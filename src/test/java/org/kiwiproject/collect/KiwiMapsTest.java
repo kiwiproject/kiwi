@@ -66,7 +66,7 @@ public class KiwiMapsTest {
     public void testNewHashMap_WhenOddNumberOfItems() {
         assertThatThrownBy(() -> KiwiMaps.newHashMap("one", 1, "two"))
                 .isExactlyInstanceOf(IllegalArgumentException.class)
-                .hasMessage("must supply even number of items; received 3");
+                .hasMessage("must be an even number of items (received 3)");
     }
 
     @Test
@@ -92,7 +92,7 @@ public class KiwiMapsTest {
     public void testNewLinkedHashMap_WhenOddNumberOfItems() {
         assertThatThrownBy(() -> KiwiMaps.newLinkedHashMap("one", 1, "two"))
                 .isExactlyInstanceOf(IllegalArgumentException.class)
-                .hasMessage("must supply even number of items; received 3");
+                .hasMessage("must be an even number of items (received 3)");
     }
 
     @Test
@@ -119,7 +119,7 @@ public class KiwiMapsTest {
     public void testNewTreeMap_WhenOddNumberOfItems() {
         assertThatThrownBy(() -> KiwiMaps.newTreeMap("one", 1, "two"))
                 .isExactlyInstanceOf(IllegalArgumentException.class)
-                .hasMessage("must supply even number of items; received 3");
+                .hasMessage("must be an even number of items (received 3)");
     }
 
     @Test
@@ -140,7 +140,7 @@ public class KiwiMapsTest {
     public void testNewConcurrentHash_WhenOddNumberOfItems() {
         assertThatThrownBy(() -> KiwiMaps.newConcurrentHashMap("one", 1, "two"))
                 .isExactlyInstanceOf(IllegalArgumentException.class)
-                .hasMessage("must supply even number of items; received 3");
+                .hasMessage("must be an even number of items (received 3)");
     }
 
     private Object[] wordToNumberArray() {
