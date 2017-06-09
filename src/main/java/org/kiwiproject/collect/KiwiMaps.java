@@ -1,6 +1,5 @@
 package org.kiwiproject.collect;
 
-import com.google.common.math.IntMath;
 import lombok.experimental.UtilityClass;
 
 import java.util.HashMap;
@@ -9,7 +8,7 @@ import java.util.Map;
 import java.util.TreeMap;
 import java.util.concurrent.ConcurrentHashMap;
 
-import static com.google.common.base.Preconditions.checkArgument;
+import static org.kiwiproject.base.KiwiPreconditions.checkEvenItemCount;
 
 @UtilityClass
 public class KiwiMaps {
@@ -48,11 +47,6 @@ public class KiwiMaps {
         Map<K, V> map = new ConcurrentHashMap<>(items.length);
         populate(map, items);
         return map;
-    }
-
-    private static void checkEvenItemCount(Object... items) {
-        checkArgument(IntMath.mod(items.length, 2) == 0,
-                "must supply even number of items; received %s", items.length);
     }
 
     @SuppressWarnings("unchecked")
