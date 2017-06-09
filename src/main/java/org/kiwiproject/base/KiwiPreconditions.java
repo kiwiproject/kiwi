@@ -9,20 +9,24 @@ import java.util.Collection;
 import java.util.function.Supplier;
 
 import static com.google.common.math.IntMath.mod;
+import static java.util.Objects.requireNonNull;
 
 @UtilityClass
 public class KiwiPreconditions {
 
     @SafeVarargs
     public static <T> void checkEvenItemCount(T... items) {
+        requireNonNull(items);
         checkEvenItemCount(() -> items.length);
     }
 
     public static <T> void checkEvenItemCount(Collection<T> items) {
+        requireNonNull(items);
         checkEvenItemCount(items::size);
     }
 
     public static void checkEvenItemCount(Supplier<Integer> countSupplier) {
+        requireNonNull(countSupplier);
         Integer count = countSupplier.get();
         Preconditions.checkArgument(mod(count, 2) == 0, "must be an even number of items (received %s)", count);
     }
