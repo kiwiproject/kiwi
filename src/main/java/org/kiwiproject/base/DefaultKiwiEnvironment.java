@@ -1,11 +1,8 @@
 package org.kiwiproject.base;
 
-import com.google.common.annotations.VisibleForTesting;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 
 import java.lang.management.ManagementFactory;
-import java.lang.management.RuntimeMXBean;
 import java.sql.Time;
 import java.sql.Timestamp;
 import java.time.Clock;
@@ -14,6 +11,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.ZoneId;
+import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 import java.util.Date;
 import java.util.Map;
@@ -21,15 +19,34 @@ import java.util.Optional;
 import java.util.Properties;
 import java.util.concurrent.TimeUnit;
 
-import static org.kiwiproject.base.KiwiStrings.f;
-
+/**
+ * A default implementation of the {@link KiwiEnvironment} interface. Normal usage is to define a private
+ * {@link KiwiEnvironment} and initialize it to a new instance of this class, for example in a constructor:
+ * <p>
+ * Then wherever you would normally call things like {@link System#currentTimeMillis()}, use the corresponding method
+ * from {@link KiwiEnvironment} instead, e.g. {@code env.currentTimeMillis()}.
+ * <p>
+ * For testing environment-related code, inject a mock instance via a constructor. A common pattern is to provide
+ * a separate constructor that accepts a {@link KiwiEnvironment} specifically for test code to use; often this should
+ * be made package-private (default scope). Other constructors will generally call this constructor. For example:
+ * <pre>
+ *  private KiwiEnvironment env;
+ *
+ *  public Foo() {
+ *      this(new DefaultKiwiEnvironment());
+ *  }
+ *
+ *  Foo(KiwiEnvironment env) {
+ *      this.env = env;
+ *  }
+ *  </pre>
+ */
+@Slf4j
 public class DefaultKiwiEnvironment implements KiwiEnvironment {
-
-    private static final Logger LOG = LoggerFactory.getLogger(DefaultKiwiEnvironment.class);
 
     @Override
     public Date currentDate() {
-        return new Date();
+        return Date.from(Instant.now());
     }
 
     @Override
@@ -48,8 +65,8 @@ public class DefaultKiwiEnvironment implements KiwiEnvironment {
     }
 
     @Override
-    public Instant currentInstant(ZoneId zoneId) {
-        return Instant.now(Clock.system(zoneId));
+    public Instant currentInstant(ZoneId zone) {
+        return Instant.now(Clock.system(zone));
     }
 
     @Override
@@ -58,8 +75,8 @@ public class DefaultKiwiEnvironment implements KiwiEnvironment {
     }
 
     @Override
-    public LocalDate currentLocalDate(ZoneId zoneId) {
-        return LocalDate.now(zoneId);
+    public LocalDate currentLocalDate(ZoneId zone) {
+        return LocalDate.now(zone);
     }
 
     @Override
@@ -68,8 +85,8 @@ public class DefaultKiwiEnvironment implements KiwiEnvironment {
     }
 
     @Override
-    public LocalTime currentLocalTime(ZoneId zoneId) {
-        return LocalTime.now(zoneId);
+    public LocalTime currentLocalTime(ZoneId zone) {
+        return LocalTime.now(zone);
     }
 
     @Override
@@ -78,18 +95,18 @@ public class DefaultKiwiEnvironment implements KiwiEnvironment {
     }
 
     @Override
-    public LocalDateTime currentLocalDateTime(ZoneId zoneId) {
-        return LocalDateTime.now(zoneId);
+    public LocalDateTime currentLocalDateTime(ZoneId zone) {
+        return LocalDateTime.now(zone);
     }
 
     @Override
     public ZonedDateTime currentZonedDateTimeUTC() {
-        return ZonedDateTime.now(ZoneId.of("UTC"));
+        return ZonedDateTime.now(ZoneOffset.UTC);
     }
 
     @Override
-    public ZonedDateTime currentZonedDateTime(ZoneId zoneId) {
-        return ZonedDateTime.now(zoneId);
+    public ZonedDateTime currentZonedDateTime(ZoneId zone) {
+        return ZonedDateTime.now(zone);
     }
 
     @Override
@@ -107,38 +124,24 @@ public class DefaultKiwiEnvironment implements KiwiEnvironment {
         return System.nanoTime();
     }
 
+    /**
+     * {@inheritDoc}
+     * <p>
+     * This default implementation uses the JMX {@link ManagementFactory#getRuntimeMXBean()} to get the process
+     * information in the form {@code pid@hostname}. It then simply splits the string and returns the {@code pid}.
+     */
     @Override
-    public int currentProcessId() {
-        return currentProcessId(getRuntimeMXBean());
-    }
-
-    @VisibleForTesting
-    int currentProcessId(RuntimeMXBean runtimeMXBean) {
-        String jvmName = runtimeMXBean.getName();
-        try {
-            return Integer.parseInt(jvmName.split("@")[0]);
-        } catch (Exception e) {
-            String message = f("Unexpected/illegal state accessing JVM name [{}] (Expecting format pid@host)", jvmName);
-            throw new IllegalStateException(message, e);
-        }
+    public String currentProcessId() {
+        return ManagementFactory.getRuntimeMXBean().getName().split("@")[0];
     }
 
     @Override
     public Optional<Integer> tryGetCurrentProcessId() {
-        return tryGetCurrentProcessId(getRuntimeMXBean());
-    }
-
-    private RuntimeMXBean getRuntimeMXBean() {
-        return ManagementFactory.getRuntimeMXBean();
-    }
-
-    @VisibleForTesting
-    Optional<Integer> tryGetCurrentProcessId(RuntimeMXBean runtimeMXBean) {
         try {
-            int value = currentProcessId(runtimeMXBean);
-            return Optional.of(value);
+            String value = currentProcessId();
+            return Optional.of(Integer.parseInt(value));
         } catch (Exception e) {
-            LOG.trace("Unable to get the current process ID", e);
+            LOG.trace("Unable to get current process ID", e);
             return Optional.empty();
         }
     }
