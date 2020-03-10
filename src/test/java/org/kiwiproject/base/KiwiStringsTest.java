@@ -1,5 +1,19 @@
 package org.kiwiproject.base;
 
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.assertj.core.util.Lists.newArrayList;
+import static org.kiwiproject.base.KiwiStrings.COMMA;
+import static org.kiwiproject.base.KiwiStrings.NEWLINE;
+import static org.kiwiproject.base.KiwiStrings.SPACE;
+import static org.kiwiproject.base.KiwiStrings.TAB;
+import static org.kiwiproject.base.KiwiStrings.blankToNull;
+import static org.kiwiproject.base.KiwiStrings.f;
+import static org.kiwiproject.base.KiwiStrings.format;
+import static org.kiwiproject.base.KiwiStrings.splitOnCommas;
+import static org.kiwiproject.base.KiwiStrings.splitToList;
+import static org.kiwiproject.base.KiwiStrings.splitWithTrimAndOmitEmpty;
+
 import org.assertj.core.api.junit.jupiter.SoftAssertionsExtension;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -12,12 +26,7 @@ import org.kiwiproject.util.BlankStringArgumentsProvider;
 
 import java.util.List;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.assertj.core.util.Lists.newArrayList;
-import static org.kiwiproject.base.KiwiStrings.*;
-
-@DisplayName("KiwiString")
+@DisplayName("KiwiStrings")
 @ExtendWith(SoftAssertionsExtension.class)
 class KiwiStringsTest {
 

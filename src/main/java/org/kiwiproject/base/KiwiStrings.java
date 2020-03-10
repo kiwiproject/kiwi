@@ -1,12 +1,12 @@
 package org.kiwiproject.base;
 
+import static org.apache.commons.lang3.StringUtils.isBlank;
+
 import com.google.common.base.Splitter;
 import com.google.common.collect.ImmutableList;
 import lombok.experimental.UtilityClass;
 
 import java.util.List;
-
-import static org.apache.commons.lang3.StringUtils.isBlank;
 
 /**
  * Utility methods relating to strings or similar.
