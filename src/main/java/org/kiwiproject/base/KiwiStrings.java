@@ -1,156 +1,228 @@
 package org.kiwiproject.base;
 
 import com.google.common.base.Splitter;
+import com.google.common.collect.ImmutableList;
 import lombok.experimental.UtilityClass;
 
 import java.util.List;
 
-import static com.google.common.base.Preconditions.checkArgument;
-import static java.util.Objects.nonNull;
-import static org.apache.commons.lang3.StringUtils.isNotBlank;
+import static org.apache.commons.lang3.StringUtils.isBlank;
 
 /**
  * Utility methods relating to strings or similar.
  */
 @UtilityClass
-public class KiwiStrings {
+@SuppressWarnings("WeakerAccess")
+public final class KiwiStrings {
 
+    /**
+     * A space character.
+     */
     public static final char SPACE = ' ';
 
+    /**
+     * A tab character.
+     */
     public static final char TAB = '\t';
 
+    /**
+     * A comma character.
+     */
     public static final char COMMA = ',';
 
+    /**
+     * A newline character.
+     */
     public static final char NEWLINE = '\n';
 
-    private static final Splitter TRIM_OMIT_EMPTY_SPACE_SPLITTER =
+    private static final Splitter TRIMMING_AND_EMPTY_OMITTING_SPACE_SPLITTER =
             Splitter.on(SPACE).omitEmptyStrings().trimResults();
 
-    private static final Splitter TRIM_OMIT_EMPTY_TAB_SPLITTER =
+    private static final Splitter TRIMMING_AND_EMPTY_OMITTING_TAB_SPLITTER =
             Splitter.on(TAB).omitEmptyStrings().trimResults();
 
-    private static final Splitter TRIM_OMIT_EMPTY_COMMA_SPLITTER =
+    private static final Splitter TRIMMING_AND_EMPTY_OMITTING_COMMA_SPLITTER =
             Splitter.on(COMMA).omitEmptyStrings().trimResults();
 
-    private static final Splitter TRIM_OMIT_EMPTY_NEWLINE_SPLITTER =
+    private static final Splitter TRIMMING_AND_EMPTY_OMITTING_NEWLINE_SPLITTER =
             Splitter.on(NEWLINE).omitEmptyStrings().trimResults();
 
-    public static Iterable<String> splitOnSpaces(CharSequence sequence) {
-        return split(sequence, SPACE);
+    /**
+     * Splits the given {@link CharSequence}, using a {@link #SPACE} as the separator character, omitting any empty
+     * strings and trimming leading and trailing whitespace.
+     *
+     * @param sequence the character sequence to be split
+     * @return an Iterable over the split strings
+     * @see #splitWithTrimAndOmitEmpty(CharSequence, char)
+     */
+    public static Iterable<String> splitWithTrimAndOmitEmpty(CharSequence sequence) {
+        return splitWithTrimAndOmitEmpty(sequence, SPACE);
     }
 
-    public static Iterable<String> splitOnTabs(CharSequence sequence) {
-        return split(sequence, TAB);
-    }
-
-    public static Iterable<String> splitOnCommas(CharSequence sequence) {
-        return split(sequence, COMMA);
-    }
-
-    public static Iterable<String> splitOnNewlines(CharSequence sequence) {
-        return split(sequence, NEWLINE);
-    }
-
-    public static Iterable<String> split(CharSequence sequence, char separator) {
-        checkSequenceArgument(sequence);
+    /**
+     * Splits the given {@link CharSequence}, using the specified separator character, omitting any empty
+     * strings and trimming leading and trailing whitespace.
+     *
+     * @param sequence the character sequence to be split
+     * @param separator the separator character to use
+     * @return an Iterable over the split strings
+     */
+    public static Iterable<String> splitWithTrimAndOmitEmpty(CharSequence sequence, char separator) {
         switch (separator) {
-            case SPACE:
-                return TRIM_OMIT_EMPTY_SPACE_SPLITTER.split(sequence);
-
-            case TAB:
-                return TRIM_OMIT_EMPTY_TAB_SPLITTER.split(sequence);
-
             case COMMA:
-                return TRIM_OMIT_EMPTY_COMMA_SPLITTER.split(sequence);
-
+                return TRIMMING_AND_EMPTY_OMITTING_COMMA_SPLITTER.split(sequence);
+            case SPACE:
+                return TRIMMING_AND_EMPTY_OMITTING_SPACE_SPLITTER.split(sequence);
+            case TAB:
+                return TRIMMING_AND_EMPTY_OMITTING_TAB_SPLITTER.split(sequence);
             case NEWLINE:
-                return TRIM_OMIT_EMPTY_NEWLINE_SPLITTER.split(sequence);
-
+                return TRIMMING_AND_EMPTY_OMITTING_NEWLINE_SPLITTER.split(sequence);
             default:
                 return Splitter.on(separator).omitEmptyStrings().trimResults().split(sequence);
         }
     }
 
-    public static Iterable<String> split(CharSequence sequence, String separator) {
-        checkSequenceArgument(sequence);
-        checkStringSeparatorArgument(separator);
+    /**
+     * Splits the given {@link CharSequence}, using the specified separator string, omitting any empty
+     * strings and trimming leading and trailing whitespace.
+     *
+     * @param sequence the character sequence to be split
+     * @param separator the separator to use, e.g. {@code ", "}
+     * @return an Iterable over the split strings
+     */
+    public static Iterable<String> splitWithTrimAndOmitEmpty(CharSequence sequence, String separator) {
         return Splitter.on(separator).omitEmptyStrings().trimResults().split(sequence);
     }
 
-    public static List<String> splitToListOnSpaces(CharSequence sequence) {
+    /**
+     * Splits the given {@link CharSequence}, using a {@link #SPACE} as the separator character, omitting any empty
+     * strings and trimming leading and trailing whitespace. Returns an <i>immutable</i> list.
+     *
+     * @param sequence the character sequence to be split
+     * @return an immutable list containing the split strings
+     * @see #splitWithTrimAndOmitEmpty(CharSequence, char)
+     */
+    public static List<String> splitToList(CharSequence sequence) {
         return splitToList(sequence, SPACE);
     }
 
-    public static List<String> splitToListOnTabs(CharSequence sequence) {
-        return splitToList(sequence, TAB);
-    }
-
-    public static List<String> splitToListOnCommas(CharSequence sequence) {
-        return splitToList(sequence, COMMA);
-    }
-
-    public static List<String> splitToListOnNewlines(CharSequence sequence) {
-        return splitToList(sequence, NEWLINE);
-    }
-
+    /**
+     * Splits the given {@link CharSequence}, using the specified separator character, omitting any empty
+     * strings and trimming leading and trailing whitespace. Returns an <i>immutable</i> list.
+     *
+     * @param sequence the character sequence to be split
+     * @param separator the separator character to use
+     * @return an immutable list containing the split strings
+     * @see #splitWithTrimAndOmitEmpty(CharSequence, char)
+     */
     public static List<String> splitToList(CharSequence sequence, char separator) {
-        checkSequenceArgument(sequence);
         switch (separator) {
-            case SPACE:
-                return TRIM_OMIT_EMPTY_SPACE_SPLITTER.splitToList(sequence);
-
-            case TAB:
-                return TRIM_OMIT_EMPTY_TAB_SPLITTER.splitToList(sequence);
-
             case COMMA:
-                return TRIM_OMIT_EMPTY_COMMA_SPLITTER.splitToList(sequence);
-
+                return TRIMMING_AND_EMPTY_OMITTING_COMMA_SPLITTER.splitToList(sequence);
+            case SPACE:
+                return TRIMMING_AND_EMPTY_OMITTING_SPACE_SPLITTER.splitToList(sequence);
+            case TAB:
+                return TRIMMING_AND_EMPTY_OMITTING_TAB_SPLITTER.splitToList(sequence);
             case NEWLINE:
-                return TRIM_OMIT_EMPTY_NEWLINE_SPLITTER.splitToList(sequence);
-
+                return TRIMMING_AND_EMPTY_OMITTING_NEWLINE_SPLITTER.splitToList(sequence);
             default:
                 return Splitter.on(separator).omitEmptyStrings().trimResults().splitToList(sequence);
         }
     }
 
-    public static List<String> splitToList(CharSequence sequence, String separator) {
-        checkSequenceArgument(sequence);
-        checkStringSeparatorArgument(separator);
-        return Splitter.on(separator).omitEmptyStrings().trimResults().splitToList(sequence);
-    }
-
-    private static void checkSequenceArgument(CharSequence sequence) {
-        checkArgument(nonNull(sequence), "sequence cannot be null");
-    }
-
-    private static void checkStringSeparatorArgument(String separator) {
-        checkArgument(isNotBlank(separator), "separator cannot be blank");
+    /**
+     * Splits the given {@link CharSequence}, using the specified separator character, into the maximum number of groups
+     * specified omitting any empty strings and trimming leading and trailing whitespace. Returns an
+     * <i>immutable</i> list.
+     *
+     * @param sequence the character sequence to be split
+     * @param separator the separator character to use
+     * @param maxGroups the maximum number of groups to separate into
+     * @return an immutable list containing the split strings
+     */
+    public static List<String> splitToList(CharSequence sequence, char separator, int maxGroups) {
+        return Splitter.on(separator).limit(maxGroups).omitEmptyStrings().trimResults().splitToList(sequence);
     }
 
     /**
-     * Performs string interpolation using either Guava- or SLF4J-style replacement placeholders. Following is copied
-     * and ever so slightly modified from Guava:
-     * <p>
-     * Substitutes each placeholder - either {@code %s} or {@code {}} - in {@code template} with an argument. These are
-     * matched by position: the first placeholder gets {@code args[0]}, etc. If there are more arguments than
+     * Splits the given {@link CharSequence}, using the specified separator string, omitting any empty
+     * strings and trimming leading and trailing whitespace. Returns an <i>immutable</i> list.
+     *
+     * @param sequence the character sequence to be split
+     * @param separator the separator string to use
+     * @return an immutable list containing the split strings
+     */
+    public static List<String> splitToList(CharSequence sequence, String separator) {
+        return Splitter.on(separator).omitEmptyStrings().trimResults().splitToList(sequence);
+    }
+
+    /**
+     * Splits the given {@link CharSequence}, using the specified separator string, into the maximum number of groups
+     * specified omitting any empty strings and trimming leading and trailing whitespace. Returns an
+     * <i>immutable</i> list.
+     *
+     * @param sequence the character sequence to be split
+     * @param separator the separator string to use
+     * @param maxGroups the maximum number of groups to separate into
+     * @return an immutable list containing the split strings
+     */
+    public static List<String> splitToList(CharSequence sequence, String separator, int maxGroups) {
+        return Splitter.on(separator).limit(maxGroups).omitEmptyStrings().trimResults().splitToList(sequence);
+    }
+
+    /**
+     * Convenience method that splits the given comma-delimited {@link CharSequence}, omitting any empty strings and
+     * trimming leading and trailing whitespace. Returns an <i>immutable</i> list.
+     *
+     * @param sequence the character sequence to be split
+     * @return an immutable list containing the split strings
+     * @see #splitWithTrimAndOmitEmpty(CharSequence, char)
+     */
+    public static List<String> splitOnCommas(CharSequence sequence) {
+        return ImmutableList.copyOf(splitWithTrimAndOmitEmpty(sequence, COMMA));
+    }
+
+    /**
+     * Returns a null if the input string is all whitespace characters or null.
+     *
+     * @param sequence a possibly null, blank, or zero length String.
+     */
+    public static String blankToNull(String sequence) {
+        return isBlank(sequence) ? null : sequence;
+    }
+
+    /**
+     * Substitutes each {@code %s} or {@code {}} in {@code template} with an argument. These are matched by
+     * position: the first {@code %s} (or {@code {}}) gets {@code args[0]}, etc. If there are more arguments than
      * placeholders, the unmatched arguments will be appended to the end of the formatted message in
      * square braces.
      * <p>
-     * Note that if the template contains a {@code %s}, then Guava style is assumed. Otherwise, SLF4J style is assumed
-     * but is not verified, i.e. if you don't use either of these placeholders then no replacements are performed, and
-     * all values are simply appended to the end in square brackets.
+     * <em>This method currently accepts <strong>either</strong> {@code %s} or {@code {}} <strong>but not both at
+     * the same time</strong></em>. It won't work if you mix and match them as that is confusing anyway. What will happen
+     * is that only the {@code %s} placeholders will be resolved, and the {@code {}} will appear as a literal {@code {}}
+     * and the resulting message will thus be very difficult to understand, as there will be more arguments than
+     * {@code %s} placeholders.
+     * <p>
+     * Generally you should pick one style and be consistent throughout your entire application. Since originally this
+     * method only supported the Guava {@code %s}, this support was retained for obvious backward-compatibility reasons,
+     * and the SLF4J {@code {}} style as added because I kept coming across instances where people are used to SLF4J
+     * replacement parameter style and used that, thus making the message not interpolate correctly (though thanks to
+     * Guava's implementation, all the parameter values are still displayed after the message as extra parameters).
+     * <p>
+     * This method was copied directly from Guava 18.0's
+     * {@link com.google.common.base.Preconditions#format(String, Object...)}
+     * because it was not public in Guava, and it is useful and provides better performance than using the
+     * {@link String#format(java.util.Locale, String, Object...)} method. A slight modification is to not re-assign
+     * the {@code template} argument. For performance comparisons, see
+     * http://stackoverflow.com/questions/12786902/performance-javas-string-format
      *
-     * @param template a string containing 0 or more placeholders
-     * @param args     the arguments to be substituted into the message template. Arguments are converted
-     *                 to strings using {@link String#valueOf(Object)}. Arguments can be null.
-     * @return the string resulting from substituting the replacements into the template
-     * @implNote This is copied and slightly modified from Guava's
-     * {@link com.google.common.base.Preconditions#format(String, Object...)} for several reasons. First, because
-     * that method is not public in Guava, yet it is useful outside precondition checks. Second, this method
-     * allows either Guava-style {@code %s} or SLF4J-style {@code {}} placeholders.
+     * @param template a non-null string containing 0 or more {@code %s} or {@code {}} placeholders.
+     * @param args the arguments to be substituted into the message template. Arguments are converted
+     *             to strings using {@link String#valueOf(Object)}. Arguments can be null.
      */
     public static String format(String template, Object... args) {
         String nonNullTemplate = String.valueOf(template);  // null -> "null"
+
         if (nonNullTemplate.contains("%s")) {
             return formatGuavaStyle(template, args);
         }
