@@ -150,19 +150,6 @@ public class KiwiPreconditions {
      * and {@link IllegalArgumentException} if null or returning the (non null) reference otherwise.
      *
      * @param reference an object reference
-     * @param errorMessage the error message for the exception
-     * @return the object type
-     */
-    public static <T> T requireNotBlank(T reference, String errorMessage) {
-        checkArgumentNotNull(reference, errorMessage);
-        return reference;
-    }
-
-    /**
-     * Ensures that an object reference passed as a parameter to the calling method is not null, throwing
-     * and {@link IllegalArgumentException} if null or returning the (non null) reference otherwise.
-     *
-     * @param reference an object reference
      * @param errorMessageTemplate a template for the exception message should the check fail, according to how
      *                             {@link KiwiStrings#format(String, Object...)} handles placeholders
      * @param errorMessageArgs the arguments to be substituted into the message template. Arguments

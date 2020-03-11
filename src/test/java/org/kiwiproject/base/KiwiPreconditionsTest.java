@@ -1,8 +1,10 @@
 package org.kiwiproject.base;
 
 import static com.google.common.collect.Lists.newArrayList;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.catchThrowable;
 import static org.assertj.core.util.Sets.newLinkedHashSet;
+import static org.kiwiproject.base.KiwiPreconditions.checkArgumentNotNull;
 import static org.kiwiproject.base.KiwiPreconditions.requireNotBlank;
 import static org.kiwiproject.base.KiwiPreconditions.requireNotNull;
 import static org.kiwiproject.base.KiwiPreconditions.requireNotNullElse;
@@ -151,6 +153,37 @@ class KiwiPreconditionsTest {
                 .hasMessage("something went wrong");
     }
 
+    @Test
+    void testCheckArgumentNotNull_NoMessage(SoftAssertions softly) {
+        softly.assertThatThrownBy(() -> checkArgumentNotNull(null))
+                .isExactlyInstanceOf(IllegalArgumentException.class);
+
+        softly.assertThat(catchThrowable(() -> checkArgumentNotNull(new Object()))).isNull();
+    }
+
+    @Test
+    void testCheckArgumentNotNull_StaticMessage(SoftAssertions softly) {
+        String errorMessage = "the argument cannot be null";
+
+        softly.assertThatThrownBy(() -> checkArgumentNotNull(null, errorMessage))
+                .isExactlyInstanceOf(IllegalArgumentException.class)
+                .hasMessage(errorMessage);
+
+        softly.assertThat(catchThrowable(() -> checkArgumentNotNull(new Object(), errorMessage))).isNull();
+    }
+
+    @Test
+    void testCheckArgumentNotNull_MessageWithTemplate(SoftAssertions softly) {
+        String errorMessageTemplate = "{} cannot be null (code: {})";
+        Object[] errorMessageArgs = { "foo", 42};
+
+        softly.assertThatThrownBy(() -> checkArgumentNotNull(null, errorMessageTemplate, errorMessageArgs))
+                .isExactlyInstanceOf(IllegalArgumentException.class)
+                .hasMessage("foo cannot be null (code: 42)");
+
+        softly.assertThat(catchThrowable(() -> checkArgumentNotNull(new Object(), errorMessageTemplate, errorMessageArgs))).isNull();
+    }
+
     @SuppressWarnings("unused")
     static class SomeCheckedException extends Exception {
 
@@ -267,6 +300,24 @@ class KiwiPreconditionsTest {
         softly.assertThatThrownBy(() -> requireNotBlank(value, errorMessageTemplate, args))
                 .isExactlyInstanceOf(IllegalArgumentException.class)
                 .hasMessage("foo cannot be null (code: 42)");
+    }
+
+    @Test
+    void testRequireNotBlank_ReturnsNotBlankValue() {
+        String value = "foo";
+        assertThat(requireNotBlank(value)).isEqualTo(value);
+    }
+
+    @Test
+    void testRequireNotBlank_ReturnsNotBlankValue_StaticMessage() {
+        String value = "foo";
+        assertThat(requireNotBlank(value, "foo cannot be null")).isEqualTo(value);
+    }
+
+    @Test
+    void testRequireNotBlank_ReturnsNotBlankValue_MessageWithTemplate() {
+        String value = "foo";
+        assertThat(requireNotBlank(value, "{} cannot be null", "foo")).isEqualTo(value);
     }
 
 }
