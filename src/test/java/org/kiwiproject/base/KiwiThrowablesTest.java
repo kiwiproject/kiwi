@@ -16,7 +16,6 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.UncheckedIOException;
-import java.util.Optional;
 
 @ExtendWith(SoftAssertionsExtension.class)
 class KiwiThrowablesTest {
@@ -126,7 +125,7 @@ class KiwiThrowablesTest {
 
     @Test
     void testRootCauseOf_WhenNonNullThrowable() {
-        Optional<Throwable> rootCauseOptional = KiwiThrowables.rootCauseOf(WRAPPED_ERROR);
+        var rootCauseOptional = KiwiThrowables.rootCauseOf(WRAPPED_ERROR);
 
         assertThat(rootCauseOptional).isNotEmpty();
         rootCauseOptional.ifPresent(KiwiThrowablesTest::assertThrowableMatches);
@@ -139,7 +138,7 @@ class KiwiThrowablesTest {
 
     @Test
     void testRootCauseOfNullable_WhenNonNullThrowable() {
-        Optional<Throwable> rootCauseOptional = KiwiThrowables.rootCauseOfNullable(WRAPPED_ERROR);
+        var rootCauseOptional = KiwiThrowables.rootCauseOfNullable(WRAPPED_ERROR);
 
         assertThat(rootCauseOptional).isNotEmpty();
         rootCauseOptional.ifPresent(KiwiThrowablesTest::assertThrowableMatches);
@@ -155,7 +154,7 @@ class KiwiThrowablesTest {
 
     @Test
     void testThrowableInfo_OfNullThrowable(SoftAssertions softly) {
-        KiwiThrowables.ThrowableInfo info = KiwiThrowables.ThrowableInfo.of(null);
+        var info = KiwiThrowables.ThrowableInfo.of(null);
 
         softly.assertThat(info.type).isNull();
         softly.assertThat(info.getType()).isEmpty();
@@ -172,7 +171,7 @@ class KiwiThrowablesTest {
 
     @Test
     void testThrowableInfo_OfNonNullThrowable_WithCause(SoftAssertions softly) {
-        KiwiThrowables.ThrowableInfo info = KiwiThrowables.ThrowableInfo.of(ERROR);
+        var info = KiwiThrowables.ThrowableInfo.of(ERROR);
 
         softly.assertThat(info.type).isEqualTo(ERROR.getClass().getName());
         softly.assertThat(info.getType()).isPresent().contains(ERROR.getClass().getName());
@@ -189,8 +188,8 @@ class KiwiThrowablesTest {
 
     @Test
     void testThrowableInfo_OfNonNullThrowable_WithNoCause(SoftAssertions softly) {
-        IOException ex = new IOException("I/O error");
-        KiwiThrowables.ThrowableInfo info = KiwiThrowables.ThrowableInfo.of(ex);
+        var ex = new IOException("I/O error");
+        var info = KiwiThrowables.ThrowableInfo.of(ex);
 
         softly.assertThat(info.type).isEqualTo(ex.getClass().getName());
         softly.assertThat(info.getType()).isPresent().contains(ex.getClass().getName());
@@ -207,8 +206,8 @@ class KiwiThrowablesTest {
 
     @Test
     void testThrowableInfo_OfNonNullThrowable_WithNoMessageOrCause(SoftAssertions softly) {
-        IOException ex = new IOException();
-        KiwiThrowables.ThrowableInfo info = KiwiThrowables.ThrowableInfo.of(ex);
+        var ex = new IOException();
+        var info = KiwiThrowables.ThrowableInfo.of(ex);
 
         softly.assertThat(info.type).isEqualTo(ex.getClass().getName());
         softly.assertThat(info.getType()).isPresent().contains(ex.getClass().getName());
@@ -225,7 +224,7 @@ class KiwiThrowablesTest {
 
     @Test
     void testThrowableInfoOfNonNull_WithThrowable() {
-        KiwiThrowables.ThrowableInfo throwableInfo = KiwiThrowables.throwableInfoOfNonNull(ERROR);
+        var throwableInfo = KiwiThrowables.throwableInfoOfNonNull(ERROR);
         assertThrowableInfoMatches(throwableInfo);
     }
 
@@ -238,7 +237,7 @@ class KiwiThrowablesTest {
 
     @Test
     void testThrowableInfoOfNullable_WithThrowable() {
-        Optional<KiwiThrowables.ThrowableInfo> throwableInfoOptional = KiwiThrowables.throwableInfoOfNullable(ERROR);
+        var throwableInfoOptional = KiwiThrowables.throwableInfoOfNullable(ERROR);
 
         assertThat(throwableInfoOptional).isNotEmpty();
         throwableInfoOptional.ifPresent(KiwiThrowablesTest::assertThrowableInfoMatches);
@@ -280,16 +279,16 @@ class KiwiThrowablesTest {
 
         @Test
         void shouldReturnOriginalThrowableWhenTypeDoesNotMatchWrapperClass() {
-            UncheckedIOException original = new UncheckedIOException(new IOException());
-            Throwable unwrapped = KiwiThrowables.unwrap(original, IOException.class);
+            var original = new UncheckedIOException(new IOException());
+            var unwrapped = KiwiThrowables.unwrap(original, IOException.class);
             assertThat(unwrapped).isSameAs(original);
         }
 
         @Test
         void shouldReturnCauseOfThrowableWhenTypeMatchesWrapperClass() {
-            FileNotFoundException cause = new FileNotFoundException("/foo.txt not found");
-            IOException original = new IOException(cause);
-            Throwable unwrapped = KiwiThrowables.unwrap(original, IOException.class);
+            var cause = new FileNotFoundException("/foo.txt not found");
+            var original = new IOException(cause);
+            var unwrapped = KiwiThrowables.unwrap(original, IOException.class);
             assertThat(unwrapped).isSameAs(cause);
         }
     }
