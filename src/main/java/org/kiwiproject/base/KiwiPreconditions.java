@@ -11,7 +11,6 @@ import com.google.common.base.Preconditions;
 import lombok.SneakyThrows;
 import lombok.experimental.UtilityClass;
 
-import java.lang.reflect.Constructor;
 import java.util.Collection;
 import java.util.function.IntSupplier;
 import java.util.function.Supplier;
@@ -59,7 +58,7 @@ public class KiwiPreconditions {
                                                            Class<T> exceptionType,
                                                            String errorMessage) {
         if (!expression) {
-            Constructor<T> constructor = exceptionType.getConstructor(String.class);
+            var constructor = exceptionType.getConstructor(String.class);
             throw constructor.newInstance(errorMessage);
         }
     }
@@ -84,7 +83,7 @@ public class KiwiPreconditions {
                                                            String errorMessageTemplate,
                                                            Object... errorMessageArgs) {
         if (!expression) {
-            Constructor<T> constructor = exceptionType.getConstructor(String.class);
+            var constructor = exceptionType.getConstructor(String.class);
             throw constructor.newInstance(format(errorMessageTemplate, errorMessageArgs));
         }
     }
@@ -202,7 +201,7 @@ public class KiwiPreconditions {
     }
 
     private static IllegalArgumentException newIllegalArgumentException(String errorMessageTemplate, Object...errorMessageArgs) {
-        String errorMessage = format(errorMessageTemplate, errorMessageArgs);
+        var errorMessage = format(errorMessageTemplate, errorMessageArgs);
         return new IllegalArgumentException(errorMessage);
     }
 
@@ -273,7 +272,7 @@ public class KiwiPreconditions {
      */
     public static void checkEvenItemCount(IntSupplier countSupplier) {
         requireNonNull(countSupplier);
-        int count = countSupplier.getAsInt();
+        var count = countSupplier.getAsInt();
         Preconditions.checkArgument(count % 2 == 0, "must be an even number of items (received %s)", count);
     }
 

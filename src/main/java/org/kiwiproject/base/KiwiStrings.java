@@ -221,7 +221,7 @@ public final class KiwiStrings {
      *             to strings using {@link String#valueOf(Object)}. Arguments can be null.
      */
     public static String format(String template, Object... args) {
-        String nonNullTemplate = String.valueOf(template);  // null -> "null"
+        var nonNullTemplate = String.valueOf(template);  // null -> "null"
 
         if (nonNullTemplate.contains("%s")) {
             return formatGuavaStyle(template, args);
@@ -258,14 +258,14 @@ public final class KiwiStrings {
      * This is copied and modified from Guava to accommodate {@code %s} or {@code {}} placeholders.
      */
     private static String formatInternal(String template, String placeholder, Object... args) {
-        String nonNullTemplate = String.valueOf(template); // null -> "null"
+        var nonNullTemplate = String.valueOf(template); // null -> "null"
 
         // start substituting the arguments into the placeholders
-        StringBuilder builder = new StringBuilder(nonNullTemplate.length() + 16 * args.length);
-        int templateStart = 0;
-        int i = 0;
+        var builder = new StringBuilder(nonNullTemplate.length() + 16 * args.length);
+        var templateStart = 0;
+        var i = 0;
         while (i < args.length) {
-            int placeholderStart = nonNullTemplate.indexOf(placeholder, templateStart);
+            var placeholderStart = nonNullTemplate.indexOf(placeholder, templateStart);
             if (placeholderStart == -1) {
                 break;
             }

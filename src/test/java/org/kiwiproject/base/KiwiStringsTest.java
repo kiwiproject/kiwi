@@ -44,66 +44,66 @@ class KiwiStringsTest {
 
             @Test
             void shouldReturnEmptyList_WithEmptyArgument() {
-                List<String> strings = newArrayList(splitWithTrimAndOmitEmpty(""));
+                var strings = newArrayList(splitWithTrimAndOmitEmpty(""));
                 assertThat(strings).isEmpty();
             }
 
             @Test
             void shouldReturnEmptyList_WithBlankArgument() {
-                List<String> strings = newArrayList(splitWithTrimAndOmitEmpty("  "));
+                var strings = newArrayList(splitWithTrimAndOmitEmpty("  "));
                 assertThat(strings).isEmpty();
             }
 
             @Test
             void shouldSplitOnSpaces_WithNoExplicitSeparatorArg() {
-                List<String> strings = newArrayList(splitWithTrimAndOmitEmpty(" this   is a   string  "));
+                var strings = newArrayList(splitWithTrimAndOmitEmpty(" this   is a   string  "));
                 assertThat(strings).hasSize(4).containsAll(expectedListForSplits());
             }
 
             @Test
             void shouldSplitOnSpaces_WithCharSequenceArgument() {
-                StringBuilder builder = new StringBuilder()
+                var builder = new StringBuilder()
                         .append("  this      ")
                         .append("  is    ")
                         .append(" a")
                         .append("      string  ");
-                List<String> strings = newArrayList(splitWithTrimAndOmitEmpty(builder));
+                var strings = newArrayList(splitWithTrimAndOmitEmpty(builder));
                 assertThat(strings).hasSize(4).containsAll(expectedListForSplits());
             }
 
             @Test
             void shouldSplitOnSpaces() {
-                List<String> strings = newArrayList(splitWithTrimAndOmitEmpty(" this   is a   string  ", SPACE));
+                var strings = newArrayList(splitWithTrimAndOmitEmpty(" this   is a   string  ", SPACE));
                 assertThat(strings).hasSize(4).containsAll(expectedListForSplits());
             }
 
             @Test
             void shouldSplitOnCommas() {
-                List<String> strings = newArrayList(splitWithTrimAndOmitEmpty(",, , ,  this ,,  is, , ,a ,  ,string , ,, ,", COMMA));
+                var strings = newArrayList(splitWithTrimAndOmitEmpty(",, , ,  this ,,  is, , ,a ,  ,string , ,, ,", COMMA));
                 assertThat(strings).hasSize(4).containsAll(expectedListForSplits());
             }
 
             @Test
             void shouldSplitOnTabs() {
-                List<String> strings = newArrayList(splitWithTrimAndOmitEmpty("\t\t\t this \t\t   is\t \t   \ta \t  \tstring \t \t\t \t", TAB));
+                var strings = newArrayList(splitWithTrimAndOmitEmpty("\t\t\t this \t\t   is\t \t   \ta \t  \tstring \t \t\t \t", TAB));
                 assertThat(strings).hasSize(4).containsAll(expectedListForSplits());
             }
 
             @Test
             void shouldSplitOnNewLines() {
-                List<String> strings = newArrayList(splitWithTrimAndOmitEmpty("\n\n\n this \n\n   is\n \n   \na \n  \nstring \n \n\n \n", NEWLINE));
+                var strings = newArrayList(splitWithTrimAndOmitEmpty("\n\n\n this \n\n   is\n \n   \na \n  \nstring \n \n\n \n", NEWLINE));
                 assertThat(strings).hasSize(4).containsAll(expectedListForSplits());
             }
 
             @Test
             void shouldSplitOnPipe() {
-                List<String> strings = newArrayList(splitWithTrimAndOmitEmpty("||| this ||   is| |   |a |  |string | || |", '|'));
+                var strings = newArrayList(splitWithTrimAndOmitEmpty("||| this ||   is| |   |a |  |string | || |", '|'));
                 assertThat(strings).hasSize(4).containsAll(expectedListForSplits());
             }
 
             @Test
             void shouldSplitOnStringSeparator() {
-                List<String> strings = newArrayList(splitWithTrimAndOmitEmpty("this, is, , , a, string", ", "));
+                var strings = newArrayList(splitWithTrimAndOmitEmpty("this, is, , , a, string", ", "));
                 assertThat(strings).hasSize(4).containsAll(expectedListForSplits());
             }
         }
@@ -113,59 +113,59 @@ class KiwiStringsTest {
 
             @Test
             void shouldSplitOnSpaces_WithNoExplicitSeparatorArg() {
-                List<String> strings = splitToList(" this   is a   string  ");
+                var strings = splitToList(" this   is a   string  ");
                 assertThat(strings).hasSize(4).containsAll(expectedListForSplits());
             }
 
             @Test
             void shouldSplitOnSpace() {
-                List<String> strings = splitToList(" this   is a   string  ", SPACE);
+                var strings = splitToList(" this   is a   string  ", SPACE);
                 assertThat(strings).hasSize(4).containsAll(expectedListForSplits());
             }
 
             @Test
             void shouldSplitOnCommas() {
-                List<String> strings = splitToList(",, , ,  this ,,  is, , ,a ,  ,string , ,, ,", COMMA);
+                var strings = splitToList(",, , ,  this ,,  is, , ,a ,  ,string , ,, ,", COMMA);
                 assertThat(strings).hasSize(4).containsAll(expectedListForSplits());
             }
 
             @Test
             void shouldSplitOnTabs() {
-                List<String> strings = splitToList("\t\t\t this \t\t   is\t \t   \ta \t  \tstring \t \t\t \t", TAB);
+                var strings = splitToList("\t\t\t this \t\t   is\t \t   \ta \t  \tstring \t \t\t \t", TAB);
                 assertThat(strings).hasSize(4).containsAll(expectedListForSplits());
             }
 
             @Test
             void shouldSplitOnNewLines() {
-                List<String> strings = newArrayList(splitToList("\n\n\n this \n\n   is\n \n   \na \n  \nstring \n \n\n \n", NEWLINE));
+                var strings = newArrayList(splitToList("\n\n\n this \n\n   is\n \n   \na \n  \nstring \n \n\n \n", NEWLINE));
                 assertThat(strings).hasSize(4).containsAll(expectedListForSplits());
             }
 
             @Test
             void shouldSplitOnPipe() {
-                List<String> strings = splitToList("||| this ||   is| |   |a |  |string | || |", '|');
+                var strings = splitToList("||| this ||   is| |   |a |  |string | || |", '|');
                 assertThat(strings).hasSize(4).containsAll(expectedListForSplits());
             }
 
             @Test
             void shouldSplitOnStringSeparator() {
-                List<String> strings = splitToList("this, is, , , a, string", ", ");
+                var strings = splitToList("this, is, , , a, string", ", ");
                 assertThat(strings).hasSize(4).containsAll(expectedListForSplits());
             }
 
             @Test
             void shouldSplitWithMaxGroups() {
-                List<String> expectedList = newArrayList("this", "is  a    string");
+                var expectedList = newArrayList("this", "is  a    string");
 
-                List<String> strings = splitToList(" this   is  a    string  ", SPACE, 2);
+                var strings = splitToList(" this   is  a    string  ", SPACE, 2);
                 assertThat(strings).hasSize(2).containsAll(expectedList);
             }
 
             @Test
             void shouldSplitWithMaxGroups_WithStringSeparator() {
-                List<String> expectedList = newArrayList("this", "is||a|| string");
+                var expectedList = newArrayList("this", "is||a|| string");
 
-                List<String> strings = splitToList(" this||is||a|| string  ", "||", 2);
+                var strings = splitToList(" this||is||a|| string  ", "||", 2);
                 assertThat(strings).hasSize(2).containsAll(expectedList);
             }
         }
@@ -181,13 +181,13 @@ class KiwiStringsTest {
 
             @Test
             void shouldReturnEmptyList_WithEmptyArgument() {
-                List<String> strings = newArrayList(splitOnCommas(""));
+                var strings = newArrayList(splitOnCommas(""));
                 assertThat(strings).isEmpty();
             }
 
             @Test
             void shouldReturnEmptyList_WithBlankArgument() {
-                List<String> strings = newArrayList(splitOnCommas("  "));
+                var strings = newArrayList(splitOnCommas("  "));
                 assertThat(strings).isEmpty();
             }
         }
@@ -205,13 +205,13 @@ class KiwiStringsTest {
 
             @Test
             void shouldFormat() {
-                String result = format("This is a %s template with %s placeholders", "great", 2);
+                var result = format("This is a %s template with %s placeholders", "great", 2);
                 assertThat(result).isEqualTo("This is a great template with 2 placeholders");
             }
 
             @Test
             void shouldFormat_ThroughAliasMethod() {
-                String result = f("This is a %s template with %s placeholders", "great", 2);
+                var result = f("This is a %s template with %s placeholders", "great", 2);
                 assertThat(result).isEqualTo("This is a great template with 2 placeholders");
             }
 
@@ -220,15 +220,15 @@ class KiwiStringsTest {
             void shouldFormat_withSomeArguments_ContainingNullValues() {
                 String templateAdjective = null;
                 String numPlaceholders = null;
-                String result = format("This is a %s template with %s placeholders and all null arguments",
+                var result = format("This is a %s template with %s placeholders and all null arguments",
                         templateAdjective, numPlaceholders);
                 assertThat(result).isEqualTo("This is a null template with null placeholders and all null arguments");
             }
 
             @Test
             void shouldFormat_withMoreArgs_ThanPlaceholders() {
-                Object o = new Object();
-                String result = format("This is a %s template with %s placeholders but more arguments", "great", 2, 3.14, o);
+                var o = new Object();
+                var result = format("This is a %s template with %s placeholders but more arguments", "great", 2, 3.14, o);
                 assertThat(result).isEqualTo("This is a great template with 2 placeholders but more arguments [3.14, " + o.toString() + "]");
             }
         }
@@ -238,13 +238,13 @@ class KiwiStringsTest {
 
             @Test
             void shouldFormat() {
-                String result = format("This is a {} template with {} placeholders", "great", 2);
+                var result = format("This is a {} template with {} placeholders", "great", 2);
                 assertThat(result).isEqualTo("This is a great template with 2 placeholders");
             }
 
             @Test
             void shouldFormat_ThroughAliasMethod() {
-                String result = f("This is a {} template with {} placeholders", "great", 2);
+                var result = f("This is a {} template with {} placeholders", "great", 2);
                 assertThat(result).isEqualTo("This is a great template with 2 placeholders");
             }
 
@@ -253,28 +253,28 @@ class KiwiStringsTest {
             void shouldFormat_withSomeArguments_ContainingNullValues() {
                 String templateAdjective = null;
                 String numPlaceholders = null;
-                String result = format("This is a {} template with {} placeholders and all null arguments",
+                var result = format("This is a {} template with {} placeholders and all null arguments",
                         templateAdjective, numPlaceholders);
                 assertThat(result).isEqualTo("This is a null template with null placeholders and all null arguments");
             }
 
             @Test
             void shouldFormat_withMoreArgs_ThanPlaceholders() {
-                Object o = new Object();
-                String result = format("This is a {} template with {} placeholders but more arguments", "great", 2, 3.14, o);
+                var o = new Object();
+                var result = format("This is a {} template with {} placeholders but more arguments", "great", 2, 3.14, o);
                 assertThat(result).isEqualTo("This is a great template with 2 placeholders but more arguments [3.14, " + o.toString() + "]");
             }
         }
 
         @Test
         void withNullTemplate_ShouldFormat() {
-            String result = format(null, "great", 2);
+            var result = format(null, "great", 2);
             assertThat(result).isEqualTo("null [great, 2]");
         }
 
         @Test
         void whenSomeoneIsBeingAJerkAndTriesToMixAndMatchGuavaAndSlf4jPlaceholders() {
-            String result = format("This is a %s template with {} parameters, which %s {} properly or as {}",
+            var result = format("This is a %s template with {} parameters, which %s {} properly or as {}",
                     "silly", 5, "does not", "work", "expected");
             assertThat(result).isEqualTo("This is a silly template with {} parameters, which 5 {} properly or as {} [does not, work, expected]");
         }
@@ -286,14 +286,14 @@ class KiwiStringsTest {
         @ParameterizedTest
         @ArgumentsSource(BlankStringArgumentsProvider.class)
         void shouldBeNull_WithBlankStrings(String argument) {
-            String result = blankToNull(argument);
+            var result = blankToNull(argument);
             assertThat(result).isNull();
         }
 
         @ParameterizedTest
         @ValueSource(strings = { "a ", " a", " a "})
         void shouldReturnValues_WithNonWhitespaceCharacters(String argument) {
-            String result = blankToNull(argument);
+            var result = blankToNull(argument);
             assertThat(result).isEqualTo(argument);
         }
     }

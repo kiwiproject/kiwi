@@ -108,7 +108,7 @@ class KiwiPreconditionsTest {
 
     @Test
     void testCheckArgument_WhenHasMessageConstant(SoftAssertions softly) {
-        String message = "something went wrong";
+        var message = "something went wrong";
 
         softly.assertThat(catchThrowable(() ->
                 KiwiPreconditions.checkArgument(true, SomeCheckedException.class, message)))
@@ -131,7 +131,7 @@ class KiwiPreconditionsTest {
 
     @Test
     void testCheckArgument_WhenHasMessageTemplateWithArgs(SoftAssertions softly) {
-        String template = "%s went %s";
+        var template = "%s went %s";
         Object[] args = {"something", "wrong"};
 
         softly.assertThat(catchThrowable(() ->
@@ -163,7 +163,7 @@ class KiwiPreconditionsTest {
 
     @Test
     void testCheckArgumentNotNull_StaticMessage(SoftAssertions softly) {
-        String errorMessage = "the argument cannot be null";
+        var errorMessage = "the argument cannot be null";
 
         softly.assertThatThrownBy(() -> checkArgumentNotNull(null, errorMessage))
                 .isExactlyInstanceOf(IllegalArgumentException.class)
@@ -174,7 +174,7 @@ class KiwiPreconditionsTest {
 
     @Test
     void testCheckArgumentNotNull_MessageWithTemplate(SoftAssertions softly) {
-        String errorMessageTemplate = "{} cannot be null (code: {})";
+        var errorMessageTemplate = "{} cannot be null (code: {})";
         Object[] errorMessageArgs = { "foo", 42};
 
         softly.assertThatThrownBy(() -> checkArgumentNotNull(null, errorMessageTemplate, errorMessageArgs))
@@ -234,7 +234,7 @@ class KiwiPreconditionsTest {
 
     @Test
     void testRequireNotNull_StaticMessage(SoftAssertions softly) {
-        String errorMessage = "foo cannot be null";
+        var errorMessage = "foo cannot be null";
 
         softly.assertThatThrownBy(() -> requireNotNull(null, errorMessage))
                 .isExactlyInstanceOf(IllegalArgumentException.class)
@@ -245,7 +245,7 @@ class KiwiPreconditionsTest {
 
     @Test
     void testRequireNotNull_MessageWithTemplate(SoftAssertions softly) {
-        String errorMessageTemplate = "{} cannot be null (code: {})";
+        var errorMessageTemplate = "{} cannot be null (code: {})";
         Object[] args = { "foo", 42 };
 
         softly.assertThatThrownBy(() -> requireNotNull(null, errorMessageTemplate, args))
@@ -283,7 +283,7 @@ class KiwiPreconditionsTest {
     @ParameterizedTest
     @ArgumentsSource(BlankStringArgumentsProvider.class)
     void testRequireNotBlank_StaticMessage(String value, SoftAssertions softly) {
-        String errorMessage = "foo cannot be null";
+        var errorMessage = "foo cannot be null";
 
         softly.assertThatThrownBy(() -> requireNotBlank(value, errorMessage))
                 .isExactlyInstanceOf(IllegalArgumentException.class)
@@ -294,7 +294,7 @@ class KiwiPreconditionsTest {
     @ParameterizedTest
     @ArgumentsSource(BlankStringArgumentsProvider.class)
     void testRequireNotBlank_MessageWithTemplate(String value, SoftAssertions softly) {
-        String errorMessageTemplate = "{} cannot be null (code: {})";
+        var errorMessageTemplate = "{} cannot be null (code: {})";
         Object[] args = { "foo", 42 };
 
         softly.assertThatThrownBy(() -> requireNotBlank(value, errorMessageTemplate, args))
@@ -304,19 +304,19 @@ class KiwiPreconditionsTest {
 
     @Test
     void testRequireNotBlank_ReturnsNotBlankValue() {
-        String value = "foo";
+        var value = "foo";
         assertThat(requireNotBlank(value)).isEqualTo(value);
     }
 
     @Test
     void testRequireNotBlank_ReturnsNotBlankValue_StaticMessage() {
-        String value = "foo";
+        var value = "foo";
         assertThat(requireNotBlank(value, "foo cannot be null")).isEqualTo(value);
     }
 
     @Test
     void testRequireNotBlank_ReturnsNotBlankValue_MessageWithTemplate() {
-        String value = "foo";
+        var value = "foo";
         assertThat(requireNotBlank(value, "{} cannot be null", "foo")).isEqualTo(value);
     }
 
