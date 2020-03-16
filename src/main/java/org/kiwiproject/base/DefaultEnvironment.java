@@ -42,7 +42,7 @@ import java.util.concurrent.TimeUnit;
  *  </pre>
  */
 @Slf4j
-public class DefaultKiwiEnvironment implements KiwiEnvironment {
+public class DefaultEnvironment implements KiwiEnvironment {
 
     @Override
     public Date currentDate() {

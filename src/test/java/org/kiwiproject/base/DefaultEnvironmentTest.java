@@ -1,7 +1,5 @@
 package org.kiwiproject.base;
 
-import static org.assertj.core.api.Assertions.assertThat;
-
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -24,16 +22,18 @@ import java.util.Properties;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 @DisplayName("DefaultKiwiEnvironment")
-class DefaultKiwiEnvironmentTest {
+class DefaultEnvironmentTest {
 
     private static final long DEFAULT_DELTA_MILLIS = 50;
 
-    private DefaultKiwiEnvironment env;
+    private DefaultEnvironment env;
 
     @BeforeEach
     void setUp() {
-        env = new DefaultKiwiEnvironment();
+        env = new DefaultEnvironment();
     }
 
     @Test
