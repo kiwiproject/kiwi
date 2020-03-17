@@ -1,8 +1,12 @@
 package org.kiwiproject.base;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.spy;
+import static org.mockito.Mockito.verify;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -262,6 +266,19 @@ class DefaultEnvironmentTest {
     }
 
     @Test
+    void testSleepQuietly_WhenThrowsInterruptedException() throws InterruptedException {
+        var envSpy = spy(env);
+        doThrow(new InterruptedException())
+                .when(envSpy)
+                .sleep(anyLong());
+
+        var interrupted = envSpy.sleepQuietly(2500L);
+        assertThat(interrupted).isTrue();
+
+        verify(envSpy).sleep(2500L);
+    }
+
+    @Test
     void testSleepQuietly_UsingTimeUnit() {
         long sleepTime = 50;
         long start = System.currentTimeMillis();
@@ -269,6 +286,22 @@ class DefaultEnvironmentTest {
         long end = System.currentTimeMillis();
         assertThat(interrupted).isFalse();
         assertElapsedTimeInMillisMeetsMinimum(sleepTime, start, end);
+    }
+
+    @Test
+    void testSleepQuietly_UsingTimeUnit_WhenThrowsInterruptedException() throws InterruptedException {
+        var envSpy = spy(env);
+        doThrow(new InterruptedException())
+                .when(envSpy)
+                .sleep(anyLong(), any(TimeUnit.class));
+
+        var timeout = 5;
+        var timeUnit = TimeUnit.SECONDS;
+        var interrupted = envSpy.sleepQuietly(timeout, timeUnit);
+
+        assertThat(interrupted).isTrue();
+
+        verify(envSpy).sleepQuietly(timeout, timeUnit);
     }
 
     @Test
@@ -280,6 +313,22 @@ class DefaultEnvironmentTest {
         long end = System.currentTimeMillis();
         assertThat(interrupted).isFalse();
         assertElapsedTimeInMillisMeetsMinimum(sleepMillis, start, end);
+    }
+
+    @Test
+    void testSleepQuietly_WithNanos_WhenThrowsInterruptedException() throws InterruptedException {
+        var envSpy = spy(env);
+        doThrow(new InterruptedException())
+                .when(envSpy)
+                .sleep(anyLong(), anyInt());
+
+        var millis = 50L;
+        var nanos = 100_000;
+        var interrupted = envSpy.sleepQuietly(millis, nanos);
+
+        assertThat(interrupted).isTrue();
+
+        verify(envSpy).sleepQuietly(millis, nanos);
     }
 
     /**
