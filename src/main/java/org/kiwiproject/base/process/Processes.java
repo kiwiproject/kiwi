@@ -154,7 +154,7 @@ public class Processes {
             LOG.trace("Killing sleeper process ({}) used to determine pgrep flags", processId);
             kill(processId, KillSignal.SIGTERM, KillTimeoutAction.NO_OP);
         } catch (Exception e) {
-            LOG.warn("Error killing sleeper process ({}) used to determined pgrep flags", processId, e);
+            LOG.warn("Error killing sleeper process ({}) used to determine pgrep flags", processId, e);
         }
     }
 
