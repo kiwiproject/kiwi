@@ -1,5 +1,9 @@
 package org.kiwiproject.base;
 
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.spy;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -21,8 +25,6 @@ import java.util.Optional;
 import java.util.Properties;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
-
-import static org.assertj.core.api.Assertions.assertThat;
 
 @DisplayName("DefaultKiwiEnvironment")
 class DefaultEnvironmentTest {
@@ -208,6 +210,17 @@ class DefaultEnvironmentTest {
         assertThat(optionalPid)
                 .isPresent()
                 .hasValueSatisfying(value -> assertThat(value).isNotNegative());
+    }
+
+    @Test
+    void testTryGetCurrentProcessId_WhenExceptionThrown() {
+        var envSpy = spy(env);
+        doThrow(new IllegalArgumentException())
+                .when(envSpy)
+                .currentProcessId();
+
+        Optional<Integer> optionalPid = envSpy.tryGetCurrentProcessId();
+        assertThat(optionalPid).isEmpty();
     }
 
     @Test
