@@ -1,6 +1,12 @@
 package org.kiwiproject.base;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.spy;
+import static org.mockito.Mockito.verify;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -25,15 +31,15 @@ import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
 @DisplayName("DefaultKiwiEnvironment")
-class DefaultKiwiEnvironmentTest {
+class DefaultEnvironmentTest {
 
     private static final long DEFAULT_DELTA_MILLIS = 50;
 
-    private DefaultKiwiEnvironment env;
+    private DefaultEnvironment env;
 
     @BeforeEach
     void setUp() {
-        env = new DefaultKiwiEnvironment();
+        env = new DefaultEnvironment();
     }
 
     @Test
@@ -211,6 +217,17 @@ class DefaultKiwiEnvironmentTest {
     }
 
     @Test
+    void testTryGetCurrentProcessId_WhenExceptionThrown() {
+        var envSpy = spy(env);
+        doThrow(new IllegalArgumentException())
+                .when(envSpy)
+                .currentProcessId();
+
+        Optional<Integer> optionalPid = envSpy.tryGetCurrentProcessId();
+        assertThat(optionalPid).isEmpty();
+    }
+
+    @Test
     void testSleep() throws InterruptedException {
         long sleepTime = 50;
         long start = System.currentTimeMillis();
@@ -249,6 +266,19 @@ class DefaultKiwiEnvironmentTest {
     }
 
     @Test
+    void testSleepQuietly_WhenThrowsInterruptedException() throws InterruptedException {
+        var envSpy = spy(env);
+        doThrow(new InterruptedException())
+                .when(envSpy)
+                .sleep(anyLong());
+
+        var interrupted = envSpy.sleepQuietly(2500L);
+        assertThat(interrupted).isTrue();
+
+        verify(envSpy).sleep(2500L);
+    }
+
+    @Test
     void testSleepQuietly_UsingTimeUnit() {
         long sleepTime = 50;
         long start = System.currentTimeMillis();
@@ -256,6 +286,22 @@ class DefaultKiwiEnvironmentTest {
         long end = System.currentTimeMillis();
         assertThat(interrupted).isFalse();
         assertElapsedTimeInMillisMeetsMinimum(sleepTime, start, end);
+    }
+
+    @Test
+    void testSleepQuietly_UsingTimeUnit_WhenThrowsInterruptedException() throws InterruptedException {
+        var envSpy = spy(env);
+        doThrow(new InterruptedException())
+                .when(envSpy)
+                .sleep(anyLong(), any(TimeUnit.class));
+
+        var timeout = 5;
+        var timeUnit = TimeUnit.SECONDS;
+        var interrupted = envSpy.sleepQuietly(timeout, timeUnit);
+
+        assertThat(interrupted).isTrue();
+
+        verify(envSpy).sleepQuietly(timeout, timeUnit);
     }
 
     @Test
@@ -267,6 +313,22 @@ class DefaultKiwiEnvironmentTest {
         long end = System.currentTimeMillis();
         assertThat(interrupted).isFalse();
         assertElapsedTimeInMillisMeetsMinimum(sleepMillis, start, end);
+    }
+
+    @Test
+    void testSleepQuietly_WithNanos_WhenThrowsInterruptedException() throws InterruptedException {
+        var envSpy = spy(env);
+        doThrow(new InterruptedException())
+                .when(envSpy)
+                .sleep(anyLong(), anyInt());
+
+        var millis = 50L;
+        var nanos = 100_000;
+        var interrupted = envSpy.sleepQuietly(millis, nanos);
+
+        assertThat(interrupted).isTrue();
+
+        verify(envSpy).sleepQuietly(millis, nanos);
     }
 
     /**
