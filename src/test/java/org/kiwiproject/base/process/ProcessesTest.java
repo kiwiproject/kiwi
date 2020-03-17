@@ -1,6 +1,7 @@
 package org.kiwiproject.base.process;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatCode;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assumptions.assumeTrue;
 import static org.mockito.Mockito.mock;
@@ -11,6 +12,7 @@ import static org.mockito.Mockito.when;
 import org.apache.commons.lang3.SystemUtils;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.RepeatedTest;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
@@ -34,6 +36,21 @@ class ProcessesTest {
         assertThat(Processes.wasPgrepFlagsCheckSuccessful())
                 .describedAs("We expect this to always be true...")
                 .isTrue();
+    }
+
+    @RepeatedTest(5)
+    void testLogPgrepFlagWarnings() {
+        assertThatCode(Processes::logPgrepFlagWarnings).doesNotThrowAnyException();
+    }
+
+    @Test
+    void testLogPgrepCheckInfo() {
+        assertThatCode(() -> Processes.logPgrepCheckInfo(
+                "-fl",
+                "12345",
+                List.of(),
+                List.of("PEBKAC (problem exists between keyboard and chair)", "User error"),
+                "doit -foo -bar -baz")).doesNotThrowAnyException();
     }
 
     @Test

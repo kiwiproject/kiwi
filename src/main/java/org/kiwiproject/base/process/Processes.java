@@ -119,11 +119,12 @@ public class Processes {
         }
     }
 
-    private static void logPgrepCheckInfo(String flags,
-                                          String pid,
-                                          List<String> stdOutLines,
-                                          List<String> stdErrLines,
-                                          String expectedCommand) {
+    @VisibleForTesting
+    static void logPgrepCheckInfo(String flags,
+                                  String pid,
+                                  List<String> stdOutLines,
+                                  List<String> stdErrLines,
+                                  String expectedCommand) {
         LOG.trace("Checking pgrep flags [{}] for command [{}] with pid {}", flags, expectedCommand, pid);
         LOG.trace("pid {} stdOut: {}", pid, stdOutLines);
         if (stdErrLines.isEmpty()) {
@@ -147,7 +148,8 @@ public class Processes {
         }
     }
 
-    private static void logPgrepFlagWarnings() {
+    @VisibleForTesting
+    static void logPgrepFlagWarnings() {
         LOG.warn("Neither -fa nor -fl flags produced PID and full command line, so pgrep commands will behave (or fail) in unexpected ways!");
         LOG.warn("If you see this warning, DO NOT use any of the pgrep-related methods in Processes or ProcessHelper and submit a bug report.");
         LOG.warn("Turn on TRACE-level logging to see standard output and error for pgrep commands");
