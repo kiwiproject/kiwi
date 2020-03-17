@@ -12,6 +12,7 @@ import static org.mockito.Mockito.when;
 import org.apache.commons.lang3.SystemUtils;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.RepeatedTest;
 import org.junit.jupiter.api.Test;
 
@@ -36,6 +37,29 @@ class ProcessesTest {
         assertThat(Processes.wasPgrepFlagsCheckSuccessful())
                 .describedAs("We expect this to always be true...")
                 .isTrue();
+    }
+
+    @Nested
+    class ChoosePgrepFlags {
+
+        @Test
+        void shouldIndicateSuccess_WhenNonNullFlags() {
+            var flags = "-fl";
+            var result = Processes.choosePgrepFlags(flags);
+            assertThat(result.getLeft()).isEqualTo(flags);
+            assertThat(result.getRight()).isTrue();
+        }
+
+        @Test
+        void shouldIndicateUnsuccessful_WhenNullFlags() {
+            var result = Processes.choosePgrepFlags(null);
+            assertThat(result.getLeft())
+                    .describedAs("default should be -fa")
+                    .isEqualTo("-fa");
+            assertThat(result.getRight())
+                    .describedAs("should indicate not successful")
+                    .isFalse();
+        }
     }
 
     @RepeatedTest(5)

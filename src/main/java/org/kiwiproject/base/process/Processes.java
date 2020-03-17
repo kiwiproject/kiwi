@@ -23,6 +23,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.kiwiproject.base.UncheckedInterruptedException;
 
+import javax.annotation.Nullable;
 import java.io.IOException;
 import java.io.UncheckedIOException;
 import java.util.List;
@@ -73,20 +74,29 @@ public class Processes {
     private static final boolean PGREP_CHECK_SUCCESSFUL;
 
     static {
-        String flagsOrNull = choosePgrepFlags().orElse(null);
-        if (isNull(flagsOrNull)) {
-            logPgrepFlagWarnings();
-            PGREP_FULL_COMMAND_MATCH_AND_PRINT_FLAGS = "-fa";
-            PGREP_CHECK_SUCCESSFUL = false;
-        } else {
-            PGREP_FULL_COMMAND_MATCH_AND_PRINT_FLAGS = flagsOrNull;
-            PGREP_CHECK_SUCCESSFUL = true;
-        }
+        var result = choosePgrepFlags();
+        PGREP_FULL_COMMAND_MATCH_AND_PRINT_FLAGS = result.getLeft();
+        PGREP_CHECK_SUCCESSFUL = result.getRight();
     }
 
     private static final String PGREP_COMMAND = "pgrep";
 
-    private static Optional<String> choosePgrepFlags() {
+    private static Pair<String, Boolean> choosePgrepFlags() {
+        String flagsOrNull = findPgrepFlags().orElse(null);
+        return choosePgrepFlags(flagsOrNull);
+    }
+
+    @VisibleForTesting
+    static Pair<String, Boolean> choosePgrepFlags(@Nullable String flagsOrNull) {
+        if (isNull(flagsOrNull)) {
+            logPgrepFlagWarnings();
+            return Pair.of("-fa", false);
+        }
+
+        return Pair.of(flagsOrNull, true);
+    }
+
+    private static Optional<String> findPgrepFlags() {
         return tryPgrepForSleepCommand("-fa", "123")
                 .or(() -> tryPgrepForSleepCommand("-fl", "124"));
     }
