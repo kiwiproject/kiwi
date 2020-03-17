@@ -1,6 +1,7 @@
 package org.kiwiproject.base.process;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatCode;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assumptions.assumeTrue;
 import static org.mockito.Mockito.mock;
@@ -11,8 +12,11 @@ import static org.mockito.Mockito.when;
 import org.apache.commons.lang3.SystemUtils;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Nested;
+import org.junit.jupiter.api.RepeatedTest;
 import org.junit.jupiter.api.Test;
 
+import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 @DisplayName("Processes")
@@ -21,6 +25,56 @@ class ProcessesTest {
     @BeforeEach
     void setUp() {
         assumeTrue(SystemUtils.IS_OS_UNIX, "This test should only run on UNIX or UNIX-like systems");
+    }
+
+    @Test
+    void testGetPgrepFlags() {
+        assertThat(Processes.getPgrepFlags()).isIn(List.of("-fa", "-fl"));
+    }
+
+    @Test
+    void testWasPgrepCheckSuccessful() {
+        assertThat(Processes.wasPgrepFlagsCheckSuccessful())
+                .describedAs("We expect this to always be true...")
+                .isTrue();
+    }
+
+    @Nested
+    class ChoosePgrepFlags {
+
+        @Test
+        void shouldIndicateSuccess_WhenNonNullFlags() {
+            var flags = "-fl";
+            var result = Processes.choosePgrepFlags(flags);
+            assertThat(result.getLeft()).isEqualTo(flags);
+            assertThat(result.getRight()).isTrue();
+        }
+
+        @Test
+        void shouldIndicateUnsuccessful_WhenNullFlags() {
+            var result = Processes.choosePgrepFlags(null);
+            assertThat(result.getLeft())
+                    .describedAs("default should be -fa")
+                    .isEqualTo("-fa");
+            assertThat(result.getRight())
+                    .describedAs("should indicate not successful")
+                    .isFalse();
+        }
+    }
+
+    @RepeatedTest(5)
+    void testLogPgrepFlagWarnings() {
+        assertThatCode(Processes::logPgrepFlagWarnings).doesNotThrowAnyException();
+    }
+
+    @Test
+    void testLogPgrepCheckInfo() {
+        assertThatCode(() -> Processes.logPgrepCheckInfo(
+                "-fl",
+                "12345",
+                List.of(),
+                List.of("PEBKAC (problem exists between keyboard and chair)", "User error"),
+                "doit -foo -bar -baz")).doesNotThrowAnyException();
     }
 
     @Test
