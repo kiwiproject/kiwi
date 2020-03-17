@@ -53,6 +53,8 @@ public class ProcessHelper {
 
     /**
      * @see Processes#pgrep(String)
+     * @see Processes#wasPgrepFlagsCheckSuccessful()
+     * @see Processes#getPgrepFlags()
      */
     public List<Long> pgrep(String commandLine) {
         return Processes.pgrep(commandLine);
@@ -60,6 +62,8 @@ public class ProcessHelper {
 
     /**
      * @see Processes#pgrep(String, String)
+     * @see Processes#wasPgrepFlagsCheckSuccessful()
+     * @see Processes#getPgrepFlags()
      */
     public List<Long> pgrep(String user, String commandLine) {
         return Processes.pgrep(user, commandLine);
@@ -67,6 +71,8 @@ public class ProcessHelper {
 
     /**
      * @see Processes#pgrepWithSingleResult(String)
+     * @see Processes#wasPgrepFlagsCheckSuccessful()
+     * @see Processes#getPgrepFlags()
      */
     public Optional<Long> pgrepWithSingleResult(String commandLine) {
         return Processes.pgrepWithSingleResult(commandLine);
@@ -74,6 +80,8 @@ public class ProcessHelper {
 
     /**
      * @see Processes#pgrepWithSingleResult(String, String)
+     * @see Processes#wasPgrepFlagsCheckSuccessful()
+     * @see Processes#getPgrepFlags()
      */
     public Optional<Long> pgrepWithSingleResult(String user, String commandLine) {
         return Processes.pgrepWithSingleResult(user, commandLine);
@@ -81,6 +89,8 @@ public class ProcessHelper {
 
     /**
      * @see Processes#pgrepList(String)
+     * @see Processes#wasPgrepFlagsCheckSuccessful()
+     * @see Processes#getPgrepFlags()
      */
     public List<String> pgrepList(String commandLine) {
         return Processes.pgrepList(commandLine);
@@ -88,6 +98,8 @@ public class ProcessHelper {
 
     /**
      * @see Processes#pgrepList(String, String)
+     * @see Processes#wasPgrepFlagsCheckSuccessful()
+     * @see Processes#getPgrepFlags()
      */
     public List<String> pgrepList(String user, String commandLine) {
         return Processes.pgrepList(user, commandLine);
@@ -95,6 +107,8 @@ public class ProcessHelper {
 
     /**
      * @see Processes#pgrepParsedList(String)
+     * @see Processes#wasPgrepFlagsCheckSuccessful()
+     * @see Processes#getPgrepFlags()
      */
     public List<Pair<Long, String>> pgrepParsedList(String commandLine) {
         return Processes.pgrepParsedList(commandLine);
@@ -102,6 +116,8 @@ public class ProcessHelper {
 
     /**
      * @see Processes#pgrepParsedList(String, String)
+     * @see Processes#wasPgrepFlagsCheckSuccessful()
+     * @see Processes#getPgrepFlags()
      */
     public List<Pair<Long, String>> pgrepParsedList(String user, String commandLine) {
         return Processes.pgrepParsedList(user, commandLine);

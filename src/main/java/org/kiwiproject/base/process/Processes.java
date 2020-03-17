@@ -2,6 +2,7 @@ package org.kiwiproject.base.process;
 
 import static com.google.common.base.Preconditions.checkArgument;
 import static com.google.common.base.Preconditions.checkState;
+import static java.util.Objects.isNull;
 import static java.util.Objects.nonNull;
 import static java.util.stream.Collectors.toList;
 import static org.kiwiproject.base.KiwiPreconditions.checkArgumentNotNull;
@@ -55,73 +56,122 @@ public class Processes {
     public static final long DEFAULT_WAIT_FOR_EXIT_TIME_SECONDS = 5;
 
     /**
-     * There are a few significant differences in command line argument flags between the much older {@code procps} UNIX
-     * process library, which is found on Red Hat 6 (and older) systems, and the newer {@code procps-ng} library found on
-     * Red Hat 7 (and above) systems. The main difference for the purposes of this class is the different flags on the
-     * {@code pgrep} command. Specifically in the older {@code procps} library you use {@code -fl} to match against and
-     * print out the full command line with {@code pgrep}. But with {@code procps-ng} you must use {@code -fa} to perform
-     * the same full command line match and printing. (The {@code -a} short flag is equivalent to the {@code --list-full}
-     * long flag, though we only use short flags here.)
-     * <p>
-     * <em>Note: we are assuming the {@code pgrep} command is available, and that the minimum version of it comes from
-     * {@code procps}. If {@code procps-ng} is available then we change the command flags used to match and print the
-     * full command line. Obviously if these assumptions are false, for example if {@code pgrep} command is not present,
-     * then none of the pgrep methods in this class will work anyway.</em>
-     */
-    private static final boolean PROCPS_NEXT_GENERATION = isProcpsNextGeneration();
-
-    /**
      * The command flags to use with the {@code pgrep} command for matching and printing the full command line.
-     *
-     * @see #PROCPS_NEXT_GENERATION
+     * For example, to find the "sleep 25" process with pid 32332 we want pgrep to return results in the
+     * format: "[pid] [full command]". For this example the expected result is: {@code 32332 sleep 25}.
+     * <p>
+     * However, there are differences in pgrep command line arguments between BSD-based systems (including macOS) and
+     * Linux systems. There are also differences between older and newer Linux distributions such as
+     * CentOS/Red Hat 6 and 7. Specifically, some systems require {@code -fl} to match against and print out the full
+     * command line with {@code pgrep}. Other implementations require {@code -fa} (or {@code -f --list-full}).
+     * <p>
+     * See for example <a href="http://man7.org/linux/man-pages/man1/pgrep.1.html">Linux pgrep</a> and
+     * <a href="https://www.freebsd.org/cgi/man.cgi?query=pgrep&sektion=1">BSD pgrep</a> for more information.
      */
-    private static final String PGREP_FULL_COMMAND_MATCH_AND_PRINT_FLAGS = choosePgrepFlags();
+    private static final String PGREP_FULL_COMMAND_MATCH_AND_PRINT_FLAGS;
+
+    private static final boolean PGREP_CHECK_SUCCESSFUL;
+
+    static {
+        String flagsOrNull = choosePgrepFlags().orElse(null);
+        if (isNull(flagsOrNull)) {
+            logPgrepFlagWarnings();
+            PGREP_FULL_COMMAND_MATCH_AND_PRINT_FLAGS = "-fa";
+            PGREP_CHECK_SUCCESSFUL = false;
+        } else {
+            PGREP_FULL_COMMAND_MATCH_AND_PRINT_FLAGS = flagsOrNull;
+            PGREP_CHECK_SUCCESSFUL = true;
+        }
+    }
 
     private static final String PGREP_COMMAND = "pgrep";
 
-    /**
-     * This method launches a sleep process, then attempts to use the {@code procps-ng} flag {@code -a} with a
-     * {@code pgrep} command to determine if the {@code progps-ng} library is available, or whether we only have
-     * the older {@code procps} library available.
-     */
-    private static boolean isProcpsNextGeneration() {
+    private static Optional<String> choosePgrepFlags() {
+        return tryPgrepForSleepCommand("-fa", "123")
+                .or(() -> tryPgrepForSleepCommand("-fl", "124"));
+    }
+
+    private static Optional<String> tryPgrepForSleepCommand(String flags, String sleepTime) {
         Process sleeperProc = null;
         try {
-            sleeperProc = launch("sleep", "123");
-            Process pgrepCheckerProc = launch(PGREP_COMMAND, "-a", "sleep");
+            sleeperProc = launch("sleep", sleepTime);
+            var pid = String.valueOf(sleeperProc.pid());
+            var pgrepCheckerProc = launch(PGREP_COMMAND, flags, "sleep");
+            var stdOutLines = readLinesFromInputStreamOf(pgrepCheckerProc);
+            var stdErrLines = readLinesFromErrorStreamOf(pgrepCheckerProc);
+            var expectedCommand = "sleep " + sleepTime;
+            logPgrepCheckInfo(flags, pid, stdOutLines, stdErrLines, expectedCommand);
 
-            List<String> stdOut = readLinesFromInputStreamOf(pgrepCheckerProc);
-            LOG.trace("stdout from procps-ng check: {}", stdOut);
+            if (linesContainPidAndFullCommand(stdOutLines, pid, expectedCommand)) {
+                LOG.info("Will use [{}] as flags for pgrep full-command listing", flags);
+                return Optional.of(flags);
+            }
 
-            List<String> stdErr = readLinesFromErrorStreamOf(pgrepCheckerProc);
-            LOG.trace("stderr from procps-ng check: {}", stdErr);
-
-            return stdErr.isEmpty();
+            LOG.trace("Flags [{}] did not produce pgrep full-command listing", flags);
+            return Optional.empty();
         } catch (Exception e) {
-            LOG.error("Error checking if procps-ng is available. Assuming yes. If assumption is wrong, pgrep calls may fail in unexpected ways!", e);
-            return true;
+            LOG.error("Error checking pgrep flags. pgrep calls may fail in unexpected ways!", e);
+            return Optional.empty();
         } finally {
             if (nonNull(sleeperProc)) {
-                long processId = sleeperProc.pid();
-                killSilently(processId);
+                killSilently(sleeperProc.pid());
             }
         }
     }
 
-    private static void killSilently(long processId) {
-        try {
-            LOG.trace("Killing sleeper process ({}) used to check procps-ng", processId);
-            kill(processId, KillSignal.SIGTERM, KillTimeoutAction.NO_OP);
-        } catch (Exception e) {
-            LOG.warn("Error killing sleeper process", e);
+    private static void logPgrepCheckInfo(String flags,
+                                          String pid,
+                                          List<String> stdOutLines,
+                                          List<String> stdErrLines,
+                                          String expectedCommand) {
+        LOG.trace("Checking pgrep flags [{}] for command [{}] with pid {}", flags, expectedCommand, pid);
+        LOG.trace("pid {} stdOut: {}", pid, stdOutLines);
+        if (stdErrLines.isEmpty()) {
+            LOG.trace("pid {} stdErr: {}", pid, stdErrLines);
+        } else {
+            LOG.warn("stdErr checking pgrep flags for pid {} (command: {}): {}",
+                    pid, expectedCommand, stdErrLines);
         }
     }
 
-    private static String choosePgrepFlags() {
-        String flags = Processes.PROCPS_NEXT_GENERATION ? "-fa" : "-fl";
-        LOG.info("procps-ng present? {}. Using [{}] as flags for pgrep commands", Processes.PROCPS_NEXT_GENERATION, flags);
+    private static boolean linesContainPidAndFullCommand(List<String> lines, String pid, String expectedCommand) {
+        return lines.stream().anyMatch(line -> line.contains(pid) && line.contains(expectedCommand));
+    }
 
-        return flags;
+    private static void killSilently(long processId) {
+        try {
+            LOG.trace("Killing sleeper process ({}) used to determine pgrep flags", processId);
+            kill(processId, KillSignal.SIGTERM, KillTimeoutAction.NO_OP);
+        } catch (Exception e) {
+            LOG.warn("Error killing sleeper process ({}) used to determined pgrep flags", processId, e);
+        }
+    }
+
+    private static void logPgrepFlagWarnings() {
+        LOG.warn("Neither -fa nor -fl flags produced PID and full command line, so pgrep commands will behave (or fail) in unexpected ways!");
+        LOG.warn("If you see this warning, DO NOT use any of the pgrep-related methods in Processes or ProcessHelper and submit a bug report.");
+        LOG.warn("Turn on TRACE-level logging to see standard output and error for pgrep commands");
+        LOG.warn("We will use -fa even though we know this will not work, instead of throwing an exception");
+    }
+
+    /**
+     * Use this method to determine if calling any of the pgrep methods in this class will work as expected.
+     *
+     * @return true if the pgrep check to determine the flags to use for full command matching was successful; false
+     * otherwise. If false you should NOT use any of the pgrep methods.
+     * @see #getPgrepFlags()
+     */
+    public static boolean wasPgrepFlagsCheckSuccessful() {
+        return PGREP_CHECK_SUCCESSFUL;
+    }
+
+    /**
+     * Returns the pgrep flags that {@link Processes} will use in all pgrep methods.
+     * Use {@link #wasPgrepFlagsCheckSuccessful()} to check if the flags were chosen successfully
+     * to ensure that pgrep commands will work as expected on your OS.
+     */
+    public static String getPgrepFlags() {
+        return PGREP_FULL_COMMAND_MATCH_AND_PRINT_FLAGS;
     }
 
     /**
@@ -201,6 +251,8 @@ public class Processes {
      * Does a {@code pgrep} with the specified full command.
      *
      * @see #pgrep(String, String)
+     * @see #wasPgrepFlagsCheckSuccessful()
+     * @see #getPgrepFlags()
      */
     public static List<Long> pgrep(String commandLine) {
         return pgrep(null, commandLine);
@@ -212,6 +264,8 @@ public class Processes {
      * @param user        the OS user (passed to the {@code -u} option)
      * @param commandLine the full command to match
      * @return list of matching process ids (pids)
+     * @see #wasPgrepFlagsCheckSuccessful()
+     * @see #getPgrepFlags()
      */
     public static List<Long> pgrep(String user, String commandLine) {
         try {
@@ -232,6 +286,8 @@ public class Processes {
      *
      * @param commandLine the full command line
      * @return an optional either containing a process id, or an empty optional
+     * @see #wasPgrepFlagsCheckSuccessful()
+     * @see #getPgrepFlags()
      */
     public static Optional<Long> pgrepWithSingleResult(String commandLine) {
         return pgrepWithSingleResult(null, commandLine);
@@ -243,6 +299,8 @@ public class Processes {
      * @param user        the OS user (passed to the {@code -u} option)
      * @param commandLine the full command to match
      * @return an optional either containing a process id, or an empty optional
+     * @see #wasPgrepFlagsCheckSuccessful()
+     * @see #getPgrepFlags()
      */
     public static Optional<Long> pgrepWithSingleResult(String user, String commandLine) {
         List<Long> pids = pgrep(user, commandLine);
@@ -260,6 +318,8 @@ public class Processes {
      * Does a {@code pgrep} with the specified full command.
      *
      * @see #pgrepList(String, String)
+     * @see #wasPgrepFlagsCheckSuccessful()
+     * @see #getPgrepFlags()
      */
     public static List<String> pgrepList(String commandLine) {
         return pgrepList(null, commandLine);
@@ -271,6 +331,8 @@ public class Processes {
      * @param user        the OS user (passed to the {@code -u} option)
      * @param commandLine the full command line to match
      * @return a list of pgrep output, with each line in format "{pid} {command}"
+     * @see #wasPgrepFlagsCheckSuccessful()
+     * @see #getPgrepFlags()
      */
     public static List<String> pgrepList(String user, String commandLine) {
         try {
@@ -289,6 +351,8 @@ public class Processes {
      * process id (pid) and the matched command line.
      *
      * @see #pgrepParsedList(String, String)
+     * @see #wasPgrepFlagsCheckSuccessful()
+     * @see #getPgrepFlags()
      */
     public static List<Pair<Long, String>> pgrepParsedList(String commandLine) {
         return pgrepParsedList(null, commandLine);
@@ -301,6 +365,8 @@ public class Processes {
      * @param user        the OS user (passed to the {@code -u} option)
      * @param commandLine the full command line to match
      * @return a list of {@link Pair} objects; each pair contains the pid as a Long and the associated full command
+     * @see #wasPgrepFlagsCheckSuccessful()
+     * @see #getPgrepFlags()
      */
     public static List<Pair<Long, String>> pgrepParsedList(String user, String commandLine) {
         List<String> lines = pgrepList(user, commandLine);

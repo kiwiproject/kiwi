@@ -12,7 +12,10 @@ import static org.kiwiproject.collect.KiwiLists.third;
 import static org.kiwiproject.io.KiwiIO.emptyByteArrayInputStream;
 import static org.kiwiproject.io.KiwiIO.newByteArrayInputStreamOfLines;
 import static org.kiwiproject.io.KiwiIO.readLinesFromInputStreamOf;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import com.google.common.base.StandardSystemProperty;
@@ -65,6 +68,18 @@ public class ProcessHelperTest {
         Optional<Integer> exitCode = processes.waitForExit(process, 25, TimeUnit.MILLISECONDS);
 
         assertThat(exitCode).isEmpty();
+    }
+
+    @Test
+    void testWaitForExit_WhenInterruptedExceptionThrown() throws InterruptedException {
+        var process = mock(Process.class);
+        when(process.waitFor(anyLong(), any(TimeUnit.class))).thenThrow(new InterruptedException("sorry"));
+
+        var timeout = 2L;
+        var timeUnit = TimeUnit.SECONDS;
+        assertThat(processes.waitForExit(process, timeout, timeUnit)).isEmpty();
+
+        verify(process).waitFor(timeout, timeUnit);
     }
 
     @Test

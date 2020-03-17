@@ -13,6 +13,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
+import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 @DisplayName("Processes")
@@ -21,6 +22,18 @@ class ProcessesTest {
     @BeforeEach
     void setUp() {
         assumeTrue(SystemUtils.IS_OS_UNIX, "This test should only run on UNIX or UNIX-like systems");
+    }
+
+    @Test
+    void testGetPgrepFlags() {
+        assertThat(Processes.getPgrepFlags()).isIn(List.of("-fa", "-fl"));
+    }
+
+    @Test
+    void testWasPgrepCheckSuccessful() {
+        assertThat(Processes.wasPgrepFlagsCheckSuccessful())
+                .describedAs("We expect this to always be true...")
+                .isTrue();
     }
 
     @Test
