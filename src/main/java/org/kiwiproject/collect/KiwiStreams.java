@@ -2,54 +2,45 @@ package org.kiwiproject.collect;
 
 import lombok.experimental.UtilityClass;
 
-import java.util.Iterator;
-import java.util.function.BiFunction;
+import java.util.Optional;
+import java.util.function.Predicate;
 import java.util.stream.Stream;
-import java.util.stream.StreamSupport;
 
-import static java.util.Objects.requireNonNull;
-
+/**
+ * Utilities related to Streams that are not already in the JDKs {@link java.util.stream.Stream}
+ * or Guava's {@link com.google.common.collect.Streams}.
+ */
 @UtilityClass
-public class KiwiStreams {
+public final class KiwiStreams {
 
-    public static <A, B, C> Stream<C> zip(Stream<A> aStream,
-                                          Stream<B> bStream,
-                                          BiFunction<? super A, ? super B, C> zipFunction) {
-
-        requireNonNull(aStream);
-        requireNonNull(bStream);
-        requireNonNull(zipFunction);
-
-        Iterator<A> aIterator = aStream.iterator();
-        Iterator<B> bIterator = bStream.iterator();
-        Iterator<C> cIterator = makeZippingIterator(aIterator, bIterator, zipFunction);
-        Iterable<C> iterable = toIterable(cIterator);
-
-        return StreamSupport.stream(iterable.spliterator(), areBothParallel(aStream, bStream));
+    /**
+     * Find the first object having the given {@code typeToFind} in a stream of objects.
+     *
+     * @param stream        the stream of objects of some (unknown) type
+     * @param typeToFind    the class of the object to find
+     * @param <T>           the type token of the type we want to find
+     * @return an Optional containing the first object of the given type, or empty
+     */
+    public static <T> Optional<T> findFirst(Stream<?> stream, Class<T> typeToFind) {
+        return findFirst(stream, typeToFind, obj -> true);
     }
 
-    private static <A, B, C> Iterator<C> makeZippingIterator(Iterator<A> aIterator,
-                                                             Iterator<B> bIterator,
-                                                             BiFunction<? super A, ? super B, C> zipFunction) {
-        return new Iterator<C>() {
-            @Override
-            public boolean hasNext() {
-                return aIterator.hasNext() && bIterator.hasNext();
-            }
-
-            @Override
-            public C next() {
-                return zipFunction.apply(aIterator.next(), bIterator.next());
-            }
-        };
-    }
-
-    private static <C> Iterable<C> toIterable(Iterator<C> cIterator) {
-        return () -> cIterator;
-    }
-
-    private static <A, B> boolean areBothParallel(Stream<A> aStream, Stream<B> bStream) {
-        return aStream.isParallel() && bStream.isParallel();
+    /**
+     * Find the first object having the given {@code typeToFind} and matching the supplied
+     * predicate in a stream of objects.
+     *
+     * @param stream        the stream of objects of some (unknown) type
+     * @param typeToFind    the class of the object to find
+     * @param predicate     the condition that must be satisfied for a match to occur
+     * @param <T>           the type token of the type we want to find
+     * @return an Optional containing the first object of the given type, or empty
+     */
+    public static <T> Optional<T> findFirst(Stream<?> stream, Class<T> typeToFind, Predicate<T> predicate) {
+        return stream
+                .filter(obj -> typeToFind.isAssignableFrom(obj.getClass()))
+                .map(typeToFind::cast)
+                .filter(predicate)
+                .findFirst();
     }
 
 }

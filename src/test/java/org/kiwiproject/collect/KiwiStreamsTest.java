@@ -1,110 +1,110 @@
 package org.kiwiproject.collect;
 
-import org.junit.Ignore;
-import org.junit.Test;
+import static java.util.stream.Collectors.toList;
 
+import lombok.Value;
+import org.assertj.core.api.SoftAssertions;
+import org.assertj.core.api.junit.jupiter.SoftAssertionsExtension;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+
+import java.io.Serializable;
 import java.util.List;
 import java.util.stream.Stream;
 
-import static java.util.stream.Collectors.toList;
-import static org.assertj.core.api.Assertions.assertThat;
-
-public class KiwiStreamsTest {
-
-    @Test
-    public void testZip_WithFiniteStreamsOfSameLength() {
-        Stream<String> stream1 = Stream.of("a", "c", "e", "g", "i", "k", "m", "o", "q", "s", "u", "w", "y");
-        Stream<String> stream2 = Stream.of("b", "d", "f", "h", "j", "l", "n", "p", "r", "t", "v", "x", "z");
-
-        List<String> zipped = KiwiStreams.zip(stream1, stream2, this::concat).collect(toList());
-        assertThat(zipped).
-                containsExactly("ab", "cd", "ef", "gh", "ij", "kl", "mn", "op", "qr", "st", "uv", "wx", "yz");
-    }
+@DisplayName("KiwiStreams")
+@ExtendWith(SoftAssertionsExtension.class)
+class KiwiStreamsTest {
 
     @Test
-    public void testZip_WithFiniteStreams_WhenFirstStreamIsLongerThanSecondStream() {
-        Stream<String> stream1 = Stream.of("a", "b", "c", "d");
-        Stream<String> stream2 = Stream.of("x", "y", "z");
+    void testFindFirst(SoftAssertions softly) {
+        softly.assertThat(KiwiStreams.findFirst(newNumberStream(), String.class)).isEmpty();
+        softly.assertThat(KiwiStreams.findFirst(newNumberList().stream(), String.class)).isEmpty();
 
-        List<String> zipped = KiwiStreams.zip(stream1, stream2, this::concat).collect(toList());
-        assertThat(zipped).containsExactly("ax", "by", "cz");
-    }
+        softly.assertThat(KiwiStreams.findFirst(newNumberStream(), Integer.class)).hasValue(24);
+        softly.assertThat(KiwiStreams.findFirst(newNumberList().stream(), Integer.class)).hasValue(24);
 
-    @Test
-    public void testZip_WithFiniteStreams_WhenSecondStreamIsLongerThanFirstStream() {
-        Stream<String> stream1 = Stream.of("a", "b", "c");
-        Stream<String> stream2 = Stream.of("w", "x", "y", "z");
+        softly.assertThat(KiwiStreams.findFirst(newNumberStream(), Long.class)).hasValue(42L);
+        softly.assertThat(KiwiStreams.findFirst(newNumberList().stream(), Long.class)).hasValue(42L);
 
-        List<String> zipped = KiwiStreams.zip(stream1, stream2, this::concat).collect(toList());
-        assertThat(zipped).containsExactly("aw", "bx", "cy");
-    }
+        softly.assertThat(KiwiStreams.findFirst(newNumberStream(), Double.class)).hasValue(84.0);
+        softly.assertThat(KiwiStreams.findFirst(newNumberList().stream(), Double.class)).hasValue(84.0);
 
-    private String concat(String s1, String s2) {
-        return s1 + s2;
+        softly.assertThat(KiwiStreams.findFirst(newStreamOfABC(), A.class)).contains(new A(1));
+        softly.assertThat(KiwiStreams.findFirst(newStreamOfABC(), B.class)).contains(new B(7));
+        softly.assertThat(KiwiStreams.findFirst(newStreamOfABC(), C.class)).contains(new C(3));
+
+        softly.assertThat(KiwiStreams.findFirst(streamOf42(), Object.class)).hasValue(42);
+        softly.assertThat(KiwiStreams.findFirst(streamOf42(), Integer.class)).hasValue(42);
+        softly.assertThat(KiwiStreams.findFirst(streamOf42(), Double.class)).hasValue(42.0);
+        softly.assertThat(KiwiStreams.findFirst(streamOf42(), String.class)).hasValue("42");
+        softly.assertThat(KiwiStreams.findFirst(streamOf42(), Float.class)).isEmpty();
     }
 
     @Test
-    public void testZip_WithInfiniteSequentialStreams() {
-        Stream<Long> stream1 = Stream.iterate(0L, this::addTwo);
-        Stream<Long> stream2 = Stream.iterate(1L, this::addTwo);
-        Stream<Long> zipped = KiwiStreams.zip(stream1, stream2, this::sum);
+    void testFindFirst_WithPredicate(SoftAssertions softly) {
+        softly.assertThat(KiwiStreams.findFirst(newNumberStream(), String.class,
+                value -> value.length() > 10)).isEmpty();
+        softly.assertThat(KiwiStreams.findFirst(newNumberList().stream(), String.class,
+                value -> value.length() > 10)).isEmpty();
 
-        int numberToCheck = 10_000;
-        List<Long> expected = buildExpectedListHavingElementCount(numberToCheck);
+        softly.assertThat(KiwiStreams.findFirst(newNumberStream(), Integer.class,
+                value -> value > 100)).isEmpty();
+        softly.assertThat(KiwiStreams.findFirst(newNumberList().stream(), Integer.class,
+                value -> value > 100)).isEmpty();
 
-        assertThat(zipped.limit(numberToCheck).collect(toList())).containsExactlyElementsOf(expected);
+        softly.assertThat(KiwiStreams.findFirst(newNumberStream(), Integer.class,
+                value -> value > 30)).hasValue(64);
+        softly.assertThat(KiwiStreams.findFirst(newNumberList().stream(), Integer.class,
+                value -> value > 30)).hasValue(64);
+
+        softly.assertThat(KiwiStreams.findFirst(newStreamOfABC(), A.class,
+                a -> a.id > 5)).contains(new A(8));
+        softly.assertThat(KiwiStreams.findFirst(newStreamOfABC(), B.class,
+                b -> b.id > 10)).isEmpty();
+        softly.assertThat(KiwiStreams.findFirst(newStreamOfABC(), C.class,
+                c -> c.id == 6)).contains(new C(6));
+
+        softly.assertThat(KiwiStreams.findFirst(streamOf42(), Integer.class,
+                value -> value > 10)).hasValue(42);
+        softly.assertThat(KiwiStreams.findFirst(streamOf42(), Integer.class,
+                value -> value < 10)).isEmpty();
+        softly.assertThat(KiwiStreams.findFirst(streamOf42(), Double.class,
+                value -> value >= 42)).hasValue(42.0);
+        softly.assertThat(KiwiStreams.findFirst(streamOf42(), String.class,
+                value -> value.length() >= 2)).hasValue("42");
     }
 
-    /**
-     * Ignoring for now...the parallel streams makes things wonky and the test fails.
-     */
-    @Test
-    @Ignore
-    public void testZip_WithInfiniteParallelStreams() {
-        Stream<Long> parallelStream1 = Stream.iterate(0L, this::addTwo).parallel();
-        Stream<Long> parallelStream2 = Stream.iterate(1L, this::addTwo).parallel();
-        Stream<Long> zipped = KiwiStreams.zip(parallelStream1, parallelStream2, this::sum);
-
-        int numberToCheck = 10_000;
-        List<Long> expected = buildExpectedListHavingElementCount(numberToCheck);
-
-        assertThat(zipped.limit(numberToCheck).collect(toList())).containsExactlyElementsOf(expected);
+    private Stream<? extends Number> newNumberStream() {
+        return Stream.of(24, 42L, 64, 84.0, 96L, 256.0);
     }
 
-    @Test
-    public void testZip_WithInfiniteSequentialStream_AndInfiniteParallelStream() {
-        Stream<Long> stream1 = Stream.iterate(0L, this::addTwo);
-        Stream<Long> parallelStream2 = Stream.iterate(1L, this::addTwo).parallel();
-        Stream<Long> zipped = KiwiStreams.zip(stream1, parallelStream2, this::sum);
-
-        int numberToCheck = 10_000;
-        List<Long> expected = buildExpectedListHavingElementCount(numberToCheck);
-
-        assertThat(zipped.limit(numberToCheck).collect(toList())).containsExactlyElementsOf(expected);
+    private List<Number> newNumberList() {
+        return newNumberStream().collect(toList());
     }
 
-    @Test
-    public void testZip_WithInfiniteParallelStream_AndInfiniteSequentialStream() {
-        Stream<Long> parallelStream1 = Stream.iterate(0L, this::addTwo).parallel();
-        Stream<Long> stream2 = Stream.iterate(1L, this::addTwo);
-        Stream<Long> zipped = KiwiStreams.zip(parallelStream1, stream2, this::sum);
-
-        int numberToCheck = 10_000;
-        List<Long> expected = buildExpectedListHavingElementCount(numberToCheck);
-
-        assertThat(zipped.limit(numberToCheck).collect(toList())).containsExactlyElementsOf(expected);
+    @Value
+    private static class A {
+        int id;
     }
 
-    private Long addTwo(Long value) {
-        return value + 2;
+    @Value
+    private static class B {
+        int id;
     }
 
-    private long sum(Long value1, Long value2) {
-        return value1 + value2;
+    @Value
+    private static class C {
+        int id;
     }
 
-    private List<Long> buildExpectedListHavingElementCount(int numberToCheck) {
-        return Stream.iterate(1L, value -> value + 4).limit(numberToCheck).collect(toList());
+    private Stream<Object> newStreamOfABC() {
+        return Stream.of(new A(1), new A(2), new C(3), new A(4), new A(5),
+                new C(6), new B(7), new A(8));
     }
 
+    private Stream<? extends Serializable> streamOf42() {
+        return Stream.of(42, 42.0, "42");
+    }
 }
