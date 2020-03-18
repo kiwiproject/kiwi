@@ -5,6 +5,7 @@ import static java.util.stream.Collectors.toList;
 import lombok.Value;
 import org.assertj.core.api.SoftAssertions;
 import org.assertj.core.api.junit.jupiter.SoftAssertionsExtension;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 
@@ -12,6 +13,7 @@ import java.io.Serializable;
 import java.util.List;
 import java.util.stream.Stream;
 
+@DisplayName("KiwiStreams")
 @ExtendWith(SoftAssertionsExtension.class)
 class KiwiStreamsTest {
 

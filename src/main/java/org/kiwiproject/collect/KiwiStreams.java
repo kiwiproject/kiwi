@@ -6,6 +6,10 @@ import java.util.Optional;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
 
+/**
+ * Utilities related to Streams that are not already in the JDKs {@link java.util.stream.Stream}
+ * or Guava's {@link com.google.common.collect.Streams}.
+ */
 @UtilityClass
 public final class KiwiStreams {
 
