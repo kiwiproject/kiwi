@@ -1,6 +1,7 @@
 package org.kiwiproject.collect;
 
 import static java.util.Map.entry;
+import static java.util.stream.Collectors.toList;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatIllegalStateException;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -9,6 +10,7 @@ import static org.kiwiproject.collect.KiwiCollectors.toEnumSet;
 import static org.kiwiproject.collect.KiwiCollectors.toImmutableListBuilder;
 import static org.kiwiproject.collect.KiwiCollectors.toLinkedMap;
 
+import com.google.common.collect.ImmutableList;
 import org.apache.commons.lang3.tuple.Pair;
 import org.apache.commons.text.WordUtils;
 import org.junit.jupiter.api.DisplayName;
@@ -29,28 +31,41 @@ class KiwiCollectorsTest {
 
         @Test
         void shouldReturnImmutableListBuilder() {
-            var list = Stream.iterate(0, value -> value + 2)
-                    .limit(50)
+            var list = firstFiftyEvenIntegers()
                     .collect(toImmutableListBuilder())
                     .build();
 
-            assertThat(list)
-                    .hasSize(50)
-                    .containsSequence(0, 2, 4, 6, 8, 10)
-                    .containsSequence(18, 20, 22)
-                    .containsSequence(30, 32, 34)
-                    .containsSequence(42, 44, 46, 48, 50);
+            assertListContents(list);
+        }
+
+        @Test
+        void shouldCombineFromParallelStream() {
+            var list = firstFiftyEvenIntegers()
+                    .parallel()
+                    .collect(toImmutableListBuilder())
+                    .build();
+
+            assertListContents(list);
+        }
+
+        private void assertListContents(ImmutableList<Integer> list) {
+            var expectedList = firstFiftyEvenIntegers().collect(toList());
+
+            assertThat(list).isEqualTo(expectedList);
         }
 
         @SuppressWarnings("deprecation") // intentionally using deprecated add() method to demo exception generation
         @Test
         void shouldDefinitelyReturnImmutableList() {
-            var list = Stream.iterate(0, value -> value + 2)
-                    .limit(50)
+            var list = firstFiftyEvenIntegers()
                     .collect(toImmutableListBuilder())
                     .build();
 
             assertThatThrownBy(() -> list.add(52)).isExactlyInstanceOf(UnsupportedOperationException.class);
+        }
+
+        private Stream<Integer> firstFiftyEvenIntegers() {
+            return Stream.iterate(0, value -> value + 2).limit(50);
         }
     }
 
@@ -94,6 +109,16 @@ class KiwiCollectorsTest {
 
             assertThat(seasons)
                     .containsExactlyInAnyOrder(Season.SPRING, Season.SUMMER);
+        }
+
+        @Test
+        void shouldCombineFromParallelStream() {
+            var seasons = Arrays.stream(Season.values())
+                    .parallel()
+                    .collect(toEnumSet(Season.class));
+
+            assertThat(seasons)
+                    .containsExactlyInAnyOrder(Season.FALL, Season.WINTER, Season.SPRING, Season.SUMMER);
         }
     }
 
@@ -144,7 +169,7 @@ class KiwiCollectorsTest {
 
     @Nested
     class ToLinkedMap {
-        
+
         @Test
         void shouldNotPermitDuplicateKeys() {
             var stream = Stream.of(
@@ -153,14 +178,14 @@ class KiwiCollectorsTest {
                     Pair.of("red", 5),
                     Pair.of("green", 5)
             );
-            
+
             assertThatIllegalStateException()
                     .isThrownBy(() -> {
                         //noinspection ResultOfMethodCallIgnored
                         stream.collect(toLinkedMap(Pair::getLeft, Pair::getRight));
                     }).withMessage("Duplicate key. Attempted to merge values 3 and 5");
         }
-        
+
         @Test
         void shouldCollectToLinkedHashMap() {
             var stream = Stream.of(
@@ -172,9 +197,9 @@ class KiwiCollectorsTest {
                     Pair.of("indigo", 6),
                     Pair.of("violet", 6)
             );
-            
+
             var colorLengths = stream.collect(toLinkedMap(Pair::getLeft, Pair::getRight));
-            
+
             assertThat(colorLengths)
                     .isExactlyInstanceOf(LinkedHashMap.class)
                     .hasSize(7)

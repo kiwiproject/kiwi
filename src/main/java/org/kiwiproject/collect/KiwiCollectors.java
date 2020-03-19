@@ -42,7 +42,7 @@ public class KiwiCollectors {
      * Returns a {@link Collector} that collects into an {@link EnumSet}.
      *
      * @param type the type in the {@link EnumSet}
-     * @param <E> the enum type subclass
+     * @param <E>  the enum type subclass
      * @return the {@link Collector}
      */
     public static <E extends Enum<E>> Collector<E, EnumSet<E>, EnumSet<E>> toEnumSet(Class<E> type) {
@@ -88,11 +88,11 @@ public class KiwiCollectors {
     /**
      * Returns a {@link Collector} that collects intoa {@link LinkedHashMap}.
      *
-     * @param keyMapper    a mapping function to produce keys
-     * @param valueMapper  a mapping function to produce values
-     * @param <T>          the type of the input elements
-     * @param <K>          the output type of the key mapping function
-     * @param <U>          the output type of the value mapping function
+     * @param keyMapper   a mapping function to produce keys
+     * @param valueMapper a mapping function to produce values
+     * @param <T>         the type of the input elements
+     * @param <K>         the output type of the key mapping function
+     * @param <U>         the output type of the value mapping function
      * @return a {@link Collector} which collects elements into a {@link java.util.LinkedHashMap} whose keys
      * are the result of applying key and value mapping functions.
      */
@@ -113,8 +113,8 @@ public class KiwiCollectors {
     /**
      * Used when a duplicate key occurs during a collection, returns a new {@link IllegalStateException}.
      *
-     * @param u1  the first value supplied to the merge function
-     * @param u2  the second value supplied to the merge function
+     * @param u1 the first value supplied to the merge function
+     * @param u2 the second value supplied to the merge function
      * @return a new {@link IllegalStateException} object
      * @implNote There is not an easy way to obtain the actual duplicate key here, since the merge function is a
      * {@link java.util.function.BinaryOperator} that accepts the two values needing to be merged. So unfortunately
