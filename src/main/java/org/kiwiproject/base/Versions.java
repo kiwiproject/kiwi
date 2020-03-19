@@ -15,6 +15,72 @@ import org.apache.commons.lang3.StringUtils;
 public class Versions {
 
     /**
+     * Given two versions, return the higher version
+     *
+     * @param left  the first version to compare
+     * @param right the second version to compare
+     * @return the higher of the given versions
+     */
+    public static String higherVersion(String left, String right) {
+        return versionCompare(left, right) >= 0 ? left : right;
+    }
+
+    /**
+     * Returns true if the "left" version is strictly higher than the "right" version.
+     *
+     * @param left  the first version to compare
+     * @param right the second version to compare
+     * @return true if {@code left} is greater than {@code right}
+     */
+    public static boolean isStrictlyHigherVersion(String left, String right) {
+        return versionCompare(left, right) > 0;
+    }
+
+    /**
+     * Returns true if the "left" version is higher than or equal to the "right" version.
+     *
+     * @param left  the first version to compare
+     * @param right the second version to compare
+     * @return true if {@code left} is greater than or equal to {@code right}
+     */
+    public static boolean isHigherOrSameVersion(String left, String right) {
+        return versionCompare(left, right) >= 0;
+    }
+
+    /**
+     * Returns true if the "left" version is strictly lower than the "right" version.
+     *
+     * @param left  the first version to compare
+     * @param right the second version to compare
+     * @return true if {@code left} is lower than {@code right}
+     */
+    public static boolean isStrictlyLowerVersion(String left, String right) {
+        return versionCompare(left, right) < 0;
+    }
+
+    /**
+     * Returns true if the "left" version is lower than or equal to the "right" version.
+     *
+     * @param left  the first version to compare
+     * @param right the second version to compare
+     * @return true if {@code left} is less than or equal to {@code right}
+     */
+    public static boolean isLowerOrSameVersion(String left, String right) {
+        return versionCompare(left, right) <= 0;
+    }
+
+    /**
+     * Returns true if the "left" version exactly equals the "right" version.
+     *
+     * @param left  the first version to compare
+     * @param right the second version to compare
+     * @return true if {@code left} equals {@code right}
+     */
+    public static boolean isSameVersion(String left, String right) {
+        return versionCompare(left, right) == 0;
+    }
+
+    /**
      * Performs a <=> comparison of numeric version numbers. When a section is determined to be non-numeric, a
      * case-insensitive string comparison is performed.
      *

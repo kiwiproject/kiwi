@@ -5,9 +5,11 @@ import static java.util.Objects.isNull;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
 
+@DisplayName("Versions")
 class VersionsTest {
 
     /**
@@ -117,5 +119,77 @@ class VersionsTest {
     })
     void testVersions_WithDifferingLengths(String left, String right, int expectedResult) {
         assertThat(Versions.versionCompare(left, right)).isEqualTo(expectedResult);
+    }
+
+    @ParameterizedTest
+    @CsvSource({
+            "2, 1, 2",
+            "1.0.0, 1.0.0, 1.0.0",
+            "1.0.0, 1.1.0, 1.1.0",
+            "1.2.0, 1.1.0, 1.2.0",
+            "1.0.0-SNAPSHOT, 2.0.0-SNAPSHOT, 2.0.0-SNAPSHOT"
+    })
+    void testHigherVersion(String left, String right, String expectedVersion) {
+        assertThat(Versions.higherVersion(left, right)).isEqualTo(expectedVersion);
+    }
+
+    @ParameterizedTest
+    @CsvSource({
+            "2, 1, true",
+            "1.0.0, 1.0.0, false",
+            "1.0.0, 1.1.0, false",
+            "1.2.0, 1.1.0, true",
+            "1.0.0-SNAPSHOT, 2.0.0-SNAPSHOT, false"
+    })
+    void testIsStrictlyHigherVersion(String left, String right, boolean expectedResult) {
+        assertThat(Versions.isStrictlyHigherVersion(left, right)).isEqualTo(expectedResult);
+    }
+
+    @ParameterizedTest
+    @CsvSource({
+            "2, 1, true",
+            "1.0.0, 1.0.0, true",
+            "1.0.0, 1.1.0, false",
+            "1.2.0, 1.1.0, true",
+            "1.0.0-SNAPSHOT, 2.0.0-SNAPSHOT, false"
+    })
+    void testIsHigherOrSameVersion(String left, String right, boolean expectedResult) {
+        assertThat(Versions.isHigherOrSameVersion(left, right)).isEqualTo(expectedResult);
+    }
+
+    @ParameterizedTest
+    @CsvSource({
+            "2, 1, false",
+            "1.0.0, 1.0.0, false",
+            "1.0.0, 1.1.0, true",
+            "1.2.0, 1.1.0, false",
+            "1.0.0-SNAPSHOT, 2.0.0-SNAPSHOT, true"
+    })
+    void testIsStrictlyLowerVersion(String left, String right, boolean expectedResult) {
+        assertThat(Versions.isStrictlyLowerVersion(left, right)).isEqualTo(expectedResult);
+    }
+
+    @ParameterizedTest
+    @CsvSource({
+            "2, 1, false",
+            "1.0.0, 1.0.0, true",
+            "1.0.0, 1.1.0, true",
+            "1.2.0, 1.1.0, false",
+            "1.0.0-SNAPSHOT, 2.0.0-SNAPSHOT, true"
+    })
+    void testIsLowerOrSameVersion(String left, String right, boolean expectedResult) {
+        assertThat(Versions.isLowerOrSameVersion(left, right)).isEqualTo(expectedResult);
+    }
+
+    @ParameterizedTest
+    @CsvSource({
+            "2, 1, false",
+            "1.0.0, 1.0.0, true",
+            "1.0.0, 1.1.0, false",
+            "1.2.0, 1.1.0, false",
+            "1.0.0-SNAPSHOT, 2.0.0-SNAPSHOT, false"
+    })
+    void testIsSameVersion(String left, String right, boolean expectedResult) {
+        assertThat(Versions.isSameVersion(left, right)).isEqualTo(expectedResult);
     }
 }
