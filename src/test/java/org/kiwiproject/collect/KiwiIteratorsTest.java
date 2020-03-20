@@ -1,8 +1,12 @@
 package org.kiwiproject.collect;
 
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.assertj.core.api.Assertions.fail;
+
 import org.assertj.core.util.Lists;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -16,11 +20,7 @@ import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.assertj.core.api.Assertions.fail;
-
-public class KiwiIteratorsTest {
+class KiwiIteratorsTest {
 
     private static final int NUMBER_OF_ITERATIONS = 5_000;
     private static final String VALUE_1 = "dark";
@@ -28,27 +28,27 @@ public class KiwiIteratorsTest {
 
     private List<String> colorShades;
 
-    @Before
-    public void setUp() {
+    @BeforeEach
+    void setUp() {
         colorShades = Lists.newArrayList(VALUE_1, VALUE_2);
     }
 
     @Test
-    public void testCycleForever_ThrowsIllegalArgumentException_WhenSupplyEmptyIterable() {
+    void testCycleForever_ThrowsIllegalArgumentException_WhenSupplyEmptyIterable() {
         assertThatThrownBy(() -> KiwiIterators.cycleForever(new ArrayList<>()))
                 .isExactlyInstanceOf(IllegalArgumentException.class)
                 .hasMessage("need at least 2 elements to cycle");
     }
 
     @Test
-    public void testCycleForever_ThrowsIllegalArgumentException_WhenDoNotPassAnyVarArgs() {
+    void testCycleForever_ThrowsIllegalArgumentException_WhenDoNotPassAnyVarArgs() {
         assertThatThrownBy(KiwiIterators::cycleForever)
                 .isExactlyInstanceOf(IllegalArgumentException.class)
                 .hasMessage("need at least 2 elements to cycle");
     }
 
     @Test
-    public void testCycleForever_DoesNotPermitRemovingElements() {
+    void testCycleForever_DoesNotPermitRemovingElements() {
         tryRemoveElement(KiwiIterators.cycleForever(colorShades));
     }
 
@@ -63,7 +63,7 @@ public class KiwiIteratorsTest {
     }
 
     @Test
-    public void testCycleForever_ModificationsToOriginalCollection_ShouldNotEffectCycler() {
+    void testCycleForever_ModificationsToOriginalCollection_ShouldNotEffectCycler() {
         Iterator<String> cycleForever = KiwiIterators.cycleForever(colorShades);
         colorShades.add("lighter");
         colorShades.add("medium");
@@ -80,7 +80,7 @@ public class KiwiIteratorsTest {
     }
 
     @Test
-    public void testCycleForever_DoesNotSupport_forEachRemaining() {
+    void testCycleForever_DoesNotSupport_forEachRemaining() {
         Iterator<String> cycleForever = KiwiIterators.cycleForever(colorShades);
         assertThatThrownBy(() -> cycleForever.forEachRemaining(System.out::println))
                 .isExactlyInstanceOf(UnsupportedOperationException.class)
@@ -88,7 +88,7 @@ public class KiwiIteratorsTest {
     }
 
     @Test
-    public void testCycleForever_ThroughLongList() {
+    void testCycleForever_ThroughLongList() {
         Iterator<Integer> cycleForever = KiwiIterators.cycleForever(0, 1, 2, 3, 4, 5, 6, 7, 8, 9);
         assertCyclesThroughNumbersInNaturalOrder(cycleForever);
     }
@@ -102,7 +102,7 @@ public class KiwiIteratorsTest {
     }
 
     @Test
-    public void testCycleForever_CyclingManyTimes_UsingOnlySingleThread() {
+    void testCycleForever_CyclingManyTimes_UsingOnlySingleThread() {
         Iterator<String> cycleForever = KiwiIterators.cycleForever(colorShades);
         for (int i = 0; i < NUMBER_OF_ITERATIONS; i++) {
             String next = cycleForever.next();
@@ -115,7 +115,7 @@ public class KiwiIteratorsTest {
     }
 
     @Test
-    public void testCycleForever_CyclingManyTimes_UsingMultipleThreads_ShouldNeverFail()
+    void testCycleForever_CyclingManyTimes_UsingMultipleThreads_ShouldNeverFail()
             throws InterruptedException, TimeoutException, ExecutionException {
 
         Iterator<String> cycleForever = KiwiIterators.cycleForever(colorShades);

@@ -1,5 +1,8 @@
 package org.kiwiproject.collect;
 
+import static com.google.common.base.Preconditions.checkArgument;
+import static com.google.common.collect.Lists.newArrayList;
+
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Iterators;
 import lombok.experimental.UtilityClass;
@@ -11,20 +14,44 @@ import java.util.concurrent.locks.ReentrantLock;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 
-import static com.google.common.base.Preconditions.checkArgument;
-import static com.google.common.collect.Lists.newArrayList;
-
+/**
+ * Utility methods for working with {@link Iterator} instances. Analogous to Guava's {@link Iterators}
+ */
 @UtilityClass
 public class KiwiIterators {
 
     public static final String NOT_ENOUGH_VALUES_ERROR = "need at least 2 elements to cycle";
 
+    /**
+     * Returns a <em>thread-safe</em> iterator that cycles indefinitely over the elements of {@code iterable}, base
+     * on Guava's {@link com.google.common.collect.Iterables#cycle(Iterable)}. The differences from Guava is that the
+     * returned iterator provides thread-safety; makes an immutable copy of the provided iterable; and does not
+     * support element removal regardless of whether the original iterable does.
+     * <p>
+     * Typical use cases include round-robin scenarios, such as round-robin between replicated service registries
+     * like Netflix Eureka.
+     * <p>
+     * The returned iterator does <em>not</em> support {@link Iterator#remove()} nor does it support
+     * {@link Iterator#forEachRemaining(Consumer)}, as the entire point is to cycle <em>forever</em>.
+     */
     public static <T> Iterator<T> cycleForever(Iterable<T> iterable) {
         ImmutableList<T> elements = ImmutableList.copyOf(iterable);
         checkArgument(elements.size() > 1, NOT_ENOUGH_VALUES_ERROR);
         return new ThreadSafeCyclicIterator<>(elements);
     }
 
+    /**
+     * Returns a <em>thread-safe</em> iterator that cycles indefinitely over the elements of {@code iterable}, base
+     * on Guava's {@link com.google.common.collect.Iterables#cycle(Iterable)}. The differences from Guava is that the
+     * returned iterator provides thread-safety; makes an immutable copy of the provided iterable; and does not
+     * support element removal regardless of whether the original iterable does.
+     * <p>
+     * Typical use cases include round-robin scenarios, such as round-robin between replicated service registries
+     * like Netflix Eureka.
+     * <p>
+     * The returned iterator does <em>not</em> support {@link Iterator#remove()} nor does it support
+     * {@link Iterator#forEachRemaining(Consumer)}, as the entire point is to cycle <em>forever</em>.
+     */
     @SafeVarargs
     public static <T> Iterator<T> cycleForever(T... elements) {
         checkArgument(elements.length > 1, NOT_ENOUGH_VALUES_ERROR);
