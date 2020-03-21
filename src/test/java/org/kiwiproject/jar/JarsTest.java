@@ -4,7 +4,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.kiwiproject.collect.KiwiLists.first;
 import static org.kiwiproject.collect.KiwiLists.secondToLast;
 
-import io.dropwizard.jdbi.args.OptionalArgumentFactory;
+import com.google.common.base.Ticker;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -21,46 +21,52 @@ class JarsTest {
 
     @Test
     void shouldGetPathComponents() {
-        var pathComponents = Jars.getPathComponents(OptionalArgumentFactory.class);
+        var pathComponents = Jars.getPathComponents(Ticker.class);  // Ticker is a Guava class
         LOG.trace("pathComponents: {}", pathComponents);
 
         var version = secondToLast(pathComponents);
-        int indexOfIo = pathComponents.indexOf("io");
+        int indexOfCom = pathComponents.indexOf("com");
+
+        // Guava's maven coordinates (groupId:artifactId:version) are: com.google.guava:guava:<version>
+        // Therefore the JAR file path will contain com/google/guava/guava/<version>/guava-<version>.jar
+        // So, the path of Guava version 28.2-jre therefore must include:
+        // com/google/guava/guava/28.2-jre/guava-28.2-jre.jar
 
         assertThat(first(pathComponents)).isEqualTo("");
-        assertThat(pathComponents.get(indexOfIo + 1)).isEqualTo("dropwizard");
-        assertThat(pathComponents.get(indexOfIo + 2)).isEqualTo("dropwizard-jdbi");
-        assertThat(pathComponents.get(indexOfIo + 3)).isEqualTo(version);
-        assertThat(pathComponents.get(indexOfIo + 4)).isEqualTo("dropwizard-jdbi-" + version + ".jar");
+        assertThat(pathComponents.get(indexOfCom + 1)).isEqualTo("google");
+        assertThat(pathComponents.get(indexOfCom + 2)).isEqualTo("guava");
+        assertThat(pathComponents.get(indexOfCom + 3)).isEqualTo("guava");
+        assertThat(pathComponents.get(indexOfCom + 4)).isEqualTo(version);
+        assertThat(pathComponents.get(indexOfCom + 5)).isEqualTo("guava-" + version + ".jar");
     }
 
     @Test
     void shouldLogExceptionAndReturnEmptyList_WhenHandlingExceptionsGettingPathComponents() {
         var securityException = new SecurityException("Access Denied!");
 
-        var list = Jars.logExceptionAndReturnEmptyList(securityException, OptionalArgumentFactory.class);
+        var list = Jars.logExceptionAndReturnEmptyList(securityException, Ticker.class);
 
         assertThat(list).isEmpty();
     }
 
     @Test
     void shouldGetPath() {
-        var path = Jars.getPath(OptionalArgumentFactory.class).orElse(null);
+        var path = Jars.getPath(Ticker.class).orElse(null);
         LOG.trace("path: {}", path);
 
         assertThat(path)
                 .isNotNull()
                 .startsWith("/")
-                .contains("io/dropwizard/dropwizard-jdbi")
+                .contains("com/google/guava/guava")
                 .endsWith(".jar");
     }
 
     @Test
     void shouldGetDirectoryPath() {
-        var dirPath = Jars.getDirectoryPath(OptionalArgumentFactory.class).orElse(null);
+        var dirPath = Jars.getDirectoryPath(Ticker.class).orElse(null);
         LOG.trace("dirPath: {}", dirPath);
 
-        var jarPath = Jars.getPath(OptionalArgumentFactory.class).orElseThrow();
+        var jarPath = Jars.getPath(Ticker.class).orElseThrow();
         var jarFile = new File(jarPath);
 
         assertThat(dirPath).isEqualTo(jarFile.getParent());
