@@ -1,224 +1,304 @@
 package org.kiwiproject.collect;
 
-import org.assertj.core.api.JUnitSoftAssertions;
-import org.junit.Rule;
-import org.junit.Test;
-
-import java.util.ArrayList;
-import java.util.List;
-
-import static java.util.Comparator.reverseOrder;
+import static java.util.stream.Collectors.toList;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.assertj.core.util.Lists.newArrayList;
 
-public class KiwiListsTest {
+import org.assertj.core.api.SoftAssertions;
+import org.assertj.core.api.junit.jupiter.SoftAssertionsExtension;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 
-    @Rule
-    public final JUnitSoftAssertions softly = new JUnitSoftAssertions();
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.List;
+import java.util.stream.IntStream;
 
+@DisplayName("KiwiLists")
+@ExtendWith(SoftAssertionsExtension.class)
+class KiwiListsTest {
+
+    private List<String> items;
+
+    @BeforeEach
+    void setUp() {
+        items = Arrays.asList("guava", "kiwi", "guarana", "limeberry", "chupa-chupa");
+    }
+
+    @SuppressWarnings("ConstantConditions")
     @Test
-    public void testIsNullOrEmpty_WhenNull() {
+    void testIsNullOrEmpty_WhenNull() {
         assertThat(KiwiLists.isNullOrEmpty(null)).isTrue();
     }
 
     @Test
-    public void testIsNullOrEmpty_WhenEmpty() {
+    void testIsNullOrEmpty_WhenEmpty() {
         assertThat(KiwiLists.isNullOrEmpty(newArrayList())).isTrue();
     }
 
     @Test
-    public void testIsNullOrEmpty_WhenContainsElements() {
-        List<String> fruits = newListOfFruits();
-        assertThat(KiwiLists.isNullOrEmpty(fruits)).isFalse();
+    void testIsNullOrEmpty_WhenContainsElements() {
+        assertThat(KiwiLists.isNullOrEmpty(items)).isFalse();
     }
 
+    @SuppressWarnings("ConstantConditions")
     @Test
-    public void testIsNotNullOrEmpty_WhenNull() {
+    void testIsNotNullOrEmpty_WhenNull() {
         assertThat(KiwiLists.isNotNullOrEmpty(null)).isFalse();
     }
 
     @Test
-    public void testIsNotNullOrEmpty_WhenEmpty() {
+    void testIsNotNullOrEmpty_WhenEmpty() {
         assertThat(KiwiLists.isNotNullOrEmpty(newArrayList())).isFalse();
     }
 
     @Test
-    public void testIsNotNullOrEmpty_WhenContainsElements() {
-        List<String> fruits = newListOfFruits();
-        assertThat(KiwiLists.isNotNullOrEmpty(fruits)).isTrue();
+    void testIsNotNullOrEmpty_WhenContainsElements() {
+        assertThat(KiwiLists.isNotNullOrEmpty(items)).isTrue();
     }
 
     @Test
-    public void testHasOneElement_WhenNull() {
+    void testHasOneElement_WhenNull() {
         assertThat(KiwiLists.hasOneElement(null)).isFalse();
     }
 
     @Test
-    public void testHasOneElement_WhenEmpty() {
+    void testHasOneElement_WhenEmpty() {
         assertThat(KiwiLists.hasOneElement(new ArrayList<>())).isFalse();
     }
 
     @Test
-    public void testHasOneElement_WhenHasOnlyOneElement() {
+    void testHasOneElement_WhenHasOnlyOneElement() {
         assertThat(KiwiLists.hasOneElement(newArrayList("kiwi"))).isTrue();
     }
 
     @Test
-    public void testHasOneElement_WhenHasMoreThanOneElement() {
-        assertThat(KiwiLists.hasOneElement(newListOfFruits())).isFalse();
+    void testHasOneElement_WhenHasMoreThanOneElement() {
+        assertThat(KiwiLists.hasOneElement(items)).isFalse();
     }
 
     @Test
-    public void testSorted_WithNaturalOrdering() {
-        List<String> fruits = newListOfFruits();
-        List<String> sortedFruits = KiwiLists.sorted(fruits);
-        softly.assertThat(sortedFruits).isNotSameAs(fruits);
-        softly.assertThat(sortedFruits)
-                .containsExactlyElementsOf(newSortedListOfFruits());
+    void testSorted_WhenEmptyList() {
+        assertThat(KiwiLists.sorted(newArrayList())).isEmpty();
     }
 
     @Test
-    public void testSorted_UsingCustomComparator() {
-        List<String> fruits = newListOfFruits();
-        List<String> sortedFruits = KiwiLists.sorted(fruits, reverseOrder());
-        softly.assertThat(sortedFruits).isNotSameAs(fruits);
-        softly.assertThat(sortedFruits)
-                .containsExactly("orange", "kiwi", "guava", "banana", "apple");
+    void testSorted_WhenNullList() {
+        assertThatThrownBy(() -> KiwiLists.sorted(null))
+                .isExactlyInstanceOf(NullPointerException.class)
+                .hasMessage("items cannot be null");
     }
 
     @Test
-    public void testFirstIfPresent_WhenNullList() {
-        assertThatThrownBy(() -> KiwiLists.firstIfPresent(null))
-                .isExactlyInstanceOf(NullPointerException.class);
+    void testSorted_WhenHasItems() {
+        var someIntegers = IntStream.iterate(1, n -> n + 1).limit(100).boxed().collect(toList());
+
+        var randomIntegers = newArrayList(someIntegers);
+        Collections.shuffle(randomIntegers);
+
+        assertThat(KiwiLists.sorted(randomIntegers))
+                .hasSize(100)
+                .containsExactlyElementsOf(someIntegers);
     }
 
     @Test
-    public void testFirstIfPresent_WhenEmptyList() {
+    void testSorted_WithComparator_WhenEmptyList() {
+        List<Integer> items = newArrayList();
+        Comparator<Integer> comparator = Comparator.reverseOrder();
+
+        assertThat(KiwiLists.sorted(items, comparator)).isEmpty();
+    }
+
+    @Test
+    void testSorted_WithComparator_WhenNullList() {
+        assertThatThrownBy(() -> KiwiLists.sorted(null, Comparator.<Integer>reverseOrder()))
+                .isExactlyInstanceOf(NullPointerException.class)
+                .hasMessage("items cannot be null");
+    }
+
+    @Test
+    void testSorted_WithComparator_WhenNullComparator() {
+        assertThatThrownBy(() -> KiwiLists.sorted(newArrayList(), null))
+                .isExactlyInstanceOf(NullPointerException.class)
+                .hasMessage("Comparator cannot be null");
+    }
+
+    @Test
+    void testSorted_WithComparator_WhenHasItems() {
+        var someIntegers = IntStream.iterate(1, n -> n + 1).limit(100).boxed().collect(toList());
+        var reverseIntegers = newArrayList(someIntegers);
+        Collections.reverse(reverseIntegers);
+
+        var randomIntegers = newArrayList(someIntegers);
+        Collections.shuffle(randomIntegers);
+
+        var comparator = Comparator.<Integer>reverseOrder();
+        assertThat(KiwiLists.sorted(randomIntegers, comparator))
+                .hasSize(100)
+                .containsExactlyElementsOf(reverseIntegers);
+    }
+
+    @Test
+    void testFirstIfPresent_WhenNullList() {
+        assertThat(KiwiLists.firstIfPresent(null)).isEmpty();
+    }
+
+    @Test
+    void testFirstIfPresent_WhenEmptyList() {
         assertThat(KiwiLists.firstIfPresent(new ArrayList<>())).isEmpty();
     }
 
     @Test
-    public void testFirstIfPresent_WhenSingleElementList() {
+    void testFirstIfPresent_WhenSingleElementList() {
         assertThat(KiwiLists.firstIfPresent(newArrayList("kiwi")))
                 .isPresent()
                 .contains("kiwi");
     }
 
     @Test
-    public void testFirstIfPresent_WhenTwoElementList() {
+    void testFirstIfPresent_WhenTwoElementList() {
         assertThat(KiwiLists.firstIfPresent(newArrayList("kiwi", "guava")))
                 .isPresent()
                 .contains("kiwi");
     }
 
     @Test
-    public void testFirst() {
-        List<String> items = newListOfFruits();
+    void testFirst() {
         assertThat(KiwiLists.first(items)).isEqualTo(items.get(0));
     }
 
     @Test
-    public void testSecond() {
-        List<String> items = newListOfFruits();
+    void testSecond() {
         assertThat(KiwiLists.second(items)).isEqualTo(items.get(1));
     }
 
     @Test
-    public void testThird() {
-        List<String> items = newListOfFruits();
+    void testThird() {
         assertThat(KiwiLists.third(items)).isEqualTo(items.get(2));
     }
 
     @Test
-    public void testFourth() {
-        List<String> items = newListOfFruits();
+    void testFourth() {
         assertThat(KiwiLists.fourth(items)).isEqualTo(items.get(3));
     }
 
     @Test
-    public void testFifth() {
-        List<String> items = newListOfFruits();
+    void testFifth() {
         assertThat(KiwiLists.fifth(items)).isEqualTo(items.get(4));
     }
 
     @Test
-    public void testSecondToLast() {
-        List<String> items = newListOfFruits();
-        String expected = items.get(items.size() - 2);
+    void testSecondToLast(SoftAssertions softly) {
+        var expected = items.get(items.size() - 2);
         softly.assertThat(KiwiLists.secondToLast(items)).isEqualTo(expected);
         softly.assertThat(KiwiLists.penultimate(items)).isEqualTo(expected);
     }
 
     @Test
-    public void testLast() {
-        List<String> items = newListOfFruits();
-        String expected = items.get(items.size() - 1);
+    void testLast() {
+        var expected = items.get(items.size() - 1);
         assertThat(KiwiLists.last(items)).isEqualTo(expected);
     }
 
     @Test
-    public void testLastIfPresent_WhenEmptyList() {
+    void testLastIfPresent_WhenEmptyList() {
         assertThat(KiwiLists.lastIfPresent(new ArrayList<>())).isEmpty();
     }
 
     @Test
-    public void testLastIfPresent_WhenSingleElementList() {
+    void testLastIfPresent_WhenSingleElementList() {
         assertThat(KiwiLists.lastIfPresent(newArrayList("kiwi")))
                 .isPresent()
                 .contains("kiwi");
     }
 
     @Test
-    public void testLastIfPresent_WhenTwoElementList() {
+    void testLastIfPresent_WhenTwoElementList() {
         assertThat(KiwiLists.lastIfPresent(newArrayList("kiwi", "guava")))
                 .isPresent()
                 .contains("guava");
     }
 
     @Test
-    public void testNth_WhenNegativeNumber() {
-        assertThatThrownBy(() -> KiwiLists.nth(newListOfFruits(), -1))
+    void testNth_WhenNegativeNumber() {
+        assertThatThrownBy(() -> KiwiLists.nth(items, -1))
                 .isExactlyInstanceOf(IllegalArgumentException.class)
                 .hasMessage("number must be positive");
     }
 
     @Test
-    public void testNth_WhenNullList() {
+    void testNth_WhenNullList() {
         assertThatThrownBy(() -> KiwiLists.nth(null, 42))
                 .isExactlyInstanceOf(NullPointerException.class)
                 .hasMessage("items cannot be null");
     }
 
     @Test
-    public void testNth_WhenEmptyList() {
+    void testNth_WhenEmptyList() {
         assertThatThrownBy(() -> KiwiLists.nth(new ArrayList<>(), 8))
                 .isExactlyInstanceOf(IllegalArgumentException.class)
                 .hasMessage("expected at least 8 items (actual size: 0)");
     }
 
     @Test
-    public void testNth_WhenNotEnoughElementsForRequestedPosition() {
-        List<String> fruits = newListOfFruits();
-        int number = fruits.size() + 1;
-        assertThatThrownBy(() -> KiwiLists.nth(fruits, number))
+    void testNth_WhenNotEnoughElementsForRequestedPosition() {
+        int number = items.size() + 1;
+        assertThatThrownBy(() -> KiwiLists.nth(items, number))
                 .isExactlyInstanceOf(IllegalArgumentException.class)
-                .hasMessage("expected at least %d items (actual size: %d)", number, fruits.size());
+                .hasMessage("expected at least %d items (actual size: %d)", number, items.size());
     }
 
     @Test
-    public void testNth_WhenJustEnoughElementsForRequestedPosition() {
-        List<String> fruits = newListOfFruits();
-        int number = fruits.size();
-        assertThat(KiwiLists.nth(fruits, number)).isEqualTo(fruits.get(number - 1));
+    void testNth_WhenJustEnoughElementsForRequestedPosition() {
+        int number = items.size();
+        assertThat(KiwiLists.nth(items, number)).isEqualTo(items.get(number - 1));
     }
 
-    private static List<String> newListOfFruits() {
-        return newArrayList("orange", "apple", "kiwi", "banana", "guava");
+    @Test
+    void testCheckMinimumSize_WhenNullArgument() {
+        assertThatThrownBy(() -> KiwiLists.checkMinimumSize(null, 10))
+                .isExactlyInstanceOf(NullPointerException.class);
     }
 
-    private List<String> newSortedListOfFruits() {
-        return newArrayList("apple", "banana", "guava", "kiwi", "orange");
+    @Test
+    void testDistinct(SoftAssertions softly) {
+        softly.assertThat(KiwiLists.distinct(newArrayList(1, 2, 3))).hasSize(3);
+        softly.assertThat(KiwiLists.distinct(newArrayList(1, 1, 1))).hasSize(1);
+        softly.assertThat(KiwiLists.distinct(newArrayList("a", "b", "b"))).hasSize(2);
     }
 
+    @Test
+    void testDistinct_NullThrowsException(SoftAssertions softly) {
+        softly.assertThatThrownBy(() -> KiwiLists.distinct(null))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessageContaining("collection can not be null");
+    }
+
+    @Test
+    void testDistinctOrNull_NullIsAllowed(SoftAssertions softly) {
+        softly.assertThat(KiwiLists.distinctOrNull(null)).isNull();
+    }
+
+    @Test
+    void testCircularListOffset() {
+        assertThat(KiwiLists.newListStartingAtCircularOffset(newArrayList("zero", "one", "two", "three"), 0))
+                .containsExactly("zero", "one", "two", "three");
+
+        assertThat(KiwiLists.newListStartingAtCircularOffset(newArrayList("zero", "one", "two", "three"), 1))
+                .containsExactly("one", "two", "three", "zero");
+
+        assertThat(KiwiLists.newListStartingAtCircularOffset(newArrayList("zero", "one", "two", "three"), 3))
+                .containsExactly("three", "zero", "one", "two");
+    }
+
+    @Test
+    void testCircularListOffset_OffsetWraps() {
+        assertThat(KiwiLists.newListStartingAtCircularOffset(newArrayList("zero", "one", "two", "three"), 4))
+                .containsExactly("zero", "one", "two", "three");
+    }
 }
