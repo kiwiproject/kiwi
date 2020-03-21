@@ -19,9 +19,14 @@ import java.util.List;
 @Slf4j
 class JarsTest {
 
+    /**
+     * Use Guava's {@link Ticker} class as the "classInJar" for these tests.
+     */
+    private static final Class<Ticker> CLASS_IN_JAR = Ticker.class;
+
     @Test
     void shouldGetPathComponents() {
-        var pathComponents = Jars.getPathComponents(Ticker.class);  // Ticker is a Guava class
+        var pathComponents = Jars.getPathComponents(CLASS_IN_JAR);
         LOG.trace("pathComponents: {}", pathComponents);
 
         var version = secondToLast(pathComponents);
@@ -44,14 +49,14 @@ class JarsTest {
     void shouldLogExceptionAndReturnEmptyList_WhenHandlingExceptionsGettingPathComponents() {
         var securityException = new SecurityException("Access Denied!");
 
-        var list = Jars.logExceptionAndReturnEmptyList(securityException, Ticker.class);
+        var list = Jars.logExceptionAndReturnEmptyList(securityException, CLASS_IN_JAR);
 
         assertThat(list).isEmpty();
     }
 
     @Test
     void shouldGetPath() {
-        var path = Jars.getPath(Ticker.class).orElse(null);
+        var path = Jars.getPath(CLASS_IN_JAR).orElse(null);
         LOG.trace("path: {}", path);
 
         assertThat(path)
@@ -63,10 +68,10 @@ class JarsTest {
 
     @Test
     void shouldGetDirectoryPath() {
-        var dirPath = Jars.getDirectoryPath(Ticker.class).orElse(null);
+        var dirPath = Jars.getDirectoryPath(CLASS_IN_JAR).orElse(null);
         LOG.trace("dirPath: {}", dirPath);
 
-        var jarPath = Jars.getPath(Ticker.class).orElseThrow();
+        var jarPath = Jars.getPath(CLASS_IN_JAR).orElseThrow();
         var jarFile = new File(jarPath);
 
         assertThat(dirPath).isEqualTo(jarFile.getParent());
