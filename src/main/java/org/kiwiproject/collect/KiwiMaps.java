@@ -1,7 +1,5 @@
 package org.kiwiproject.collect;
 
-import static com.google.common.collect.Lists.newArrayList;
-import static com.google.common.collect.Lists.partition;
 import static java.util.Objects.isNull;
 import static org.kiwiproject.base.KiwiPreconditions.checkEvenItemCount;
 
@@ -9,7 +7,6 @@ import lombok.experimental.UtilityClass;
 
 import java.util.HashMap;
 import java.util.LinkedHashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 import java.util.concurrent.ConcurrentHashMap;
@@ -18,7 +15,7 @@ import java.util.concurrent.ConcurrentHashMap;
  * Utility methods for working with {@link Map} instances
  */
 @UtilityClass
-public final class KiwiMaps {
+public class KiwiMaps {
 
     /**
      * Checks whether the specified map is null or empty.
@@ -118,12 +115,11 @@ public final class KiwiMaps {
 
     @SuppressWarnings("unchecked")
     private static <K, V> void populate(Map<K, V> map, Object... items) {
-        List<List<Object>> kvPairs = partition(newArrayList(items), 2);
-        kvPairs.forEach(kvPair -> {
-            K key = (K) kvPair.get(0);
-            V value = (V) kvPair.get(1);
+        for (var i = 0; i < items.length; i += 2) {
+            K key = (K) items[i];
+            V value = (V) items[i + 1];
             map.put(key, value);
-        });
+        }
     }
 
     /**
