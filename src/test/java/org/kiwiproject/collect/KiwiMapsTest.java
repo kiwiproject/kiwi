@@ -1,6 +1,15 @@
 package org.kiwiproject.collect;
 
-import org.junit.Test;
+import static java.util.stream.Collectors.toList;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
+
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Nested;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ArgumentsSource;
+import org.kiwiproject.util.BlankStringArgumentsProvider;
 
 import java.util.Arrays;
 import java.util.HashMap;
@@ -10,46 +19,45 @@ import java.util.Map;
 import java.util.TreeMap;
 import java.util.concurrent.ConcurrentHashMap;
 
-import static java.util.stream.Collectors.toList;
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
+@DisplayName("KiwiMaps")
+class KiwiMapsTest {
 
-public class KiwiMapsTest {
-
+    @SuppressWarnings("ConstantConditions")
     @Test
-    public void testIsNullOrEmpty_WhenNull() {
+    void testIsNullOrEmpty_WhenNull() {
         assertThat(KiwiMaps.isNullOrEmpty(null)).isTrue();
     }
 
     @Test
-    public void testIsNullOrEmpty_WhenEmpty() {
+    void testIsNullOrEmpty_WhenEmpty() {
         assertThat(KiwiMaps.isNullOrEmpty(new HashMap<>())).isTrue();
     }
 
     @Test
-    public void testIsNullOrEmpty_WhenContainsSomeMappings() {
+    void testIsNullOrEmpty_WhenContainsSomeMappings() {
         Map<String, Integer> wordsToNumbers = newWordNumberMap();
         assertThat(KiwiMaps.isNullOrEmpty(wordsToNumbers)).isFalse();
     }
 
+    @SuppressWarnings("ConstantConditions")
     @Test
-    public void testIsNotNullOrEmpty_WhenNull() {
+    void testIsNotNullOrEmpty_WhenNull() {
         assertThat(KiwiMaps.isNotNullOrEmpty(null)).isFalse();
     }
 
     @Test
-    public void testIsNotNullOrEmpty_WhenEmpty() {
+    void testIsNotNullOrEmpty_WhenEmpty() {
         assertThat(KiwiMaps.isNotNullOrEmpty(new HashMap<>())).isFalse();
     }
 
     @Test
-    public void testIsNotNullOrEmpty_WhenContainsSomeMappings() {
+    void testIsNotNullOrEmpty_WhenContainsSomeMappings() {
         Map<String, Integer> wordsToNumbers = newWordNumberMap();
         assertThat(KiwiMaps.isNotNullOrEmpty(wordsToNumbers)).isTrue();
     }
 
     @Test
-    public void testNewHashMap() {
+    void testNewHashMap() {
         Object[] items = wordToNumberArray();
         Map<String, Integer> hashMap = KiwiMaps.newHashMap(items);
         assertThat(hashMap)
@@ -58,19 +66,19 @@ public class KiwiMapsTest {
     }
 
     @Test
-    public void testNewHashMap_WhenNoItems() {
+    void testNewHashMap_WhenNoItems() {
         assertThat(KiwiMaps.newHashMap()).isEmpty();
     }
 
     @Test
-    public void testNewHashMap_WhenOddNumberOfItems() {
+    void testNewHashMap_WhenOddNumberOfItems() {
         assertThatThrownBy(() -> KiwiMaps.newHashMap("one", 1, "two"))
                 .isExactlyInstanceOf(IllegalArgumentException.class)
                 .hasMessage("must be an even number of items (received 3)");
     }
 
     @Test
-    public void testNewLinkedHashMap() {
+    void testNewLinkedHashMap() {
         Object[] items = wordToNumberArray();
         Map<String, Integer> linkedHashMap = KiwiMaps.newLinkedHashMap(items);
         assertThat(linkedHashMap)
@@ -84,19 +92,19 @@ public class KiwiMapsTest {
     }
 
     @Test
-    public void testNewLinkedHashMap_WhenNoItems() {
+    void testNewLinkedHashMap_WhenNoItems() {
         assertThat(KiwiMaps.newLinkedHashMap()).isEmpty();
     }
 
     @Test
-    public void testNewLinkedHashMap_WhenOddNumberOfItems() {
+    void testNewLinkedHashMap_WhenOddNumberOfItems() {
         assertThatThrownBy(() -> KiwiMaps.newLinkedHashMap("one", 1, "two"))
                 .isExactlyInstanceOf(IllegalArgumentException.class)
                 .hasMessage("must be an even number of items (received 3)");
     }
 
     @Test
-    public void testNewTreeMap() {
+    void testNewTreeMap() {
         Object[] items = wordToNumberArray();
         Map<String, Integer> treeMap = KiwiMaps.newTreeMap(items);
         assertThat(treeMap)
@@ -111,19 +119,19 @@ public class KiwiMapsTest {
     }
 
     @Test
-    public void testNewTreeMap_WhenNoItems() {
+    void testNewTreeMap_WhenNoItems() {
         assertThat(KiwiMaps.newTreeMap()).isEmpty();
     }
 
     @Test
-    public void testNewTreeMap_WhenOddNumberOfItems() {
+    void testNewTreeMap_WhenOddNumberOfItems() {
         assertThatThrownBy(() -> KiwiMaps.newTreeMap("one", 1, "two"))
                 .isExactlyInstanceOf(IllegalArgumentException.class)
                 .hasMessage("must be an even number of items (received 3)");
     }
 
     @Test
-    public void testNewConcurrentHashMap() {
+    void testNewConcurrentHashMap() {
         Object[] items = wordToNumberArray();
         Map<String, Integer> treeMap = KiwiMaps.newConcurrentHashMap(items);
         assertThat(treeMap)
@@ -132,12 +140,12 @@ public class KiwiMapsTest {
     }
 
     @Test
-    public void testNewConcurrentHash_WhenNoItems() {
+    void testNewConcurrentHash_WhenNoItems() {
         assertThat(KiwiMaps.newConcurrentHashMap()).isEmpty();
     }
 
     @Test
-    public void testNewConcurrentHash_WhenOddNumberOfItems() {
+    void testNewConcurrentHash_WhenOddNumberOfItems() {
         assertThatThrownBy(() -> KiwiMaps.newConcurrentHashMap("one", 1, "two"))
                 .isExactlyInstanceOf(IllegalArgumentException.class)
                 .hasMessage("must be an even number of items (received 3)");
@@ -161,6 +169,71 @@ public class KiwiMapsTest {
         words.put("four", 4);
         words.put("five", 5);
         return words;
+    }
+
+    @Nested
+    class KeyExistsWithNullValue {
+
+        @Nested
+        class ShouldReturnTrue {
+
+            @Test
+            void whenKeyExistsAndHasNullValue() {
+                var key = "aKey";
+                var map = KiwiMaps.<String, Object>newHashMap(key, null);
+                assertThat(KiwiMaps.keyExistsWithNullValue(map, key)).isTrue();
+            }
+
+            @Test
+            void whenObjectKeyExistsAndHasNullValue() {
+                var key = new Object();
+                var map = KiwiMaps.newHashMap(key, null);
+                assertThat(KiwiMaps.keyExistsWithNullValue(map, key)).isTrue();
+            }
+        }
+
+        @Nested
+        class ShouldReturnFalse {
+
+            @Test
+            void whenMapIsNull() {
+                assertThat(KiwiMaps.keyExistsWithNullValue(null, "aKey")).isFalse();
+            }
+
+            @Test
+            void whenMapIsEmpty() {
+                assertThat(KiwiMaps.keyExistsWithNullValue(Map.of(), "aKey")).isFalse();
+            }
+
+            @Test
+            void whenKeyIsNull() {
+                assertThat(KiwiMaps.keyExistsWithNullValue(Map.of(), null)).isFalse();
+            }
+
+            @ParameterizedTest
+            @ArgumentsSource(BlankStringArgumentsProvider.class)
+            void whenKeyIsBlank(String value) {
+                assertThat(KiwiMaps.keyExistsWithNullValue(Map.of(), value)).isFalse();
+            }
+
+            @Test
+            void whenKeyDoesNotExist() {
+                var map = Map.of("aKey", "aValue");
+                assertThat(KiwiMaps.keyExistsWithNullValue(map, "anotherKey")).isFalse();
+            }
+
+            @Test
+            void whenKeyExistsAndHasANonNullValue() {
+                var key = "aKey";
+                assertThat(KiwiMaps.keyExistsWithNullValue(Map.of(key, "aValue"), key)).isFalse();
+            }
+
+            @Test
+            void whenObjectKeyExistsAndHasANonNullValue() {
+                var key = new Object();
+                assertThat(KiwiMaps.keyExistsWithNullValue(Map.of(key, "aValue"), key)).isFalse();
+            }
+        }
     }
 
 }
