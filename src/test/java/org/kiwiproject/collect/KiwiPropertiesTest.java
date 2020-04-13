@@ -88,7 +88,7 @@ class KiwiPropertiesTest {
         );
         assertThatThrownBy(() -> KiwiProperties.newPropertiesFromStringPairs(items))
                 .isExactlyInstanceOf(IllegalArgumentException.class)
-                .hasMessage("Each sublist must contain at least 2 items");
+                .hasMessage("Each sublist must contain at least 2 items (additional elements are ignored but won't cause an error)");
     }
 
     @Test
