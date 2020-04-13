@@ -3,7 +3,7 @@ package org.kiwiproject.security;
 import lombok.Getter;
 
 /**
- * KeyStore types thar can be specified when generating an instance of {@link java.security.KeyStore} using
+ * KeyStore types that can be specified when generating an instance of {@link java.security.KeyStore} using
  * {@link java.security.KeyStore#getInstance(String)}.
  *
  * @implNote These are from the Java 11 documentation, specifically from "Java Security Standard Algorithm Names".
