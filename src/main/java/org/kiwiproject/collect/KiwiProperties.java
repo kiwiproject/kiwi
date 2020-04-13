@@ -117,7 +117,7 @@ public class KiwiProperties {
     }
 
     private static void checkPairAndAccumulate(Properties accumulator, List<String> pair) {
-        checkArgument(pair.size() >= 2, "Each sublist must contain at least 2 items");
+        checkArgument(pair.size() >= 2, "Each sublist must contain at least 2 items (additional elements are ignored but won't cause an error)");
         accumulator.setProperty(first(pair), second(pair));
     }
 
