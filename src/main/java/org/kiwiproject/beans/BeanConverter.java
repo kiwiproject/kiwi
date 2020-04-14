@@ -20,16 +20,33 @@ import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Stream;
 
+/**
+ * Simple way to convert one bean to another.  This utility uses spring-beans to attempt the conversion at first.  If attempting to
+ * convert maps, it will attempt to do simple copies of the key-value pairs.
+ *
+ * Exclusion lists can be provided to ignore specific fields.
+ *
+ * Also custom mappers can be provided per field for more control over how the fields are converted.
+ */
 @Slf4j
 public class BeanConverter<T> {
 
+    /**
+     * Custom mappers that map specific field names to a function that will accept the data and convert it to the new value.
+     */
     @Getter
     private Map<String, Function<T, ?>> mappers = new HashMap<>();
 
+    /**
+     * Set of property names to exclude from copying over.  Defaults to {@code ["class", "new"] }
+     */
     @Getter
     @Setter
     private Set<String> exclusionList = Sets.newHashSet("class", "new");
 
+    /**
+     * Allows for a failed conversion to throw an exception if {@code true}; otherwise just logs a failure if {@code false}
+     */
     @Getter
     @Setter
     private boolean failOnError;
