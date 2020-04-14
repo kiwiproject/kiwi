@@ -1,0 +1,12 @@
+tlsConfig:
+  protocol: TLSv1.3
+  keyStorePath: /path/to/keystore.pkcs12
+  keyStorePassword: ksPassWd
+  keyStoreType: PKCS12
+  trustStorePath: /path/to/truststore.pkcs12
+  trustStorePassword: tsPass100
+  trustStoreType: PKCS12
+  verifyHostname: false
+  supportedProtocols:
+    - TLSv1.2
+    - TLSv1.3

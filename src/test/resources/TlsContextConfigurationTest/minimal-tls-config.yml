@@ -1,0 +1,5 @@
+tlsConfig:
+  keyStorePath: /path/to/keystore.jks
+  keyStorePassword: ksPassWd
+  trustStorePath: /path/to/truststore.jks
+  trustStorePassword: tsPass100
