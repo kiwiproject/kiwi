@@ -102,7 +102,6 @@
             <artifactId>spring-beans</artifactId>
             <version>5.2.5.RELEASE</version>
             <scope>provided</scope>
-            <optional>true</optional>
         </dependency>
 
         <!-- test dependencies -->
