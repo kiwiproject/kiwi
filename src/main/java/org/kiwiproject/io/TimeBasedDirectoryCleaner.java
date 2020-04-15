@@ -10,7 +10,6 @@ import static org.kiwiproject.base.KiwiPreconditions.checkArgumentNotNull;
 import static org.kiwiproject.base.KiwiStrings.f;
 
 import com.google.common.annotations.VisibleForTesting;
-import com.google.common.collect.EvictingQueue;
 import com.google.common.collect.Queues;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -20,6 +19,7 @@ import lombok.With;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.time.DurationFormatUtils;
+import org.kiwiproject.collect.KiwiEvictingQueues;
 import org.slf4j.event.Level;
 
 import javax.annotation.concurrent.Immutable;
@@ -51,7 +51,7 @@ public class TimeBasedDirectoryCleaner implements Runnable {
     private static final boolean SUPPRESS_TRAILING_ZERO_ELEMENTS = true;
     private static final File[] EMPTY_FILE_ARRAY = new File[0];
 
-    private final Queue<DeleteError> recentDeleteErrors = Queues.synchronizedQueue(EvictingQueue.create(MAX_RECENT_DELETE_ERRORS));
+    private final Queue<DeleteError> recentDeleteErrors = KiwiEvictingQueues.synchronizedEvictingQueue(MAX_RECENT_DELETE_ERRORS);
     private final AtomicLong deleteCount = new AtomicLong();
     private final AtomicInteger deleteErrorCount = new AtomicInteger();
 
