@@ -15,6 +15,11 @@ import java.nio.file.Paths;
 @UtilityClass
 public class KiwiPaths {
 
+    /**
+     * This wraps Guava's {@link Resources#getResource(String)} and converts it to a {@link Path}
+     *
+     * @see Resources#getResource(String)
+     */
     public static Path pathFromResourceName(String resourceName) {
         try {
             return Paths.get(Resources.getResource(resourceName).toURI());
