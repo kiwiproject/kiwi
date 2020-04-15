@@ -1,0 +1,3 @@
+tlsConfig:
+  trustStorePath: /path/to/truststore.jks
+  trustStorePassword: tsPass100
