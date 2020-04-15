@@ -51,7 +51,7 @@ public class TimeBasedDirectoryCleaner implements Runnable {
     private static final boolean SUPPRESS_TRAILING_ZERO_ELEMENTS = true;
     private static final File[] EMPTY_FILE_ARRAY = new File[0];
 
-    private final Queue<DeleteError> recentDeleteErrors = Queues.synchronizedQueue(KiwiEvictingQueues.synchronizedEvictingQueue(MAX_RECENT_DELETE_ERRORS));
+    private final Queue<DeleteError> recentDeleteErrors = KiwiEvictingQueues.synchronizedEvictingQueue(MAX_RECENT_DELETE_ERRORS);
     private final AtomicLong deleteCount = new AtomicLong();
     private final AtomicInteger deleteErrorCount = new AtomicInteger();
 
