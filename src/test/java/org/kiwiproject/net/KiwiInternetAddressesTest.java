@@ -141,6 +141,15 @@ class KiwiInternetAddressesTest {
     }
 
     @Test
+    void testSimpleHostInfo_EqualsAndHashCodeSanityCheck() {
+        var hostInfo1 = newSimpleHostInfo();
+        var hostInfo2 = newSimpleHostInfo();
+
+        assertThat(hostInfo1).isEqualTo(hostInfo2);
+        assertThat(hostInfo1.hashCode()).isEqualTo(hostInfo2.hashCode());
+    }
+
+    @Test
     void testPortFromStringUrl_WhenValidUrl() {
         assertThat(KiwiInternetAddresses.portFrom("http://localhost:4567/path").orElse(-1)).isEqualTo(4567);
     }
