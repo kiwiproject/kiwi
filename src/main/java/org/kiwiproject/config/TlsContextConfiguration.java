@@ -25,6 +25,8 @@ import java.util.Optional;
 
 /**
  * Configuration for standard/common properties required for secure TLS connections.
+ * <p>
+ * As this is a configuration class that supports population from external configuration, it is mutable.
  */
 @Getter
 @Setter
