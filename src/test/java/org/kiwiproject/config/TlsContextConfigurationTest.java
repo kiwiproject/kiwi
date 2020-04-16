@@ -191,7 +191,7 @@ class TlsContextConfigurationTest {
     @Nested
     class ConversionMethods {
 
-        private TlsContextConfiguration config;
+        private TlsContextConfiguration tlsConfig;
         private String protocol;
         private String path;
         private String password;
@@ -204,7 +204,7 @@ class TlsContextConfigurationTest {
             password = SecureTestConstants.JKS_PASSWORD;
             type = SecureTestConstants.STORE_TYPE;
 
-            config = TlsContextConfiguration.builder()
+            tlsConfig = TlsContextConfiguration.builder()
                     .protocol(protocol)
                     .keyStorePath(path)
                     .keyStorePassword(password)
@@ -314,10 +314,10 @@ class TlsContextConfigurationTest {
 
             @Test
             void shouldReturnSslContext() {
-                var sslContext = config.toSSLContext();
+                var sslContext = tlsConfig.toSSLContext();
 
                 assertThat(sslContext).isNotNull();
-                assertThat(sslContext.getProtocol()).isEqualTo(config.getProtocol());
+                assertThat(sslContext.getProtocol()).isEqualTo(tlsConfig.getProtocol());
             }
         }
 
@@ -326,7 +326,7 @@ class TlsContextConfigurationTest {
 
             @Test
             void shouldReturnSslSocketFactory() {
-                var sslSocketFactory = config.toSslSocketFactory();
+                var sslSocketFactory = tlsConfig.toSslSocketFactory();
                 assertThat(sslSocketFactory).isNotNull();
             }
         }
@@ -337,7 +337,7 @@ class TlsContextConfigurationTest {
             @SuppressWarnings("ConstantConditions")  // b/c IntelliJ sees Dropwizard [key|trust]StorePath are @Nullable
             @Test
             void shouldReturnTlsConfiguration() {
-                var dwTlsConfig = config.toDropwizardTlsConfiguration();
+                var dwTlsConfig = tlsConfig.toDropwizardTlsConfiguration();
 
                 assertThat(dwTlsConfig.getProtocol()).isEqualTo(protocol);
                 assertThat(dwTlsConfig.getKeyStorePath().getAbsolutePath()).isEqualTo(path);
@@ -352,13 +352,13 @@ class TlsContextConfigurationTest {
             @SuppressWarnings("ConstantConditions")  // b/c IntelliJ sees Dropwizard [key|trust]StorePath are @Nullable
             @Test
             void shouldCorrectlyHandleWhenOnlyTrustStoreIsPresent() {
-                config = TlsContextConfiguration.builder()
+                tlsConfig = TlsContextConfiguration.builder()
                         .trustStorePath("/data/pki/trust-store.pkcs12")
                         .trustStorePassword("mySuperSecretTsPassword")
                         .trustStoreType(KeyStoreType.PKCS12.value)
                         .build();
 
-                var dwTlsConfig = config.toDropwizardTlsConfiguration();
+                var dwTlsConfig = tlsConfig.toDropwizardTlsConfiguration();
 
                 assertThat(dwTlsConfig.getProtocol()).isEqualTo(SSLContextProtocol.TLS_1_2.value);
                 assertThat(dwTlsConfig.getKeyStorePath()).isNull();
@@ -368,6 +368,60 @@ class TlsContextConfigurationTest {
                 assertThat(dwTlsConfig.getTrustStorePassword()).isEqualTo("mySuperSecretTsPassword");
                 assertThat(dwTlsConfig.getTrustStoreType()).isEqualTo(KeyStoreType.PKCS12.value);
                 assertThat(dwTlsConfig.isVerifyHostname()).isTrue();
+            }
+        }
+
+        @Nested
+        class ToSSLContextConfiguration {
+
+            @Test
+            void shouldReturnSSLContextConfiguration() {
+                var tlsContextConfig = TlsContextConfiguration.builder()
+                        .protocol(SSLContextProtocol.TLS_1_3.value)
+                        .verifyHostname(false)
+                        .keyStorePath("/data/pki/key-store.pkcs12")
+                        .keyStorePassword("myKsPassword")
+                        .keyStoreType(KeyStoreType.PKCS12.value)
+                        .trustStorePath("/data/pki/trust-store.pkcs12")
+                        .trustStorePassword("myTsPassword")
+                        .trustStoreType(KeyStoreType.PKCS12.value)
+                        .supportedProtocols(List.of(SSLContextProtocol.TLS_1_2.value, SSLContextProtocol.TLS_1_3.value))
+                        .build();
+
+                var sslConfig = tlsContextConfig.toSslContextConfiguration();
+
+                assertThat(sslConfig.getProtocol()).isEqualTo(SSLContextProtocol.TLS_1_3.value);
+                assertThat(sslConfig.isVerifyHostname()).isFalse();
+
+                assertThat(sslConfig.getKeyStorePath()).isEqualTo("/data/pki/key-store.pkcs12");
+                assertThat(sslConfig.getKeyStorePassword()).isEqualTo("myKsPassword");
+                assertThat(sslConfig.getKeyStoreType()).isEqualTo(KeyStoreType.PKCS12.value);
+
+                assertThat(sslConfig.getTrustStorePath()).isEqualTo("/data/pki/trust-store.pkcs12");
+                assertThat(sslConfig.getTrustStorePassword()).isEqualTo("myTsPassword");
+                assertThat(sslConfig.getTrustStoreType()).isEqualTo(KeyStoreType.PKCS12.value);
+            }
+
+            @Test
+            void shouldNotCurrentlySupportDifferentTrustStoreType() {
+                var tlsContextConfig = TlsContextConfiguration.builder()
+                        .protocol(SSLContextProtocol.TLS_1_3.value)
+                        .verifyHostname(false)
+                        .keyStorePath("/data/pki/key-store.jks")
+                        .keyStorePassword("myKsPassword")
+                        .keyStoreType(KeyStoreType.JKS.value)
+                        .trustStorePath("/data/pki/trust-store.pkcs12")
+                        .trustStorePassword("myTsPassword")
+                        .trustStoreType(KeyStoreType.PKCS12.value)
+                        .supportedProtocols(List.of(SSLContextProtocol.TLS_1_2.value, SSLContextProtocol.TLS_1_3.value))
+                        .build();
+
+                var sslConfig = tlsContextConfig.toSslContextConfiguration();
+
+                assertThat(sslConfig.getTrustStoreType())
+                        .describedAs("If this test has failed, it means we have added support for different" +
+                                " trust store type in SSLContextConfiguration and this test needs to be updated!")
+                        .isEqualTo(KeyStoreType.JKS.value);
             }
         }
     }
