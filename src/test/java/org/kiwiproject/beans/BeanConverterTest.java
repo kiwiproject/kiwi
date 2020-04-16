@@ -1,6 +1,8 @@
 package org.kiwiproject.beans;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatCode;
+import static org.assertj.core.api.Assertions.assertThatIllegalStateException;
 import static org.assertj.core.api.Assertions.catchThrowable;
 import static org.assertj.core.data.MapEntry.entry;
 
@@ -15,6 +17,7 @@ import org.springframework.beans.TypeMismatchException;
 
 import java.util.Map;
 import java.util.Set;
+import java.util.function.Function;
 
 @DisplayName("BeanConverter")
 class BeanConverterTest {
@@ -101,12 +104,7 @@ class BeanConverterTest {
             return val;
         });
 
-        converter.addPropertyMapper("stringField", data -> {
-            // prefix with 'test'
-            var val = "test:" + data.getStringField();
-            data.setStringField(val);
-            return val;
-        });
+        converter.addPropertyMapper("stringField", prefixTestDataStringFunc());
 
         converter.addPropertyMapper("mapField", data -> {
             var m = data.getMapField();
@@ -119,6 +117,27 @@ class BeanConverterTest {
         assertThat(result.getNumberField()).isEqualTo(1001);
         assertThat(result.getStringField()).isEqualTo("test:foo");
         assertThat(result.getMapField()).contains(entry("innerFoo", "innerBar"), entry("test", "1234"));
+    }
+
+    @Test
+    void shouldNotAllowRegisteringMapper_WhenSamePropertyAlreadyRegistered() {
+        var converter = new BeanConverter<TestData>();
+
+        assertThatCode(() -> converter.addPropertyMapper("stringField", prefixTestDataStringFunc()))
+                .doesNotThrowAnyException();
+
+        assertThatIllegalStateException()
+                .isThrownBy(() -> converter.addPropertyMapper("stringField", testData -> "foo"))
+                .withMessage("Mapper already registered for property: stringField");
+    }
+
+    private Function<TestData, String> prefixTestDataStringFunc() {
+        return data -> {
+            // prefix with 'test'
+            var val = "test:" + data.getStringField();
+            data.setStringField(val);
+            return val;
+        };
     }
 
     @Test
