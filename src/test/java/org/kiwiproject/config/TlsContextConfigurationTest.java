@@ -2,12 +2,12 @@ package org.kiwiproject.config;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
+import static org.kiwiproject.util.YamlTestHelper.loadFromYaml;
 import static org.kiwiproject.validation.ValidationTestHelper.assertNoViolations;
 import static org.kiwiproject.validation.ValidationTestHelper.assertOnePropertyViolation;
 import static org.kiwiproject.validation.ValidationTestHelper.newValidator;
 
 import io.dropwizard.client.ssl.TlsConfiguration;
-import io.dropwizard.testing.FixtureHelpers;
 import lombok.Getter;
 import lombok.Setter;
 import org.junit.jupiter.api.BeforeEach;
@@ -17,7 +17,6 @@ import org.junit.jupiter.api.Test;
 import org.kiwiproject.security.KeyStoreType;
 import org.kiwiproject.security.SSLContextProtocol;
 import org.kiwiproject.security.SecureTestConstants;
-import org.yaml.snakeyaml.Yaml;
 
 import javax.validation.Validator;
 import java.io.File;
@@ -374,9 +373,7 @@ class TlsContextConfigurationTest {
     }
 
     private static TlsContextConfiguration loadTlsContextConfiguration(String filename) {
-        var yaml = new Yaml();
-        var yamlConfig = FixtureHelpers.fixture(filename);
-        var appConfig = yaml.loadAs(yamlConfig, SampleAppConfig.class);
+        var appConfig = loadFromYaml(filename, SampleAppConfig.class);
         return appConfig.getTlsConfig();
     }
 }
