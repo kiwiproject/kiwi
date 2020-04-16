@@ -187,6 +187,6 @@ public class BeanConverter<T> {
      * @return true if successfully added; false otherwise
      */
     public boolean addPropertyMapper(String propertyName, Function<T, ?> function) {
-        return mappers.put(propertyName, function) != null;
+        return mappers.put(propertyName, function) == null;
     }
 }

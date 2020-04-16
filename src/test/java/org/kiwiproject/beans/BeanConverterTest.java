@@ -15,6 +15,7 @@ import org.springframework.beans.TypeMismatchException;
 
 import java.util.Map;
 import java.util.Set;
+import java.util.function.Function;
 
 @DisplayName("BeanConverter")
 class BeanConverterTest {
@@ -94,31 +95,49 @@ class BeanConverterTest {
     @Test
     void testConversionWithCustomRule() {
         var converter = new BeanConverter<TestData>();
-        converter.addPropertyMapper("numberField", data -> {
+        var addedNumberFieldMapper = converter.addPropertyMapper("numberField", data -> {
             // increment by 1000
             var val = data.getNumberField() + 1000;
             data.setNumberField(val);
             return val;
         });
+        assertThat(addedNumberFieldMapper).isTrue();
 
-        converter.addPropertyMapper("stringField", data -> {
-            // prefix with 'test'
-            var val = "test:" + data.getStringField();
-            data.setStringField(val);
-            return val;
-        });
+        var addedStringFieldMapper = converter.addPropertyMapper("stringField", prefixTestDataStringFunc());
+        assertThat(addedStringFieldMapper).isTrue();
 
-        converter.addPropertyMapper("mapField", data -> {
+        var addedMapFieldMapper = converter.addPropertyMapper("mapField", data -> {
             var m = data.getMapField();
             m.put("test", "1234");
             return m;
         });
+        assertThat(addedMapFieldMapper).isTrue();
 
         var result = converter.convert(constructTestData());
 
         assertThat(result.getNumberField()).isEqualTo(1001);
         assertThat(result.getStringField()).isEqualTo("test:foo");
         assertThat(result.getMapField()).contains(entry("innerFoo", "innerBar"), entry("test", "1234"));
+    }
+
+    @Test
+    void shouldReturnFalseWhenMapperWithSameKeyAlreadyRegistered() {
+        var converter = new BeanConverter<TestData>();
+
+        var firstAdded = converter.addPropertyMapper("stringField", prefixTestDataStringFunc());
+        assertThat(firstAdded).isTrue();
+
+        var secondAdded = converter.addPropertyMapper("stringField", testData -> "foo");
+        assertThat(secondAdded).isFalse();
+    }
+
+    private Function<TestData, String> prefixTestDataStringFunc() {
+        return data -> {
+            // prefix with 'test'
+            var val = "test:" + data.getStringField();
+            data.setStringField(val);
+            return val;
+        };
     }
 
     @Test
