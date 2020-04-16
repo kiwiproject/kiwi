@@ -82,7 +82,7 @@ class KiwiInternetAddressesTest {
 
     @Test
     void testGetLocalHostInetAddress_WithDefaultValue_WhenNoErrors() {
-        var defaultHostInetAddress = InetAddress.getLoopbackAddress();
+        var defaultHostInetAddress = dummyInetAddress();
         var inetAddress = KiwiInternetAddresses.getLocalHostInetAddress(defaultHostInetAddress);
         assertThat(inetAddress).isNotEqualTo(defaultHostInetAddress);
     }
@@ -92,7 +92,7 @@ class KiwiInternetAddressesTest {
         KiwiInternetAddresses.setAddressFinder(finder);
         when(finder.getLocalHost()).thenThrow(new UnknownHostException("cannot get localhost"));
 
-        var defaultHostInetAddress = InetAddress.getLoopbackAddress();
+        var defaultHostInetAddress = dummyInetAddress();
         var inetAddress = KiwiInternetAddresses.getLocalHostInetAddress(defaultHostInetAddress);
         assertThat(inetAddress).isEqualTo(defaultHostInetAddress);
     }
@@ -117,7 +117,7 @@ class KiwiInternetAddressesTest {
 
     @Test
     void testGetLocalHostInetAddress_WithSupplier_WhenNoErrors() {
-        Supplier<InetAddress> supplier = InetAddress::getLoopbackAddress;
+        Supplier<InetAddress> supplier = this::dummyInetAddress;
 
         var inetAddress = KiwiInternetAddresses.getLocalHostInetAddress(supplier);
         assertThat(inetAddress).isNotEqualTo(supplier.get());
@@ -128,7 +128,7 @@ class KiwiInternetAddressesTest {
         KiwiInternetAddresses.setAddressFinder(finder);
         when(finder.getLocalHost()).thenThrow(new UnknownHostException("cannot get localhost"));
 
-        Supplier<InetAddress> supplier = InetAddress::getLoopbackAddress;
+        Supplier<InetAddress> supplier = this::dummyInetAddress;
         var inetAddress = KiwiInternetAddresses.getLocalHostInetAddress(supplier);
         assertThat(inetAddress).isEqualTo(supplier.get());
     }
@@ -211,5 +211,18 @@ class KiwiInternetAddressesTest {
 
     private SimpleHostInfo newSimpleHostInfo() {
         return SimpleHostInfo.from("test-host", "127.0.0.1");
+    }
+
+    /**
+     * @implNote Turns out travis and very likely personal machines could have their hostname resolve to the
+     * loopback address.  This causes the default checks to fail because the equals method only checks the
+     * IP address and both getLocalHost and getLoopbackAddress are resolving to the same IP.
+     */
+    private InetAddress dummyInetAddress() {
+        try {
+            return InetAddress.getByName("192.168.1.1");
+        } catch (UnknownHostException e) {
+            throw new RuntimeException(e);
+        }
     }
 }
