@@ -1,5 +1,6 @@
 package org.kiwiproject.beans;
 
+import static com.google.common.base.Preconditions.checkState;
 import static java.util.Objects.isNull;
 import static java.util.function.Predicate.not;
 import static java.util.stream.Collectors.toSet;
@@ -21,8 +22,8 @@ import java.util.function.Function;
 import java.util.stream.Stream;
 
 /**
- * Simple way to convert one bean to another.  This utility uses spring-beans to attempt the conversion at first.  If attempting to
- * convert maps, it will attempt to do simple copies of the key-value pairs.
+ * Simple way to convert one bean to another.  This utility uses spring-beans to attempt the conversion at first.
+ * If attempting to maps, it will attempt to do simple copies of the key-value pairs.
  * <p>
  * Exclusion lists can be provided to ignore specific fields.
  * <p>
@@ -184,9 +185,12 @@ public class BeanConverter<T> {
      *
      * @param propertyName the property name
      * @param function     the Function that will be triggered
-     * @return true if successfully added; false otherwise
+     * @throws IllegalStateException if a mapper is already registered on the given property
      */
-    public boolean addPropertyMapper(String propertyName, Function<T, ?> function) {
-        return mappers.put(propertyName, function) == null;
+    public void addPropertyMapper(String propertyName, Function<T, ?> function) {
+        checkState(!mappers.containsKey(propertyName),
+                "Mapper already registered for property: %s", propertyName);
+
+        mappers.put(propertyName, function);
     }
 }

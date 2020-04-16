@@ -1,6 +1,8 @@
 package org.kiwiproject.beans;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatCode;
+import static org.assertj.core.api.Assertions.assertThatIllegalStateException;
 import static org.assertj.core.api.Assertions.catchThrowable;
 import static org.assertj.core.data.MapEntry.entry;
 
@@ -95,23 +97,20 @@ class BeanConverterTest {
     @Test
     void testConversionWithCustomRule() {
         var converter = new BeanConverter<TestData>();
-        var addedNumberFieldMapper = converter.addPropertyMapper("numberField", data -> {
+        converter.addPropertyMapper("numberField", data -> {
             // increment by 1000
             var val = data.getNumberField() + 1000;
             data.setNumberField(val);
             return val;
         });
-        assertThat(addedNumberFieldMapper).isTrue();
 
-        var addedStringFieldMapper = converter.addPropertyMapper("stringField", prefixTestDataStringFunc());
-        assertThat(addedStringFieldMapper).isTrue();
+        converter.addPropertyMapper("stringField", prefixTestDataStringFunc());
 
-        var addedMapFieldMapper = converter.addPropertyMapper("mapField", data -> {
+        converter.addPropertyMapper("mapField", data -> {
             var m = data.getMapField();
             m.put("test", "1234");
             return m;
         });
-        assertThat(addedMapFieldMapper).isTrue();
 
         var result = converter.convert(constructTestData());
 
@@ -121,14 +120,15 @@ class BeanConverterTest {
     }
 
     @Test
-    void shouldReturnFalseWhenMapperWithSameKeyAlreadyRegistered() {
+    void shouldNotAllowRegisteringMapper_WhenSamePropertyAlreadyRegistered() {
         var converter = new BeanConverter<TestData>();
 
-        var firstAdded = converter.addPropertyMapper("stringField", prefixTestDataStringFunc());
-        assertThat(firstAdded).isTrue();
+        assertThatCode(() -> converter.addPropertyMapper("stringField", prefixTestDataStringFunc()))
+                .doesNotThrowAnyException();
 
-        var secondAdded = converter.addPropertyMapper("stringField", testData -> "foo");
-        assertThat(secondAdded).isFalse();
+        assertThatIllegalStateException()
+                .isThrownBy(() -> converter.addPropertyMapper("stringField", testData -> "foo"))
+                .withMessage("Mapper already registered for property: stringField");
     }
 
     private Function<TestData, String> prefixTestDataStringFunc() {
