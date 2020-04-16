@@ -1,6 +1,6 @@
 package org.kiwiproject.net;
 
-import static io.dropwizard.util.Strings.nullToEmpty;
+import static com.google.common.base.Strings.nullToEmpty;
 
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.net.HostAndPort;
