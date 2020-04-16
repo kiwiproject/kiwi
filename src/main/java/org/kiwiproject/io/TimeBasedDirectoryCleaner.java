@@ -37,6 +37,8 @@ import java.util.concurrent.atomic.AtomicLong;
 /**
  * A {@link Runnable} that cleans a given directory of files and/or directories that are older than a specified
  * retention threshold.
+ * <p>
+ * NOTE: This class relies on classes in commons-io, so you will need to add it as a dependency to your project!
  *
  * @implNote This is intended to be run in a single thread, e.g. using a {@link java.util.concurrent.ScheduledExecutorService}
  * with one thread. Results are undefined (and probably bad) if multiple threads execute the same instance of this
@@ -298,7 +300,7 @@ public class TimeBasedDirectoryCleaner implements Runnable {
      */
     @VisibleForTesting
     void logUnableToDelete(FileDeleteResult deleteResult) {
-       logDeleteError("Unable to delete " + deleteResult.absolutePath);
+        logDeleteError("Unable to delete " + deleteResult.absolutePath);
     }
 
     @VisibleForTesting

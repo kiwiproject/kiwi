@@ -10,7 +10,6 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
-import org.apache.http.protocol.HttpContext;
 import org.kiwiproject.security.KeyAndTrustStoreConfigProvider;
 import org.kiwiproject.security.KeyStoreType;
 import org.kiwiproject.security.SSLContextProtocol;
@@ -26,7 +25,9 @@ import java.util.Optional;
 /**
  * Configuration for standard/common properties required for secure TLS connections.
  * <p>
- * As this is a configuration class that supports population from external configuration, it is mutable.
+ * As this is a configuration class that supports population from external configuration, it is mutable
+ * <p>
+ * NOTE: This requires dropwizard-client as a dependency.
  */
 @Getter
 @Setter
@@ -99,7 +100,7 @@ public class TlsContextConfiguration implements KeyAndTrustStoreConfigProvider {
      * HttpClient's {@link org.apache.http.conn.ssl.SSLConnectionSocketFactory} accepts {@code supportedProtocols}
      * in its constructors as arrays that are supposed to be null if you aren't specifying a specific list of them.
      * The HttpClient code does an explicit null check on the {@code supportedProtocols} in
-     * {@link org.apache.http.conn.ssl.SSLConnectionSocketFactory#createLayeredSocket(Socket, String, int, HttpContext)}.
+     * {@link org.apache.http.conn.ssl.SSLConnectionSocketFactory#createLayeredSocket(Socket, String, int, org.apache.http.protocol.HttpContext)}.
      * You will need to look at the source code, as the JavaDoc doesn't mention this tidbit, nor do the constructors
      * since they don't have any documentation regarding their arguments. If you don't like reading source code of the
      * open source tools you rely on, then please close this file, log out, and change careers.
