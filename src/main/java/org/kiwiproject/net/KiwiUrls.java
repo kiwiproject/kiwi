@@ -11,10 +11,10 @@ import static org.kiwiproject.collect.KiwiLists.first;
 import static org.kiwiproject.collect.KiwiMaps.isNullOrEmpty;
 
 import com.google.common.base.Splitter;
-import io.dropwizard.util.Strings;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.experimental.UtilityClass;
+import org.apache.commons.lang3.StringUtils;
 
 import java.net.MalformedURLException;
 import java.net.URI;
@@ -88,7 +88,7 @@ public class KiwiUrls {
      */
     public static URL createUrlObject(String protocol, String hostname, int port, String path) {
         try {
-            var pathWithLeadingSlash = Strings.isNullOrEmpty(path) ? "" : prependLeadingSlash(path);
+            var pathWithLeadingSlash = StringUtils.isBlank(path) ? "" : prependLeadingSlash(path);
 
             return new URL(protocol, hostname, port, pathWithLeadingSlash);
         } catch (MalformedURLException e) {

@@ -6,7 +6,7 @@
 
     <groupId>org.kiwiproject</groupId>
     <artifactId>kiwi</artifactId>
-    <version>0.0.2-SNAPSHOT</version>
+    <version>0.0.3-SNAPSHOT</version>
     <packaging>jar</packaging>
 
     <properties>
@@ -15,10 +15,9 @@
         <guava.version>28.2-jre</guava.version>
         <commons-lang3.version>3.10</commons-lang3.version>
 
-        <!-- Versions for provided/optional dependencies -->
+        <!-- Versions for provided dependencies -->
         <commons-text.version>1.8</commons-text.version>
         <dropwizard.version>2.0.7</dropwizard.version>
-        <error_prone_annotations.version>2.3.4</error_prone_annotations.version>
         <hibernate-validator.version>6.1.3.Final</hibernate-validator.version>
         <httpclient.version>4.5.12</httpclient.version>
         <jackson.version>2.10.3</jackson.version>
@@ -29,13 +28,14 @@
         <javax.annotation-api.version>1.3.2</javax.annotation-api.version>
         <javax.ws.rs-api.version>2.1.1</javax.ws.rs-api.version>
         <joda-time.version>2.10.5</joda-time.version>
-        <jsr250-api.version>1.0</jsr250-api.version>
-        <jsr305.version>3.0.2</jsr305.version>
         <logback-classic.version>1.2.3</logback-classic.version>
-        <spring-beans.version>5.2.5.RELEASE</spring-beans.version>
+        <spring.version>5.2.5.RELEASE</spring.version>
         <commons-io.version>2.6</commons-io.version>
-
         <lombok.version>1.18.12</lombok.version>
+
+        <!-- Versions for optional dependencies -->
+        <error_prone_annotations.version>2.3.4</error_prone_annotations.version>
+        <jsr305.version>3.0.2</jsr305.version>
 
         <!-- Versions for test dependencies -->
         <mockito.version>3.3.0</mockito.version>
@@ -69,6 +69,18 @@
             <version>${guava.version}</version>
             <exclusions>
                 <exclusion>
+                    <groupId>com.google.code.findbugs</groupId>
+                    <artifactId>jsr305</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>com.google.errorprone</groupId>
+                    <artifactId>error_prone_annotations</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>com.google.j2objc</groupId>
+                    <artifactId>j2objc-annotations</artifactId>
+                </exclusion>
+                <exclusion>
                     <groupId>org.checkerframework</groupId>
                     <artifactId>checker-qual</artifactId>
                 </exclusion>
@@ -87,7 +99,20 @@
             <version>${slf4j-api.version}</version>
         </dependency>
 
-        <!-- provided & optional dependencies -->
+        <!-- provided dependencies -->
+
+        <dependency>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>commons-text</artifactId>
+            <version>${commons-text.version}</version>
+            <scope>provided</scope>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.apache.commons</groupId>
+                    <artifactId>commons-lang3</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
 
         <dependency>
             <groupId>io.dropwizard</groupId>
@@ -166,18 +191,21 @@
             <groupId>commons-io</groupId>
             <artifactId>commons-io</artifactId>
             <version>${commons-io.version}</version>
+            <scope>provided</scope>
         </dependency>
 
         <dependency>
             <groupId>jakarta.annotation</groupId>
             <artifactId>jakarta.annotation-api</artifactId>
             <version>${jakarta.annotation-api.version}</version>
+            <scope>provided</scope>
         </dependency>
 
         <dependency>
             <groupId>joda-time</groupId>
             <artifactId>joda-time</artifactId>
             <version>${joda-time.version}</version>
+            <scope>provided</scope>
         </dependency>
 
         <dependency>
@@ -191,12 +219,14 @@
             <groupId>org.glassfish</groupId>
             <artifactId>jakarta.el</artifactId>
             <version>${jakarta-el.version}</version>
+            <scope>provided</scope>
         </dependency>
 
         <dependency>
             <groupId>org.javassist</groupId>
             <artifactId>javassist</artifactId>
             <version>${javassist.version}</version>
+            <scope>provided</scope>
         </dependency>
 
         <dependency>
@@ -226,13 +256,6 @@
         </dependency>
 
         <dependency>
-            <groupId>javax.ws.rs</groupId>
-            <artifactId>javax.ws.rs-api</artifactId>
-            <version>${javax.ws.rs-api.version}</version>
-            <scope>provided</scope>
-        </dependency>
-
-        <dependency>
             <groupId>jakarta.xml.bind</groupId>
             <artifactId>jakarta.xml.bind-api</artifactId>
             <version>${jakarta.xml.bind-api.version}</version>
@@ -247,26 +270,18 @@
         </dependency>
 
         <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-beans</artifactId>
+            <version>${spring.version}</version>
+            <scope>provided</scope>
+        </dependency>
+
+        <!-- optional dependencies -->
+
+        <dependency>
             <groupId>com.google.errorprone</groupId>
             <artifactId>error_prone_annotations</artifactId>
             <version>${error_prone_annotations.version}</version>
-            <scope>provided</scope>
-            <optional>true</optional>
-        </dependency>
-
-        <dependency>
-            <groupId>javax.annotation</groupId>
-            <artifactId>javax.annotation-api</artifactId>
-            <version>${javax.annotation-api.version}</version>
-            <scope>provided</scope>
-            <optional>true</optional>
-        </dependency>
-
-        <dependency>
-            <groupId>javax.annotation</groupId>
-            <artifactId>jsr250-api</artifactId>
-            <version>${jsr250-api.version}</version>
-            <scope>provided</scope>
             <optional>true</optional>
         </dependency>
 
@@ -274,15 +289,7 @@
             <groupId>com.google.code.findbugs</groupId>
             <artifactId>jsr305</artifactId>
             <version>${jsr305.version}</version>
-            <scope>provided</scope>
             <optional>true</optional>
-        </dependency>
-
-        <dependency>
-            <groupId>org.springframework</groupId>
-            <artifactId>spring-beans</artifactId>
-            <version>${spring-beans.version}</version>
-            <scope>provided</scope>
         </dependency>
 
         <!-- test dependencies -->
@@ -296,19 +303,6 @@
                 <exclusion>
                     <groupId>org.slf4j</groupId>
                     <artifactId>slf4j-api</artifactId>
-                </exclusion>
-            </exclusions>
-        </dependency>
-
-        <dependency>
-            <groupId>org.apache.commons</groupId>
-            <artifactId>commons-text</artifactId>
-            <version>${commons-text.version}</version>
-            <scope>test</scope>
-            <exclusions>
-                <exclusion>
-                    <groupId>org.apache.commons</groupId>
-                    <artifactId>commons-lang3</artifactId>
                 </exclusion>
             </exclusions>
         </dependency>

@@ -23,10 +23,12 @@ import java.util.stream.Stream;
 /**
  * Simple way to convert one bean to another.  This utility uses spring-beans to attempt the conversion at first.  If attempting to
  * convert maps, it will attempt to do simple copies of the key-value pairs.
- *
+ * <p>
  * Exclusion lists can be provided to ignore specific fields.
- *
+ * <p>
  * Also custom mappers can be provided per field for more control over how the fields are converted.
+ * <p>
+ * NOTE: This class requires spring-beans as a dependency.
  */
 @Slf4j
 public class BeanConverter<T> {
@@ -64,9 +66,9 @@ public class BeanConverter<T> {
     /**
      * This conversion method takes two parameters and copies properties from one object to another
      *
-     * @param input   the object to copy the properties from
-     * @param target  the object to copy the properties too (destination)
-     * @param <R>     the type of object being returned
+     * @param input  the object to copy the properties from
+     * @param target the object to copy the properties too (destination)
+     * @param <R>    the type of object being returned
      * @return the modified target object
      */
     @SuppressWarnings("unchecked")
@@ -181,7 +183,7 @@ public class BeanConverter<T> {
      * Adds a property mapper function for a specific property name
      *
      * @param propertyName the property name
-     * @param function the Function that will be triggered
+     * @param function     the Function that will be triggered
      * @return true if successfully added; false otherwise
      */
     public boolean addPropertyMapper(String propertyName, Function<T, ?> function) {
