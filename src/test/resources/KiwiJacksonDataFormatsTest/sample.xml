@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
+
+<ns1:Thing xsi:type="ns1:Thing" xmlns:ns1="urn:com.acme.things:schemas"
+           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+    <id>some-id</id>
+    <type>some-type</type>
+</ns1:Thing>
