@@ -86,7 +86,7 @@ class SocketCheckerTest {
             server.setName("stupid-simple-server-thread");
             server.start();
 
-            while(!runningFlag.get()) {
+            while (!runningFlag.get()) {
                 MILLISECONDS.sleep(10);
             }
         }
