@@ -18,6 +18,7 @@ import lombok.Getter;
  */
 @EqualsAndHashCode
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
+@SuppressWarnings("UnstableApiUsage")  // Because Guava's InetAddresses is marked @Beta (but has been there a long time)
 public class SimpleHostAndPort {
 
     @Getter
