@@ -44,6 +44,7 @@ public class SimpleHostAndPort {
      *
      * @throws NullPointerException if {@code hostPortString} is null
      * @throws IllegalStateException if not in the expected format
+     * @throws NumberFormatException if port is not a valid number
      */
     public static SimpleHostAndPort from(String hostPortString) {
         var split = hostPortString.split(":");
