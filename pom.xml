@@ -41,7 +41,7 @@
         <!-- Versions for test dependencies -->
         <assertj.version>3.15.0</assertj.version>
         <awaitility.version>4.0.2</awaitility.version>
-        <junit.jupiter.version>5.6.0</junit.jupiter.version>
+        <junit.jupiter.version>5.6.2</junit.jupiter.version>
         <mockito.version>3.3.0</mockito.version>
 
         <!-- Versions for plugins -->
