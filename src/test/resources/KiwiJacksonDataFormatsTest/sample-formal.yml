@@ -1,0 +1,37 @@
+---
+
+userSecurityEnabled: false
+
+remoteServiceConfig:
+  endpoints:
+    - tag: config
+      scheme: https
+      domain: proxy-1.test
+      path: proxy/config
+    - tag: system
+      scheme: https
+      domain: proxy-1.test
+      path: proxy/system
+    - tag: controller
+      scheme: https
+      domain: proxy-1.test
+      path: proxy/controller
+    - tag: ack
+      scheme: https
+      domain: proxy-1.test
+      path: proxy/ack
+
+messaging:
+  consumers:
+    - topic:CHANNEL_1
+    - topic:CHANNEL_2
+    - topic:CHANNEL_3
+  producers:
+    - topic:CHANNEL_4
+
+logging:
+  level: INFO
+  loggers:
+    com.fasterxml.jackson: ERROR
+  appenders:
+    - type: console

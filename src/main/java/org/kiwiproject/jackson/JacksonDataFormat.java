@@ -8,9 +8,9 @@ import lombok.Getter;
 /**
  * Represents the detected type of a {@link String}.
  * <p>
- * Currently only supports JSON, XML, and Yaml formats.
+ * Currently only supports JSON, XML, and YAML formats.
  *
- * @implNote Uses Jackson under the covers. You will need to ensure that jackson-dataformat-xml and
+ * @implNote Uses Jackson under the covers. You will need to ensure that jackson-core, jackson-dataformat-xml and
  * jackson-dataformat-yaml dependencies are present at runtime.
  * @see com.fasterxml.jackson.core.format.DataFormatDetector
  */

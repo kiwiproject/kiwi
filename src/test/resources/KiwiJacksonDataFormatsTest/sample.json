@@ -1,0 +1,20 @@
+{
+  "messageType": "MISC_STATUS_MESSAGE",
+  "message": "{ \"field1\":\"value1\",\"field2\":42 }",
+  "metaData": {
+    "id": "5cc49bef-6bba-42ed-8e1d-08309ff479c5",
+    "messageTimestamp": "1587147703073",
+    "type": "MISC_STATUS_MESSAGE",
+    "functional": "FUNCTIONAL_AREA",
+    "subsystem": "IMPORTANT_SUBSYSTEM",
+    "nodeInfo": {
+      "ip": "192.168.1.101",
+      "hostname": "service1.test",
+      "port": 8080,
+      "adminPort": 8081,
+      "serviceName": "test-service",
+      "serviceVersion": "1.0.0-SNAPSHOT"
+    },
+    "producer": "INTERNAL"
+  }
+}
