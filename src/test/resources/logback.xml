@@ -9,6 +9,13 @@
     </appender>
 
     <logger name="org.kiwiproject" level="TRACE"/>
+    <logger name="org.kiwiproject.io.TimeBasedDirectoryCleaner" level="WARN"/>
+
+    <!--
+    NOTE: A logger for this test class *must* be present and at DEBUG level for the test to work (since it
+    is testing logging and specifically whether the lazy supplier executes or not.
+    -->
+    <logger name="org.kiwiproject.slf4j.LazyLogParameterSupplierTest" level="DEBUG"/>
 
     <root level="INFO">
         <appender-ref ref="STDOUT"/>
