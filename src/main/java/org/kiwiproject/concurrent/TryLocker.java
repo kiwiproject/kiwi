@@ -1,5 +1,8 @@
 package org.kiwiproject.concurrent;
 
+import static java.util.Objects.nonNull;
+import static org.kiwiproject.base.KiwiPreconditions.checkArgumentNotNull;
+
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 
@@ -7,6 +10,7 @@ import java.time.Duration;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
+import java.util.function.Supplier;
 
 /**
  * Utility that aids in using {@link Lock#tryLock(long, TimeUnit)}.
@@ -110,6 +114,68 @@ public class TryLocker {
         }
 
         return orElseAction;
+    }
+
+    /**
+     * Execute the given {@code withLockSupplier} if the lock is obtained within the lock timeout period and return
+     * its value. Otherwise return null.
+     *
+     * @param withLockSupplier supplier to execute if lock is obtained
+     * @param <T>              type of object returned
+     * @return the supplied value or null
+     */
+    public <T> T withLockSupplyOrNull(Supplier<T> withLockSupplier) {
+        return getWithLockOrNull(withLockSupplier);
+    }
+
+    /**
+     * Execute the given {@code withLockSupplier} if the lock is obtained within the lock timeout period and return
+     * its value. Otherwise return the {@code fallbackValue}.
+     *
+     * @param withLockSupplier supplier to execute if lock is obtained
+     * @param fallbackValue    the value to use if the lock is not obtained
+     * @param <T>              type of object returned
+     * @return the supplied value or the fallback value
+     */
+    public <T> T withLockSupplyOrFallback(Supplier<T> withLockSupplier, T fallbackValue) {
+        var result = getWithLockOrNull(withLockSupplier);
+
+        return nonNull(result) ? result : fallbackValue;
+    }
+
+    /**
+     * Execute the given {@code withLockSupplier} if the lock is obtained within the lock timeout period and return
+     * its value. Otherwise return the valued supplied by {@code fallbackSupplier}.
+     *
+     * @param withLockSupplier supplier to execute if lock is obtained
+     * @param fallbackSupplier the supplier to execute if the lock is not obtained
+     * @param <T>              type of object returned
+     * @return the supplied value or the supplied fallback value
+     */
+    public <T> T withLockSupplyOrFallbackSupply(Supplier<T> withLockSupplier, Supplier<T> fallbackSupplier) {
+        var result = getWithLockOrNull(withLockSupplier);
+
+        return nonNull(result) ? result : fallbackSupplier.get();
+    }
+
+    private <T> T getWithLockOrNull(Supplier<T> withLockSupplier) {
+        checkArgumentNotNull(withLockSupplier);
+
+        boolean gotLock = false;
+        T result = null;
+        try {
+            gotLock = lock.tryLock(lockWaitTime, lockWaitTimeUnit);
+            LOG.trace("Got lock {} within wait time {} {}? {}", lock, lockWaitTime, lockWaitTimeUnit, gotLock);
+            if (gotLock) {
+                result = withLockSupplier.get();
+            }
+        } catch (InterruptedException e) {
+            LOG.warn("Interrupted waiting for lock", e);
+            Thread.currentThread().interrupt();
+        } finally {
+            unlockOnlyIf(gotLock);
+        }
+        return result;
     }
 
     private void unlockOnlyIf(boolean gotLock) {
