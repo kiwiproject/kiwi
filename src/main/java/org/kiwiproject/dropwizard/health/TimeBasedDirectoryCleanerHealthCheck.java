@@ -19,8 +19,8 @@ public class TimeBasedDirectoryCleanerHealthCheck extends HealthCheck {
 
     public static final Duration DEFAULT_DELETE_ERROR_THRESHOLD = Duration.ofHours(1);
 
-    public static final boolean SUPPRESS_LEADING_ZERO_ELEMENTS = true;
-    public static final boolean SUPPRESS_TRAILING_ZERO_ELEMENTS = true;
+    private static final boolean SUPPRESS_LEADING_ZERO_ELEMENTS = true;
+    private static final boolean SUPPRESS_TRAILING_ZERO_ELEMENTS = true;
 
     private final TimeBasedDirectoryCleaner cleaner;
     private final long warningThresholdInMillis;
