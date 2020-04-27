@@ -256,6 +256,9 @@ public class TimeBasedDirectoryCleaner implements Runnable {
     /**
      * Attempt delete if the file exists, which might not be the case if multiple cleaners in different JVMs are
      * executing concurrently against a shared directory.
+     *
+     * @implNote We have only tested this on a Centos/RedHat based system. Some issues have been noticed with deleting files
+     * concurrently from multiple threads in the same directories on MacOS. Use with caution.
      */
     private static FileDeleteResult tryDeleteIfExists(File file) {
         var absolutePath = file.getAbsolutePath();

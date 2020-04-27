@@ -9,7 +9,7 @@
     </appender>
 
     <logger name="org.kiwiproject" level="TRACE"/>
-    <logger name="org.kiwiproject.io.TimeBasedDirectoryCleaner" level="WARN"/>
+    <logger name="org.kiwiproject.io.TimeBasedDirectoryCleaner" level="INFO"/>
 
     <!--
     NOTE: A logger for this test class *must* be present and at DEBUG level for the test to work (since it
