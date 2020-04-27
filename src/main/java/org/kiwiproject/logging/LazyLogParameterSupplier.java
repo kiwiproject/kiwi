@@ -1,4 +1,4 @@
-package org.kiwiproject.slf4j;
+package org.kiwiproject.logging;
 
 import static java.util.Objects.isNull;
 
