@@ -1,7 +1,7 @@
-package org.kiwiproject.slf4j;
+package org.kiwiproject.logging;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.kiwiproject.slf4j.LazyLogParameterSupplier.lazy;
+import static org.kiwiproject.logging.LazyLogParameterSupplier.lazy;
 
 import lombok.Value;
 import lombok.extern.slf4j.Slf4j;
