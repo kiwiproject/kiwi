@@ -26,6 +26,8 @@ import org.assertj.core.api.SoftAssertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.condition.EnabledOnOs;
+import org.junit.jupiter.api.condition.OS;
 import org.junit.jupiter.api.io.TempDir;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
@@ -133,6 +135,7 @@ class TimeBasedDirectoryCleanerConfigTest {
      */
     @ParameterizedTest
     @ValueSource(ints = { 500, 2000 })
+    @EnabledOnOs(OS.LINUX)
     void testScheduleCleanup_WithScheduledExecutor_UsingMultipleConcurrentCleaners_IntegrationTest(int totalFileCount) throws InterruptedException {
         assertThat(TimeBasedDirectoryCleaner.capacityOfRecentDeleteErrors())
                 .describedAs("Assumption of cleaner error queue capacity of 500 is invalid; @ValueSource values need to be adjusted")
