@@ -5,7 +5,7 @@ import io.dropwizard.lifecycle.setup.LifecycleEnvironment;
 import lombok.experimental.UtilityClass;
 
 /**
- * Provides utilities related to the Dropwizard lifecycle
+ * Provides utilities related to the Dropwizard lifecycle.
  */
 @UtilityClass
 public class KiwiDropwizardLifecycles {
@@ -15,7 +15,7 @@ public class KiwiDropwizardLifecycles {
      * is {@code stopAction}, and attaches it to the given Dropwizard {@code lifecycle}.
      * <p>
      * Useful when you have some external object that has start and stop methods, but you don't want to clutter your
-     * code by creating anonymous inner class just to specify the start and stop actions. For example if you have an
+     * code by creating an anonymous inner class just to specify the start and stop actions. For example if you have an
      * ActiveMQ {@code PooledConnectionFactory} (which has {@code start} and {@code stop} methods) you can simply
      * call this method:
      * <p>
