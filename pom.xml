@@ -32,6 +32,7 @@
         <joda-time.version>2.10.5</joda-time.version>
         <logback-classic.version>1.2.3</logback-classic.version>
         <lombok.version>1.18.12</lombok.version>
+        <postgresql.version>42.2.12</postgresql.version>
         <spring.version>5.2.5.RELEASE</spring.version>
         <stax2-api.version>4.2</stax2-api.version>
         <!--
@@ -359,6 +360,12 @@
             <artifactId>lombok</artifactId>
             <version>${lombok.version}</version>
             <scope>provided</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.postgresql</groupId>
+            <artifactId>postgresql</artifactId>
+            <version>${postgresql.version}</version>
         </dependency>
 
         <dependency>
