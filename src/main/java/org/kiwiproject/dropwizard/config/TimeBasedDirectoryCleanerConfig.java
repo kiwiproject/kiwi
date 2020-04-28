@@ -8,7 +8,7 @@ import io.dropwizard.util.Duration;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
-import org.kiwiproject.dropwizard.health.TimeBasedDirectoryCleanerHealthCheck;
+import org.kiwiproject.dropwizard.metrics.health.TimeBasedDirectoryCleanerHealthCheck;
 import org.kiwiproject.dropwizard.util.KiwiDropwizardDurations;
 import org.kiwiproject.io.TimeBasedDirectoryCleaner;
 import org.slf4j.event.Level;
