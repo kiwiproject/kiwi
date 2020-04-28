@@ -31,7 +31,7 @@ import org.junit.jupiter.api.condition.OS;
 import org.junit.jupiter.api.io.TempDir;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
-import org.kiwiproject.dropwizard.health.TimeBasedDirectoryCleanerHealthCheck;
+import org.kiwiproject.dropwizard.metrics.health.TimeBasedDirectoryCleanerHealthCheck;
 import org.kiwiproject.io.TimeBasedDirectoryCleaner;
 import org.kiwiproject.io.TimeBasedDirectoryCleanerTestHelper;
 

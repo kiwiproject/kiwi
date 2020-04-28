@@ -1,4 +1,4 @@
-package org.kiwiproject.dropwizard.health;
+package org.kiwiproject.dropwizard.metrics.health;
 
 import static org.kiwiproject.io.TimeBasedDirectoryCleaner.DeleteError;
 
