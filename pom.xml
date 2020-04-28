@@ -33,6 +33,18 @@
         <logback-classic.version>1.2.3</logback-classic.version>
         <lombok.version>1.18.12</lombok.version>
         <spring.version>5.2.5.RELEASE</spring.version>
+        <stax2-api.version>4.2</stax2-api.version>
+        <!--
+        NOTE:
+        There is a conflict between jackson-dataformat-xml and jaxws-rt in the
+        version of woodstox-core. Jackson uses 6.x while the the JAX-WS runtime
+        uses 5.x. We are choosing to use 5.x here because that is what has worked
+        for us in production services. However, it may simply be the case that
+        we have not used both jackson-dataformat-xml and jaxws-rt in the same
+        service and didn't experience any problems, so you will need to choose
+        the woodstox version you want to use and test it.
+        -->
+        <woodstox-core.version>5.1.0</woodstox-core.version>
 
         <!-- Versions for optional dependencies -->
         <error_prone_annotations.version>2.3.4</error_prone_annotations.version>
@@ -222,6 +234,12 @@
             <artifactId>jackson-dataformat-xml</artifactId>
             <version>${jackson.version}</version>
             <scope>provided</scope>
+            <exclusions>
+                <exclusion>
+                    <groupId>com.fasterxml.woodstox</groupId>
+                    <artifactId>woodstox-core</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
 
         <dependency>
@@ -294,6 +312,35 @@
         </dependency>
 
         <dependency>
+            <groupId>com.sun.xml.ws</groupId>
+            <artifactId>jaxws-rt</artifactId>
+            <version>2.3.2</version>
+            <scope>provided</scope>
+            <exclusions>
+                <exclusion>
+                    <groupId>jakarta.activation</groupId>
+                    <artifactId>jakarta.activation-api</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>jakarta.annotation</groupId>
+                    <artifactId>jakarta.annotation-api</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>jakarta.xml.bind</groupId>
+                    <artifactId>jakarta.xml.bind-api</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>org.codehaus.woodstox</groupId>
+                    <artifactId>stax2-api</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>com.fasterxml.woodstox</groupId>
+                    <artifactId>woodstox-core</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+
+        <dependency>
             <groupId>org.eclipse.jetty</groupId>
             <artifactId>jetty-server</artifactId>
             <version>${jetty-server.version}</version>
@@ -319,6 +366,24 @@
             <artifactId>spring-beans</artifactId>
             <version>${spring.version}</version>
             <scope>provided</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.codehaus.woodstox</groupId>
+            <artifactId>stax2-api</artifactId>
+            <version>${stax2-api.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>com.fasterxml.woodstox</groupId>
+            <artifactId>woodstox-core</artifactId>
+            <version>${woodstox-core.version}</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.codehaus.woodstox</groupId>
+                    <artifactId>stax2-api</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
 
         <!-- optional dependencies -->
