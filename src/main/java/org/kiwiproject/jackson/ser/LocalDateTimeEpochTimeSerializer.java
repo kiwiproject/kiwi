@@ -10,7 +10,7 @@ import java.time.ZoneId;
 
 /**
  * Jackson serializer that converts a {@link java.time.LocalDateTime} into milliseconds since the epoch
- * in the UTC zone.
+ * in the UTC zone by default, or in a zone specified in the constructor.
  */
 public class LocalDateTimeEpochTimeSerializer extends StdSerializer<LocalDateTime> {
 
