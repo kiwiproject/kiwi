@@ -19,6 +19,7 @@
         <commons-io.version>2.6</commons-io.version>
         <commons-text.version>1.8</commons-text.version>
         <dropwizard.version>2.0.8</dropwizard.version>
+        <dropwizard.modules.dropwizard-jdbi.version>2.0.7</dropwizard.modules.dropwizard-jdbi.version>
         <hibernate-validator.version>6.1.3.Final</hibernate-validator.version>
         <httpclient.version>4.5.12</httpclient.version>
         <jackson.version>2.10.3</jackson.version>
@@ -192,6 +193,46 @@
                 <exclusion>
                     <groupId>joda-time</groupId>
                     <artifactId>joda-time</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+
+        <dependency>
+            <groupId>io.dropwizard.modules</groupId>
+            <artifactId>dropwizard-jdbi</artifactId>
+            <version>${dropwizard.modules.dropwizard-jdbi.version}</version>
+            <scope>provided</scope>
+            <exclusions>
+                <!-- We are excluding dropwizard deps here because the module is a slightly different version
+                       than our version of dropwizard -->
+                <exclusion>
+                    <groupId>io.dropwizard</groupId>
+                    <artifactId>dropwizard-core</artifactId>
+                </exclusion>
+
+                <exclusion>
+                    <groupId>io.dropwizard</groupId>
+                    <artifactId>dropwizard-db</artifactId>
+                </exclusion>
+
+                <exclusion>
+                    <groupId>io.dropwizard</groupId>
+                    <artifactId>dropwizard-jersey</artifactId>
+                </exclusion>
+
+                <exclusion>
+                    <groupId>io.dropwizard</groupId>
+                    <artifactId>dropwizard-lifecycle</artifactId>
+                </exclusion>
+
+                <exclusion>
+                    <groupId>io.dropwizard</groupId>
+                    <artifactId>dropwizard-util</artifactId>
+                </exclusion>
+
+                <exclusion>
+                    <groupId>org.eclipse.jetty</groupId>
+                    <artifactId>jetty-util</artifactId>
                 </exclusion>
             </exclusions>
         </dependency>
