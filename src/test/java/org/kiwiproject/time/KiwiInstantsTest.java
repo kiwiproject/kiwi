@@ -14,7 +14,7 @@ import java.time.ZonedDateTime;
 import java.time.temporal.ChronoUnit;
 import java.time.temporal.TemporalUnit;
 
-@DisplayName("KiwiInstant")
+@DisplayName("KiwiInstants")
 class KiwiInstantsTest {
 
     /**
