@@ -1,15 +1,15 @@
 package org.kiwiproject.time;
 
-import static org.kiwiproject.time.KiwiInstant.minusDays;
-import static org.kiwiproject.time.KiwiInstant.minusHours;
-import static org.kiwiproject.time.KiwiInstant.minusMinutes;
-import static org.kiwiproject.time.KiwiInstant.minusMonths;
-import static org.kiwiproject.time.KiwiInstant.minusYears;
-import static org.kiwiproject.time.KiwiInstant.plusDays;
-import static org.kiwiproject.time.KiwiInstant.plusHours;
-import static org.kiwiproject.time.KiwiInstant.plusMinutes;
-import static org.kiwiproject.time.KiwiInstant.plusMonths;
-import static org.kiwiproject.time.KiwiInstant.plusYears;
+import static org.kiwiproject.time.KiwiInstants.minusDays;
+import static org.kiwiproject.time.KiwiInstants.minusHours;
+import static org.kiwiproject.time.KiwiInstants.minusMinutes;
+import static org.kiwiproject.time.KiwiInstants.minusMonths;
+import static org.kiwiproject.time.KiwiInstants.minusYears;
+import static org.kiwiproject.time.KiwiInstants.plusDays;
+import static org.kiwiproject.time.KiwiInstants.plusHours;
+import static org.kiwiproject.time.KiwiInstants.plusMinutes;
+import static org.kiwiproject.time.KiwiInstants.plusMonths;
+import static org.kiwiproject.time.KiwiInstants.plusYears;
 
 import lombok.experimental.UtilityClass;
 
@@ -26,7 +26,7 @@ import java.util.Date;
  * {@link java.time.LocalDateTime}, {@link java.time.ZonedDateTime}) in the {@code java.time} package
  * over using the legacy {@link Date}. But if you need to convert instants to dates, then this will help.
  * <p>
- * Functionally this is just a Date wrapper for {@link KiwiInstant}.
+ * Functionally this is just a Date wrapper for {@link KiwiInstants}.
  */
 @UtilityClass
 public class KiwiDates {
