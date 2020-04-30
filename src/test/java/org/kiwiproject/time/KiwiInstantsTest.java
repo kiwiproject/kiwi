@@ -15,7 +15,7 @@ import java.time.temporal.ChronoUnit;
 import java.time.temporal.TemporalUnit;
 
 @DisplayName("KiwiInstant")
-class KiwiInstantTest {
+class KiwiInstantsTest {
 
     /**
      * date = 400th anniversary of Shakespeare's death
@@ -38,37 +38,37 @@ class KiwiInstantTest {
 
         @Test
         void shouldReturnSecond() {
-            assertThat(KiwiInstant.getSecond(SHAKESPEARE_ANNIVERSARY)).isEqualTo(8);
+            assertThat(KiwiInstants.getSecond(SHAKESPEARE_ANNIVERSARY)).isEqualTo(8);
         }
 
         @Test
         void shouldReturnMinute() {
-            assertThat(KiwiInstant.getMinute(SHAKESPEARE_ANNIVERSARY)).isEqualTo(10);
+            assertThat(KiwiInstants.getMinute(SHAKESPEARE_ANNIVERSARY)).isEqualTo(10);
         }
 
         @Test
         void shouldReturnHour() {
-            assertThat(KiwiInstant.getHour(SHAKESPEARE_ANNIVERSARY)).isEqualTo(18);
+            assertThat(KiwiInstants.getHour(SHAKESPEARE_ANNIVERSARY)).isEqualTo(18);
         }
 
         @Test
         void shouldReturnDayOfMonth() {
-            assertThat(KiwiInstant.getDayOfMonth(SHAKESPEARE_ANNIVERSARY)).isEqualTo(23);
+            assertThat(KiwiInstants.getDayOfMonth(SHAKESPEARE_ANNIVERSARY)).isEqualTo(23);
         }
 
         @Test
         void shouldReturnMonth() {
-            assertThat(KiwiInstant.getMonth(SHAKESPEARE_ANNIVERSARY)).isEqualTo(Month.APRIL);
+            assertThat(KiwiInstants.getMonth(SHAKESPEARE_ANNIVERSARY)).isEqualTo(Month.APRIL);
         }
 
         @Test
         void shouldReturnMonthValue() {
-            assertThat(KiwiInstant.getMonthValue(SHAKESPEARE_ANNIVERSARY)).isEqualTo(4);
+            assertThat(KiwiInstants.getMonthValue(SHAKESPEARE_ANNIVERSARY)).isEqualTo(4);
         }
 
         @Test
         void shouldReturnYear() {
-            assertThat(KiwiInstant.getYear(SHAKESPEARE_ANNIVERSARY)).isEqualTo(2016);
+            assertThat(KiwiInstants.getYear(SHAKESPEARE_ANNIVERSARY)).isEqualTo(2016);
         }
     }
 
@@ -84,13 +84,13 @@ class KiwiInstantTest {
 
         @Test
         void shouldAddMinutes() {
-            assertThat(KiwiInstant.plusMinutes(aMinuteAgo, 5))
+            assertThat(KiwiInstants.plusMinutes(aMinuteAgo, 5))
                     .isEqualTo(now.plus(4, ChronoUnit.MINUTES));
         }
 
         @Test
         void shouldSubtractMinutes() {
-            assertThat(KiwiInstant.minusMinutes(aMinuteAgo, 5))
+            assertThat(KiwiInstants.minusMinutes(aMinuteAgo, 5))
                     .isEqualTo(now.minus(6, ChronoUnit.MINUTES));
         }
     }
@@ -107,13 +107,13 @@ class KiwiInstantTest {
 
         @Test
         void shouldAddHours() {
-            assertThat(KiwiInstant.plusHours(anHourAgo, 2))
+            assertThat(KiwiInstants.plusHours(anHourAgo, 2))
                     .isEqualTo(now.plus(1, ChronoUnit.HOURS));
         }
 
         @Test
         void shouldSubtractHours() {
-            assertThat(KiwiInstant.minusHours(anHourAgo, 2))
+            assertThat(KiwiInstants.minusHours(anHourAgo, 2))
                     .isEqualTo(now.minus(3, ChronoUnit.HOURS));
         }
     }
@@ -130,13 +130,13 @@ class KiwiInstantTest {
 
         @Test
         void shouldAddDays() {
-            assertThat(KiwiInstant.plusDays(aDayAgo, 2))
+            assertThat(KiwiInstants.plusDays(aDayAgo, 2))
                     .isEqualTo(now.plus(1, ChronoUnit.DAYS));
         }
 
         @Test
         void shouldSubtractDays() {
-            assertThat(KiwiInstant.minusDays(aDayAgo, 2))
+            assertThat(KiwiInstants.minusDays(aDayAgo, 2))
                     .isEqualTo(now.minus(3, ChronoUnit.DAYS));
         }
     }
@@ -165,13 +165,13 @@ class KiwiInstantTest {
 
         @Test
         void shouldAddMonths() {
-            assertThat(KiwiInstant.plusMonths(aMonthAgo, 2))
+            assertThat(KiwiInstants.plusMonths(aMonthAgo, 2))
                     .isEqualTo(zdtNow.plusMonths(1).toInstant());
         }
 
         @Test
         void shouldSubtractMonths() {
-            assertThat(KiwiInstant.minusMonths(aMonthAgo, 2))
+            assertThat(KiwiInstants.minusMonths(aMonthAgo, 2))
                     .isEqualTo(zdtNow.minusMonths(3).toInstant());
         }
     }
@@ -195,13 +195,13 @@ class KiwiInstantTest {
 
         @Test
         void shouldAddYears() {
-            assertThat(KiwiInstant.plusYears(aYearAgo, 2))
+            assertThat(KiwiInstants.plusYears(aYearAgo, 2))
                     .isEqualTo(zdtNow.plusYears(1).toInstant());
         }
 
         @Test
         void shouldSubtractYears() {
-            assertThat(KiwiInstant.minusYears(aYearAgo, 2))
+            assertThat(KiwiInstants.minusYears(aYearAgo, 2))
                     .isEqualTo(zdtNow.minusYears(3).toInstant());
         }
     }
