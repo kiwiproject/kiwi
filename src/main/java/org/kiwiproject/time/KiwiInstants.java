@@ -12,7 +12,7 @@ import java.time.temporal.TemporalUnit;
 /**
  * Provides utilities related to {@link Instant}.
  * <p>
- * First, {@link KiwiInstant} adds convenience methods for adding and subtracting common time increments to
+ * First, {@link KiwiInstants} adds convenience methods for adding and subtracting common time increments to
  * {@link Instant} objects in the form of {@code plus<TemporalField>} and {@code minus<TemporalField>} methods such
  * as {@link #plusMinutes(Instant, long)} and {@link #minusDays(Instant, long)}.
  * <p>
@@ -34,18 +34,18 @@ import java.time.temporal.TemporalUnit;
  * the {@link #plusUsingZDT(Instant, long, TemporalUnit)} and {@link #minusUsingZDT(Instant, long, TemporalUnit)}
  * methods.
  * <p>
- * Second, {@link KiwiInstant} supports adding and subtracting months and years by first converting the {@link Instant}
+ * Second, {@link KiwiInstants} supports adding and subtracting months and years by first converting the {@link Instant}
  * to a {@link ZonedDateTime} at {@link ZoneOffset#UTC}. For example {@link #plusMonths(Instant, long)}. For other
  * {@link TemporalUnit} values you can use the {@link #plusUsingZDT(Instant, long, TemporalUnit)} and
  * {@link #minusUsingZDT(Instant, long, TemporalUnit)} methods, which will work as long as {@link ZonedDateTime}
  * supports the provided {@link TemporalUnit}.
  * <p>
- * Third, {@link KiwiInstant} provides utilities to retrieve individual standard parts of an {@link Instant} (second,
+ * Third, {@link KiwiInstants} provides utilities to retrieve individual standard parts of an {@link Instant} (second,
  * minute, hour, day, month, year) using the various {@code get<TemporalField>} methods, for example
  * {@link #getHour(Instant)}.
  */
 @UtilityClass
-public class KiwiInstant {
+public class KiwiInstants {
 
     /**
      * Return the value of the second from {@code instant}.
