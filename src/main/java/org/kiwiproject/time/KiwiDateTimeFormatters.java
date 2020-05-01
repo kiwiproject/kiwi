@@ -17,6 +17,10 @@ import java.util.Date;
  * A collection of small utilities to format various types of Java date/time classes, both the legacy
  * {@link java.util.Date} and the Java 8 date/time API classes in {@code java.time}.
  * <p>
+ * While the JDK has decided to keep the formatting and parsing methods together in {@link DateTimeFormatter},
+ * we decided to split them into separate utilities. So if you are looking for utilities to parse strings into
+ * date/time objects, see {@link KiwiDateTimeParsers}.
+ * <p>
  * None of these are difficult to implement, but if you are constantly doing them, the time and code adds up
  * over time.
  * <p>
