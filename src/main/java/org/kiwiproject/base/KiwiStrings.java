@@ -205,16 +205,19 @@ public final class KiwiStrings {
      * <p>
      * Generally you should pick one style and be consistent throughout your entire application. Since originally this
      * method only supported the Guava {@code %s}, this support was retained for obvious backward-compatibility reasons,
-     * and the SLF4J {@code {}} style as added because I kept coming across instances where people are used to SLF4J
+     * and the SLF4J {@code {}} style as added because we kept coming across instances where people are used to SLF4J
      * replacement parameter style and used that, thus making the message not interpolate correctly (though thanks to
      * Guava's implementation, all the parameter values are still displayed after the message as extra parameters).
      * <p>
-     * This method was copied directly from Guava 18.0's
-     * {@link com.google.common.base.Preconditions#format(String, Object...)}
+     * This method was originally copied directly from Guava 18.0's
+     * {@code com.google.common.base.Preconditions#format(String, Object...)}
      * because it was not public in Guava, and it is useful and provides better performance than using the
-     * {@link String#format(java.util.Locale, String, Object...)} method. A slight modification is to not re-assign
-     * the {@code template} argument. For performance comparisons, see
-     * http://stackoverflow.com/questions/12786902/performance-javas-string-format
+     * {@link String#format(java.util.Locale, String, Object...)} method. A slight modification we made is to not
+     * re-assign the {@code template} argument. Guava 25.1 moved this very useful functionality into the Guava
+     * {@link com.google.common.base.Strings} class as
+     * {{@link com.google.common.base.Strings#lenientFormat(String, Object...)}}. However, it only accepts {@code %s}
+     * as the replacement placeholder. For performance comparisons of the JDK {@link String#format(String, Object...)}
+     * method, see http://stackoverflow.com/questions/12786902/performance-javas-string-format
      *
      * @param template a non-null string containing 0 or more {@code %s} or {@code {}} placeholders.
      * @param args the arguments to be substituted into the message template. Arguments are converted

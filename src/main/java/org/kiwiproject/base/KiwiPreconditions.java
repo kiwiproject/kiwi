@@ -31,12 +31,13 @@ public class KiwiPreconditions {
 
     /**
      * Ensures the truth of an expression involving one or more parameters to the calling method.
+     * <p>
+     * Throws an exception of type T if {@code expression} is false.
      *
-     * @param expression a boolean expression
+     * @param expression    a boolean expression
      * @param exceptionType the type of exception to be thrown if {@code expression} is false
-     * @throws T an exception of type T if {@code expression} is false
+     * @implNote This uses Lombok's {@link SneakyThrows} to throw any checked exceptions without declaring them.
      */
-    @SuppressWarnings("JavaDoc")
     @SneakyThrows(Throwable.class)
     public static <T extends Throwable> void checkArgument(boolean expression, Class<T> exceptionType) {
         if (!expression) {
@@ -46,13 +47,14 @@ public class KiwiPreconditions {
 
     /**
      * Ensures the truth of an expression involving one or more parameters to the calling method.
+     * <p>
+     * Throws an exception of type T if {@code expression} is false.
      *
-     * @param expression a boolean expression
+     * @param expression    a boolean expression
      * @param exceptionType the type of exception to be thrown if {@code expression} is false
-     * @param errorMessage the exception message to use if the check fails
-     * @throws T an exception of type T if {@code expression} is false
+     * @param errorMessage  the exception message to use if the check fails
+     * @implNote This uses Lombok's {@link SneakyThrows} to throw any checked exceptions without declaring them.
      */
-    @SuppressWarnings("JavaDoc")
     @SneakyThrows(Throwable.class)
     public static <T extends Throwable> void checkArgument(boolean expression,
                                                            Class<T> exceptionType,
@@ -65,18 +67,19 @@ public class KiwiPreconditions {
 
     /**
      * Ensures the truth of an expression involving one or more parameters to the calling method.
+     * <p>
+     * Throws an exception of type T if {@code expression} is false.
      *
-     * @param expression a boolean expression
-     * @param exceptionType the type of exception to be thrown if {@code expression} is false
+     * @param expression           a boolean expression
+     * @param exceptionType        the type of exception to be thrown if {@code expression} is false
      * @param errorMessageTemplate a template for the exception message should the check fail, according to how
      *                             {@link KiwiStrings#format(String, Object...)} handles placeholders
-     * @param errorMessageArgs the arguments to be substituted into the message template. Arguments
-     *                          are converted to strings using {@link String#valueOf(Object)}.
-     * @throws T an exception of type T if {@code expression} is false
+     * @param errorMessageArgs     the arguments to be substituted into the message template. Arguments
+     *                             are converted to strings using {@link String#valueOf(Object)}.
      * @throws NullPointerException if the check fails and either {@code errorMessageTemplate} or
      *                              {@code errorMessageArgs} is null (don't let this happen)
+     * @implNote This uses Lombok's {@link SneakyThrows} to throw any checked exceptions without declaring them.
      */
-    @SuppressWarnings("JavaDoc")
     @SneakyThrows(Throwable.class)
     public static <T extends Throwable> void checkArgument(boolean expression,
                                                            Class<T> exceptionType,
@@ -105,7 +108,7 @@ public class KiwiPreconditions {
      * Ensures that a String passed as a parameter to the calling method is not blank, throwing
      * and {@link IllegalArgumentException} if blank or returning the String otherwise.
      *
-     * @param value the String value to check
+     * @param value        the String value to check
      * @param errorMessage the error message for the exception
      * @return the given String
      * @see #checkArgumentNotBlank(String, String)
@@ -119,11 +122,11 @@ public class KiwiPreconditions {
      * Ensures that a String passed as a parameter to the calling method is not blank, throwing
      * and {@link IllegalArgumentException} if blank or returning the String otherwise.
      *
-     * @param value the String value to check
+     * @param value                the String value to check
      * @param errorMessageTemplate a template for the exception message should the check fail, according to how
      *                             {@link KiwiStrings#format(String, Object...)} handles placeholders
-     * @param errorMessageArgs the arguments to be substituted into the message template. Arguments
-     *                          are converted to strings using {@link String#valueOf(Object)}.
+     * @param errorMessageArgs     the arguments to be substituted into the message template. Arguments
+     *                             are converted to strings using {@link String#valueOf(Object)}.
      * @return the given String
      * @see #checkArgumentNotBlank(String, String, Object...)
      */
@@ -148,11 +151,11 @@ public class KiwiPreconditions {
      * Ensures that an object reference passed as a parameter to the calling method is not null, throwing
      * and {@link IllegalArgumentException} if null or returning the (non null) reference otherwise.
      *
-     * @param reference an object reference
+     * @param reference            an object reference
      * @param errorMessageTemplate a template for the exception message should the check fail, according to how
      *                             {@link KiwiStrings#format(String, Object...)} handles placeholders
-     * @param errorMessageArgs the arguments to be substituted into the message template. Arguments
-     *                          are converted to strings using {@link String#valueOf(Object)}.
+     * @param errorMessageArgs     the arguments to be substituted into the message template. Arguments
+     *                             are converted to strings using {@link String#valueOf(Object)}.
      * @return the object type
      */
     public static <T> T requireNotNull(T reference, String errorMessageTemplate, Object... errorMessageArgs) {
@@ -175,9 +178,9 @@ public class KiwiPreconditions {
      * Ensures that an object reference passed as a parameter to the calling method is not null, throwing
      * an {@link IllegalArgumentException} if null.
      *
-     * @param reference an object reference
+     * @param reference    an object reference
      * @param errorMessage the error message for the exception
-     * @param <T>       the object type
+     * @param <T>          the object type
      */
     public static <T> void checkArgumentNotNull(T reference, String errorMessage) {
         Preconditions.checkArgument(nonNull(reference), errorMessage);
@@ -187,20 +190,20 @@ public class KiwiPreconditions {
      * Ensures that an object reference passed as a parameter to the calling method is not null, throwing
      * an {@link IllegalArgumentException} if null.
      *
-     * @param reference an object reference
+     * @param reference            an object reference
      * @param errorMessageTemplate a template for the exception message should the check fail, according to how
      *                             {@link KiwiStrings#format(String, Object...)} handles placeholders
-     * @param errorMessageArgs the arguments to be substituted into the message template. Arguments
-     *                          are converted to strings using {@link String#valueOf(Object)}.
-     * @param <T>       the object type
+     * @param errorMessageArgs     the arguments to be substituted into the message template. Arguments
+     *                             are converted to strings using {@link String#valueOf(Object)}.
+     * @param <T>                  the object type
      */
-    public static <T> void checkArgumentNotNull(T reference, String errorMessageTemplate, Object...errorMessageArgs) {
+    public static <T> void checkArgumentNotNull(T reference, String errorMessageTemplate, Object... errorMessageArgs) {
         if (isNull(reference)) {
             throw newIllegalArgumentException(errorMessageTemplate, errorMessageArgs);
         }
     }
 
-    private static IllegalArgumentException newIllegalArgumentException(String errorMessageTemplate, Object...errorMessageArgs) {
+    private static IllegalArgumentException newIllegalArgumentException(String errorMessageTemplate, Object... errorMessageArgs) {
         var errorMessage = format(errorMessageTemplate, errorMessageArgs);
         return new IllegalArgumentException(errorMessage);
     }
@@ -219,7 +222,7 @@ public class KiwiPreconditions {
      * Ensures that the string passed as a parameter to the calling method is not null, empty or blank, throwing
      * an {@link IllegalArgumentException} if it is null, empty, or blank.
      *
-     * @param string a string
+     * @param string       a string
      * @param errorMessage the error message for the exception
      */
     public static void checkArgumentNotBlank(String string, String errorMessage) {
@@ -230,13 +233,13 @@ public class KiwiPreconditions {
      * Ensures that the string passed as a parameter to the calling method is not null, empty or blank, throwing
      * an {@link IllegalArgumentException} if it is null, empty, or blank.
      *
-     * @param string a string
+     * @param string               a string
      * @param errorMessageTemplate a template for the exception message should the check fail, according to how
      *                             {@link KiwiStrings#format(String, Object...)} handles placeholders
-     * @param errorMessageArgs the arguments to be substituted into the message template. Arguments
-     *                          are converted to strings using {@link String#valueOf(Object)}.
+     * @param errorMessageArgs     the arguments to be substituted into the message template. Arguments
+     *                             are converted to strings using {@link String#valueOf(Object)}.
      */
-    public static void checkArgumentNotBlank(String string, String errorMessageTemplate, Object...errorMessageArgs) {
+    public static void checkArgumentNotBlank(String string, String errorMessageTemplate, Object... errorMessageArgs) {
         if (isBlank(string)) {
             throw newIllegalArgumentException(errorMessageTemplate, errorMessageArgs);
         }
@@ -246,7 +249,7 @@ public class KiwiPreconditions {
      * Ensures that a collection of items has an even count.
      *
      * @param items items to count
-     * @param <T> the object type
+     * @param <T>   the object type
      */
     @SafeVarargs
     public static <T> void checkEvenItemCount(T... items) {
@@ -258,7 +261,7 @@ public class KiwiPreconditions {
      * Ensures that a collection of items has an even count.
      *
      * @param items items to count
-     * @param <T> the object type
+     * @param <T>   the object type
      */
     public static <T> void checkEvenItemCount(Collection<T> items) {
         requireNonNull(items);
@@ -283,9 +286,9 @@ public class KiwiPreconditions {
      * this method throws an {@link IllegalArgumentException} instead of a {@link NullPointerException}, which was an
      * unfortunate choice by the JDK.
      *
-     * @param obj           an object, possibly {@code null}
-     * @param defaultObj    a non-{@code null} object
-     * @param <T>           the type of the reference
+     * @param obj        an object, possibly {@code null}
+     * @param defaultObj a non-{@code null} object
+     * @param <T>        the type of the reference
      * @return the first non-{@code null} argument
      */
     public static <T> T requireNotNullElse(T obj, T defaultObj) {
@@ -302,9 +305,9 @@ public class KiwiPreconditions {
      * this method throws an {@link IllegalArgumentException} instead of a {@link NullPointerException}, which was an
      * unfortunate choice by the JDK.
      *
-     * @param obj           an object, possibly {@code null}
-     * @param supplier      creates a non-{@code null} object
-     * @param <T>           the type of the reference
+     * @param obj      an object, possibly {@code null}
+     * @param supplier creates a non-{@code null} object
+     * @param <T>      the type of the reference
      * @return the first argument, or the value from {@code supplier}
      */
     public static <T> T requireNotNullElseGet(T obj, Supplier<? extends T> supplier) {
