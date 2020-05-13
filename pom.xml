@@ -9,6 +9,42 @@
     <version>0.0.4-SNAPSHOT</version>
     <packaging>jar</packaging>
 
+    <name>${project.groupId}:${project.artifactId}</name>
+    <description>
+        Kiwi is a utility library. We really like Google's Guava, and also use Apache Commons.
+        But if they don't have something we need, and we think it is useful, this is where we put it.
+    </description>
+    <url>https://github.com/kiwiproject/kiwi</url>
+    <inceptionYear>2020</inceptionYear>
+
+    <organization>
+        <name>Kiwi Project</name>
+        <url>https://github.com/kiwiproject</url>
+    </organization>
+
+    <developers>
+        <developer>
+            <name>Chris Rohr</name>
+            <organization>Fortitude Technologies, LLC</organization>
+            <organizationUrl>https://github.com/fortitudetec</organizationUrl>
+            <url>https://github.com/chrisrohr</url>
+        </developer>
+        <developer>
+            <name>Scott Leberknight</name>
+            <organization>Fortitude Technologies, LLC</organization>
+            <organizationUrl>https://github.com/fortitudetec</organizationUrl>
+            <url>https://github.com/sleberknight</url>
+        </developer>
+    </developers>
+
+    <licenses>
+        <license>
+            <name>MIT License</name>
+            <url>https://opensource.org/licenses/MIT</url>
+            <distribution>repo</distribution>
+        </license>
+    </licenses>
+
     <properties>
         <!-- Versions for required dependencies -->
         <commons-lang3.version>3.10</commons-lang3.version>
