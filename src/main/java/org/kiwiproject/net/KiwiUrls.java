@@ -230,7 +230,6 @@ public class KiwiUrls {
      * <li>port = 8080</li>
      * <li>path = "a-news-article"</li>
      * </ul>
-     * </p>
      *
      * @param url the URL to analyze
      * @return the {@link Components} found or an empty {@link Components} object if the URL was invalid
@@ -494,7 +493,7 @@ public class KiwiUrls {
     }
 
     /**
-     * Converts a query string (comprised of key/value pairs separated by '&' characters) into a Map of String of
+     * Converts a query string (comprised of key/value pairs separated by '&amp;' characters) into a Map of String of
      * Strings
      *
      * @param queryString the query string to create the map from
@@ -513,7 +512,7 @@ public class KiwiUrls {
 
     /**
      * Converts a Map of String of Strings into one (potentially long) string of key/value parameters (each key/value
-     * parameter is separated by an '=' character), with each parameter pair separated by an '&' character.
+     * parameter is separated by an '=' character), with each parameter pair separated by an '&amp;' character.
      *
      * @param parameters the map of the parameters to create the query string from
      * @return a concatenated query string

@@ -25,17 +25,17 @@ import java.util.function.Supplier;
  * Examples:
  * <pre>
  * // Explicitly create the parameter supplier and pass it to the lazy method
- * Supplier<String> jsonSupplier = () -> jsonHelper.toJson(thing);
+ * Supplier&lt;String&gt; jsonSupplier = () -&gt; jsonHelper.toJson(thing);
  * LOG.debug("Thing {} took {} millis to fetch. JSON value: {}",
  *         thing.getId(), fetchMillis, lazy(jsonSupplier));
  *
  * // Pass a Supplier as a lambda to the lazy method for one or more parameters
  * LOG.debug("Thing {} took {} millis to fetch. JSON value: {}",
- *         thing.getId(), fetchMillis, lazy(() -> jsonHelper.toJson(thing)));
+ *         thing.getId(), fetchMillis, lazy(() -&gt; jsonHelper.toJson(thing)));
  *
  * // If thingToJson converts the thing to JSON it can be a simple lambda...
  * LOG.debug("Thing {} took {} millis to fetch. JSON value: {}",
- *         thing.getId(), fetchMillis, lazy(() -> thingToJson()));
+ *         thing.getId(), fetchMillis, lazy(() -&gt; thingToJson()));
  *
  * // ...or a method reference
  * LOG.debug("Thing {} took {} millis to fetch. JSON value: {}",

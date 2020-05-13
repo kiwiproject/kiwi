@@ -81,7 +81,7 @@ public class Versions {
     }
 
     /**
-     * Performs a <=> comparison of numeric version numbers. When a section is determined to be non-numeric, a
+     * Performs a &lt;=&gt; comparison of numeric version numbers. When a section is determined to be non-numeric, a
      * case-insensitive string comparison is performed.
      *
      * @param left  the first version number (e.g. "1.2.3")

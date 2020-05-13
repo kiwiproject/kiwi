@@ -36,7 +36,7 @@ public enum JacksonDataFormat {
      *
      * @implNote Format names are the values of the public constants in the appropriate Jackson {@link JsonFactory}
      * and its subclasses.
-     * @see #getFormatName()
+     * @apiNote See the getFormatName() method which returns the name of the returned format
      */
     public static JacksonDataFormat from(String formatName) {
         if (JSON.formatName.equals(formatName)) {
