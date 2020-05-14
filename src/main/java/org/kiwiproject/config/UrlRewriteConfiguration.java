@@ -33,6 +33,8 @@ public class UrlRewriteConfiguration {
 
     /**
      * Returns and instance that will not perform any URL rewriting. Useful as a default value.
+     *
+     * @return a new "no-rewriting" UrlRewriteConfiguration
      */
     public static UrlRewriteConfiguration none() {
         return UrlRewriteConfiguration.builder().build();

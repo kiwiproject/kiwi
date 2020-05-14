@@ -183,6 +183,8 @@ public class EndpointConfiguration {
 
     /**
      * Return a new builder instance to create a standalone {@link EndpointConfiguration}.
+     *
+     * @return the builder instance
      */
     public static Builder builder() {
         return new Builder();
@@ -192,6 +194,9 @@ public class EndpointConfiguration {
      * Return a new builder instance to create a {@link EndpointConfiguration} within a
      * {@link SecureEndpointsConfiguration}. Supply the {@link SecureEndpointsConfiguration.Builder} which
      * is being used to build the {@link SecureEndpointsConfiguration}.
+     *
+     * @param parent the parent builder
+     * @return the builder instance
      */
     public static Builder builder(SecureEndpointsConfiguration.Builder parent) {
         return new Builder(parent);
@@ -199,6 +204,8 @@ public class EndpointConfiguration {
 
     /**
      * Returns true if the scheme is "wss" or "https".
+     *
+     * @return true if using a secure scheme
      */
     public boolean isSecure() {
         return "wss".equalsIgnoreCase(scheme) || "https".equalsIgnoreCase(scheme);
@@ -209,6 +216,8 @@ public class EndpointConfiguration {
      * a comma-separated list of domains is specified, whitespace is allowed and trimmed. For example this is
      * valid: " domain-1.test , domain-2.test , domain-3.test " and results in the three domains "domain-1.test",
      * "domain-2.test", and "domain-3.test".
+     *
+     * @param singleDomainOrCsv a single domain like example.org or a comma-delimited list of domains
      */
     public void setDomain(String singleDomainOrCsv) {
         this.domain = singleDomainOrCsv;
@@ -217,6 +226,8 @@ public class EndpointConfiguration {
 
     /**
      * Return the domains as a list.
+     *
+     * @return the list of domains
      */
     public List<String> getDomains() {
         return domainList;
@@ -226,6 +237,7 @@ public class EndpointConfiguration {
      * Uses this endpoint's {@code path} to build a URI as a String. The host in the returned URI will be the result of
      * round-robin among the domains returned by {@link #getDomains()}.
      *
+     * @return the URI as a {@link String}
      * @implNote This currently builds URIs using simple string substitution, any any leading or trailing slashes
      * on the domain are stripped.
      */
@@ -236,6 +248,7 @@ public class EndpointConfiguration {
     /**
      * Uses this endpoint's {@code path} to build a {@link URI}.
      *
+     * @return the URI as a {@link URI}
      * @see #getURI()
      */
     public URI getUriObject() {
@@ -282,6 +295,8 @@ public class EndpointConfiguration {
      * Converts the URI returned by {@link #getURI()} into a JAX-RS {@link UriBuilder}.
      * <p>
      * Note that JAX-RS must be in the classpath when calling this method.
+     *
+     * @return a JAX-RS {@link UriBuilder} instance
      */
     public UriBuilder toUriBuilder() {
         return UriBuilder.fromUri(getURI());

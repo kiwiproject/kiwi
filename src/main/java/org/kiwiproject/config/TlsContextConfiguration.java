@@ -114,6 +114,8 @@ public class TlsContextConfiguration implements KeyAndTrustStoreConfigProvider {
      * annotations), the {@link TlsConfiguration} does. If we encounter this sitation, we will be lenient; even though
      * this could possibly cause downstream problems, we will jsut assume the caller knows what it is doing.
      *
+     * @param tlsConfig the Dropwizard TlsConfiguration from which to pull information
+     * @return a new TlsContextConfiguration instance
      * @implNote Currently we do not support {@code supportedCiphers} or {@code certAlias}, which Dropwizard does.
      */
     public static TlsContextConfiguration fromDropwizardTlsConfiguration(TlsConfiguration tlsConfig) {
@@ -138,8 +140,9 @@ public class TlsContextConfiguration implements KeyAndTrustStoreConfigProvider {
 
     /**
      * Convert this {@link TlsContextConfiguration} into a Dropwizard {@link TlsConfiguration} object. Assumes that
-     * thia object is valid.
+     * this object is valid.
      *
+     * @return a new Dropwizard TlsConfiguration instance
      * @implNote Requires dropwizard-client as a dependency
      */
     public TlsConfiguration toDropwizardTlsConfiguration() {
@@ -172,6 +175,8 @@ public class TlsContextConfiguration implements KeyAndTrustStoreConfigProvider {
      * <p>
      * The {@link SSLContextConfiguration} also does not have {@code supportedProtocols}, so that information is lost
      * in the conversion.
+     *
+     * @return the new SSLContextConfiguration instance
      */
     public SSLContextConfiguration toSslContextConfiguration() {
         return SSLContextConfiguration.builder()
