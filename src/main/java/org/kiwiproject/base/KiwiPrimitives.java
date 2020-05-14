@@ -14,6 +14,11 @@ public class KiwiPrimitives {
     /**
      * Returns the first non-zero argument, otherwise throws {@link IllegalArgumentException} if both arguments
      * are zero.
+     *
+     * @param first  the first int to check
+     * @param second the second int to check
+     * @return the first non-zero value
+     * @throws IllegalArgumentException if both arguments are zero
      */
     public static int firstNonZero(int first, int second) {
         return first != 0 ? first : (int) checkNonZero(second);
@@ -22,6 +27,11 @@ public class KiwiPrimitives {
     /**
      * Returns the first non-zero argument, otherwise throws {@link IllegalArgumentException} if both arguments
      * are zero.
+     *
+     * @param first  the first int to check
+     * @param second the second int to check
+     * @return the first non-zero value
+     * @throws IllegalArgumentException if both arguments are zero
      */
     public static long firstNonZero(long first, long second) {
         return first != 0 ? first : checkNonZero(second);

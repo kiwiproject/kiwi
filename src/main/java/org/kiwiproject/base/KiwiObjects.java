@@ -17,6 +17,12 @@ public class KiwiObjects {
 
     /**
      * Return the first non-null object, or {@code null} if all are null.
+     *
+     * @param first  the first object
+     * @param second the second object
+     * @param rest   zero or more additional objects
+     * @param <T>    the type of objects
+     * @return the first non-null object or null if all are null
      */
     @SafeVarargs
     public static <T> T firstNonNullOrNull(T first, T second, T... rest) {
@@ -25,6 +31,13 @@ public class KiwiObjects {
 
     /**
      * Return the first supplied non-null object, or {@code null} if all all suppliers return null.
+     *
+     * @param first  the first object supplier
+     * @param second the second object supplier
+     * @param rest   zero or more additional object suppliers
+     * @param <T>    the type of objects
+     * @return the first non-null supplied object or null if all suppliers return null
+     * @implNote once a non-null object is supplied, no further suppliers are called
      */
     @SafeVarargs
     public static <T> T firstSuppliedNonNullOrNull(Supplier<T> first, Supplier<T> second, Supplier<T>... rest) {
@@ -33,6 +46,12 @@ public class KiwiObjects {
 
     /**
      * Return an {@link Optional} containing the first non-null object, or an empty {@link Optional} if all are null.
+     *
+     * @param first  the first object
+     * @param second the second object
+     * @param rest   zero or more additional objects
+     * @param <T>    the type of objects
+     * @return an optional containing the first non-null object or empty optional if all are null
      */
     @SafeVarargs
     public static <T> Optional<T> firstNonNull(T first, T second, T... rest) {
@@ -52,6 +71,13 @@ public class KiwiObjects {
     /**
      * Return an {@link Optional} containing the first non-null object, or an empty {@link Optional} if all suppliers
      * return null.
+     *
+     * @param first  the first object supplier
+     * @param second the second object supplier
+     * @param rest   zero or more additional object suppliers
+     * @param <T>    the type of objects
+     * @return an optional containing the first non-null supplied object or empty optional if all suppliers return null
+     * @implNote once a non-null object is supplied, no further suppliers are called
      */
     @SafeVarargs
     public static <T> Optional<T> firstSuppliedNonNull(Supplier<T> first, Supplier<T> second, Supplier<T>... rest) {
