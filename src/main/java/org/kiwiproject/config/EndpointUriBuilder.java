@@ -19,11 +19,11 @@ class EndpointUriBuilder {
 
     private static final String SLASH = "/";
 
-    private String scheme;
-    private String host;
-    private String port;
-    private String path;
-    private UrlRewriteConfiguration urlRewriteConfig;
+    private final String scheme;
+    private final String host;
+    private final String port;
+    private final String path;
+    private final UrlRewriteConfiguration urlRewriteConfig;
 
     String getURI() {
         var schemeAndHost = getSchemeAndHostString(scheme, host);

@@ -90,8 +90,8 @@ class KiwiObjectsTest {
     @Nested
     class FirstSuppliedNonNullOrNull {
 
-        private Supplier<String> nullStringSupplier = () -> null;
-        private Supplier<String> stringSupplier = () -> "hello";
+        private final Supplier<String> nullStringSupplier = () -> null;
+        private final Supplier<String> stringSupplier = () -> "hello";
 
         @Nested
         class ShouldReturnNull {

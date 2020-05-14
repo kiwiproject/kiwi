@@ -23,6 +23,9 @@ public class KiwiPostgres {
 
     /**
      * Creates a new {@link PGobject} of type {@link #JSON_TYPE} with the given JSON value.
+     *
+     * @param jsonValue the JSON value as a {@link String}
+     * @return a PGobject of type {@code json} with the given JSON string value
      */
     public static PGobject newJSONObject(String jsonValue) {
         return newPGobject(JSON_TYPE, jsonValue);
@@ -30,6 +33,9 @@ public class KiwiPostgres {
 
     /**
      * Creates a new {@link PGobject} of type {@link #JSONB_TYPE} with teh given JSON value.
+     *
+     * @param jsonValue the JSON value as a {@link String}
+     * @return a PGobject of type {@code jsonb} with the given JSON string value
      */
     public static PGobject newJSONBObject(String jsonValue) {
         return newPGobject(JSONB_TYPE, jsonValue);
@@ -38,6 +44,9 @@ public class KiwiPostgres {
     /**
      * Creates a new {@link PGobject} of the specified type and with the given value.
      *
+     * @param type  the type of object, e.g. json or jsonb
+     * @param value the value as a String
+     * @return a new {@link PGobject}
      * @implNote We are catching the {@link SQLException} thrown by {@link PGobject#setType(String)} and wrapping
      * with an {@link IllegalStateException} since this should never happen, since that specific setter method simply
      * sets an instance field.

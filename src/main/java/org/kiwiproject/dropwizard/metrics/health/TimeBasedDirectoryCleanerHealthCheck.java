@@ -30,6 +30,7 @@ public class TimeBasedDirectoryCleanerHealthCheck extends HealthCheck {
     /**
      * Create with specified {@link TimeBasedDirectoryCleaner} and the default warning threshold.
      *
+     * @param cleaner the TimeBasedDirectoryCleaner to use
      * @see #DEFAULT_DELETE_ERROR_THRESHOLD
      */
     public TimeBasedDirectoryCleanerHealthCheck(TimeBasedDirectoryCleaner cleaner) {
@@ -38,6 +39,9 @@ public class TimeBasedDirectoryCleanerHealthCheck extends HealthCheck {
 
     /**
      * Create with the specified {@link TimeBasedDirectoryCleaner} and warning threshold.
+     *
+     * @param cleaner          the TimeBasedDirectoryCleaner to use
+     * @param warningThreshold the warning threshold
      */
     public TimeBasedDirectoryCleanerHealthCheck(TimeBasedDirectoryCleaner cleaner, Duration warningThreshold) {
         this.cleaner = cleaner;
@@ -73,6 +77,6 @@ public class TimeBasedDirectoryCleanerHealthCheck extends HealthCheck {
 
     private boolean errorHasOccurredWithinWarningThreshold(long now, DeleteError error) {
         var ageInMillis = now - error.getTimestamp();
-        return ageInMillis <  warningThresholdInMillis;
+        return ageInMillis < warningThresholdInMillis;
     }
 }

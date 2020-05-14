@@ -38,7 +38,7 @@ public class BeanConverter<T> {
      * Custom mappers that map specific field names to a function that will accept the data and convert it to the new value.
      */
     @Getter
-    private Map<String, Function<T, ?>> mappers = new HashMap<>();
+    private final Map<String, Function<T, ?>> mappers = new HashMap<>();
 
     /**
      * Set of property names to exclude from copying over.  Defaults to {@code ["class", "new"] }

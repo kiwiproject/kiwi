@@ -426,7 +426,10 @@ public class KiwiJdbc {
      * @param ps             the PreparedStatement to set the value on
      * @param parameterIndex the positional index of the value in the SQL statement
      * @param value          the value to set, or {@code null}
+     * @param type           the SQL type as an int, see {@link java.sql.SQLType}
      * @throws SQLException if there is a database problem
+     * @see java.sql.SQLType
+     * @see java.sql.JDBCType
      */
     public static void nullSafeSetString(PreparedStatement ps, int parameterIndex, String value, int type)
             throws SQLException {

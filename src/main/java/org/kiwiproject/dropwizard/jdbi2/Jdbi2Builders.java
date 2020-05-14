@@ -12,7 +12,7 @@ import org.skife.jdbi.v2.DBI;
 
 /**
  * Utilities for building Dropwizard-managed {@link DBI} instances.
- *
+ * <p>
  * NOTE: This class is for JDBI version 2, if you would like to upgrade to JDBI version
  * 3, there is an equivalent to this class in {@code org.kiwiproject.dropwizard.jdbi3}.
  */
@@ -29,6 +29,10 @@ public class Jdbi2Builders {
     /**
      * Build a Dropwizard-managed {@link DBI} instance with metrics and health check given an {@link Environment} and
      * {@link PooledDataSourceFactory}.
+     *
+     * @param environment       the Dropwizard environment
+     * @param dataSourceFactory the data source factory
+     * @return new DBI instance
      */
     public static DBI buildManagedJdbi(Environment environment,
                                        PooledDataSourceFactory dataSourceFactory) {
@@ -38,6 +42,11 @@ public class Jdbi2Builders {
     /**
      * Build a Dropwizard-managed {@link DBI} instance with metrics and health check given an {@link Environment},
      * {@link PooledDataSourceFactory}, and name to give to the health check.
+     *
+     * @param environment       the Dropwizard environment
+     * @param dataSourceFactory the data source factory
+     * @param healthCheckName   the name to give the health check
+     * @return new DBI instance
      */
     public static DBI buildManagedJdbi(Environment environment,
                                        PooledDataSourceFactory dataSourceFactory,
@@ -55,6 +64,11 @@ public class Jdbi2Builders {
     /**
      * Build a Dropwizard-managed {@link DBI} instance with metrics and health check given an {@link Environment},
      * {@link PooledDataSourceFactory}, and {@link ManagedDataSource}.
+     *
+     * @param environment       the Dropwizard environment
+     * @param dataSourceFactory the data source factory
+     * @param dataSource        the data source
+     * @return new DBI instance
      */
     public static DBI buildManagedJdbi(Environment environment,
                                        PooledDataSourceFactory dataSourceFactory,
@@ -65,6 +79,12 @@ public class Jdbi2Builders {
     /**
      * Build a Dropwizard-managed {@link DBI} instance with metrics and health check given an {@link Environment},
      * {@link PooledDataSourceFactory}, {@link ManagedDataSource}, and name to give to the health check.
+     *
+     * @param environment       the Dropwizard environment
+     * @param dataSourceFactory the data source factory
+     * @param dataSource        the data source
+     * @param healthCheckName   the name to give the health check
+     * @return new DBI instance
      */
     public static DBI buildManagedJdbi(Environment environment,
                                        PooledDataSourceFactory dataSourceFactory,

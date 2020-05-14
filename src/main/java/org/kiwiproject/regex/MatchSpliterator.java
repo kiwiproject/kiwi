@@ -31,6 +31,8 @@ public class MatchSpliterator extends Spliterators.AbstractSpliterator<MatchResu
     /**
      * Create a new instance from the given {@link Matcher}. Usually you won't use this directly. Instead use the
      * {@code stream} methods.
+     *
+     * @param matcher the Matcher to split
      */
     public MatchSpliterator(Matcher matcher) {
         super(Long.MAX_VALUE, NONNULL | ORDERED);

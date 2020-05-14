@@ -52,6 +52,8 @@ public class TimeBasedDirectoryCleanerConfig {
      * {@link TimeBasedDirectoryCleaner} instance that was scheduled. It can then be used to retrieve delete
      * error information.
      *
+     * @param cleanupExecutor the scheduled executor to use
+     * @return a new TimeBasedDirectoryCleaner using the given executor
      * @implNote It is assumed that the {@link ScheduledExecutorService} is externally managed and has only one thread.
      */
     public TimeBasedDirectoryCleaner scheduleCleanupUsing(ScheduledExecutorService cleanupExecutor) {
@@ -76,6 +78,9 @@ public class TimeBasedDirectoryCleanerConfig {
      * Schedules directory cleanup and registers a {@link TimeBasedDirectoryCleanerHealthCheck} health check using the
      * given {@link Environment}, returning the {@link TimeBasedDirectoryCleaner} instance that was scheduled. It can
      * then be used to retrieve delete error information.
+     *
+     * @param environment the Dropwizard Environment to use
+     * @return a new TimeBasedDirectoryCleaner using the given environment
      */
     public TimeBasedDirectoryCleaner scheduleCleanupUsing(Environment environment) {
         var cleanupExecutor = environment.lifecycle()

@@ -45,6 +45,7 @@ public class KiwiSearching {
         /**
          * Check the given page number for this scheme's minimum page number.
          *
+         * @param pageNumber the page number to check
          * @throws IllegalArgumentException if the given page number is not valid
          */
         public void checkPageNumber(int pageNumber) {
@@ -75,6 +76,8 @@ public class KiwiSearching {
 
     /**
      * Validate that the given page size is greater than zero.
+     *
+     * @param pageSize the page size to check
      */
     public static void checkPageSize(int pageSize) {
         checkArgument(pageSize > 0, PAGE_SIZE_ERROR);

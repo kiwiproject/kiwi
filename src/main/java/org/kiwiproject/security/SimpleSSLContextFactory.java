@@ -196,6 +196,8 @@ public class SimpleSSLContextFactory {
 
     /**
      * Return a new builder instance.
+     *
+     * @return new Builder
      */
     public static Builder builder() {
         return new Builder();

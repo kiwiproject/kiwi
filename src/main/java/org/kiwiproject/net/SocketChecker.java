@@ -19,6 +19,10 @@ public class SocketChecker {
 
     /**
      * Check whether a {@link Socket} can be opened on the specified host and port.
+     *
+     * @param host the host to check
+     * @param port the port to check
+     * @return {@code true} if the port is open; {@code false} otherwise
      */
     public boolean canConnectViaSocket(String host, int port) {
         return canConnectViaSocket(host, port, DEFAULT_TIMEOUT);
@@ -26,6 +30,11 @@ public class SocketChecker {
 
     /**
      * Check whether a {@link Socket} can be opened on the specified host and port, with the specified timeout.
+     *
+     * @param host    the host to check
+     * @param port    the port to check
+     * @param timeout how long to wait for the socket connection before timing out
+     * @return {@code true} if the socket connection succeeded; {@code false} otherwise
      */
     public boolean canConnectViaSocket(String host, int port, Duration timeout) {
         try (var socket = new Socket()) {
@@ -40,7 +49,11 @@ public class SocketChecker {
     }
 
     /**
-     * Check whether a {@link Socket} can be opened on the specified host and port.
+     * Check whether a {@link Socket} can be opened on the specified host and port. Uses the default timeout
+     * of {@link #DEFAULT_TIMEOUT}.
+     *
+     * @param hostAndPort a Pair containing the host and port to check
+     * @return {@code true} if the socket connection succeeded; {@code false} otherwise
      */
     public boolean canConnectViaSocket(Pair<String, Integer> hostAndPort) {
         return canConnectViaSocket(hostAndPort, DEFAULT_TIMEOUT);
@@ -48,6 +61,10 @@ public class SocketChecker {
 
     /**
      * Check whether a {@link Socket} can be opened on the specified host and port, with the specified timeout.
+     *
+     * @param hostAndPort a Pair containing the host and port to check
+     * @param timeout     how long to wait for the socket connection before timing out
+     * @return {@code true} if the socket connection succeeded; {@code false} otherwise
      */
     public boolean canConnectViaSocket(Pair<String, Integer> hostAndPort, Duration timeout) {
         var host = hostAndPort.getLeft();

@@ -30,7 +30,7 @@ class KiwiConsumersTest {
     static class ConsumerNoOpScaffold {
 
         @Getter
-        private List<String> text = new ArrayList<>();
+        private final List<String> text = new ArrayList<>();
 
         ConsumerNoOpScaffold() {
             mutateValue();
