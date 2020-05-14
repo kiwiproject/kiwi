@@ -8,6 +8,7 @@ import static org.kiwiproject.io.KiwiIO.streamLinesFromInputStreamOf;
 import com.google.common.annotations.VisibleForTesting;
 import org.apache.commons.lang3.tuple.Pair;
 
+import java.io.UncheckedIOException;
 import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
@@ -24,6 +25,11 @@ import java.util.stream.Stream;
 public class ProcessHelper {
 
     /**
+     * Waits up to {@link Processes#DEFAULT_WAIT_FOR_EXIT_TIME_SECONDS} for the given process to exit.
+     *
+     * @param process the process to wait for
+     * @return an {@link Optional} that will contain the exit code if the process exited before the timeout, or
+     * empty if the process did not exit before the timeout expired.
      * @see Processes#waitForExit(Process)
      */
     public Optional<Integer> waitForExit(Process process) {
@@ -31,6 +37,13 @@ public class ProcessHelper {
     }
 
     /**
+     * Waits up to the specified {@code timeout} for the given process to exit.
+     *
+     * @param process the process to wait for
+     * @param timeout the value of the time to wait
+     * @param unit    the unit of time to wait
+     * @return an {@link Optional} that will contain the exit code if the process exited before the timeout, or
+     * empty if the process did not exit before the timeout expired.
      * @see Processes#waitForExit(Process, long, TimeUnit)
      */
     public Optional<Integer> waitForExit(Process process, long timeout, TimeUnit unit) {
@@ -38,6 +51,10 @@ public class ProcessHelper {
     }
 
     /**
+     * Launches a new process using the specified {@code command}.
+     *
+     * @param command the list containing the program and its arguments
+     * @return the new {@link Process}
      * @see Processes#launch(List)
      */
     public Process launch(List<String> command) {
@@ -45,6 +62,10 @@ public class ProcessHelper {
     }
 
     /**
+     * Launches a new process using the specified {@code command}.
+     *
+     * @param command a list containing the program and its arguments
+     * @return the new {@link Process}
      * @see Processes#launch(String...)
      */
     public Process launch(String... command) {
@@ -52,6 +73,10 @@ public class ProcessHelper {
     }
 
     /**
+     * Does a {@code pgrep} with the specified full command.
+     *
+     * @param commandLine the full command to match
+     * @return a list of matching process ids (pids)
      * @see Processes#pgrep(String)
      * @see Processes#wasPgrepFlagsCheckSuccessful()
      * @see Processes#getPgrepFlags()
@@ -61,6 +86,11 @@ public class ProcessHelper {
     }
 
     /**
+     * Does a {@code pgrep} with the specified full command.
+     *
+     * @param user        the OS user (passed to the {@code -u} option)
+     * @param commandLine the full command to match
+     * @return list of matching process ids (pids)
      * @see Processes#pgrep(String, String)
      * @see Processes#wasPgrepFlagsCheckSuccessful()
      * @see Processes#getPgrepFlags()
@@ -70,6 +100,10 @@ public class ProcessHelper {
     }
 
     /**
+     * Does a {@code pgrep} against the specified full command, expecting a single result, or no result.
+     *
+     * @param commandLine the full command line
+     * @return an optional either containing a process id, or an empty optional
      * @see Processes#pgrepWithSingleResult(String)
      * @see Processes#wasPgrepFlagsCheckSuccessful()
      * @see Processes#getPgrepFlags()
@@ -79,6 +113,11 @@ public class ProcessHelper {
     }
 
     /**
+     * Does a {@code pgrep} against the specified full command, expecting a single result for a specific user, or no result.
+     *
+     * @param user        the OS user (passed to the {@code -u} option)
+     * @param commandLine the full command to match
+     * @return an optional either containing a process id, or an empty optional
      * @see Processes#pgrepWithSingleResult(String, String)
      * @see Processes#wasPgrepFlagsCheckSuccessful()
      * @see Processes#getPgrepFlags()
@@ -88,6 +127,10 @@ public class ProcessHelper {
     }
 
     /**
+     * Does a {@code pgrep} with the specified full command.
+     *
+     * @param commandLine the full command line to match
+     * @return a list of pgrep output, with each line in format "{pid} {command}"
      * @see Processes#pgrepList(String)
      * @see Processes#wasPgrepFlagsCheckSuccessful()
      * @see Processes#getPgrepFlags()
@@ -97,6 +140,11 @@ public class ProcessHelper {
     }
 
     /**
+     * Does a {@code pgrep} with the specified full command.
+     *
+     * @param user        the OS user (passed to the {@code -u} option)
+     * @param commandLine the full command line to match
+     * @return a list of pgrep output, with each line in format "{pid} {command}"
      * @see Processes#pgrepList(String, String)
      * @see Processes#wasPgrepFlagsCheckSuccessful()
      * @see Processes#getPgrepFlags()
@@ -106,6 +154,11 @@ public class ProcessHelper {
     }
 
     /**
+     * Does a {@code pgrep} for the specified full command, returning a list of pairs containing the
+     * process id (pid) and the matched command line.
+     *
+     * @param commandLine the full command line to match
+     * @return a list of {@link Pair} objects; each pair contains the pid as a Long and the associated full command
      * @see Processes#pgrepParsedList(String)
      * @see Processes#wasPgrepFlagsCheckSuccessful()
      * @see Processes#getPgrepFlags()
@@ -115,6 +168,12 @@ public class ProcessHelper {
     }
 
     /**
+     * Does a {@code pgrep} for the specified full command, returning a list of pairs containing the
+     * process id (pid) and the matched command line.
+     *
+     * @param user        the OS user (passed to the {@code -u} option)
+     * @param commandLine the full command line to match
+     * @return a list of {@link Pair} objects; each pair contains the pid as a Long and the associated full command
      * @see Processes#pgrepParsedList(String, String)
      * @see Processes#wasPgrepFlagsCheckSuccessful()
      * @see Processes#getPgrepFlags()
@@ -124,6 +183,12 @@ public class ProcessHelper {
     }
 
     /**
+     * Kill a process, waiting up to {@link Processes#DEFAULT_KILL_TIMEOUT_SECONDS} seconds for it to terminate.
+     *
+     * @param processId the pid of the process to kill
+     * @param signal    the kill signal; this could be the signal number (e.g. "1") or name (e.g. "SIGHUP")
+     * @param action    the {@link KillTimeoutAction} to take if the process doesn't terminate within the allotted time
+     * @return the exit code from the {@code kill} command, or {@code -1} if {@code action} is
      * @see Processes#kill(long, KillSignal, KillTimeoutAction)
      */
     public int kill(long processId, KillSignal signal, KillTimeoutAction action) {
@@ -131,6 +196,14 @@ public class ProcessHelper {
     }
 
     /**
+     * Kill a process, waiting up to {@code timeout} in the specified {@link TimeUnit} for it to terminate.
+     *
+     * @param processId the pid of the process to kill
+     * @param signal    the kill signal enum
+     * @param timeout   the time to wait for the process to be killed
+     * @param unit      the time unit associated with {@code timeout}
+     * @param action    the {@link KillTimeoutAction} to take if the process doesn't terminate within the allotted time
+     * @return the exit code from the {@code kill} command, or {@code -1} if {@code action} is
      * @see Processes#kill(long, KillSignal, long, TimeUnit, KillTimeoutAction)
      */
     public int kill(long processId, KillSignal signal, long timeout, TimeUnit unit, KillTimeoutAction action) {
@@ -138,6 +211,14 @@ public class ProcessHelper {
     }
 
     /**
+     * Kill a process, waiting up to {@link Processes#DEFAULT_KILL_TIMEOUT_SECONDS} seconds for it to terminate.
+     *
+     * @param processId the pid of the process to kill
+     * @param signal    the kill signal; this could be the signal number (e.g. "1") or name (e.g. "SIGHUP")
+     * @param action    the {@link KillTimeoutAction} to take if the process doesn't terminate within the allotted time
+     * @return the exit code from the {@code kill} command, or {@code -1} if {@code action} is
+     * {@link KillTimeoutAction#NO_OP} and the kill command times out
+     * @throws UncheckedIOException if an I/O error occurs killing the process
      * @see Processes#kill(long, String, KillTimeoutAction)
      */
     public int kill(long processId, String signal, KillTimeoutAction action) {
@@ -145,6 +226,16 @@ public class ProcessHelper {
     }
 
     /**
+     * Kill a process, waiting up to {@code timeout} in the specified {@link TimeUnit} for it to terminate.
+     *
+     * @param processId the pid of the process to kill
+     * @param signal    the kill signal; this could be the signal number (e.g. "1") or name (e.g. "SIGHUP")
+     * @param timeout   the time to wait for the process to be killed
+     * @param unit      the time unit associated with {@code timeout}
+     * @param action    the {@link KillTimeoutAction} to take if the process doesn't terminate within the allotted time
+     * @return the exit code from the {@code kill} command, or {@code -1} if {@code action} is
+     * {@link KillTimeoutAction#NO_OP} and the kill command times out
+     * @throws UncheckedIOException if an I/O error occurs killing the process
      * @see Processes#kill(long, String, long, TimeUnit, KillTimeoutAction)
      */
     public int kill(long processId, String signal, long timeout, TimeUnit unit, KillTimeoutAction action) {
@@ -152,6 +243,13 @@ public class ProcessHelper {
     }
 
     /**
+     * Equivalent to a {@code kill -9} (i.e. a {@code SIGKILL}).
+     *
+     * @param process the process to kill forcibly
+     * @param timeout the time to wait for the process to be forcibly killed
+     * @param unit    the time unit associated with the {@code timeout}
+     * @return {@code true} if {@code process} was killed before the timeout period elapsed; {@code false} otherwise
+     * @throws InterruptedException if the current thread is interrupted while waiting
      * @see Processes#killForcibly(Process, long, TimeUnit)
      */
     public boolean killForcibly(Process process, long timeout, TimeUnit unit) throws InterruptedException {

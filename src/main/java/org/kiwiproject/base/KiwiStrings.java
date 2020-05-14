@@ -63,7 +63,7 @@ public final class KiwiStrings {
      * Splits the given {@link CharSequence}, using the specified separator character, omitting any empty
      * strings and trimming leading and trailing whitespace.
      *
-     * @param sequence the character sequence to be split
+     * @param sequence  the character sequence to be split
      * @param separator the separator character to use
      * @return an Iterable over the split strings
      */
@@ -86,7 +86,7 @@ public final class KiwiStrings {
      * Splits the given {@link CharSequence}, using the specified separator string, omitting any empty
      * strings and trimming leading and trailing whitespace.
      *
-     * @param sequence the character sequence to be split
+     * @param sequence  the character sequence to be split
      * @param separator the separator to use, e.g. {@code ", "}
      * @return an Iterable over the split strings
      */
@@ -110,7 +110,7 @@ public final class KiwiStrings {
      * Splits the given {@link CharSequence}, using the specified separator character, omitting any empty
      * strings and trimming leading and trailing whitespace. Returns an <i>immutable</i> list.
      *
-     * @param sequence the character sequence to be split
+     * @param sequence  the character sequence to be split
      * @param separator the separator character to use
      * @return an immutable list containing the split strings
      * @see #splitWithTrimAndOmitEmpty(CharSequence, char)
@@ -135,7 +135,7 @@ public final class KiwiStrings {
      * specified omitting any empty strings and trimming leading and trailing whitespace. Returns an
      * <i>immutable</i> list.
      *
-     * @param sequence the character sequence to be split
+     * @param sequence  the character sequence to be split
      * @param separator the separator character to use
      * @param maxGroups the maximum number of groups to separate into
      * @return an immutable list containing the split strings
@@ -148,7 +148,7 @@ public final class KiwiStrings {
      * Splits the given {@link CharSequence}, using the specified separator string, omitting any empty
      * strings and trimming leading and trailing whitespace. Returns an <i>immutable</i> list.
      *
-     * @param sequence the character sequence to be split
+     * @param sequence  the character sequence to be split
      * @param separator the separator string to use
      * @return an immutable list containing the split strings
      */
@@ -161,7 +161,7 @@ public final class KiwiStrings {
      * specified omitting any empty strings and trimming leading and trailing whitespace. Returns an
      * <i>immutable</i> list.
      *
-     * @param sequence the character sequence to be split
+     * @param sequence  the character sequence to be split
      * @param separator the separator string to use
      * @param maxGroups the maximum number of groups to separate into
      * @return an immutable list containing the split strings
@@ -186,6 +186,7 @@ public final class KiwiStrings {
      * Returns a null if the input string is all whitespace characters or null.
      *
      * @param sequence a possibly null, blank, or zero length String.
+     * @return null if {@code sequence} is blank, otherwise return {@code sequence}
      */
     public static String blankToNull(String sequence) {
         return isBlank(sequence) ? null : sequence;
@@ -220,8 +221,9 @@ public final class KiwiStrings {
      * method, see http://stackoverflow.com/questions/12786902/performance-javas-string-format
      *
      * @param template a non-null string containing 0 or more {@code %s} or {@code {}} placeholders.
-     * @param args the arguments to be substituted into the message template. Arguments are converted
-     *             to strings using {@link String#valueOf(Object)}. Arguments can be null.
+     * @param args     the arguments to be substituted into the message template. Arguments are converted
+     *                 to strings using {@link String#valueOf(Object)}. Arguments can be null.
+     * @return the formatted string after making replacements
      */
     public static String format(String template, Object... args) {
         var nonNullTemplate = String.valueOf(template);  // null -> "null"
@@ -234,6 +236,11 @@ public final class KiwiStrings {
 
     /**
      * Alias for {@link #format(String, Object...)}.
+     *
+     * @param template a non-null string containing 0 or more {@code %s} or {@code {}} placeholders.
+     * @param args     the arguments to be substituted into the message template. Arguments are converted
+     *                 to strings using {@link String#valueOf(Object)}. Arguments can be null.
+     * @return the formatted string after making replacements
      */
     public static String f(String template, Object... args) {
         return format(template, args);
@@ -242,6 +249,10 @@ public final class KiwiStrings {
     /**
      * Same as {@link #format(String, Object...)} assuming Guava-style placeholders.
      *
+     * @param template a non-null string containing 0 or more {@code %s} placeholders.
+     * @param args     the arguments to be substituted into the message template. Arguments are converted
+     *                 to strings using {@link String#valueOf(Object)}. Arguments can be null.
+     * @return the formatted string after making replacements
      * @see #format(String, Object...)
      */
     public static String formatGuavaStyle(String template, Object... args) {
@@ -251,6 +262,10 @@ public final class KiwiStrings {
     /**
      * Same as {@link #format(String, Object...)} assuming SLF4J-style placeholders.
      *
+     * @param template a non-null string containing 0 or more {@code {}} placeholders.
+     * @param args     the arguments to be substituted into the message template. Arguments are converted
+     *                 to strings using {@link String#valueOf(Object)}. Arguments can be null.
+     * @return the formatted string after making replacements
      * @see #format(String, Object...)
      */
     public static String formatSlf4jJStyle(String template, Object... args) {
@@ -258,7 +273,7 @@ public final class KiwiStrings {
     }
 
     /**
-     * This is copied and modified from Guava to accommodate {@code %s} or {@code {}} placeholders.
+     * This is copied and modified from Guava 18 to accommodate {@code %s} or {@code {}} placeholders.
      */
     private static String formatInternal(String template, String placeholder, Object... args) {
         var nonNullTemplate = String.valueOf(template); // null -> "null"

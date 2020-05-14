@@ -36,6 +36,7 @@ public class KiwiPreconditions {
      *
      * @param expression    a boolean expression
      * @param exceptionType the type of exception to be thrown if {@code expression} is false
+     * @param <T>           the type of exception
      * @implNote This uses Lombok's {@link SneakyThrows} to throw any checked exceptions without declaring them.
      */
     @SneakyThrows(Throwable.class)
@@ -53,6 +54,7 @@ public class KiwiPreconditions {
      * @param expression    a boolean expression
      * @param exceptionType the type of exception to be thrown if {@code expression} is false
      * @param errorMessage  the exception message to use if the check fails
+     * @param <T>           the type of exception
      * @implNote This uses Lombok's {@link SneakyThrows} to throw any checked exceptions without declaring them.
      */
     @SneakyThrows(Throwable.class)
@@ -76,6 +78,7 @@ public class KiwiPreconditions {
      *                             {@link KiwiStrings#format(String, Object...)} handles placeholders
      * @param errorMessageArgs     the arguments to be substituted into the message template. Arguments
      *                             are converted to strings using {@link String#valueOf(Object)}.
+     * @param <T>                  the type of exception
      * @throws NullPointerException if the check fails and either {@code errorMessageTemplate} or
      *                              {@code errorMessageArgs} is null (don't let this happen)
      * @implNote This uses Lombok's {@link SneakyThrows} to throw any checked exceptions without declaring them.
@@ -140,6 +143,7 @@ public class KiwiPreconditions {
      * and {@link IllegalArgumentException} if null or returning the (non null) reference otherwise.
      *
      * @param reference an object reference
+     * @param <T>       the type of object
      * @return the object type
      */
     public static <T> T requireNotNull(T reference) {
@@ -156,6 +160,7 @@ public class KiwiPreconditions {
      *                             {@link KiwiStrings#format(String, Object...)} handles placeholders
      * @param errorMessageArgs     the arguments to be substituted into the message template. Arguments
      *                             are converted to strings using {@link String#valueOf(Object)}.
+     * @param <T>                  the type of object
      * @return the object type
      */
     public static <T> T requireNotNull(T reference, String errorMessageTemplate, Object... errorMessageArgs) {
@@ -203,7 +208,8 @@ public class KiwiPreconditions {
         }
     }
 
-    private static IllegalArgumentException newIllegalArgumentException(String errorMessageTemplate, Object... errorMessageArgs) {
+    private static IllegalArgumentException newIllegalArgumentException(String errorMessageTemplate,
+                                                                        Object... errorMessageArgs) {
         var errorMessage = format(errorMessageTemplate, errorMessageArgs);
         return new IllegalArgumentException(errorMessage);
     }

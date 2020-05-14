@@ -181,6 +181,8 @@ public class Processes {
      * Returns the pgrep flags that {@link Processes} will use in all pgrep methods.
      * Use {@link #wasPgrepFlagsCheckSuccessful()} to check if the flags were chosen successfully
      * to ensure that pgrep commands will work as expected on your OS.
+     *
+     * @return the flags that will be used in pgrep commands
      */
     public static String getPgrepFlags() {
         return PGREP_FULL_COMMAND_MATCH_AND_PRINT_FLAGS;
@@ -205,18 +207,24 @@ public class Processes {
     }
 
     /**
-     * Waits up to {@link #DEFAULT_WAIT_FOR_EXIT_TIME_SECONDS} for the given process to exit. Returns an {@link Optional}
-     * that will contain the exit code if the process exited before the timeout, or be empty if the process did not exit
-     * before the timeout expired.
+     * Waits up to {@link #DEFAULT_WAIT_FOR_EXIT_TIME_SECONDS} for the given process to exit.
+     *
+     * @param process the process to wait for
+     * @return an {@link Optional} that will contain the exit code if the process exited before the timeout, or
+     * empty if the process did not exit before the timeout expired.
      */
     public static Optional<Integer> waitForExit(Process process) {
         return waitForExit(process, DEFAULT_WAIT_FOR_EXIT_TIME_SECONDS, TimeUnit.SECONDS);
     }
 
     /**
-     * Waits up to the specified {@code timeout} for the given process to exit. Returns an {@link Optional}
-     * that will contain the exit code if the process exited before the timeout, or be empty if the process did not exit
-     * before the timeout expired.
+     * Waits up to the specified {@code timeout} for the given process to exit.
+     *
+     * @param process the process to wait for
+     * @param timeout the value of the time to wait
+     * @param unit    the unit of time to wait
+     * @return an {@link Optional} that will contain the exit code if the process exited before the timeout, or
+     * empty if the process did not exit before the timeout expired.
      */
     public static Optional<Integer> waitForExit(Process process, long timeout, TimeUnit unit) {
         try {
@@ -253,6 +261,8 @@ public class Processes {
     /**
      * Launches a new process using the specified {@code command}.
      *
+     * @param command a list containing the program and its arguments
+     * @return the new {@link Process}
      * @see #launch(List)
      */
     public static Process launch(String... command) {
@@ -262,6 +272,8 @@ public class Processes {
     /**
      * Does a {@code pgrep} with the specified full command.
      *
+     * @param commandLine the full command to match
+     * @return a list of matching process ids (pids)
      * @see #pgrep(String, String)
      * @see #wasPgrepFlagsCheckSuccessful()
      * @see #getPgrepFlags()
@@ -329,6 +341,8 @@ public class Processes {
     /**
      * Does a {@code pgrep} with the specified full command.
      *
+     * @param commandLine the full command line to match
+     * @return a list of pgrep output, with each line in format "{pid} {command}"
      * @see #pgrepList(String, String)
      * @see #wasPgrepFlagsCheckSuccessful()
      * @see #getPgrepFlags()
@@ -362,6 +376,8 @@ public class Processes {
      * Does a {@code pgrep} for the specified full command, returning a list of pairs containing the
      * process id (pid) and the matched command line.
      *
+     * @param commandLine the full command line to match
+     * @return a list of {@link Pair} objects; each pair contains the pid as a Long and the associated full command
      * @see #pgrepParsedList(String, String)
      * @see #wasPgrepFlagsCheckSuccessful()
      * @see #getPgrepFlags()
@@ -419,6 +435,10 @@ public class Processes {
     /**
      * Kill a process, waiting up to {@link #DEFAULT_KILL_TIMEOUT_SECONDS} seconds for it to terminate.
      *
+     * @param processId the pid of the process to kill
+     * @param signal    the kill signal; this could be the signal number (e.g. "1") or name (e.g. "SIGHUP")
+     * @param action    the {@link KillTimeoutAction} to take if the process doesn't terminate within the allotted time
+     * @return the exit code from the {@code kill} command, or {@code -1} if {@code action} is
      * @see #kill(long, String, long, TimeUnit, KillTimeoutAction)
      */
     public static int kill(long processId, KillSignal signal, KillTimeoutAction action) {
@@ -442,6 +462,12 @@ public class Processes {
     /**
      * Kill a process, waiting up to {@code timeout} in the specified {@link TimeUnit} for it to terminate.
      *
+     * @param processId the pid of the process to kill
+     * @param signal    the kill signal enum
+     * @param timeout   the time to wait for the process to be killed
+     * @param unit      the time unit associated with {@code timeout}
+     * @param action    the {@link KillTimeoutAction} to take if the process doesn't terminate within the allotted time
+     * @return the exit code from the {@code kill} command, or {@code -1} if {@code action} is
      * @see #kill(long, String, long, TimeUnit, KillTimeoutAction)
      */
     public static int kill(long processId, KillSignal signal, long timeout, TimeUnit unit, KillTimeoutAction action) {

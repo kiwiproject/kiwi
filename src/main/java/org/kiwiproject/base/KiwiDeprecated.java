@@ -30,11 +30,15 @@ public @interface KiwiDeprecated {
 
     /**
      * The version the annotated element became deprecated.
+     *
+     * @return the version when the annotated was deprecated
      */
     String since() default "";
 
     /**
      * The anticipated version at which the annotated element will be removed.
+     *
+     * @return the anticipated version when the annotated element will be removed
      */
     String removeAt() default "";
 
@@ -43,6 +47,8 @@ public @interface KiwiDeprecated {
      * <p>
      * For example, a text description of a replacement REST endpoint such as: {@code GET /foo/bar/{id}} or the
      * name of one or more replacement methods.
+     *
+     * @return a description of the replacement, if any
      */
     String[] replacedBy() default "";
 
@@ -50,6 +56,8 @@ public @interface KiwiDeprecated {
      * The issue number or other reference or descriptor which caused or is related to the deprecation, if any.
      * <p>
      * For example, one or more JIRA issue numbers.
+     *
+     * @return a reference to an issue, ticket, or other descriptor
      */
     String[] reference() default "";
 
@@ -59,6 +67,8 @@ public @interface KiwiDeprecated {
 
     /**
      * Indication of potential for problems if the deprecated feature continues to be used by callers, clients, etc.
+     *
+     * @return the severity of continued usage
      */
     Severity usageSeverity() default Severity.WARN;
 }

@@ -37,6 +37,8 @@ public interface CatchingRunnable extends Runnable {
 
     /**
      * Handle an exception thrown by {@link #runSafely()}.
+     *
+     * @param throwable the {@link Throwable} to handle
      */
     default void handleExceptionSafely(Throwable throwable) {
         // no-op by default; override if desired
