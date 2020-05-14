@@ -68,9 +68,9 @@ public class KiwiLists {
     /**
      * Given a list, sort it according to the provided {@link Comparator} returning a new list.
      *
-     * @param items       the list
-     * @param comparator  a Comparator to be used to compare stream elements
-     * @param <T>         the type of items in the list
+     * @param items      the list
+     * @param comparator a Comparator to be used to compare stream elements
+     * @param <T>        the type of items in the list
      * @return a new sorted list
      */
     public static <T> List<T> sorted(List<T> items, Comparator<T> comparator) {
@@ -174,6 +174,11 @@ public class KiwiLists {
     /**
      * Synonym for {@link #penultimate(List)}.
      *
+     * @param items the list
+     * @param <T>   the type of items in the list
+     * @return the penultimate item in items
+     * @throws java.lang.IllegalArgumentException if the list does not contain at least two items
+     * @throws java.lang.NullPointerException     if the list is null
      * @see #penultimate(List)
      */
     public static <T> T secondToLast(List<T> items) {
@@ -211,7 +216,7 @@ public class KiwiLists {
      *
      * @param items  the list
      * @param number the number of the element to retrieve, starting at one (<i>not zero</i>)
-     * @param <T>   the type of items in the list
+     * @param <T>    the type of items in the list
      * @return the nth item in items
      * @throws java.lang.IllegalArgumentException if the list does not contain at least number items
      * @throws java.lang.NullPointerException     if the list is null
