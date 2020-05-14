@@ -47,6 +47,7 @@ public class TryLocker {
     /**
      * Create a new {@link TryLocker} using a {@link ReentrantLock} and the default lock maximum wait time.
      *
+     * @return a new instance
      * @see #DEFAULT_LOCK_WAIT_TIME
      * @see #DEFAULT_LOCK_WAIT_TIME_UNIT
      */
@@ -79,6 +80,8 @@ public class TryLocker {
 
     /**
      * Return the maximum lock wait time as a {@link Duration}.
+     *
+     * @return the lock wait duration
      */
     public Duration getLockWaitDuration() {
         return Duration.ofMillis(lockWaitTimeUnit.toMillis(lockWaitTime));

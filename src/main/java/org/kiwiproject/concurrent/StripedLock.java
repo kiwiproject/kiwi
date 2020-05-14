@@ -38,6 +38,9 @@ public class StripedLock {
 
     /**
      * Creates a new {@link StripedLock} with the given number of stripes.
+     *
+     * @param numStripes number of stripes
+     * @see Striped#readWriteLock(int)
      */
     public StripedLock(int numStripes) {
         this(Striped.readWriteLock(numStripes));
@@ -46,6 +49,8 @@ public class StripedLock {
     /**
      * Create a new {@link StripedLock} using the given {@link ReadWriteLock}. This is useful if you have
      * multiple interdependent usages that you want to share across the same set of locks.
+     *
+     * @param lock the striped lock to use
      */
     public StripedLock(Striped<ReadWriteLock> lock) {
         this.lock = lock;
