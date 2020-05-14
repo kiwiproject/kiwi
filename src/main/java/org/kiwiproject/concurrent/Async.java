@@ -30,7 +30,7 @@ import java.util.function.Supplier;
  *
  * @implNote the "asyncMode" flag is a STATIC variable and should only ever be changed during testing using the
  * {@link #setUnitTestAsyncMode(Mode)} method. Generally, you should set this before tests and reset after
- * they have run. Note also this could cause unexpected behavior if tests are run in parallel.
+ * they have run. Note also this almost certainly will cause unexpected behavior if tests are run in parallel.
  */
 @Slf4j
 @UtilityClass
@@ -72,9 +72,10 @@ public class Async {
     }
 
     /**
-     * Execute the given {@link Runnable} asynchronously, returning a {@link CompletableFuture} with no result. This
-     * uses the common fork join pool as the executor.
+     * Execute the given {@link Runnable} asynchronously. This uses the common fork join pool as the executor.
      *
+     * @param func the code to run asynchronously
+     * @return a {@link CompletableFuture} with no result
      * @see ForkJoinPool#commonPool()
      * @see #doAsync(Runnable, Executor)
      */
@@ -83,12 +84,14 @@ public class Async {
     }
 
     /**
-     * Execute the given {@link Runnable} asynchronously using the given {@link Executor}, returning a
-     * {@link CompletableFuture} with no result.
+     * Execute the given {@link Runnable} asynchronously using the given {@link Executor}.
      * <p>
      * Essentially, wraps {@link CompletableFuture#runAsync(Runnable, Executor)} but allowing synchronous behavior
      * if mode is {@link Mode#DISABLED}.
      *
+     * @param func     the code to run asynchronously
+     * @param executor the {@link Executor} to use
+     * @return a {@link CompletableFuture} with no result
      * @see CompletableFuture#runAsync(Runnable, Executor)
      */
     public static CompletableFuture<Void> doAsync(Runnable func, Executor executor) {
@@ -99,6 +102,9 @@ public class Async {
      * Execute the given {@link Supplier} asynchronously to return a result, using the common fork join pool
      * as the executor.
      *
+     * @param supplier the code to run asynchronously
+     * @param <T>      the type of object being supplied
+     * @return the result returned by the supplier
      * @see ForkJoinPool#commonPool()
      * @see #doAsync(Supplier, Executor)
      */
@@ -113,6 +119,10 @@ public class Async {
      * Essentially, wraps {@link CompletableFuture#supplyAsync(Supplier, Executor)} but allowing synchronous behavior
      * * if mode is {@link Mode#DISABLED}.
      *
+     * @param supplier the code to run asynchronously
+     * @param executor the {@link Executor} to use
+     * @param <T>      the type of object being supplied
+     * @return the result returned by the supplier
      * @see ForkJoinPool#commonPool()
      * @see CompletableFuture#supplyAsync(Supplier, Executor)
      */
@@ -147,6 +157,10 @@ public class Async {
      * <p>
      * Note that {@link Mode} has no effect on this method.
      *
+     * @param future  the CompletableFuture to wait for
+     * @param timeout the value of the timeout in the given unit
+     * @param unit    the time unit to use
+     * @param <T>     the result returned by the future
      * @throws AsyncException if any error occurs during asynchronous code execution
      */
     public static <T> void waitFor(CompletableFuture<T> future, long timeout, TimeUnit unit) {
@@ -159,7 +173,10 @@ public class Async {
      * <p>
      * Note that {@link Mode} has no effect on this method.
      *
-     * @throws AsyncException if any error occurs during asynchronous code execution
+     * @param futures the CompletableFuture instances to wait for
+     * @param timeout the value of the timeout in the given unit
+     * @param unit    the time unit to use
+     * @param <T>     the result returned by the futures
      */
     @SuppressWarnings("DuplicatedCode")
     public static <T> void waitForAll(Collection<CompletableFuture<T>> futures, long timeout, TimeUnit unit) {
@@ -179,9 +196,13 @@ public class Async {
      * <p>
      * Note that {@link Mode} has no effect on this method.
      *
+     * @param futures the CompletableFuture instances to wait for
+     * @param timeout the value of the timeout in the given unit
+     * @param unit    the time unit to use
      * @throws AsyncException if any error occurs during asynchronous code execution
+     * @implNote Suppressed the IntelliJ and Sonar warnings about raw types
      */
-    @SuppressWarnings({"DuplicatedCode", "rawtypes"})
+    @SuppressWarnings({"DuplicatedCode", "rawtypes", "java:S3740"})
     public static void waitForAllIgnoringType(Collection<CompletableFuture> futures, long timeout, TimeUnit unit) {
         try {
             CompletableFuture.allOf(futures.toArray(CompletableFuture[]::new)).get(timeout, unit);
@@ -193,7 +214,8 @@ public class Async {
         }
     }
 
-    @SuppressWarnings("rawtypes")
+    // Suppressed the IntelliJ and Sonar warnings about raw types
+    @SuppressWarnings({"rawtypes", "java:S3740"})
     private static void logAndThrowAsyncException(long timeout,
                                                   TimeUnit unit,
                                                   Exception ex,
@@ -210,6 +232,11 @@ public class Async {
      * <p>
      * Note that {@link Mode} has no effect on this method.
      *
+     * @param future  the CompletableFuture for which to apply the timeout
+     * @param timeout the value of the timeout in the given unit
+     * @param unit    the time unit to use
+     * @param <T>     the result returned by the future
+     * @return the original {@link CompletableFuture} wrapped by a new one that applies the given timeout
      * @throws AsyncException if any error occurs during asynchronous code execution, including timeout
      * @see #withMaxTimeout(CompletableFuture, long, TimeUnit, ExecutorService)
      */
@@ -225,6 +252,12 @@ public class Async {
      * <p>
      * Note that {@link Mode} has no effect on this method.
      *
+     * @param future   the CompletableFuture for which to apply the timeout
+     * @param timeout  the value of the timeout in the given unit
+     * @param unit     the time unit to use
+     * @param executor the {@link ExecutorService} to use
+     * @param <T>      the result returned by the future
+     * @return the original {@link CompletableFuture} wrapped by a new one that applies the given timeout
      * @throws AsyncException if any error occurs during asynchronous code execution, including timeout
      * @see CompletableFuture#supplyAsync(Supplier, Executor)
      */

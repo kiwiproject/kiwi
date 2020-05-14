@@ -34,4 +34,22 @@ class AsyncExceptionTest {
         var ex = new AsyncException("kabloom!", null);
         assertThat(ex.getFuture()).isNull();
     }
+
+    @Test
+    void shouldReturnTypedFuture() {
+        var future = newFailingCompletableFutureWithStringType();
+
+        var ex = new AsyncException("oop", future);
+
+        CompletableFuture<String> typedFuture = ex.getFuture();
+
+        assertThat(typedFuture)
+                .hasFailedWithThrowableThat()
+                .isExactlyInstanceOf(RuntimeException.class)
+                .hasMessage("this didn't work!");
+    }
+
+    private static CompletableFuture<String> newFailingCompletableFutureWithStringType() {
+        return CompletableFuture.failedFuture(new RuntimeException("this didn't work!"));
+    }
 }
