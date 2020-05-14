@@ -54,6 +54,8 @@ public class SecureEndpointsConfiguration extends SSLContextConfiguration {
          * configuration.
          * <p>
          * Multiple endpoints can be added.
+         *
+         * @return the builder instance
          */
         public EndpointConfiguration.Builder addEndpoint() {
             return EndpointConfiguration.builder(this);
@@ -144,6 +146,8 @@ public class SecureEndpointsConfiguration extends SSLContextConfiguration {
 
     /**
      * Return a new builder instance.
+     *
+     * @return the builder instance
      */
     public static Builder builder() {
         return new Builder();
@@ -153,6 +157,8 @@ public class SecureEndpointsConfiguration extends SSLContextConfiguration {
      * Returns true if <strong>any</strong> of the endpoints in this configuration is secure.
      * <p>
      * Alias for {@link #anyEndpointSecure()}.
+     *
+     * @return true if any endpoint is secure
      */
     public boolean isSecure() {
         return endpoints.stream().anyMatch(EndpointConfiguration::isSecure);
@@ -179,6 +185,8 @@ public class SecureEndpointsConfiguration extends SSLContextConfiguration {
     /**
      * Finds the {@link EndpointConfiguration} with the given tag, throwing an exception if not found.
      *
+     * @param tag the tag to search for
+     * @return the EndpointConfiguration with the given tag
      * @throws IllegalStateException if there is no such endpoint
      */
     public EndpointConfiguration getEndpointByTag(String tag) {
@@ -188,6 +196,9 @@ public class SecureEndpointsConfiguration extends SSLContextConfiguration {
 
     /**
      * Finds the {@link EndpointConfiguration} with the given tag, returning an empty Optional if not found.
+     *
+     * @param tag the tag to search for
+     * @return an {@link Optional} that may or may not contain an endpoint
      */
     public Optional<EndpointConfiguration> getEndpointByTagOrEmpty(String tag) {
         return endpoints.stream()
@@ -199,6 +210,8 @@ public class SecureEndpointsConfiguration extends SSLContextConfiguration {
      * Finds the {@link EndpointConfiguration} with a path ending with the given {@code pathEnding}, throwing an
      * exception if not found.
      *
+     * @param pathEnding the end of the path to look for in each endpoint
+     * @return the EndpointConfiguration with the given path ending
      * @throws IllegalStateException if there is no such endpoint
      */
     public EndpointConfiguration getEndpointByPathEnding(String pathEnding) {
@@ -209,6 +222,9 @@ public class SecureEndpointsConfiguration extends SSLContextConfiguration {
     /**
      * Finds the {@link EndpointConfiguration} with a path ending with the given {@code pathEnding}, returning an
      * empty Optional if not found.
+     *
+     * @param pathEnding the end of the path to look for in each endpoint
+     * @return an {@link Optional} that may or may not contain an endpoint
      */
     public Optional<EndpointConfiguration> getEndpointByPathEndingOrEmpty(String pathEnding) {
         return endpoints.stream()

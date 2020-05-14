@@ -107,6 +107,8 @@ public class SSLContextConfiguration implements KeyAndTrustStoreConfigProvider {
 
     /**
      * Return a new builder instance.
+     *
+     * @return builder instance
      */
     public static Builder builder() {
         return new Builder();
@@ -167,6 +169,7 @@ public class SSLContextConfiguration implements KeyAndTrustStoreConfigProvider {
      * {@code keyStoreType} for the key and the specified {@code trustStoreType} as the trust store type
      * in the returned object.
      *
+     * @param trustStoreType the type of trust store to use
      * @return a new {@link TlsContextConfiguration} instance
      */
     public TlsContextConfiguration toTlsContextConfiguration(String trustStoreType) {
