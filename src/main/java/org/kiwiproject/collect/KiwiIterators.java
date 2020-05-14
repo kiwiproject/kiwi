@@ -33,6 +33,10 @@ public class KiwiIterators {
      * <p>
      * The returned iterator does <em>not</em> support {@link Iterator#remove()} nor does it support
      * {@link Iterator#forEachRemaining(Consumer)}, as the entire point is to cycle <em>forever</em>.
+     *
+     * @param iterable the Iterable to cycle
+     * @param <T> the type of objects in the Iterable
+     * @return an Iterator that cycles through the given Iterable without terminating
      */
     public static <T> Iterator<T> cycleForever(Iterable<T> iterable) {
         ImmutableList<T> elements = ImmutableList.copyOf(iterable);
@@ -51,6 +55,10 @@ public class KiwiIterators {
      * <p>
      * The returned iterator does <em>not</em> support {@link Iterator#remove()} nor does it support
      * {@link Iterator#forEachRemaining(Consumer)}, as the entire point is to cycle <em>forever</em>.
+     *
+     * @param elements the values to cycle
+     * @param <T> the type of the elements
+     * @return an Iterator that cycles through the given iterable without terminating
      */
     @SafeVarargs
     public static <T> Iterator<T> cycleForever(T... elements) {
