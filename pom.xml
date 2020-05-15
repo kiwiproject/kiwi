@@ -45,6 +45,23 @@
         </license>
     </licenses>
 
+    <scm>
+        <connection>scm:git:https://github.com/kiwiproject/kiwi.git</connection>
+        <developerConnection>scm:git:git@github.com:kiwiproject/kiwi.git</developerConnection>
+        <url>https://github.com/kiwiproject/kiwi</url>
+    </scm>
+
+    <distributionManagement>
+        <snapshotRepository>
+            <id>ossrh</id>
+            <url>https://oss.sonatype.org/content/repositories/snapshots</url>
+        </snapshotRepository>
+        <repository>
+            <id>ossrh</id>
+            <url>https://oss.sonatype.org/service/local/staging/deploy/maven2/</url>
+        </repository>
+    </distributionManagement>
+
     <properties>
         <!-- Versions for required dependencies -->
         <commons-lang3.version>3.10</commons-lang3.version>
@@ -670,7 +687,7 @@
                     <execution>
                         <id>attach-sources</id>
                         <goals>
-                            <goal>jar</goal>
+                            <goal>jar-no-fork</goal>
                         </goals>
                     </execution>
                 </executions>
