@@ -276,7 +276,8 @@ public class TimeBasedDirectoryCleaner implements Runnable {
      * @implNote We have only tested this on a Centos/RedHat based system. Some issues have been noticed with deleting files
      * concurrently from multiple threads in the same directories on MacOS. Use with caution.
      */
-    private static FileDeleteResult tryDeleteIfExists(File file) {
+    @VisibleForTesting
+    static FileDeleteResult tryDeleteIfExists(File file) {
         var absolutePath = file.getAbsolutePath();
         LOG.trace("Attempting to delete file {}", absolutePath);
 
