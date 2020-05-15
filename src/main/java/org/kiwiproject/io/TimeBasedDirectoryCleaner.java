@@ -60,8 +60,7 @@ public class TimeBasedDirectoryCleaner implements Runnable {
     private final File directory;
     private final long retentionThresholdInMillis;
 
-    @VisibleForTesting
-    final Level deleteErrorLogLevel;
+    @VisibleForTesting final Level deleteErrorLogLevel;
 
     @Getter
     private final String retentionThresholdDescription;
@@ -106,6 +105,11 @@ public class TimeBasedDirectoryCleaner implements Runnable {
     }
 
     /**
+     * Create a new TimeBasedDirectoryCleaner instance.
+     *
+     * @param directoryPath       the directory to be cleaned
+     * @param retentionThreshold  how long the directory contents should be retained before deletion
+     * @param deleteErrorLogLevel the log level; should be a string corresponding to an SLF4J {@link Level}
      * @implNote No validation on whether the directoryPath points to a valid directory at this point; we assume it
      * will exist at some point, e.g. if some other component creates it the first time it is written to, we don't want
      * to throw exceptions from here.
@@ -149,6 +153,8 @@ public class TimeBasedDirectoryCleaner implements Runnable {
 
     /**
      * Returns the absolute path of the directory being cleaned.
+     *
+     * @return directory path
      */
     public String getDirectoryPath() {
         return directory.getAbsolutePath();
@@ -156,6 +162,8 @@ public class TimeBasedDirectoryCleaner implements Runnable {
 
     /**
      * Returns the retention threshold as a {@link Duration}
+     *
+     * @return retention threshold
      */
     public Duration getRetentionThreshold() {
         return Duration.ofMillis(retentionThresholdInMillis);
@@ -164,6 +172,7 @@ public class TimeBasedDirectoryCleaner implements Runnable {
     /**
      * Returns the total number of deletes this instance has counted.
      *
+     * @return the total delete count
      * @implNote A directory that is deleted is counted as ONE deletion, regardless of how many files were inside.
      */
     public long getDeleteCount() {
@@ -172,6 +181,8 @@ public class TimeBasedDirectoryCleaner implements Runnable {
 
     /**
      * Returns the total number of delete errors this instance has counted.
+     *
+     * @return the total delete error count
      */
     public int getDeleteErrorCount() {
         return deleteErrorCount.get();
@@ -179,6 +190,8 @@ public class TimeBasedDirectoryCleaner implements Runnable {
 
     /**
      * Returns the number of recent delete errors currently stored in memory.
+     *
+     * @return total number of recent delete errors
      */
     public int getNumberOfRecentDeleteErrors() {
         return recentDeleteErrors.size();
@@ -186,6 +199,8 @@ public class TimeBasedDirectoryCleaner implements Runnable {
 
     /**
      * Returns the maximum number of delete failures that can be stored in memory.
+     *
+     * @return number of delete errors that will be stored in memory
      */
     public static int capacityOfRecentDeleteErrors() {
         return MAX_RECENT_DELETE_ERRORS;
@@ -201,6 +216,7 @@ public class TimeBasedDirectoryCleaner implements Runnable {
     /**
      * Returns all the recent delete failures stored in memory.
      *
+     * @return a list of recent DeleteError objects
      * @implNote Per the docs for {@link Queues#synchronizedQueue(Queue)}, we MUST synchronize when iterating, and
      * creating a new ArrayList has to iterate the constructor argument's contents in some fashion.
      */
@@ -260,7 +276,8 @@ public class TimeBasedDirectoryCleaner implements Runnable {
      * @implNote We have only tested this on a Centos/RedHat based system. Some issues have been noticed with deleting files
      * concurrently from multiple threads in the same directories on MacOS. Use with caution.
      */
-    private static FileDeleteResult tryDeleteIfExists(File file) {
+    @VisibleForTesting
+    static FileDeleteResult tryDeleteIfExists(File file) {
         var absolutePath = file.getAbsolutePath();
         LOG.trace("Attempting to delete file {}", absolutePath);
 
@@ -281,9 +298,9 @@ public class TimeBasedDirectoryCleaner implements Runnable {
     @Getter
     static class FileDeleteResult {
 
-        private String absolutePath;
-        private boolean deleteWasAttempted;
-        private boolean deleteWasSuccessful;
+        private final String absolutePath;
+        private final boolean deleteWasAttempted;
+        private final boolean deleteWasSuccessful;
 
         static FileDeleteResult attempted(String absolutePath, boolean deleteWasSuccessful) {
             return new FileDeleteResult(requireNonNull(absolutePath), true, deleteWasSuccessful);

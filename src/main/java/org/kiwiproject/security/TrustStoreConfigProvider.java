@@ -12,23 +12,29 @@ public interface TrustStoreConfigProvider {
     /**
      * The protocol to use. Consider using {@link SSLContextProtocol} to ensure valid protocols.
      *
+     * @return protocol
      * @see SSLContextProtocol
      */
     String getProtocol();
 
     /**
      * The path to the trust store.
+     *
+     * @return path to trust store
      */
     String getTrustStorePath();
 
     /**
      * The trust store password (plain text).
+     *
+     * @return trust store password
      */
     String getTrustStorePassword();
 
     /**
      * Trust store type. Default is JKS.
      *
+     * @return trust store type
      * @see KeyStoreType#JKS
      */
     default String getTrustStoreType() {
@@ -36,7 +42,9 @@ public interface TrustStoreConfigProvider {
     }
 
     /**
-     * Defaults to {@code true}/.
+     * Defaults to {@code true}.
+     *
+     * @return true if hostname verification should be performed
      */
     default boolean isVerifyHostname() {
         return true;
@@ -45,6 +53,7 @@ public interface TrustStoreConfigProvider {
     /**
      * Convert this configuration into a {@link SSLContext}.
      *
+     * @return a new SSLContext instance
      * @see KiwiSecurity#createSslContext(String, String, String, String, String, String, String)
      */
     default SSLContext toSSLContext() {
@@ -59,6 +68,7 @@ public interface TrustStoreConfigProvider {
     /**
      * Convert this configuration into a {@link SSLSocketFactory}.
      *
+     * @return a new SSLSocketFactory instance
      * @see #toSSLContext()
      */
     default SSLSocketFactory toSslSocketFactory() {

@@ -13,6 +13,7 @@ import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.spy;
 
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -63,9 +64,9 @@ class TimeBasedDirectoryCleanerTest {
     @Test
     void testCreateCleaner_WithNegativeDuration_ThrowsException() {
         assertThatThrownBy(() -> TimeBasedDirectoryCleaner.builder()
-                    .directoryPath(temporaryPath.toString())
-                    .retentionThreshold(Duration.ofMillis(-100))
-                    .build())
+                .directoryPath(temporaryPath.toString())
+                .retentionThreshold(Duration.ofMillis(-100))
+                .build())
                 .isExactlyInstanceOf(IllegalArgumentException.class)
                 .hasMessage("retentionThreshold cannot be negative");
     }
@@ -110,11 +111,11 @@ class TimeBasedDirectoryCleanerTest {
     @ParameterizedTest
     @EnumSource(Level.class)
     void testLogUnableToDelete(Level level) {
-       var levelString = level.toString();
-       var cleaner = newCleanerWithLogLevel(levelString);
+        var levelString = level.toString();
+        var cleaner = newCleanerWithLogLevel(levelString);
 
-       var result = FileDeleteResult.attempted("/tmp/foo.txt", false);
-       assertThatCode(() -> cleaner.logUnableToDelete(result)).doesNotThrowAnyException();
+        var result = FileDeleteResult.attempted("/tmp/foo.txt", false);
+        assertThatCode(() -> cleaner.logUnableToDelete(result)).doesNotThrowAnyException();
     }
 
     private static TimeBasedDirectoryCleaner newCleanerWithLogLevel(String level) {
@@ -349,5 +350,32 @@ class TimeBasedDirectoryCleanerTest {
             softly.assertThat(cleaner.getRecentDeleteErrors().stream().map(DeleteError::getFileName))
                     .containsOnly(last500.toArray(new String[]{}));
         });
+    }
+
+    @Nested
+    class TryDeleteIfExists {
+
+        @Test
+        void shouldReturnSkippedWhenFileDoesNotExist() {
+            var file = new File("/does/not/exist/file.txt");
+
+            var deleteResult = TimeBasedDirectoryCleaner.tryDeleteIfExists(file);
+
+            assertThat(deleteResult.isDeleteWasAttempted()).isFalse();
+            assertThat(deleteResult.isDeleteWasSuccessful()).isFalse();
+        }
+    }
+
+    @Nested
+    class FileDeleteResults {
+
+        @Test
+        void shouldReturnTrue_WhenDeleteAttemptedAndFailed() {
+            var deleteResult = FileDeleteResult.attempted("/path/to/some/file.txt", false);
+
+            assertThat(deleteResult.isDeleteWasAttempted()).isTrue();
+            assertThat(deleteResult.isDeleteWasSuccessful()).isFalse();
+            assertThat(deleteResult.deleteAttemptedAndFailed()).isTrue();
+        }
     }
 }

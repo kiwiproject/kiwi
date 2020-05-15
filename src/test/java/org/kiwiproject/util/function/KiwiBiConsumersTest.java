@@ -33,10 +33,10 @@ class KiwiBiConsumersTest {
     static class BiConsumerNoOpScaffold {
 
         @Getter
-        private List<Integer> numbers = new ArrayList<>();
+        private final List<Integer> numbers = new ArrayList<>();
 
         @Getter
-        private List<String> text = new ArrayList<>();
+        private final List<String> text = new ArrayList<>();
 
         public BiConsumerNoOpScaffold() {
             mutateValues();

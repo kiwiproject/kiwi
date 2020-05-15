@@ -64,6 +64,11 @@ public class KiwiUrls {
 
     /**
      * Create a well-formed URL (String) from the given protocol, hostname, and port.
+     *
+     * @param protocol the protocol
+     * @param hostname the host name
+     * @param port     the port
+     * @return the URL as a {@link String} object
      */
     public static String createUrl(String protocol, String hostname, int port) {
         return createUrlObject(protocol, hostname, port).toString();
@@ -71,6 +76,11 @@ public class KiwiUrls {
 
     /**
      * Create a well-formed URL from the given protocol, hostname, and port.
+     *
+     * @param protocol the protocol
+     * @param hostname the host name
+     * @param port     the port
+     * @return the URL as a {@link URL} object
      */
     public static URL createUrlObject(String protocol, String hostname, int port) {
         return createUrlObject(protocol, hostname, port, "");
@@ -78,6 +88,12 @@ public class KiwiUrls {
 
     /**
      * Create a well-formed URL (String) from the given protocol, hostname, port and path.
+     *
+     * @param protocol the protocol
+     * @param hostname the host name
+     * @param port     the port
+     * @param path     the path
+     * @return the URL as a {@link String} object
      */
     public static String createUrl(String protocol, String hostname, int port, String path) {
         return createUrlObject(protocol, hostname, port, path).toString();
@@ -85,6 +101,12 @@ public class KiwiUrls {
 
     /**
      * Create a well-formed URL from the given protocol, hostname, port, and path.
+     *
+     * @param protocol the protocol
+     * @param hostname the host name
+     * @param port     the port
+     * @param path     the path
+     * @return the URL as a {@link URL} object
      */
     public static URL createUrlObject(String protocol, String hostname, int port, String path) {
         try {
@@ -102,6 +124,10 @@ public class KiwiUrls {
      * Wrapper around URL's constructor which throws a checked {@link MalformedURLException}. This instead assumes
      * the given {@code urlSpec} is valid and throws {@link UncheckedMalformedURLException} in case it is actually
      * not valid.
+     *
+     * @param urlSpec the String to parse as a URL
+     * @return a new {@link URL} instance
+     * @throws UncheckedMalformedURLException that wraps a {@link MalformedURLException} if any error occurs
      */
     public static URL createUrlObject(String urlSpec) {
         try {
@@ -112,7 +138,11 @@ public class KiwiUrls {
     }
 
     /**
-     * Crate a well-formed URL string from the given {@code schemeHostPort} and zero or more path components.
+     * Create a well-formed URL string from the given {@code schemeHostPort} and zero or more path components.
+     *
+     * @param schemeHostPort a string containing the scheme, host, and port parts, e.g. http://acme.com:8080
+     * @param pathComponents zero or more path components to append
+     * @return the constructed URL as a {@link String}
      */
     public static String createUrl(String schemeHostPort, String... pathComponents) {
         return createUrlObject(schemeHostPort, pathComponents).toString();
@@ -120,6 +150,10 @@ public class KiwiUrls {
 
     /**
      * Create a well-formed URL from the given {@code schemeHostPort} and zero or more path components.
+     *
+     * @param schemeHostPort a string containing the scheme, host, and port parts, e.g. http://acme.com:8080
+     * @param pathComponents zero or more path components to append
+     * @return the constructed URL as a {@link URL}
      */
     public static URL createUrlObject(String schemeHostPort, String... pathComponents) {
         var rawBaseUri = URI.create(schemeHostPort);
@@ -138,6 +172,8 @@ public class KiwiUrls {
      * Tries to convert the given {@code uri} into a {@link URL}, throwing an unchecked exception if the conversion
      * fails. The thrown unchecked exception wraps the original checked {@link MalformedURLException}.
      *
+     * @param uri the URI to convert
+     * @return a {@link URL} instance
      * @throws UncheckedMalformedURLException if conversion from {@link URI} to {@link URL} fails
      * @see URI#toURL()
      */
@@ -152,6 +188,9 @@ public class KiwiUrls {
 
     /**
      * Trims {@code path} and, if a leading slash is not present, adds it.
+     *
+     * @param path a path
+     * @return a new String with a leading slash
      */
     public static String prependLeadingSlash(String path) {
         var trimmedPath = path.trim();
@@ -164,6 +203,10 @@ public class KiwiUrls {
 
     /**
      * Create a well-formed HTTP URL (String) from the given hostname and port.
+     *
+     * @param hostname the host name
+     * @param port     the port
+     * @return a URL as a {@link String}
      */
     public static String createHttpUrl(String hostname, int port) {
         return createHttpUrlObject(hostname, port).toString();
@@ -171,6 +214,10 @@ public class KiwiUrls {
 
     /**
      * Create a well-formed HTTP URL from the given hostname and port.
+     *
+     * @param hostname the host name
+     * @param port     the port
+     * @return a URL as a {@link URL}
      */
     public static URL createHttpUrlObject(String hostname, int port) {
         return createUrlObject(HTTP_PROTOCOL, hostname, port);
@@ -178,6 +225,11 @@ public class KiwiUrls {
 
     /**
      * Create a well-formed HTTP URL (String) from the given hostname, port and path.
+     *
+     * @param hostname the host name
+     * @param port     the port
+     * @param path     the path
+     * @return a URL as a {@link String}
      */
     public static String createHttpUrl(String hostname, int port, String path) {
         return createHttpUrlObject(hostname, port, path).toString();
@@ -185,6 +237,11 @@ public class KiwiUrls {
 
     /**
      * Create a well-formed HTTP URL from the given hostname, port and path.
+     *
+     * @param hostname the host name
+     * @param port     the port
+     * @param path     the path
+     * @return a URL as a {@link URL}
      */
     public static URL createHttpUrlObject(String hostname, int port, String path) {
         return createUrlObject(HTTP_PROTOCOL, hostname, port, path);
@@ -192,6 +249,10 @@ public class KiwiUrls {
 
     /**
      * Create a well-formed HTTPS URL (String) from the given hostname and port.
+     *
+     * @param hostname the host name
+     * @param port     the port
+     * @return a URL as a {@link String}
      */
     public static String createHttpsUrl(String hostname, int port) {
         return createHttpsUrlObject(hostname, port).toString();
@@ -199,6 +260,10 @@ public class KiwiUrls {
 
     /**
      * Create a well-formed HTTPS URL from the given hostname and port.
+     *
+     * @param hostname the host name
+     * @param port     the port
+     * @return a URL as a {@link URL}
      */
     public static URL createHttpsUrlObject(String hostname, int port) {
         return createUrlObject(HTTPS_PROTOCOL, hostname, port);
@@ -206,6 +271,11 @@ public class KiwiUrls {
 
     /**
      * Create a well-formed HTTPS URL (String) from the given hostname, port and path.
+     *
+     * @param hostname the host name
+     * @param port     the port
+     * @param path     the path
+     * @return a URL as a {@link String}
      */
     public static String createHttpsUrl(String hostname, int port, String path) {
         return createHttpsUrlObject(hostname, port, path).toString();
@@ -213,6 +283,11 @@ public class KiwiUrls {
 
     /**
      * Create a well-formed HTTPS URL from the given hostname, port and path.
+     *
+     * @param hostname the host name
+     * @param port     the port
+     * @param path     the path
+     * @return a URL as a {@link URL}
      */
     public static URL createHttpsUrlObject(String hostname, int port, String path) {
         return createUrlObject(HTTPS_PROTOCOL, hostname, port, path);
@@ -272,6 +347,9 @@ public class KiwiUrls {
 
     /**
      * Trims {@code url} and, if present, strips the trailing slash
+     *
+     * @param url the URL
+     * @return the URL minus any trailing slash
      */
     public static String stripTrailingSlash(String url) {
         var trimmedUrl = url.trim();
@@ -285,6 +363,9 @@ public class KiwiUrls {
 
     /**
      * Trims each URL in {@code urls} and strips any trailing slashes
+     *
+     * @param urls a list of URLs
+     * @return a list of URLs matching the input URLs minus any trailing slash
      */
     public static List<String> stripTrailingSlashes(List<String> urls) {
         return urls.stream().map(KiwiUrls::stripTrailingSlash).collect(toList());
@@ -545,12 +626,12 @@ public class KiwiUrls {
     @Builder(toBuilder = true)
     public static final class Components {
 
-        private String scheme;
-        private String subDomainName;
-        private String domainName;
-        private String canonicalName;
-        private Integer port;
-        private String path;
+        private final String scheme;
+        private final String subDomainName;
+        private final String domainName;
+        private final String canonicalName;
+        private final Integer port;
+        private final String path;
 
         public Optional<Integer> getPort() {
             return Optional.ofNullable(port);

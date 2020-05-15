@@ -24,6 +24,10 @@ public class KiwiDropwizardLifecycles {
      * To make the code cleaner, use method references:
      * <p>
      * {@code KiwiDropwizardLifecycles.manage(lifecycle, factory::start, factory::stop);}
+     *
+     * @param lifecycle   the lifecycle to manage
+     * @param startAction the action to run when Dropwizard starts the application
+     * @param stopAction  the action to run when Dropwizard stops the application
      */
     public static void manage(LifecycleEnvironment lifecycle, Runnable startAction, Runnable stopAction) {
         lifecycle.manage(new Managed() {

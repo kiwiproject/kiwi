@@ -10,17 +10,22 @@ public interface KeyAndTrustStoreConfigProvider extends TrustStoreConfigProvider
 
     /**
      * The path to the key store.
+     *
+     * @return key store path
      */
     String getKeyStorePath();
 
     /**
      * The key store password (plain text).
+     *
+     * @return key store password
      */
     String getKeyStorePassword();
 
     /**
      * Key store type. Default is JKS.
      *
+     * @return key store type
      * @see KeyStoreType#JKS
      */
     default String getKeyStoreType() {
@@ -30,6 +35,7 @@ public interface KeyAndTrustStoreConfigProvider extends TrustStoreConfigProvider
     /**
      * Convert this configuration into a {@link SSLContext}.
      *
+     * @return a new SSLContext instance
      * @see KiwiSecurity#createSslContext(String, String, String, String, String, String, String)
      */
     @Override

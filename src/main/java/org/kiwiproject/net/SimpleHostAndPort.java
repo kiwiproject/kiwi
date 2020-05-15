@@ -29,8 +29,14 @@ public class SimpleHostAndPort {
 
     /**
      * Parse {@code hostPortString} assuming format {@code host:port}; if it is blank, use the specified
-     * {@code defaultHost} and {@code defaultPort} values to create a link {@link SimpleHostAndPort}. No validation is
-     * performed on the default values.
+     * {@code defaultHost} and {@code defaultPort} values to create a link {@link SimpleHostAndPort}.
+     * <p>
+     * <em>No validation is performed on the default values.</em>
+     *
+     * @param hostPortString a string containing host and port, e.g. acme.com:8001
+     * @param defaultHost    a default host if the host/port string is blank
+     * @param defaultPort    a default port if the host/port string is blank
+     * @return a new SimpleHostAndPort instance
      */
     public static SimpleHostAndPort from(String hostPortString, String defaultHost, int defaultPort) {
         if (isBlank(hostPortString)) {
@@ -43,7 +49,9 @@ public class SimpleHostAndPort {
     /**
      * Parse {@code hostPortString} assuming format {@code host:port}
      *
-     * @throws NullPointerException if {@code hostPortString} is null
+     * @param hostPortString a string containing host and port, e.g. foo.com:9000
+     * @return a new SimpleHostAndPort instance
+     * @throws NullPointerException  if {@code hostPortString} is null
      * @throws IllegalStateException if not in the expected format
      * @throws NumberFormatException if port is not a valid number
      */

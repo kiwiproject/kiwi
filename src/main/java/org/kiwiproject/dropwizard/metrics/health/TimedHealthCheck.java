@@ -23,15 +23,18 @@ public class TimedHealthCheck extends HealthCheck {
     /**
      * The actual healthcheck to run
      */
-    private HealthCheck delegate;
+    private final HealthCheck delegate;
 
     /**
      * The duration to wait for the healthcheck to return. Defaults to 5 seconds.
      */
-    private Duration timeout;
+    private final Duration timeout;
 
     /**
-     * Creates a new TimedHealthCheck with the given {@code delegate} {@link HealthCheck} and the default timeout (5 seconds).
+     * Creates a new TimedHealthCheck with the given {@code delegate} {@link HealthCheck} and the
+     * default timeout (5 seconds).
+     *
+     * @param delegate the target health check
      */
     public TimedHealthCheck(HealthCheck delegate) {
         this(delegate, Duration.seconds(5));
@@ -39,6 +42,9 @@ public class TimedHealthCheck extends HealthCheck {
 
     /**
      * Creates a new TimedHealthCheck with the given ({@code delegate} {@link HealthCheck} and the given {@code timeout}.
+     *
+     * @param delegate the target health check
+     * @param timeout  the timeout to use
      */
     public TimedHealthCheck(HealthCheck delegate, Duration timeout) {
         this.delegate = delegate;

@@ -77,6 +77,7 @@ public class KiwiInternetAddresses {
     /**
      * Get local host as a {@link SimpleHostInfo}.
      *
+     * @param defaultValue the default value to use if local host could not be obtained for any reason
      * @return the local host info, or the specified {@code defaultValue} if <em>any</em> error occurred
      */
     public static SimpleHostInfo getLocalHostInfo(SimpleHostInfo defaultValue) {
@@ -86,6 +87,7 @@ public class KiwiInternetAddresses {
     /**
      * Get local host as a {@link InetAddress}.
      *
+     * @param defaultValue the default value to use if local host address could not be obtained for any reason
      * @return the local host info, or the specified {@code defaultValue} if <em>any</em> error occurred
      */
     public static InetAddress getLocalHostInetAddress(InetAddress defaultValue) {
@@ -95,7 +97,10 @@ public class KiwiInternetAddresses {
     /**
      * Get local host as a {@link SimpleHostInfo}.
      *
-     * @return the local host info, or the value obtained from the {@code defaultValueSupplier} if <em>any</em> error occurred
+     * @param defaultValueSupplier supplier for the default value to use if local host could not be obtained
+     *                             for any reason
+     * @return the local host info, or the value obtained from the {@code defaultValueSupplier}
+     * if <em>any</em> error occurred
      */
     public static SimpleHostInfo getLocalHostInfo(Supplier<SimpleHostInfo> defaultValueSupplier) {
         return getLocalHostInfo().orElseGet(defaultValueSupplier);
@@ -104,7 +109,10 @@ public class KiwiInternetAddresses {
     /**
      * Get local host as a {@link InetAddress}.
      *
-     * @return the local host info, or the value obtained from the {@code defaultValueSupplier} if <em>any</em> error occurred
+     * @param defaultValueSupplier supplier for the default value to use if local host address could not be obtained
+     *                             for any reason
+     * @return the local host info, or the value obtained from the {@code defaultValueSupplier}
+     * if <em>any</em> error occurred
      */
     public static InetAddress getLocalHostInetAddress(Supplier<InetAddress> defaultValueSupplier) {
         return getLocalHostInetAddress().orElseGet(defaultValueSupplier);
@@ -175,11 +183,14 @@ public class KiwiInternetAddresses {
     @Builder
     @ToString
     public static class SimpleHostInfo {
-        private String hostName;
-        private String ipAddr;
+        private final String hostName;
+        private final String ipAddr;
 
         /**
          * Create instance from an {@link InetAddress}
+         *
+         * @param address the internet address
+         * @return a new SimpleHostInfo instance
          */
         public static SimpleHostInfo fromInetAddress(InetAddress address) {
             return from(address.getHostName(), address.getHostAddress());
@@ -187,6 +198,10 @@ public class KiwiInternetAddresses {
 
         /**
          * Create instance from host name and ip address
+         *
+         * @param hostName the host name
+         * @param ipAddr   the IP address
+         * @return a new SimpleHostInfo instance
          */
         public static SimpleHostInfo from(String hostName, String ipAddr) {
             return SimpleHostInfo.builder()

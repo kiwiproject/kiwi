@@ -18,8 +18,11 @@ public class KiwiPaths {
     /**
      * This wraps Guava's {@link Resources#getResource(String)} and converts it to a {@link Path}
      *
+     * @param resourceName the resource name
+     * @return the {@link Path} of the given resource name
      * @see Resources#getResource(String)
      */
+    @SuppressWarnings("UnstableApiUsage") // because Guava's Resources has been around for a long time
     public static Path pathFromResourceName(String resourceName) {
         try {
             return Paths.get(Resources.getResource(resourceName).toURI());
