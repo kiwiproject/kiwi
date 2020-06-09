@@ -1,0 +1,26 @@
+{
+  "root": {
+    "str": "string",
+    "bool": true,
+    "number": 1.234,
+    "obj": {
+      "foo": "bar"
+    },
+    "array": [
+      "a",
+      "b",
+      "c"
+    ],
+    "objArray": [
+      {
+        "a": "aaa"
+      },
+      {
+        "b": "bbb"
+      },
+      {
+        "c": "ccc"
+      }
+    ]
+  }
+}
