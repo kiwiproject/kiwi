@@ -232,7 +232,7 @@ class JsonHelperBasicsTest {
             assertThat(jsonHelper.toJson(1.2345)).isEqualTo("1.2345");
 
             assertThat(jsonHelper.toJson(List.of("a", "b", "c")))
-                    .isEqualTo(FixtureHelpers.fixture("JsonHelperTests/sampleList.json"));
+                    .isEqualToIgnoringWhitespace(FixtureHelpers.fixture("JsonHelperTests/sampleList.json"));
         }
 
         @Test
