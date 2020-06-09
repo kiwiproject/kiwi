@@ -1,0 +1,28 @@
+{
+  "stringVar": "string",
+  "intVar": 123,
+  "doubleVar": 4.567,
+  "objectVar": "string-object",
+  "stringList": [
+    "a",
+    "b",
+    "c"
+  ],
+  "objectList": [
+    {
+      "foo1": "bar1"
+    },
+    {
+      "foo2": "bar2"
+    }
+  ],
+  "objectMap": {
+    "key1": "val1",
+    "key2": "val2",
+    "key3": "val3",
+    "key4": [
+      4.1,
+      4.2
+    ]
+  }
+}
