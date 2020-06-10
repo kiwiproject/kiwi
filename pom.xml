@@ -87,7 +87,6 @@
         <javassist.version>3.27.0-GA</javassist.version>
         <jetty-server.version>9.4.29.v20200521</jetty-server.version>
         <joda-time.version>2.10.6</joda-time.version>
-        <logback-classic.version>1.2.3</logback-classic.version>
         <lombok.version>1.18.12</lombok.version>
         <postgresql.version>42.2.12</postgresql.version>
         <spring.version>5.2.6.RELEASE</spring.version>
@@ -112,6 +111,7 @@
         <assertj.version>3.16.1</assertj.version>
         <awaitility.version>4.0.3</awaitility.version>
         <junit.jupiter.version>5.6.2</junit.jupiter.version>
+        <logback-classic.version>1.2.3</logback-classic.version>
         <mockito.version>3.3.3</mockito.version>
 
         <!-- Versions for plugins -->
