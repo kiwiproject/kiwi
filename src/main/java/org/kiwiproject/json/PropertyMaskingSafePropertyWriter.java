@@ -5,6 +5,7 @@ import static java.util.stream.Collectors.toUnmodifiableList;
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.databind.SerializerProvider;
 import com.fasterxml.jackson.databind.ser.BeanPropertyWriter;
+import com.google.common.annotations.VisibleForTesting;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.List;
@@ -19,8 +20,8 @@ import java.util.regex.Pattern;
  * This writer also allows masking (hiding the true value) of certain fields based on their name by writing out
  * asterisks instead of the true value.
  * <p>
- * NOTE: Generally this should be used only on String fields, because otherwise the type in the resulting JSON will be
- * different than the source type. For example, if a class has a "secretNumber" of type "int" and it is masked, the
+ * NOTE: Generally masking should be used only on String fields, because otherwise the type in the resulting JSON will
+ * be different than the source type. For example, if a class has a "secretNumber" of type "int" and it is masked, the
  * resulting JSON contains a String instead of an int, which will likely cause problems if a downstream system reads
  * the JSON expecting an int. For such cases, consider using {@link com.fasterxml.jackson.annotation.JsonView} instead.
  * <p>
@@ -29,21 +30,40 @@ import java.util.regex.Pattern;
 @Slf4j
 public class PropertyMaskingSafePropertyWriter extends BeanPropertyWriter {
 
-    private static final String DEFAULT_HIDDEN_TEXT_REPLACEMENT = "********";
-    private static final String DEFAULT_FAILED_TEXT_REPLACEMENT = "(unable to serialize field)";
-
     private final List<Pattern> hiddenFieldPatterns;
+    private final String maskedFieldReplacementText;
+    private final String serializationErrorReplacementText;
 
     /**
-     * Construct new instance wrapping the given {@link BeanPropertyWriter} and the given list of (String)
+     * Construct new instance wrapping the given {@link BeanPropertyWriter} using the given list of (String)
      * regular expressions that define the properties which should be masked.
+     * <p>
+     * Default values for masked fields and serialization errors are used. The default values are
+     * defined by {@link PropertyMaskingOptions}.
      *
      * @param base               the base or delegate {@link BeanPropertyWriter} to use
      * @param maskedFieldRegexps list containing regular expressions that define the properties to mask
      */
     public PropertyMaskingSafePropertyWriter(BeanPropertyWriter base, List<String> maskedFieldRegexps) {
+        this(base, PropertyMaskingOptions.builder()
+                .maskedFieldRegexps(maskedFieldRegexps)
+                .build());
+    }
+
+    /**
+     * Construct new instance wrapping the given {@link BeanPropertyWriter} using the given
+     * {@link PropertyMaskingOptions} to define properties to be masked, as well as replacement text for
+     * masked fields and serialization errors.
+     *
+     * @param base    the base or delegate {@link BeanPropertyWriter} to use
+     * @param options the options to use
+     * @see PropertyMaskingOptions
+     */
+    public PropertyMaskingSafePropertyWriter(BeanPropertyWriter base, PropertyMaskingOptions options) {
         super(base);
-        this.hiddenFieldPatterns = convertToPatterns(maskedFieldRegexps);
+        this.hiddenFieldPatterns = convertToPatterns(options.getMaskedFieldRegexps());
+        this.maskedFieldReplacementText = options.getMaskedFieldReplacementText();
+        this.serializationErrorReplacementText = options.getSerializationErrorReplacementText();
     }
 
     private static List<Pattern> convertToPatterns(List<String> maskedFieldRegexps) {
@@ -59,7 +79,7 @@ public class PropertyMaskingSafePropertyWriter extends BeanPropertyWriter {
         try {
             LOG.trace("Using custom serializer for field: {}", propertyName);
             if (matchesExclusionPatterns(propertyName)) {
-                writeReplacementText(gen, propertyName, DEFAULT_HIDDEN_TEXT_REPLACEMENT);
+                writeReplacementText(gen, propertyName, maskedFieldReplacementText);
             } else {
                 super.serializeAsField(bean, gen, prov);
             }
@@ -67,7 +87,7 @@ public class PropertyMaskingSafePropertyWriter extends BeanPropertyWriter {
             LOG.debug("Unable to serialize: {}, of {} instance, exception {}: {}",
                     propertyName, bean.getClass().getName(), e.getClass().getName(), e.getMessage());
             LOG.trace("Exception serializing field: {}", propertyName, e);
-            writeReplacementText(gen, propertyName, DEFAULT_FAILED_TEXT_REPLACEMENT);
+            writeReplacementText(gen, propertyName, serializationErrorReplacementText);
         }
     }
 
@@ -75,7 +95,8 @@ public class PropertyMaskingSafePropertyWriter extends BeanPropertyWriter {
         return hiddenFieldPatterns.stream().anyMatch(pattern -> pattern.matcher(name).find());
     }
 
-    private static void writeReplacementText(JsonGenerator gen, String name, String text) {
+    @VisibleForTesting
+    static void writeReplacementText(JsonGenerator gen, String name, String text) {
         LOG.trace("Setting field '{}' to: {}", name, text);
         try {
             gen.writeFieldName(name);
