@@ -211,19 +211,41 @@ public class JsonHelper {
      * @see DataFormatDetector#findFormat(byte[])
      */
     public boolean isJson(@Nullable String content, Charset charset) {
-        return isJson(content, charset, jsonFormatDetector);
+        return detectJson(content, charset, jsonFormatDetector).isJson();
+    }
+
+    /**
+     * Use Jackson's data format detection to determine if the given content is JSON, assuming UTF-8 as the charset.
+     *
+     * @param content the content to check
+     * @return the detection result
+     */
+    public JsonDetectionResult detectJson(@Nullable String content) {
+        return detectJson(content, StandardCharsets.UTF_8);
+    }
+
+    /**
+     * Use Jackson's data format detection to determine if the given content is JSON.
+     *
+     * @param content the content to check
+     * @param charset the character set to use
+     * @return the detection result
+     */
+    public JsonDetectionResult detectJson(@Nullable String content, Charset charset) {
+        return detectJson(content, charset, jsonFormatDetector);
     }
 
     @VisibleForTesting
-    static boolean isJson(@Nullable String content, Charset charset, DataFormatDetector formatDetector) {
+    static JsonDetectionResult detectJson(@Nullable String content, Charset charset, DataFormatDetector formatDetector) {
         try {
-            return isNotBlank(content) && formatDetector.findFormat(content.getBytes(charset)).hasMatch();
+            var result = isNotBlank(content) && formatDetector.findFormat(content.getBytes(charset)).hasMatch();
+            return new JsonDetectionResult(result, null);
         } catch (IOException ex) {
             LOG.warn("Unable to determine content format. " +
                             "Enable TRACE logging to see exception details. Exception type: {}. Exception message: {}",
                     ex.getClass().getName(), ex.getMessage());
             LOG.trace("Exception details:", ex);
-            return false;
+            return new JsonDetectionResult(null, ex);
         }
     }
 

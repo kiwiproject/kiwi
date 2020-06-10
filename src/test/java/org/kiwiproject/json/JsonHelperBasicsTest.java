@@ -33,6 +33,7 @@ import org.junit.jupiter.params.provider.CsvSource;
 import org.junit.jupiter.params.provider.NullAndEmptySource;
 import org.junit.jupiter.params.provider.ValueSource;
 import org.kiwiproject.json.JsonHelper.OutputFormat;
+import org.kiwiproject.junit.jupiter.WhiteBoxTest;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
@@ -187,14 +188,39 @@ class JsonHelperBasicsTest {
         void shouldCheckIsJson(String content, boolean expectedResult) {
             assertThat(jsonHelper.isJson(content)).isEqualTo(expectedResult);
         }
+    }
 
-        @Test
+    @Nested
+    class DetectJson {
+
+        @ParameterizedTest
+        @CsvSource({
+                "{\"foo\": true}, true",
+                "<html></html>, false",
+                "not json, false"
+        })
+        void shouldDetectIfJson(String content, boolean expectedResult) {
+            var result = jsonHelper.detectJson(content);
+
+            assertThat(result.hasDetectionResult()).isTrue();
+            assertThat(result.isJson()).isEqualTo(expectedResult);
+            assertThat(result.hasError()).isFalse();
+            assertThat(result.getErrorOrNull()).isNull();
+        }
+
+        @WhiteBoxTest
         void shouldCatchIOExceptions() throws IOException {
             var formatDetector = mock(DataFormatDetector.class);
-            when(formatDetector.findFormat(any(byte[].class))).thenThrow(new IOException("oops"));
+            when(formatDetector.findFormat(any(byte[].class))).thenThrow(new IOException("Whoops!"));
 
             var content = "{}";
-            assertThat(JsonHelper.isJson(content, StandardCharsets.UTF_8, formatDetector)).isFalse();
+            var result = JsonHelper.detectJson(content, StandardCharsets.UTF_8, formatDetector);
+            assertThat(result.hasDetectionResult()).isFalse();
+            assertThat(result.isJson()).isFalse();
+            assertThat(result.hasError()).isTrue();
+            assertThat(result.getErrorOrNull())
+                    .isExactlyInstanceOf(IOException.class)
+                    .hasMessage("Whoops!");
 
             verify(formatDetector).findFormat(content.getBytes(StandardCharsets.UTF_8));
         }
