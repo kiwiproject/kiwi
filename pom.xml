@@ -144,7 +144,7 @@
         NOTES:
         1. Exclusions are due to version conflicts (found using Maven Enforcer plugin)
         2. When there are version conflicts, we exclude that dependency, then add an explicit dependency.
-        3. The only required dependencies at the moment are guava and commons-lang3.
+        3. The only required dependencies at the moment are guava, commons-lang3, and slf4j-api.
         4. All other third party dependencies have 'provided' scope such that we won't always
            bring in every single transitive dependency.
         5. Because most third party dependencies are provided, you will need to add them to your
