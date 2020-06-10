@@ -23,6 +23,8 @@ import java.util.regex.Pattern;
  * different than the source type. For example, if a class has a "secretNumber" of type "int" and it is masked, the
  * resulting JSON contains a String instead of an int, which will likely cause problems if a downstream system reads
  * the JSON expecting an int. For such cases, consider using {@link com.fasterxml.jackson.annotation.JsonView} instead.
+ * <p>
+ * Note that jackson-core and jackson-databind must be available at runtime.
  */
 @Slf4j
 public class PropertyMaskingSafePropertyWriter extends BeanPropertyWriter {
