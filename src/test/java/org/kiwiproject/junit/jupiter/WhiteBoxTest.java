@@ -9,12 +9,13 @@ import java.lang.annotation.Target;
 
 /**
  * Indicator that a test is "white box", generally used to indicate a test is calling a non-public API.
- * This is often useful when testing complex internal logic or exceptions thay are difficult or near impossible
+ * This is often useful when testing complex internal logic or exceptions that are difficult or near impossible
  * to simulate.
  * <p>
- * TODO Should we make this a public part of kiwi?
+ * This is also in kiwi-test as part of its public API. However, because we don't want to create a cycle between
+ * kiwi and kiwi-test (or create yet another library that both depend on) it is duplicated here in kiwi.
  */
-@Target(ElementType.METHOD)
+@Target({ElementType.ANNOTATION_TYPE, ElementType.METHOD})
 @Retention(RetentionPolicy.RUNTIME)
 @Test
 public @interface WhiteBoxTest {
