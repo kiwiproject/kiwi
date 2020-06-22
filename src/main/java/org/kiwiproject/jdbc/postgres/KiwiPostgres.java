@@ -32,7 +32,7 @@ public class KiwiPostgres {
     }
 
     /**
-     * Creates a new {@link PGobject} of type {@link #JSONB_TYPE} with teh given JSON value.
+     * Creates a new {@link PGobject} of type {@link #JSONB_TYPE} with the given JSON value.
      *
      * @param jsonValue the JSON value as a {@link String}
      * @return a PGobject of type {@code jsonb} with the given JSON string value
