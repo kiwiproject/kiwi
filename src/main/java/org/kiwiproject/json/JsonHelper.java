@@ -263,6 +263,7 @@ public class JsonHelper {
      * Convert the given object to JSON using the given format.
      *
      * @param object the object to convert
+     * @param format the format to use
      * @return a JSON representation of the given object, or {@code null} if the given object is {@code null}
      */
     public String toJson(@Nullable Object object, OutputFormat format) {
@@ -365,9 +366,10 @@ public class JsonHelper {
     /**
      * Convert the given JSON into the specified type, or return the given default value if input JSON is blank.
      *
-     * @param json  the JSON content
-     * @param clazz the type of object to convert into
-     * @param <T>   the object type
+     * @param json         the JSON content
+     * @param clazz        the type of object to convert into
+     * @param defaultValue the default value to use if necessary
+     * @param <T>          the object type
      * @return a new instance of the given type, or return {@code defaultValue} if the given input JSON is blank
      */
     public <T> T toObjectOrDefault(@Nullable String json, Class<T> clazz, T defaultValue) {
@@ -381,9 +383,10 @@ public class JsonHelper {
     /**
      * Convert the given JSON into the specified type, or return the supplied default value if input JSON is blank.
      *
-     * @param json  the JSON content
-     * @param clazz the type of object to convert into
-     * @param <T>   the object type
+     * @param json                 the JSON content
+     * @param clazz                the type of object to convert into
+     * @param defaultValueSupplier the default value {@link Supplier} to call if necessary
+     * @param <T>                  the object type
      * @return a new instance of the given type, or return the value supplied by {@code defaultValueSupplier} if
      * the given input JSON is blank
      */
