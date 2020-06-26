@@ -3,6 +3,7 @@ package org.kiwiproject.retry;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
 import static org.assertj.core.api.Assertions.assertThatIllegalStateException;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.kiwiproject.collect.KiwiLists.second;
 import static org.kiwiproject.collect.KiwiLists.third;
 
@@ -37,6 +38,25 @@ class RetryResultTest {
             assertThat(UUIDs.isValidUUID(result.getResultUuid())).isTrue();
         }
 
+        @Test
+        void shouldMakeUnmodifiableCopyOfErrorsList() {
+            var newError = new IllegalStateException();
+            var errors = result.getErrors();
+
+            assertThat(errors).isNotSameAs(mutableErrorsList);
+
+            assertThatThrownBy(() -> errors.add(newError))
+                    .describedAs("Errors should not be modifiable after construction")
+                    .isExactlyInstanceOf(UnsupportedOperationException.class);
+        }
+
+        @Test
+        void shouldAcceptNullErrorsList() {
+            result = new RetryResult<>(1, 5, 84, null);
+
+            assertThat(result.getErrors()).isEmpty();
+        }
+
         @Nested
         class ShouldThrowIllegalArgumentException {
 
@@ -45,13 +65,6 @@ class RetryResultTest {
                 assertThatIllegalArgumentException()
                         .isThrownBy(() -> new RetryResult<Integer>(6, 5, null, List.of()))
                         .withMessage("numAttemptsMade (6) is not less or equal to maxAttempts (5)");
-            }
-
-            @Test
-            void whenGivenNullErrorsList() {
-                assertThatIllegalArgumentException()
-                        .isThrownBy(() -> new RetryResult<>(1, 5, "the answer", null))
-                        .withMessage("errors cannot be null; pass empty list if there are no errors");
             }
         }
     }
