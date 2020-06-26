@@ -1,6 +1,7 @@
 package org.kiwiproject.retry;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
 import static org.assertj.core.api.Assertions.assertThatIllegalStateException;
 import static org.kiwiproject.collect.KiwiLists.second;
 import static org.kiwiproject.collect.KiwiLists.third;
@@ -35,6 +36,24 @@ class RetryResultTest {
             assertThat(result.getResultUuid()).isNotBlank();
             assertThat(UUIDs.isValidUUID(result.getResultUuid())).isTrue();
         }
+
+        @Nested
+        class ShouldThrowIllegalArgumentException {
+
+            @Test
+            void whenNumAttemptsMoreThanMaxAttempts() {
+                assertThatIllegalArgumentException()
+                        .isThrownBy(() -> new RetryResult<Integer>(6, 5, null, List.of()))
+                        .withMessage("numAttemptsMade (6) is not less or equal to maxAttempts (5)");
+            }
+
+            @Test
+            void whenGivenNullErrorsList() {
+                assertThatIllegalArgumentException()
+                        .isThrownBy(() -> new RetryResult<>(1, 5, "the answer", null))
+                        .withMessage("errors cannot be null; pass empty list if there are no errors");
+            }
+        }
     }
 
     @Nested
@@ -63,7 +82,7 @@ class RetryResultTest {
         @Test
         void shouldHaveNoErrors() {
             assertThat(result.hasAnyErrors()).isFalse();
-            assertThat(result.getNumErrors()).isEqualTo(0);
+            assertThat(result.getNumErrors()).isZero();
         }
 
         @Test

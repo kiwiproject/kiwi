@@ -1,6 +1,9 @@
 package org.kiwiproject.retry;
 
+import static com.google.common.base.Preconditions.checkArgument;
 import static java.util.Objects.nonNull;
+import static java.util.stream.Collectors.toSet;
+import static org.kiwiproject.base.KiwiPreconditions.checkArgumentNotNull;
 import static org.kiwiproject.collect.KiwiLists.last;
 
 import lombok.Getter;
@@ -9,7 +12,6 @@ import org.kiwiproject.base.UUIDs;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 /**
  * Defines a result of one or more attempts to get some type of object. The list of errors should reflect the order
@@ -47,11 +49,15 @@ public class RetryResult<T> {
      *                        errors occurred
      */
     public RetryResult(int numAttemptsMade, int maxAttempts, T object, List<Exception> errors) {
+        checkArgument(numAttemptsMade <= maxAttempts,
+                "numAttemptsMade (%s) is not less or equal to maxAttempts (%s)", numAttemptsMade, maxAttempts);
+        checkArgumentNotNull(errors, "errors cannot be null; pass empty list if there are no errors");
+
         this.resultUuid = UUIDs.randomUUIDString();
         this.numAttemptsMade = numAttemptsMade;
         this.maxAttempts = maxAttempts;
         this.object = object;
-        this.errors = errors;
+        this.errors = List.copyOf(errors);
     }
 
     /**
@@ -166,6 +172,6 @@ public class RetryResult<T> {
     public Set<String> getUniqueErrorTypes() {
         return errors.stream()
                 .map(e -> e.getClass().getName())
-                .collect(Collectors.toSet());
+                .collect(toSet());
     }
 }
