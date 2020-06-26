@@ -3,12 +3,13 @@ package org.kiwiproject.retry;
 import static com.google.common.base.Preconditions.checkArgument;
 import static java.util.Objects.nonNull;
 import static java.util.stream.Collectors.toSet;
-import static org.kiwiproject.base.KiwiPreconditions.checkArgumentNotNull;
+import static org.kiwiproject.collect.KiwiLists.isNullOrEmpty;
 import static org.kiwiproject.collect.KiwiLists.last;
 
 import lombok.Getter;
 import org.kiwiproject.base.UUIDs;
 
+import javax.annotation.Nullable;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
@@ -45,19 +46,18 @@ public class RetryResult<T> {
      * @param numAttemptsMade the number of attempts (must be less than or equal to max attempts)
      * @param maxAttempts     the maximum number of attempts
      * @param object          the result, or {@code null}
-     * @param errors          a non-null list containing any errors that occurred on attempts, or empty list if no
-     *                        errors occurred
+     * @param errors          a list containing any errors that occurred on attempts, or {@code null} or empty list
+     *                        if no errors occurred
      */
-    public RetryResult(int numAttemptsMade, int maxAttempts, T object, List<Exception> errors) {
+    public RetryResult(int numAttemptsMade, int maxAttempts, @Nullable T object, @Nullable List<Exception> errors) {
         checkArgument(numAttemptsMade <= maxAttempts,
                 "numAttemptsMade (%s) is not less or equal to maxAttempts (%s)", numAttemptsMade, maxAttempts);
-        checkArgumentNotNull(errors, "errors cannot be null; pass empty list if there are no errors");
 
         this.resultUuid = UUIDs.randomUUIDString();
         this.numAttemptsMade = numAttemptsMade;
         this.maxAttempts = maxAttempts;
         this.object = object;
-        this.errors = List.copyOf(errors);
+        this.errors = isNullOrEmpty(errors) ? List.of() : List.copyOf(errors);
     }
 
     /**
