@@ -17,6 +17,14 @@
     -->
     <logger name="org.kiwiproject.logging.LazyLogParameterSupplierTest" level="DEBUG"/>
 
+    <!-- This is required for the RetryResultLoggerTest -->
+    <appender name="MEMORY" class="org.kiwiproject.retry.InMemoryAppender"/>
+
+    <!-- This is required for the RetryResultLoggerTest -->
+    <logger name="org.kiwiproject.retry.RetryResultLoggerTest" level="DEBUG">
+        <appender-ref ref="MEMORY"/>
+    </logger>
+
     <root level="INFO">
         <appender-ref ref="STDOUT"/>
     </root>

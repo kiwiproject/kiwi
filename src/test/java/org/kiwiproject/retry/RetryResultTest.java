@@ -231,7 +231,7 @@ class RetryResultTest {
 
         @Test
         void shouldReturnUniqueTypes_WhenErrorsHaveDifferentTypes() {
-            result = new RetryResult<Integer>(5, 5, null, List.of(
+            result = new RetryResult<>(5, 5, null, List.of(
                     new IllegalArgumentException("attempt 1 error"),
                     new IllegalStateException("attempt 2 error"),
                     new IllegalAccessException("attempt 3 error"),
