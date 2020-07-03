@@ -2,6 +2,7 @@ package org.kiwiproject.retry;
 
 import static java.util.Comparator.comparing;
 import static java.util.stream.Collectors.toList;
+import static org.assertj.core.api.Assertions.assertThat;
 
 import ch.qos.logback.classic.spi.ILoggingEvent;
 import ch.qos.logback.core.AppenderBase;
@@ -25,6 +26,16 @@ public class InMemoryAppender extends AppenderBase<ILoggingEvent> {
     public InMemoryAppender() {
         this.messageOrder = new AtomicInteger();
         this.eventMap = new ConcurrentHashMap<>();
+    }
+
+    /**
+     * Assert this appender has the expected number of logging events, and if the assertion succeeds, return a
+     * list containing those events.
+     */
+    List<ILoggingEvent> assertNumberOfLoggingEventsAndGet(int expectedEventCount) {
+        var events = getOrderedEvents();
+        assertThat(events).hasSize(expectedEventCount);
+        return events;
     }
 
     @Override
