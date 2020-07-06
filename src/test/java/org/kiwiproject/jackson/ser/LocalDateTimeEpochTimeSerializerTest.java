@@ -47,7 +47,7 @@ class LocalDateTimeEpochTimeSerializerTest {
         jsonGenerator.close();
 
         var nowEpochMillisInUTC = nowInNewYork.atZone(ZoneId.of("UTC")).toInstant().toEpochMilli();
-        assertThat(writer.toString()).isEqualTo(String.valueOf(nowEpochMillisInUTC));
+        assertThat(writer).hasToString(String.valueOf(nowEpochMillisInUTC));
 
         // Sanity check the offset...
         var offsetSeconds = zoneOffset.getTotalSeconds();
@@ -67,7 +67,7 @@ class LocalDateTimeEpochTimeSerializerTest {
         jsonGenerator.close();
 
         var nowEpochMillisInChicago = nowInNewYork.atZone(chicagoZoneId).toInstant().toEpochMilli();
-        assertThat(writer.toString()).isEqualTo(String.valueOf(nowEpochMillisInChicago));
+        assertThat(writer).hasToString(String.valueOf(nowEpochMillisInChicago));
 
         // Sanity check the offset...
         var expectedDiffInSeconds = diffInSecondsBetweenZones(nowInNewYork, newYorkZoneId, chicagoZoneId);
