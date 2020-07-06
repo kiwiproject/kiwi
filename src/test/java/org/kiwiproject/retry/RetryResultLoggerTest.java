@@ -382,9 +382,7 @@ class RetryResultLoggerTest {
     }
 
     private List<ILoggingEvent> assertNumberOfLoggingEventsAndGet(int expectedEventCount) {
-        var events = appender.getOrderedEvents();
-        assertThat(events).hasSize(expectedEventCount);
-        return events;
+        return appender.assertNumberOfLoggingEventsAndGet(expectedEventCount);
     }
 
     private static class GeneralDataException extends RuntimeException {
