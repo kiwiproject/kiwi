@@ -24,8 +24,12 @@ import java.util.stream.IntStream;
 /**
  * Static utilities for retrying an operation. The {@link Supplier} passed to each method must indicate success or
  * failure. Success is indicated by returning a non-null value. Failure is indicated by returning {@code null} or
- * by throwing an exception. Each time a failure occurs, another attempt will be made unless the maximum number
- * of attempts has been reached.
+ * by throwing an exception. Each time a failure occurs, the code sleeps for the specified delay time, and then
+ * another attempt will be made unless the maximum number of attempts has been reached.
+ * <p>
+ * While you can use this directly, consider using {@link SimpleRetryer}, which is more flexible because (1) you
+ * can easily mock it in tests, and (2) it accepts common configuration options and makes the method calls
+ * simpler because there are many fewer arguments.
  */
 @SuppressWarnings("WeakerAccess")
 @UtilityClass
