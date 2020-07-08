@@ -3,6 +3,8 @@ package org.kiwiproject.retry;
 import static com.google.common.base.Verify.verify;
 import static java.util.Objects.nonNull;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatCode;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.assertj.core.api.Assertions.catchThrowable;
 
 import com.github.rholder.retry.RetryException;
@@ -19,6 +21,9 @@ import java.net.NoRouteToHostException;
 import java.net.SocketTimeoutException;
 import java.net.UnknownHostException;
 import java.util.concurrent.Callable;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.CompletionException;
+import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.concurrent.TimeUnit;
 
@@ -383,7 +388,128 @@ class KiwiRetryerTest {
                         .hasMessage("connect error");
             }
         }
+    }
 
+    @Nested
+    class WhenCallingConcurrently {
+
+        @Test
+        void shouldHandleAllSuccessful() {
+            final var unacceptableValue = 21;
+
+            Callable<Integer> callable1 = new Callable<>() {
+                private int attempt = 0;
+
+                @Override
+                public Integer call() {
+                    ++attempt;
+                    if (attempt == 1) {
+                        return unacceptableValue;
+                    }
+                    return 42;
+                }
+            };
+
+            Callable<Integer> callable2 = new Callable<>() {
+                private int attempt = 0;
+
+                @Override
+                public Integer call() {
+                    ++attempt;
+                    if (attempt < 3) {
+                        throw new RuntimeException("oops on attempt " + attempt);
+                    }
+                    return 84;
+                }
+            };
+
+            Callable<Integer> callable3 = () -> 168;
+
+            var retryer = KiwiRetryer.<Integer>builder()
+                    .retryerId("test")
+                    .retryOnAllExceptions(true)
+                    .resultPredicate(value -> nonNull(value) && value == unacceptableValue)
+                    .waitStrategy(WaitStrategies.fixedWait(10, TimeUnit.MILLISECONDS))
+                    .build();
+
+            var executor = Executors.newFixedThreadPool(3);
+
+            var future1 = CompletableFuture.supplyAsync(() ->
+                    retryer.call("test1", callable1), executor);
+            var future2 = CompletableFuture.supplyAsync(() ->
+                    retryer.call("test2", callable2), executor);
+            var future3 = CompletableFuture.supplyAsync(() ->
+                    retryer.call("test3", callable3), executor);
+
+            assertThatCode(() -> CompletableFuture.allOf(future1, future2, future3).join())
+                    .doesNotThrowAnyException();
+
+            assertThat(future1).isCompletedWithValueMatching(value -> value == 42);
+            assertThat(future2).isCompletedWithValueMatching(value -> value == 84);
+            assertThat(future3).isCompletedWithValueMatching(value -> value == 168);
+        }
+
+        @Test
+        void shouldHandleMixedSuccessAndFailure() {
+            Callable<Response> successfulResponseCallable = () -> Response.ok().build();
+            Callable<Response> errorResponseCallable = () -> Response.serverError().entity(2).build();
+            Callable<Response> throwingCallable = () -> {
+                throw new SocketTimeoutException("timeout!");
+            };
+
+            var retryer = KiwiRetryer.<Response>builder()
+                    .retryerId("test")
+                    .maxAttempts(7)
+                    .initialSleepTimeAmount(5)  // millis
+                    .retryIncrementTimeAmount(5)  // millis
+                    .retryOnAllExceptions(true)
+                    .resultPredicate(KiwiRetryerPredicates.IS_HTTP_500s)
+                    .processingLogLevel(Level.TRACE)
+                    .exceptionLogLevel(Level.DEBUG)
+                    .build();
+
+            var executor = Executors.newFixedThreadPool(3);
+
+            var future1 = CompletableFuture.supplyAsync(() ->
+                    retryer.call("test1", successfulResponseCallable), executor);
+            var future2 = CompletableFuture.supplyAsync(() ->
+                    retryer.call("test2", errorResponseCallable), executor);
+            var future3 = CompletableFuture.supplyAsync(() ->
+                    retryer.call("test3", throwingCallable), executor);
+            var allFutures = CompletableFuture.allOf(future1, future2, future3);
+
+            assertThatThrownBy(allFutures::join).isExactlyInstanceOf(CompletionException.class);
+
+            // First one should have succeeded
+            assertThat(future1).isCompletedWithValueMatching(response -> response.getStatus() == 200);
+
+            // Second one should have failed because of bad response status 500
+            var thrownByFuture2 = catchThrowable(future2::join);
+            assertThat(thrownByFuture2)
+                    .isExactlyInstanceOf(CompletionException.class)
+                    .hasCauseExactlyInstanceOf(KiwiRetryerException.class);
+            var kiwiRetryerException2 = (KiwiRetryerException) thrownByFuture2.getCause();
+            var unwrappedException2 = kiwiRetryerException2.unwrap().orElseThrow();
+            assertThat(unwrappedException2).isExactlyInstanceOf(RetryException.class);
+            var retryException2 = (RetryException) unwrappedException2;
+            var result2 = (Response) retryException2.getLastFailedAttempt().getResult();
+            assertThat(result2.getStatus()).isEqualTo(500);
+            assertThat(result2.getEntity()).isEqualTo(2);
+
+            // Third one should have failed because of SocketTimeoutException
+            var thrownByFuture3 = catchThrowable(future3::join);
+            assertThat(thrownByFuture3)
+                    .isExactlyInstanceOf(CompletionException.class)
+                    .hasCauseExactlyInstanceOf(KiwiRetryerException.class);
+            var kiwiRetryerException3 = (KiwiRetryerException) thrownByFuture3.getCause();
+            var unwrappedException3 = kiwiRetryerException3.unwrap().orElseThrow();
+            assertThat(unwrappedException3).isExactlyInstanceOf(RetryException.class);
+            var retryException3 = (RetryException) unwrappedException3;
+            var exception3 = retryException3.getLastFailedAttempt().getExceptionCause();
+            assertThat(exception3)
+                    .isExactlyInstanceOf(SocketTimeoutException.class)
+                    .hasMessage("timeout!");
+        }
     }
 
     private Callable<Response> exceptionThrowingResponseCallable() {
