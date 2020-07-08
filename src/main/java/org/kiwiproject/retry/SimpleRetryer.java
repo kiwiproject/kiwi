@@ -16,14 +16,13 @@ import java.util.function.Supplier;
  * directly.
  * <p>
  * You can construct a {@link SimpleRetryer} using the builder obtained via {@code SimpleRetryer.builder()}.
- * Available configuration options:
  * <table>
+ *     <caption>Available configuration options for SimpleRetryer:</caption>
  *      <tr>
  *         <th>Name</th>
  *         <th>Default</th>
  *         <th>Description</th>
  *     </tr>
- *     </thead>
  *     <tr>
  *          <td>environment</td>
  *          <td>a {@link DefaultEnvironment} instance</td>
