@@ -75,6 +75,17 @@ class KiwiRetryerTest {
             assertThat(response.getStatus()).isEqualTo(200);
         }
 
+        @Test
+        void whenCallWithNullRetryerId() {
+            Callable<Long> callable = () -> 42L;
+
+            var retryer = KiwiRetryer.<Long>builder().build();
+
+            var result = retryer.call(null, callable);
+
+            assertThat(result).isEqualTo(42L);
+        }
+
         @Nested
         class WhenReturnsResultBeforeMaxAttempts {
 
