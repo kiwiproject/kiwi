@@ -1,6 +1,7 @@
 package org.kiwiproject.retry;
 
 import static com.google.common.base.Verify.verify;
+import static java.util.Objects.nonNull;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.catchThrowable;
 
@@ -10,6 +11,7 @@ import com.github.rholder.retry.WaitStrategies;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
+import org.slf4j.event.Level;
 
 import javax.ws.rs.core.Response;
 import java.net.ConnectException;
@@ -224,6 +226,43 @@ class KiwiRetryerTest {
 
         @Nested
         class WhenMaxAttemptsReached {
+
+            @Test
+            void whenAlternatesExceptionsAndResultsThatMatchResultPredicate() {
+                var serviceUnavailableStatusCode = 503;
+
+                Callable<Response> exceptionOr503Callable = () -> {
+                    if (ThreadLocalRandom.current().nextBoolean()) {
+                        throw new UnknownHostException("don't know what or who this is!");
+                    }
+                    return Response.status(serviceUnavailableStatusCode).build();
+                };
+
+                var maxAttempts = 10;
+                var retryer = KiwiRetryer.<Response>builder()
+                        .retryerId("exceptionOr503")
+                        .maxAttempts(maxAttempts)
+                        .initialSleepTimeAmount(10)  // millis
+                        .retryIncrementTimeAmount(10)  // millis
+                        .retryOnAllExceptions(true)
+                        .resultPredicate(response ->
+                                nonNull(response) && response.getStatus() == serviceUnavailableStatusCode)
+                        .processingLogLevel(Level.TRACE)
+                        .exceptionLogLevel(Level.DEBUG)
+                        .build();
+
+                var thrown = catchThrowable(() -> retryer.call(exceptionOr503Callable));
+
+                assertThat(thrown)
+                        .isExactlyInstanceOf(KiwiRetryerException.class)
+                        .hasMessageStartingWith("KiwiRetryer exceptionOr503 failed all %d attempts. Error:",
+                                maxAttempts);
+
+                var unwrappedException = ((KiwiRetryerException) thrown).unwrap().orElseThrow();
+                assertThat(unwrappedException)
+                        .isExactlyInstanceOf(RetryException.class)
+                        .hasMessage("Retrying failed to complete successfully after %d attempts.", maxAttempts);
+            }
 
             @Test
             void whenDefaultExceptionsThrown() {
