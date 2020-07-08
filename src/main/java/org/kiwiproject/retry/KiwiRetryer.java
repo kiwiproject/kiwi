@@ -383,6 +383,10 @@ public class KiwiRetryer<T> {
             this.exceptionLogLevel = exceptionLogLevel;
         }
 
+        /**
+         * @implNote The {@link Attempt} should have either a result or an exception, but we are being safe here
+         * and explicitly checking both of those cases instead of making any assumptions.
+         */
         @Override
         public <V> void onRetry(Attempt<V> attempt) {
             var attemptNumber = attempt.getAttemptNumber();
