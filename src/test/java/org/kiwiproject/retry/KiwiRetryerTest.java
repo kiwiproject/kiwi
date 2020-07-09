@@ -408,7 +408,7 @@ class KiwiRetryerTest {
         void shouldHandleAllSuccessful() {
             final var unacceptableValue = 21;
 
-            Callable<Integer> callable1 = new Callable<>() {
+            var callable1 = new Callable<Integer>() {
                 private int attempt = 0;
 
                 @Override
@@ -421,7 +421,7 @@ class KiwiRetryerTest {
                 }
             };
 
-            Callable<Integer> callable2 = new Callable<>() {
+            var callable2 = new Callable<Integer>() {
                 private int attempt = 0;
 
                 @Override
