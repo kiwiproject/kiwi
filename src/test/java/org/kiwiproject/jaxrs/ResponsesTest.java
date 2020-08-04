@@ -1,24 +1,23 @@
 package org.kiwiproject.jaxrs;
 
-import org.assertj.core.api.JUnitSoftAssertions;
-import org.junit.Rule;
-import org.junit.Test;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
+
+import org.assertj.core.api.SoftAssertions;
+import org.assertj.core.api.junit.jupiter.SoftAssertionsExtension;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status.Family;
 import java.util.Arrays;
 import java.util.function.Consumer;
 
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
-
-public class ResponsesTest {
-
-    @Rule
-    public final JUnitSoftAssertions softly = new JUnitSoftAssertions();
+@ExtendWith(SoftAssertionsExtension.class)
+class ResponsesTest {
 
     @Test
-    public void testSuccessful_ForStatusCodes() {
+    void testSuccessful_ForStatusCodes(SoftAssertions softly) {
         forEachStatus(status -> {
             int statusCode = status.getStatusCode();
             boolean successfulFamily = successful(Family.familyOf(statusCode));
@@ -29,7 +28,7 @@ public class ResponsesTest {
     }
 
     @Test
-    public void testNotSuccessful_ForStatusCodes() {
+    void testNotSuccessful_ForStatusCodes(SoftAssertions softly) {
         forEachStatus(status -> {
             int statusCode = status.getStatusCode();
             boolean successfulFamily = successful(Family.familyOf(statusCode));
@@ -40,7 +39,7 @@ public class ResponsesTest {
     }
 
     @Test
-    public void testSuccessful_ForStatus() {
+    void testSuccessful_ForStatus(SoftAssertions softly) {
         forEachStatus(status -> {
             boolean successfulFamily = successful(Family.familyOf(status.getStatusCode()));
             softly.assertThat(Responses.successful(status))
@@ -50,7 +49,7 @@ public class ResponsesTest {
     }
 
     @Test
-    public void testNotSuccessful_ForStatus() {
+    void testNotSuccessful_ForStatus(SoftAssertions softly) {
         forEachStatus(status -> {
             boolean successfulFamily = successful(Family.familyOf(status.getStatusCode()));
             softly.assertThat(Responses.notSuccessful(status))
@@ -60,7 +59,7 @@ public class ResponsesTest {
     }
 
     @Test
-    public void testSuccessful_ForSuccessfulStatusType() {
+    void testSuccessful_ForSuccessfulStatusType(SoftAssertions softly) {
         Response.StatusType type = new Response.StatusType() {
             @Override
             public int getStatusCode() {
@@ -82,7 +81,7 @@ public class ResponsesTest {
     }
 
     @Test
-    public void testSuccessful_ForUnsuccessfulStatusType() {
+    void testSuccessful_ForUnsuccessfulStatusType(SoftAssertions softly) {
         Response.StatusType type = new Response.StatusType() {
             @Override
             public int getStatusCode() {
@@ -104,7 +103,7 @@ public class ResponsesTest {
     }
 
     @Test
-    public void testSuccessful_ForResponse() {
+    void testSuccessful_ForResponse(SoftAssertions softly) {
         forEachStatus(status -> {
             Response response = mock(Response.class);
             when(response.getStatus()).thenReturn(status.getStatusCode());
@@ -116,7 +115,7 @@ public class ResponsesTest {
     }
 
     @Test
-    public void testNotSuccessful_ForResponse() {
+    void testNotSuccessful_ForResponse(SoftAssertions softly) {
         forEachStatus(status -> {
             Response response = mock(Response.class);
             when(response.getStatus()).thenReturn(status.getStatusCode());
@@ -128,7 +127,7 @@ public class ResponsesTest {
     }
 
     @Test
-    public void testNotSuccessful_ForFamily() {
+    void testNotSuccessful_ForFamily(SoftAssertions softly) {
         Arrays.stream(Family.values()).forEach(family -> {
             boolean successfulFamily = successful(family);
             softly.assertThat(Responses.notSuccessful(family))
