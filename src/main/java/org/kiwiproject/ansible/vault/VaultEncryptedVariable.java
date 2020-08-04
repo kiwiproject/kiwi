@@ -16,6 +16,18 @@ import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.ThreadLocalRandom;
 
+/**
+ * Represents a variable encrypted using {@code ansible-vault encrypt_string}.
+ * <p>
+ * The constructor attempts to parse an ansible-vault encrypted variable, and will throw an
+ * {@link IllegalArgumentException} if the given encrypted string is not a valid ansible vault encrypted variable.
+ * <p>
+ * Assuming the encrypted input is value, the resulting instance provides accessor methods for the various
+ * components of the encrypted variable. These include variable name, ansible vault format version, cipher,
+ * vault ID label (optional), as well as the encrypted contents.
+ * <p>
+ * This is package-private as there is currently no reason for it to be public.
+ */
 @Getter(AccessLevel.PACKAGE)
 class VaultEncryptedVariable {
 
