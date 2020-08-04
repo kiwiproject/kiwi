@@ -10,6 +10,9 @@ import lombok.Builder;
 import javax.annotation.Nullable;
 import java.util.List;
 
+/**
+ * Generates {@code ansible-vault encrypt_string} commands.
+ */
 @Builder
 public class VaultEncryptStringCommand implements OsCommand {
 
@@ -19,12 +22,29 @@ public class VaultEncryptStringCommand implements OsCommand {
     private final String variableName;
     private final String plainText;
 
+    /**
+     * Create an instance.
+     *
+     * @param configuration the {@link VaultConfiguration} to use
+     * @param plainText     the plain text to encrypt
+     * @param variableName  the name of the variable
+     * @return the command
+     */
     public static VaultEncryptStringCommand from(VaultConfiguration configuration,
                                                  String plainText,
                                                  String variableName) {
         return from(configuration, null, plainText, variableName);
     }
 
+    /**
+     * Create an instance.
+     *
+     * @param configuration the {@link VaultConfiguration} to use
+     * @param vaultIdLabel  the label of the vault (for use with the {@code --vault-id} argument
+     * @param plainText     the plain text to encrypt
+     * @param variableName  the name of the variable
+     * @return the command
+     */
     public static VaultEncryptStringCommand from(VaultConfiguration configuration,
                                                  @Nullable String vaultIdLabel,
                                                  String plainText,

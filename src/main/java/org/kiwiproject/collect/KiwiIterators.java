@@ -66,7 +66,7 @@ public class KiwiIterators {
         return new ThreadSafeCyclicIterator<>(newArrayList(elements));
     }
 
-    // TODO Should this be made public and/or a top-level class?
+    // TODO Should this be made public and/or a top-level class???
     private static class ThreadSafeCyclicIterator<E> implements Iterator<E> {
 
         private final Iterator<E> cycler;

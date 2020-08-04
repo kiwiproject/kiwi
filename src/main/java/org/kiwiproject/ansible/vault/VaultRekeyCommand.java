@@ -8,6 +8,9 @@ import lombok.Builder;
 import java.nio.file.Paths;
 import java.util.List;
 
+/**
+ * Generates {@code ansible-vault rekey} commands.
+ */
 @Builder
 public class VaultRekeyCommand implements OsCommand {
 
@@ -16,6 +19,14 @@ public class VaultRekeyCommand implements OsCommand {
     private final String encryptedFilePath;
     private final String newVaultPasswordFilePath;
 
+    /**
+     * Create an instance.
+     *
+     * @param configuration            the {@link VaultConfiguration} to use
+     * @param encryptedFilePath        path to the encrypted file to rekey
+     * @param newVaultPasswordFilePath path to the vault password file containing the new password
+     * @return the command
+     */
     public static VaultRekeyCommand from(VaultConfiguration configuration,
                                          String encryptedFilePath,
                                          String newVaultPasswordFilePath) {

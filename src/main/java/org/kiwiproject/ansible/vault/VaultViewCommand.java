@@ -8,6 +8,9 @@ import lombok.Builder;
 import java.nio.file.Paths;
 import java.util.List;
 
+/**
+ * Generates {@code ansible-vault view} commands.
+ */
 @Builder
 public class VaultViewCommand implements OsCommand {
 
@@ -15,6 +18,13 @@ public class VaultViewCommand implements OsCommand {
     private final String vaultPasswordFilePath;
     private final String encryptedFilePath;
 
+    /**
+     * Create an instance.
+     *
+     * @param configuration     the {@link VaultConfiguration} to use
+     * @param encryptedFilePath path to the encrypted file to view
+     * @return the command
+     */
     public static VaultViewCommand from(VaultConfiguration configuration, String encryptedFilePath) {
         checkArgumentNotNull(configuration, "configuration cannot be null");
         checkArgumentNotBlank(encryptedFilePath, "encryptedFilePath cannot be blank");

@@ -10,6 +10,9 @@ import javax.annotation.Nullable;
 import java.nio.file.Paths;
 import java.util.List;
 
+/**
+ * Generates {@code ansible-vault decrypt} commands.
+ */
 @Builder
 public class VaultDecryptCommand implements OsCommand {
 
@@ -20,14 +23,34 @@ public class VaultDecryptCommand implements OsCommand {
     private final String encryptedFilePath;
     private final String outputFilePath;
 
+    /**
+     * Create an instance.
+     *
+     * @param configuration     the {@link VaultConfiguration} to use
+     * @param encryptedFilePath path to the encrypted file
+     * @return the command
+     */
     public static VaultDecryptCommand from(VaultConfiguration configuration, String encryptedFilePath) {
         return from(configuration, encryptedFilePath, null);
     }
 
+    /**
+     * Create an instance.
+     *
+     * @param configuration     the {@link VaultConfiguration} to use
+     * @param encryptedFilePath path to the encrypted file
+     * @return the command
+     */
     public static VaultDecryptCommand toStdoutFrom(VaultConfiguration configuration, String encryptedFilePath) {
         return from(configuration, encryptedFilePath, OUTPUT_FILE_STDOUT);
     }
 
+    /**
+     * @param configuration     the {@link VaultConfiguration} to use
+     * @param encryptedFilePath path to the encrypted file
+     * @param outputFilePath    path of the file where the decrypted output should be stored
+     * @return the command
+     */
     public static VaultDecryptCommand from(VaultConfiguration configuration,
                                            String encryptedFilePath,
                                            @Nullable String outputFilePath) {
