@@ -84,7 +84,7 @@
         <jakarta.ws.rs.rs-api.version>2.1.6</jakarta.ws.rs.rs-api.version>
         <jakarta.xml.bind-api.version>2.3.3</jakarta.xml.bind-api.version>
         <javassist.version>3.27.0-GA</javassist.version>
-        <jetty-server.version>9.4.29.v20200521</jetty-server.version>
+        <jetty-server.version>9.4.30.v20200611</jetty-server.version>
         <joda-time.version>2.10.6</joda-time.version>
         <lombok.version>1.18.12</lombok.version>
         <postgresql.version>42.2.12</postgresql.version>
