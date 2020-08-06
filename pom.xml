@@ -136,6 +136,14 @@
         <!-- Build properties -->
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+
+        <!--
+            Sonar properties, until version 3.8 of the Maven Sonar Scanner is released.
+            See https://community.sonarsource.com/t/java-parse-error-source-level-1-8-or-above-although-project-uses-11/22288
+            and https://jira.sonarsource.com/browse/MSONAR-174. But as of 2020-08-06 version 3.8 has not been released.
+        -->
+        <sonar.java.source>11</sonar.java.source>
+        <sonar.java.target>11</sonar.java.target>
     </properties>
 
     <dependencies>
