@@ -1,0 +1,19 @@
+---
+python:
+  creator: "van Rossum"
+  year: 1990
+java:
+  creator: "Gosling"
+  year: 1995
+javascript:
+  creator: "Eich"
+  year: 1995
+ruby:
+  creator: "Matz"
+  year: 1996
+clojure:
+  creator: "Hickey"
+  year: 2007
+kotlin:
+  creator: "Breslav"
+  year: 2011
