@@ -3,8 +3,6 @@ package org.kiwiproject.yaml;
 import static com.google.common.base.Preconditions.checkArgument;
 import static java.util.Objects.nonNull;
 import static org.kiwiproject.base.KiwiPreconditions.checkArgumentNotNull;
-import static org.kiwiproject.yaml.YamlHelper.YamlFormat.DEFAULT;
-import static org.kiwiproject.yaml.YamlHelper.YamlFormat.PRETTY;
 
 import com.fasterxml.jackson.annotation.JsonView;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -21,25 +19,6 @@ import com.fasterxml.jackson.dataformat.yaml.YAMLGenerator;
 public class YamlHelper {
 
     private final ObjectMapper objectMapper;
-
-    /**
-     * Represents an output format when serializing an object to YAML.
-     *
-     * @implNote At present Jackson seems to format the same whether using a pretty printer or not
-     * for YAML content. Leaving this here in case Jackson changes its behavior in the future.
-     */
-    public enum YamlFormat {
-
-        /**
-         * YAML may or may not be formatted.
-         */
-        DEFAULT,
-
-        /**
-         * YAML will be formatted nicely. Using this will tell the ObjectMapper to use the default pretty printer.
-         */
-        PRETTY
-    }
 
     /**
      * Create a new instance using an {@link ObjectMapper} created with a {@link YAMLFactory} to support YAML.
@@ -71,24 +50,13 @@ public class YamlHelper {
     }
 
     /**
-     * Convert the given object to YAML using the {@link YamlFormat#DEFAULT DEFAULT} format.
+     * Convert the given object to YAML.
      *
      * @param object the object to convert
      * @return a YAML representation of the given object
      */
     public String toYaml(Object object) {
-        return toYaml(object, DEFAULT, null);
-    }
-
-    /**
-     * Convert the given object to YAML using the given format.
-     *
-     * @param object the object to convert
-     * @param format the format to use
-     * @return a YAML representation of the given object
-     */
-    public String toYaml(Object object, YamlFormat format) {
-        return toYaml(object, format, null);
+        return toYaml(object, null);
     }
 
     /**
@@ -99,26 +67,10 @@ public class YamlHelper {
      * @return a YAML representation of the given object
      */
     public String toYaml(Object object, Class<?> yamlView) {
-        return toYaml(object, DEFAULT, yamlView);
-    }
-
-    /**
-     * Convert the given object to YAML using the given format and {@link JsonView}.
-     *
-     * @param object   the object to convert
-     * @param format   the format to use
-     * @param yamlView the nullable {@link JsonView} class
-     * @return a YAML representation of the given object
-     */
-    public String toYaml(Object object, YamlFormat format, Class<?> yamlView) {
         var writer = objectMapper.writer();
 
         if (nonNull(yamlView)) {
             writer = writer.withView(yamlView);
-        }
-
-        if (PRETTY == format) {
-            writer = writer.withDefaultPrettyPrinter();
         }
 
         try {

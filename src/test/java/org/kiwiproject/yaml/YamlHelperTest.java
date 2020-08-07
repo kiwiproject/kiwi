@@ -19,6 +19,7 @@ import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.kiwiproject.internal.Fixtures;
 
+import java.util.List;
 import java.util.Map;
 
 @DisplayName("YamlHelper")
@@ -100,50 +101,17 @@ class YamlHelperTest {
 
             assertThat(yaml).isEqualTo(expectedYamlForBob());
         }
-    }
-
-    /**
-     * Yes, there does not seem to be difference between DEFAULT and PRETTY.
-     * Keeping this "as is" in case Jackson ever makes it different, for example
-     * if the default changed to create "minified" YAML.
-     * <p>
-     * See:
-     * https://onlineyamltools.com/prettify-yaml
-     * https://onlineyamltools.com/minify-yaml
-     */
-    @Nested
-    class ToYamlWithFormat {
 
         @Test
-        void shouldUseDefaultFormat() {
-            var languages = createLanguageMap();
+        void shouldConvertListOfObjects() {
+            var bob = new Person("Bob", "Sackamano", 34);
+            var alice = new Person("Alice", "Jones", 27);
+            var carlos = new Person("Carlos", "Sanchéz", 42);
+            var people = List.of(bob, alice, carlos);
 
-            var yaml = yamlHelper.toYaml(languages, YamlHelper.YamlFormat.DEFAULT);
+            var yaml = yamlHelper.toYaml(people);
 
-            assertThat(yaml).isEqualTo(expectedYamlForLanguages());
-        }
-
-        @Test
-        void shouldUsePrettyFormat() {
-            var languages = createLanguageMap();
-
-            var yaml = yamlHelper.toYaml(languages, YamlHelper.YamlFormat.PRETTY);
-
-            assertThat(yaml).isEqualTo(expectedYamlForLanguages());
-        }
-
-        private Map<Object, Object> createLanguageMap() {
-            return newLinkedHashMap(
-                    "python", newLinkedHashMap("creator", "van Rossum", "year", 1990),
-                    "java", newLinkedHashMap("creator", "Gosling", "year", 1995),
-                    "javascript", newLinkedHashMap("creator", "Eich", "year", 1995),
-                    "ruby", newLinkedHashMap("creator", "Matz", "year", 1996),
-                    "clojure", newLinkedHashMap("creator", "Hickey", "year", 2007),
-                    "kotlin", newLinkedHashMap("creator", "Breslav", "year", 2011));
-        }
-
-        private String expectedYamlForLanguages() {
-            return Fixtures.fixture("YamlHelperTest/languages.yml");
+            assertThat(yaml).isEqualTo(Fixtures.fixture("YamlHelperTest/people.yml"));
         }
     }
 

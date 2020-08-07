@@ -1,0 +1,10 @@
+---
+- firstName: "Bob"
+  lastName: "Sackamano"
+  age: 34
+- firstName: "Alice"
+  lastName: "Jones"
+  age: 27
+- firstName: "Carlos"
+  lastName: "Sanchéz"
+  age: 42
