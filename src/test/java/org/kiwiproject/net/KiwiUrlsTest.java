@@ -54,7 +54,7 @@ class KiwiUrlsTest {
     @Test
     void testCreateUrlObject_WithNoPath() {
         var url = KiwiUrls.createUrlObject("http", "localhost", 9090);
-        assertThat(url.toString()).isEqualTo("http://localhost:9090");
+        assertThat(url).hasToString("http://localhost:9090");
     }
 
     @Test

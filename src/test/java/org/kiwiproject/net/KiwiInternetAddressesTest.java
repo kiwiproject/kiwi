@@ -145,8 +145,7 @@ class KiwiInternetAddressesTest {
         var hostInfo1 = newSimpleHostInfo();
         var hostInfo2 = newSimpleHostInfo();
 
-        assertThat(hostInfo1).isEqualTo(hostInfo2);
-        assertThat(hostInfo1.hashCode()).isEqualTo(hostInfo2.hashCode());
+        assertThat(hostInfo1).isEqualTo(hostInfo2).hasSameHashCodeAs(hostInfo2);
     }
 
     @Test

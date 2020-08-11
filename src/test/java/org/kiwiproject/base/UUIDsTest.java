@@ -18,7 +18,7 @@ import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
 @ExtendWith(SoftAssertionsExtension.class)
-public class UUIDsTest {
+class UUIDsTest {
 
     private Random random;
 
@@ -28,23 +28,23 @@ public class UUIDsTest {
     }
 
     @Test
-    public void testRandomUUIDString() {
+    void testRandomUUIDString() {
         assertThat(UUIDs.randomUUIDString()).isNotNull();
         assertThat(UUIDs.isValidUUID(UUIDs.randomUUIDString())).isTrue();
     }
 
     @Test
-    public void testIsValidUUID_ForValidType4UUIDs(SoftAssertions softly) {
+    void testIsValidUUID_ForValidType4UUIDs(SoftAssertions softly) {
         assertValidUUIDs(softly, UUID::randomUUID);
     }
 
     @Test
-    public void testIsValidUUID_ForValidType3UUIDs(SoftAssertions softly) {
+    void testIsValidUUID_ForValidType3UUIDs(SoftAssertions softly) {
         assertValidUUIDs(softly, () -> UUID.nameUUIDFromBytes(randomByteArray()));
     }
 
     @Test
-    public void testIsValidUUID_ForValidType4UUIDs_UsingUUIDConstructor(SoftAssertions softly) {
+    void testIsValidUUID_ForValidType4UUIDs_UsingUUIDConstructor(SoftAssertions softly) {
         assertValidUUIDs(softly, () -> {
             var validUUID = UUID.randomUUID();
             return new UUID(validUUID.getMostSignificantBits(), validUUID.getLeastSignificantBits());
@@ -52,7 +52,7 @@ public class UUIDsTest {
     }
 
     @Test
-    public void testIsValidUUID_ForValidType3UUIDs_UsingUUIDConstructor(SoftAssertions softly) {
+    void testIsValidUUID_ForValidType3UUIDs_UsingUUIDConstructor(SoftAssertions softly) {
         assertValidUUIDs(softly, () -> {
             var validUUID = UUID.nameUUIDFromBytes(randomByteArray());
             return new UUID(validUUID.getMostSignificantBits(), validUUID.getLeastSignificantBits());
