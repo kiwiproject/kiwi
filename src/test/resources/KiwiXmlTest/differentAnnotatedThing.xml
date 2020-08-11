@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<ns1:AnnotatedThing xsi:type="ns1:AnnotatedThing"
+                    xmlns:ns1="urn:org:someotherproject:xml"
+                    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+    <id>some-id</id>
+    <type>some-type</type>
+</ns1:AnnotatedThing>
