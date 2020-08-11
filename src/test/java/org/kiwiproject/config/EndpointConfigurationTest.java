@@ -203,16 +203,16 @@ class EndpointConfigurationTest {
                         .build();
 
                 assertThat(config.getURI()).isEqualTo("https://domain-1.test:443/path");
-                assertThat(config.getUriObject().toString()).isEqualTo("https://domain-2.test:443/path");
+                assertThat(config.getUriObject()).hasToString("https://domain-2.test:443/path");
 
                 assertThat(config.getURI())
                         .describedAs("should have reset back to first domain")
                         .isEqualTo("https://domain-1.test:443/path");
-                assertThat(config.toUriBuilder().build().toString()).isEqualTo("https://domain-2.test:443/path");
+                assertThat(config.toUriBuilder().build()).hasToString("https://domain-2.test:443/path");
 
-                assertThat(config.getUriObject().toString())
+                assertThat(config.getUriObject())
                         .describedAs("should have reset back to first domain again")
-                        .isEqualTo("https://domain-1.test:443/path");
+                        .hasToString("https://domain-1.test:443/path");
             }
 
             @Test

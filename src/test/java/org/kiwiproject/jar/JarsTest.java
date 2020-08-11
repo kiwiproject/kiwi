@@ -37,7 +37,7 @@ class JarsTest {
         // So, the path of Guava version 28.2-jre therefore must include:
         // com/google/guava/guava/28.2-jre/guava-28.2-jre.jar
 
-        assertThat(first(pathComponents)).isEqualTo("");
+        assertThat(first(pathComponents)).isEmpty();
         assertThat(pathComponents.get(indexOfCom + 1)).isEqualTo("google");
         assertThat(pathComponents.get(indexOfCom + 2)).isEqualTo("guava");
         assertThat(pathComponents.get(indexOfCom + 3)).isEqualTo("guava");

@@ -191,7 +191,7 @@ class DefaultEnvironmentTest {
 
         assertThat(diff)
                 .as("Difference should be less than %d but was %d", delta, diff)
-                .isGreaterThanOrEqualTo(0)
+                .isNotNegative()
                 .isLessThan(delta);
     }
 
@@ -210,7 +210,6 @@ class DefaultEnvironmentTest {
     @Test
     void testTryGetCurrentProcessId() {
         Optional<Integer> optionalPid = env.tryGetCurrentProcessId();
-        assertThat(optionalPid).isNotNull();
         assertThat(optionalPid)
                 .isPresent()
                 .hasValueSatisfying(value -> assertThat(value).isNotNegative());

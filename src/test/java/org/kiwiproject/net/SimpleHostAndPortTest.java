@@ -75,7 +75,7 @@ class SimpleHostAndPortTest {
     void testCustomToString() {
         var hostAndPortString = "192.168.1.101:8900";
         var hostAndPort = SimpleHostAndPort.from(hostAndPortString, "127.0.0.1", 8500);
-        assertThat(hostAndPort.toString()).isEqualTo(hostAndPortString);
+        assertThat(hostAndPort).hasToString(hostAndPortString);
     }
 
     @Test
@@ -83,14 +83,14 @@ class SimpleHostAndPortTest {
         var hostAndPort1 = SimpleHostAndPort.from("192.168.1.101:8900");
         var hostAndPort2 = SimpleHostAndPort.from("192.168.1.101:8900");
 
-        assertThat(hostAndPort1).isEqualTo(hostAndPort2);
-        assertThat(hostAndPort1.hashCode()).isEqualTo(hostAndPort2.hashCode());
+        assertThat(hostAndPort1).isEqualTo(hostAndPort2).hasSameHashCodeAs(hostAndPort2);
 
         var hostAndPort3 = SimpleHostAndPort.from("192.168.1.201:8900");
         var hostAndPort4 = SimpleHostAndPort.from("192.168.1.101:8500");
 
-        assertThat(hostAndPort1).isNotEqualTo(hostAndPort3);
-        assertThat(hostAndPort1).isNotEqualTo(hostAndPort4);
+        assertThat(hostAndPort1)
+                .isNotEqualTo(hostAndPort3)
+                .isNotEqualTo(hostAndPort4);
         assertThat(hostAndPort1.hashCode()).isNotEqualTo(hostAndPort3.hashCode());
         assertThat(hostAndPort1.hashCode()).isNotEqualTo(hostAndPort4.hashCode());
     }

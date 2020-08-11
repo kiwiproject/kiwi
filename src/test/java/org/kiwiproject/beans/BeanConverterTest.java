@@ -64,8 +64,9 @@ class BeanConverterTest {
 
         var output = converter.convert(constructTestData(), KiwiMaps.newHashMap());
 
-        assertThat(output).contains(entry("stringField", "foo"));
-        assertThat(output).doesNotContainKeys("numberField", "mapField");
+        assertThat(output)
+                .contains(entry("stringField", "foo"))
+                .doesNotContainKeys("numberField", "mapField");
     }
 
     @SuppressWarnings("rawtypes")

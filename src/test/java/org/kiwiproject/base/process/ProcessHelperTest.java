@@ -34,7 +34,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.function.Consumer;
 
 @DisplayName("ProcessHelper")
-public class ProcessHelperTest {
+class ProcessHelperTest {
 
     private ProcessHelper processes;
     private String osUser;
@@ -50,7 +50,7 @@ public class ProcessHelperTest {
         var process = processes.launch("echo", "hello world");
         var lines = readLinesFromInputStreamOf(process);
 
-        assertThat(process.pid()).isGreaterThan(0);
+        assertThat(process.pid()).isPositive();
         assertThat(lines).containsExactly("hello world");
     }
 
