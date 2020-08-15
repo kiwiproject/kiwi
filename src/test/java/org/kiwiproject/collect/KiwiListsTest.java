@@ -2,6 +2,7 @@ package org.kiwiproject.collect;
 
 import static java.util.stream.Collectors.toList;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatNullPointerException;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.assertj.core.util.Lists.newArrayList;
 
@@ -376,6 +377,60 @@ class KiwiListsTest {
         void shouldWrapWhenOffsetIsBeyonfEndOfList() {
             assertThat(KiwiLists.newListStartingAtCircularOffset(newArrayList("zero", "one", "two", "three"), 4))
                     .containsExactly("zero", "one", "two", "three");
+        }
+    }
+
+    @Nested
+    class SubListExcludingFirst {
+
+        @Test
+        void shouldThrow_WhenGivenNullArg() {
+            assertThatNullPointerException()
+                    .isThrownBy(() -> KiwiLists.subListExcludingFirst(null));
+        }
+
+        @Test
+        void shouldReturnEmptyList_WhenGivenEmptyList() {
+            assertThat(KiwiLists.subListExcludingFirst(List.of())).isEmpty();
+        }
+
+        @Test
+        void shouldReturnEmptyList_GivenOneElementList() {
+            assertThat(KiwiLists.subListExcludingFirst(List.of(42))).isEmpty();
+        }
+
+        @Test
+        void shouldReturnElementsExceptFirst(SoftAssertions softly) {
+            softly.assertThat(KiwiLists.subListExcludingFirst(List.of(1, 2))).isEqualTo(List.of(2));
+            softly.assertThat(KiwiLists.subListExcludingFirst(List.of(1, 2, 3))).isEqualTo(List.of(2, 3));
+            softly.assertThat(KiwiLists.subListExcludingFirst(List.of(1, 2, 3, 4, 5))).isEqualTo(List.of(2, 3, 4, 5));
+        }
+    }
+
+    @Nested
+    class SubListExcludingLast {
+
+        @Test
+        void shouldThrow_WhenGivenNullArg() {
+            assertThatNullPointerException()
+                    .isThrownBy(() -> KiwiLists.subListExcludingLast(null));
+        }
+
+        @Test
+        void shouldReturnEmptyList_WhenGivenEmptyList() {
+            assertThat(KiwiLists.subListExcludingLast(List.of())).isEmpty();
+        }
+
+        @Test
+        void shouldReturnEmptyList_GivenOneElementList() {
+            assertThat(KiwiLists.subListExcludingLast(List.of(84))).isEmpty();
+        }
+
+        @Test
+        void shouldReturnElementsExceptLast(SoftAssertions softly) {
+            softly.assertThat(KiwiLists.subListExcludingLast(List.of(1, 2))).isEqualTo(List.of(1));
+            softly.assertThat(KiwiLists.subListExcludingLast(List.of(1, 2, 3))).isEqualTo(List.of(1, 2));
+            softly.assertThat(KiwiLists.subListExcludingLast(List.of(1, 2, 3, 4, 5))).isEqualTo(List.of(1, 2, 3, 4));
         }
     }
 }

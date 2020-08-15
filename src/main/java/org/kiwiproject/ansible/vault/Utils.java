@@ -16,10 +16,6 @@ class Utils {
     //  - moving subList methods into KiwiLists
     //  - moving readProcessXxx methods into KiwiIO
 
-    static List<String> subListExcludingLast(List<String> input) {
-        return input.subList(0, input.size() - 1);
-    }
-
     static List<String> subListFrom(List<String> input, int number) {
         return input.subList(number - 1, input.size());
     }

@@ -5,7 +5,6 @@ import static com.google.common.base.Preconditions.checkNotNull;
 import static java.util.Objects.nonNull;
 import static java.util.stream.Collectors.toList;
 
-import com.google.common.annotations.VisibleForTesting;
 import lombok.experimental.UtilityClass;
 
 import java.util.Collection;
@@ -250,19 +249,6 @@ public class KiwiLists {
         return nonNull(collection) ? collection.stream().distinct().collect(toList()) : null;
     }
 
-    @VisibleForTesting
-    static <T> void checkMinimumSize(List<T> items, int minSize) {
-        checkNonNullInputList(items);
-        checkArgument(minSize > 0, "number must be positive");
-        checkArgument(items.size() >= minSize,
-                "expected at least %s items (actual size: %s)",
-                minSize, items.size());
-    }
-
-    public static <T> void checkNonNullInputList(List<T> items) {
-        checkNotNull(items, "items cannot be null");
-    }
-
     /**
      * Returns a new list with the same elements and the same size as the original, however the initial position in the list
      * is now the element specified by the "startOffset" and the list wraps around through the contents to end with "startOffset" - 1
@@ -275,5 +261,75 @@ public class KiwiLists {
     public static <T> List<T> newListStartingAtCircularOffset(List<T> input, long startOffset) {
         var size = input.size();
         return IntStream.range(0, size).mapToObj(i -> input.get((int) (startOffset + i) % size)).collect(toList());
+    }
+
+    /**
+     * Returns a view of the portion of the given list excluding the first element.
+     * <p>
+     * This method has the same semantics as {@link List#subList(int, int)} since it calls that method.
+     *
+     * @param items the list
+     * @param <T>   the type of the items in the list
+     * @return a view of the given list excluding the first item backed by the original list
+     * @throws NullPointerException if the list is null
+     * @see List#subList(int, int)
+     */
+    public static <T> List<T> subListExcludingFirst(List<T> items) {
+        checkNonNullInputList(items);
+        if (items.isEmpty()) {
+            return zeroSubList(items);
+        }
+        return items.subList(1, items.size());
+    }
+
+    /**
+     * Returns a view of the portion of the given list excluding the last element.
+     * <p>
+     * This method has the same semantics as {@link List#subList(int, int)} since it calls that method.
+     *
+     * @param items the list
+     * @param <T>   the type of the items in the list
+     * @return a view of the given list excluding the last item backed by the original list
+     * @throws NullPointerException if the list is null
+     * @see List#subList(int, int)
+     */
+    public static <T> List<T> subListExcludingLast(List<T> items) {
+        checkNonNullInputList(items);
+        if (items.isEmpty()) {
+            return zeroSubList(items);
+        }
+        return items.subList(0, items.size() - 1);
+    }
+
+    private static <T> List<T> zeroSubList(List<T> items) {
+        return items.subList(0, 0);
+    }
+
+    /**
+     * Checks that the given list is not null and has the given minimum size.
+     *
+     * @param items   the list
+     * @param minSize the minimum required size
+     * @param <T>     the type of the items in the list
+     * @throws NullPointerException     if the list is null
+     * @throws IllegalArgumentException if minSize is not positive or the list does not contain minSize elements
+     */
+    public static <T> void checkMinimumSize(List<T> items, int minSize) {
+        checkNonNullInputList(items);
+        checkArgument(minSize > 0, "number must be positive");
+        checkArgument(items.size() >= minSize,
+                "expected at least %s items (actual size: %s)",
+                minSize, items.size());
+    }
+
+    /**
+     * Checks that the given list is not null.
+     *
+     * @param items the list
+     * @param <T>   the type of the items in the list
+     * @throws NullPointerException if the list is null
+     */
+    public static <T> void checkNonNullInputList(List<T> items) {
+        checkNotNull(items, "items cannot be null");
     }
 }
