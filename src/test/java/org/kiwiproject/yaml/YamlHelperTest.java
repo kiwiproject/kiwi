@@ -3,6 +3,7 @@ package org.kiwiproject.yaml;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
 import static org.assertj.core.api.Assertions.entry;
+import static org.assertj.core.api.Assertions.tuple;
 import static org.kiwiproject.collect.KiwiMaps.newLinkedHashMap;
 
 import com.fasterxml.jackson.annotation.JsonView;
@@ -17,7 +18,10 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ArgumentsSource;
 import org.kiwiproject.internal.Fixtures;
+import org.kiwiproject.util.BlankStringArgumentsProvider;
 
 import java.util.List;
 import java.util.Map;
@@ -130,6 +134,106 @@ class YamlHelperTest {
 
     private static String expectedYamlForBob() {
         return Fixtures.fixture("YamlHelperTest/bob.yaml");
+    }
+
+    @Nested
+    class ToObjectWithTargetClass {
+
+        @Test
+        void shouldDeserializeYaml() {
+            var yaml = Fixtures.fixture("YamlHelperTest/bob.yaml");
+
+            var person = yamlHelper.toObject(yaml, Person.class);
+
+            assertThat(person.getFirstName()).isEqualTo("Bob");
+            assertThat(person.getLastName()).isEqualTo("Sackamano");
+            assertThat(person.getAge()).isEqualTo(34);
+        }
+
+        @ParameterizedTest
+        @ArgumentsSource(BlankStringArgumentsProvider.class)
+        void shouldThrow_GivenBlankArgument(String value) {
+            assertThatIllegalArgumentException()
+                    .isThrownBy(() -> yamlHelper.toObject(value, Person.class));
+        }
+    }
+
+    @Nested
+    class ToObjectWithTargetTypeReference {
+
+        @Test
+        void shouldDeserializeYaml() {
+            var yaml = Fixtures.fixture("YamlHelperTest/anakin-public.yml");
+
+            var person = yamlHelper.toObject(yaml, new TypeReference<Person>() {
+            });
+
+            assertThat(person.getFirstName()).isEqualTo("Anakin");
+            assertThat(person.getLastName()).isEqualTo("Skywalker");
+            assertThat(person.getAge()).isNull();
+        }
+
+        @ParameterizedTest
+        @ArgumentsSource(BlankStringArgumentsProvider.class)
+        void shouldThrow_GivenBlankArgument(String value) {
+            assertThatIllegalArgumentException()
+                    .isThrownBy(() -> yamlHelper.toObject(value, new TypeReference<Person>() {
+                    }));
+        }
+    }
+
+    @Nested
+    class ToObjectList {
+
+        @Test
+        void shouldDeserializeYaml_ToListOfTargetType() {
+            var yaml = Fixtures.fixture("YamlHelperTest/people.yml");
+
+            var people = yamlHelper.toObjectList(yaml, new TypeReference<List<Person>>() {
+            });
+
+            assertThat(people).extracting("firstName", "lastName", "age")
+                    .containsExactly(
+                            tuple("Bob", "Sackamano", 34),
+                            tuple("Alice", "Jones", 27),
+                            tuple("Carlos", "Sanchéz", 42)
+                    );
+        }
+
+        @ParameterizedTest
+        @ArgumentsSource(BlankStringArgumentsProvider.class)
+        void shouldThrow_GivenBlankArgument(String value) {
+            assertThatIllegalArgumentException()
+                    .isThrownBy(() -> yamlHelper.toObjectList(value, new TypeReference<List<Person>>() {
+                    }));
+        }
+    }
+
+    @Nested
+    class ToMap {
+
+        @Test
+        void shouldDeserializeYaml_ToMap() {
+            var yaml = Fixtures.fixture("YamlHelperTest/languages.yml");
+
+            var languages = yamlHelper.toMap(yaml);
+
+            assertThat(languages)
+                    .containsOnlyKeys("clojure", "kotlin", "java", "javascript", "python", "ruby")
+                    .containsEntry("clojure", Map.of("creator", "Hickey", "year", 2007))
+                    .containsEntry("kotlin", Map.of("creator", "Breslav", "year", 2011))
+                    .containsEntry("java", Map.of("creator", "Gosling", "year", 1995))
+                    .containsEntry("javascript", Map.of("creator", "Eich", "year", 1995))
+                    .containsEntry("python", Map.of("creator", "van Rossum", "year", 1990))
+                    .containsEntry("ruby", Map.of("creator", "Matz", "year", 1996));
+        }
+
+        @ParameterizedTest
+        @ArgumentsSource(BlankStringArgumentsProvider.class)
+        void shouldThrow_GivenBlankArgument(String value) {
+            assertThatIllegalArgumentException()
+                    .isThrownBy(() -> yamlHelper.toMap(value));
+        }
     }
 
     @Data
