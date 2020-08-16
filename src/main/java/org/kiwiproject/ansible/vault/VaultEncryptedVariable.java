@@ -3,8 +3,8 @@ package org.kiwiproject.ansible.vault;
 import static com.google.common.base.Preconditions.checkArgument;
 import static java.util.stream.Collectors.joining;
 import static java.util.stream.Collectors.toUnmodifiableList;
-import static org.kiwiproject.ansible.vault.Utils.subListFrom;
 import static org.kiwiproject.base.KiwiPreconditions.checkArgumentNotBlank;
+import static org.kiwiproject.collect.KiwiLists.subListFrom;
 
 import lombok.AccessLevel;
 import lombok.Getter;

@@ -306,6 +306,93 @@ public class KiwiLists {
     }
 
     /**
+     * Returns a view of the portion of the given list starting at the given logical element number, where the
+     * numbers start at one, until and including the last element in the list. This is useful if something is using
+     * one-based element numbers for some reason. Use {@link #subListFromIndex(List, int)} if you want to use zero-based
+     * list indices.
+     * <p>
+     * This method has the same semantics as {@link List#subList(int, int)} since it calls that method.
+     *
+     * @param items  the list
+     * @param number the number of the element to start the sublist, starting at one (<i>not zero</i>)
+     * @param <T>    the type of items in the list
+     * @return a view of the given list backed by the original list, starting at the given one-based number
+     * @throws NullPointerException     if the list is null
+     * @throws IllegalArgumentException if the given number is negative or is higher than the size of the list
+     * @see List#subList(int, int)
+     */
+    public static <T> List<T> subListFrom(List<T> items, int number) {
+        checkMinimumSize(items, number);
+        return items.subList(number - 1, items.size());
+    }
+
+    /**
+     * Returns a view of the portion of the given list starting at the given index, until and including the last
+     * element in the list.
+     * <p>
+     * This method has the same semantics as {@link List#subList(int, int)} since it calls that method.
+     *
+     * @param items the list
+     * @param index the index in the list to start the sublist, zero-based like normal List methods
+     * @param <T>   the type of items in the list
+     * @return a view of the given list backed by the original list, starting at the given zero-based index
+     * @throws NullPointerException     if the list is null
+     * @throws IllegalArgumentException if the given index is negative or is higher than the last index in the list
+     * @see List#subList(int, int)
+     */
+    public static <T> List<T> subListFromIndex(List<T> items, int index) {
+        checkMinimumSize(items, index + 1);
+        return items.subList(index, items.size());
+    }
+
+    /**
+     * Returns a view of the "first N" elements of the input list.
+     * <p>
+     * If the given number is larger than the size of the list, the entire list is returned, rather than throw
+     * an exception. In this case, the input list is returned directly, i.e. {@code return items}.
+     * <p>
+     * This method has the same semantics as {@link List#subList(int, int)} since it calls that method.
+     *
+     * @param items  the list
+     * @param number the number of items wanted from the start of the list
+     * @param <T>    the type of items in the list
+     * @return a view of the given list, backed by the original list, containing the last {@code number} elements
+     * @see List#subList(int, int)
+     */
+    public static <T> List<T> firstN(List<T> items, int number) {
+        checkNonNullInputList(items);
+        checkMinSizeIsPositive(number);
+        if (number > items.size()) {
+            return items;
+        }
+        return items.subList(0, number);
+    }
+
+    /**
+     * Returns a view of the "last N" elements of the input list.
+     * <p>
+     * If the given number is larger than the size of the list, the entire list is returned, rather than throw
+     * an exception. In this case, the input list is returned directly, i.e. {@code return items}.
+     * <p>
+     * This method has the same semantics as {@link List#subList(int, int)} since it calls that method.
+     *
+     * @param items  the list
+     * @param number the number of items wanted from the end of the list
+     * @param <T>    the type of items in the list
+     * @return a view of the given list, backed by the original list, containing the first {@code number} elements
+     * @see List#subList(int, int)
+     */
+    public static <T> List<T> lastN(List<T> items, int number) {
+        checkNonNullInputList(items);
+        checkMinSizeIsPositive(number);
+        if (number > items.size()) {
+            return items;
+        }
+        var startIndex = items.size() - number;
+        return items.subList(startIndex, items.size());
+    }
+
+    /**
      * Checks that the given list is not null and has the given minimum size.
      *
      * @param items   the list
@@ -316,10 +403,14 @@ public class KiwiLists {
      */
     public static <T> void checkMinimumSize(List<T> items, int minSize) {
         checkNonNullInputList(items);
-        checkArgument(minSize > 0, "number must be positive");
+        checkMinSizeIsPositive(minSize);
         checkArgument(items.size() >= minSize,
                 "expected at least %s items (actual size: %s)",
                 minSize, items.size());
+    }
+
+    private static void checkMinSizeIsPositive(int minSize) {
+        checkArgument(minSize > 0, "number must be positive");
     }
 
     /**

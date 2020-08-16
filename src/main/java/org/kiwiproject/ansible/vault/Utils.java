@@ -7,18 +7,12 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.UncheckedIOException;
 import java.nio.charset.StandardCharsets;
-import java.util.List;
 
 @UtilityClass
 class Utils {
 
     // TODO This came as part of the ansible.vault package (see #272). Consider:
-    //  - moving subList methods into KiwiLists
     //  - moving readProcessXxx methods into KiwiIO
-
-    static List<String> subListFrom(List<String> input, int number) {
-        return input.subList(number - 1, input.size());
-    }
 
     static String readProcessOutput(Process process) {
         return readInputStreamAsString(process.getInputStream());

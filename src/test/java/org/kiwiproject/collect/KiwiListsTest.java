@@ -2,6 +2,7 @@ package org.kiwiproject.collect;
 
 import static java.util.stream.Collectors.toList;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
 import static org.assertj.core.api.Assertions.assertThatNullPointerException;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.assertj.core.util.Lists.newArrayList;
@@ -13,6 +14,8 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.kiwiproject.junit.jupiter.WhiteBoxTest;
 
 import java.util.ArrayList;
@@ -431,6 +434,160 @@ class KiwiListsTest {
             softly.assertThat(KiwiLists.subListExcludingLast(List.of(1, 2))).isEqualTo(List.of(1));
             softly.assertThat(KiwiLists.subListExcludingLast(List.of(1, 2, 3))).isEqualTo(List.of(1, 2));
             softly.assertThat(KiwiLists.subListExcludingLast(List.of(1, 2, 3, 4, 5))).isEqualTo(List.of(1, 2, 3, 4));
+        }
+    }
+
+    @Nested
+    class SubListFrom {
+
+        @Test
+        void shouldThrow_WhenGivenNullArg() {
+            assertThatNullPointerException()
+                    .isThrownBy(() -> KiwiLists.subListFrom(null, 2));
+        }
+
+        @Test
+        void shouldThrow_GivenEmptyList() {
+            assertThatIllegalArgumentException()
+                    .isThrownBy(() -> KiwiLists.subListFrom(List.of(), 1));
+        }
+
+        @Test
+        void shouldThrow_GivenInvalidNumber() {
+            assertThatIllegalArgumentException()
+                    .describedAs("zero is not a valid starting element number")
+                    .isThrownBy(() -> KiwiLists.subListFrom(List.of(1, 2, 3), 0));
+
+            assertThatIllegalArgumentException()
+                    .describedAs("4 is higher than the list size")
+                    .isThrownBy(() -> KiwiLists.subListFrom(List.of(1, 2, 3), 4));
+        }
+
+        @Test
+        void shouldReturnSingleElementList_WhenGivenSingleElementList() {
+            assertThat(KiwiLists.subListFrom(List.of("a"), 1)).isEqualTo(List.of("a"));
+        }
+
+        @Test
+        void shouldReturnElementsIncludingLast(SoftAssertions softly) {
+            var aToE = List.of("a", "b", "c", "d", "e");
+            softly.assertThat(KiwiLists.subListFrom(aToE, 1)).isEqualTo(aToE);
+            softly.assertThat(KiwiLists.subListFrom(aToE, 2)).isEqualTo(List.of("b", "c", "d", "e"));
+            softly.assertThat(KiwiLists.subListFrom(aToE, 3)).isEqualTo(List.of("c", "d", "e"));
+            softly.assertThat(KiwiLists.subListFrom(aToE, 4)).isEqualTo(List.of("d", "e"));
+            softly.assertThat(KiwiLists.subListFrom(aToE, 5)).isEqualTo(List.of("e"));
+        }
+    }
+
+    @Nested
+    class SubListFromIndex {
+
+        @Test
+        void shouldThrow_WhenGivenNullArg() {
+            assertThatNullPointerException()
+                    .isThrownBy(() -> KiwiLists.subListFromIndex(null, 1));
+        }
+
+        @Test
+        void shouldThrow_GivenEmptyList() {
+            assertThatIllegalArgumentException()
+                    .isThrownBy(() -> KiwiLists.subListFromIndex(List.of(), 0));
+        }
+
+        @Test
+        void shouldThrow_GivenInvalidIndex() {
+            assertThatIllegalArgumentException()
+                    .describedAs("-1 is not a valid list index")
+                    .isThrownBy(() -> KiwiLists.subListFromIndex(List.of(1, 2, 3), -1));
+
+            assertThatIllegalArgumentException()
+                    .describedAs("3 is higher than the highest index in the list")
+                    .isThrownBy(() -> KiwiLists.subListFromIndex(List.of(1, 2, 3), 3));
+        }
+
+        @Test
+        void shouldReturnSingleElementList_WhenGivenSingleElementList() {
+            assertThat(KiwiLists.subListFromIndex(List.of("a"), 0)).isEqualTo(List.of("a"));
+        }
+
+        @Test
+        void shouldReturnElementsIncludingLast(SoftAssertions softly) {
+            var aToE = List.of("a", "b", "c", "d", "e");
+            softly.assertThat(KiwiLists.subListFromIndex(aToE, 0)).isEqualTo(aToE);
+            softly.assertThat(KiwiLists.subListFromIndex(aToE, 1)).isEqualTo(List.of("b", "c", "d", "e"));
+            softly.assertThat(KiwiLists.subListFromIndex(aToE, 2)).isEqualTo(List.of("c", "d", "e"));
+            softly.assertThat(KiwiLists.subListFromIndex(aToE, 3)).isEqualTo(List.of("d", "e"));
+            softly.assertThat(KiwiLists.subListFromIndex(aToE, 4)).isEqualTo(List.of("e"));
+        }
+    }
+
+    @Nested
+    class FirstN {
+
+        @Test
+        void shouldThrow_WhenGivenNullList() {
+            assertThatNullPointerException()
+                    .isThrownBy(() -> KiwiLists.firstN(null, 3));
+        }
+
+        @ParameterizedTest
+        @ValueSource(ints = {-100, -1, 0})
+        void shouldThrow_WhenGivenInvalidNumberOfElements(int number) {
+            assertThatIllegalArgumentException()
+                    .describedAs("cannot get first zero elements")
+                    .isThrownBy(() -> KiwiLists.firstN(List.of(1, 2, 3), number));
+        }
+
+        @ParameterizedTest
+        @ValueSource(ints = {4, 5, 10, 50})
+        void shouldReturn_SameList_WhenGivenNumberOfElements_IsLargerThanTheListSize(int number) {
+            var oneToThree = List.of(1, 2, 3);
+            assertThat(KiwiLists.firstN(oneToThree, number)).isSameAs(oneToThree);
+        }
+
+        @Test
+        void shouldReturn_WantedNumberOfElements_FromTheStartOfTheList(SoftAssertions softly) {
+            var aToE = List.of("a", "b", "c", "d", "e");
+            softly.assertThat(KiwiLists.firstN(aToE, 1)).isEqualTo(List.of("a"));
+            softly.assertThat(KiwiLists.firstN(aToE, 2)).isEqualTo(List.of("a", "b"));
+            softly.assertThat(KiwiLists.firstN(aToE, 3)).isEqualTo(List.of("a", "b", "c"));
+            softly.assertThat(KiwiLists.firstN(aToE, 4)).isEqualTo(List.of("a", "b", "c", "d"));
+            softly.assertThat(KiwiLists.firstN(aToE, 5)).isEqualTo(List.of("a", "b", "c", "d", "e"));
+        }
+    }
+
+    @Nested
+    class LastN {
+
+        @Test
+        void shouldThrow_WhenGivenNullList() {
+            assertThatNullPointerException()
+                    .isThrownBy(() -> KiwiLists.lastN(null, 2));
+        }
+
+        @ParameterizedTest
+        @ValueSource(ints = {-100, -1, 0})
+        void shouldThrow_WhenGivenInvalidNumberOfElements(int number) {
+            assertThatIllegalArgumentException()
+                    .describedAs("cannot get last zero elements")
+                    .isThrownBy(() -> KiwiLists.lastN(List.of(1, 2, 3), number));
+        }
+
+        @ParameterizedTest
+        @ValueSource(ints = {6, 7, 20, 90})
+        void shouldReturn_SameList_WhenGivenNumberOfElements_IsLargerThanTheListSize(int number) {
+            var oneToFive = List.of(1, 2, 3, 4, 5);
+            assertThat(KiwiLists.lastN(oneToFive, number)).isSameAs(oneToFive);
+        }
+
+        @Test
+        void shouldReturn_WantedNumberOfElements_FromTheEndOfTheList(SoftAssertions softly) {
+            var aToE = List.of("a", "b", "c", "d", "e");
+            softly.assertThat(KiwiLists.lastN(aToE, 1)).isEqualTo(List.of("e"));
+            softly.assertThat(KiwiLists.lastN(aToE, 2)).isEqualTo(List.of("d", "e"));
+            softly.assertThat(KiwiLists.lastN(aToE, 3)).isEqualTo(List.of("c", "d", "e"));
+            softly.assertThat(KiwiLists.lastN(aToE, 4)).isEqualTo(List.of("b", "c", "d", "e"));
+            softly.assertThat(KiwiLists.lastN(aToE, 5)).isEqualTo(List.of("a", "b", "c", "d", "e"));
         }
     }
 }
