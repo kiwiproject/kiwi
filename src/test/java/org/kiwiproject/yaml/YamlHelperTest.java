@@ -2,6 +2,7 @@ package org.kiwiproject.yaml;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.assertj.core.api.Assertions.entry;
 import static org.assertj.core.api.Assertions.tuple;
 import static org.kiwiproject.collect.KiwiMaps.newLinkedHashMap;
@@ -28,6 +29,12 @@ import java.util.Map;
 
 @DisplayName("YamlHelper")
 class YamlHelperTest {
+
+    private static final TypeReference<Person> PERSON_TYPE_REFERENCE = new TypeReference<>() {
+    };
+
+    private static final TypeReference<List<Person>> PERSON_LIST_TYPE_REFERENCE = new TypeReference<>() {
+    };
 
     private YamlHelper yamlHelper;
 
@@ -156,6 +163,13 @@ class YamlHelperTest {
             assertThatIllegalArgumentException()
                     .isThrownBy(() -> yamlHelper.toObject(value, Person.class));
         }
+
+        @Test
+        void shouldThrow_WhenInvalidYaml() {
+            assertThatThrownBy(() -> yamlHelper.toObject("invalid YAML", Person.class))
+                    .isExactlyInstanceOf(RuntimeYamlException.class)
+                    .hasCauseInstanceOf(JsonProcessingException.class);
+        }
     }
 
     @Nested
@@ -165,8 +179,7 @@ class YamlHelperTest {
         void shouldDeserializeYaml() {
             var yaml = Fixtures.fixture("YamlHelperTest/anakin-public.yml");
 
-            var person = yamlHelper.toObject(yaml, new TypeReference<Person>() {
-            });
+            var person = yamlHelper.toObject(yaml, PERSON_TYPE_REFERENCE);
 
             assertThat(person.getFirstName()).isEqualTo("Anakin");
             assertThat(person.getLastName()).isEqualTo("Skywalker");
@@ -177,8 +190,14 @@ class YamlHelperTest {
         @ArgumentsSource(BlankStringArgumentsProvider.class)
         void shouldThrow_GivenBlankArgument(String value) {
             assertThatIllegalArgumentException()
-                    .isThrownBy(() -> yamlHelper.toObject(value, new TypeReference<Person>() {
-                    }));
+                    .isThrownBy(() -> yamlHelper.toObject(value, PERSON_TYPE_REFERENCE));
+        }
+
+        @Test
+        void shouldThrow_WhenInvalidYaml() {
+            assertThatThrownBy(() -> yamlHelper.toObject("invalid YAML", PERSON_TYPE_REFERENCE))
+                    .isExactlyInstanceOf(RuntimeYamlException.class)
+                    .hasCauseInstanceOf(JsonProcessingException.class);
         }
     }
 
@@ -189,8 +208,7 @@ class YamlHelperTest {
         void shouldDeserializeYaml_ToListOfTargetType() {
             var yaml = Fixtures.fixture("YamlHelperTest/people.yml");
 
-            var people = yamlHelper.toObjectList(yaml, new TypeReference<List<Person>>() {
-            });
+            var people = yamlHelper.toObjectList(yaml, PERSON_LIST_TYPE_REFERENCE);
 
             assertThat(people).extracting("firstName", "lastName", "age")
                     .containsExactly(
@@ -204,8 +222,7 @@ class YamlHelperTest {
         @ArgumentsSource(BlankStringArgumentsProvider.class)
         void shouldThrow_GivenBlankArgument(String value) {
             assertThatIllegalArgumentException()
-                    .isThrownBy(() -> yamlHelper.toObjectList(value, new TypeReference<List<Person>>() {
-                    }));
+                    .isThrownBy(() -> yamlHelper.toObjectList(value, PERSON_LIST_TYPE_REFERENCE));
         }
     }
 
@@ -233,6 +250,13 @@ class YamlHelperTest {
         void shouldThrow_GivenBlankArgument(String value) {
             assertThatIllegalArgumentException()
                     .isThrownBy(() -> yamlHelper.toMap(value));
+        }
+
+        @Test
+        void shouldThrow_WhenInvalidYaml() {
+            assertThatThrownBy(() -> yamlHelper.toMap("invalid YAML"))
+                    .isExactlyInstanceOf(RuntimeYamlException.class)
+                    .hasCauseInstanceOf(JsonProcessingException.class);
         }
     }
 
