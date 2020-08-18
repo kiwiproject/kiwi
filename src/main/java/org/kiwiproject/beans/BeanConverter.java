@@ -72,7 +72,6 @@ public class BeanConverter<T> {
      * @param <R>    the type of object being returned
      * @return the modified target object
      */
-    @SuppressWarnings("unchecked")
     public <R> R convert(T input, R target) {
         if (isNull(input)) {
             return null;
@@ -128,14 +127,18 @@ public class BeanConverter<T> {
     }
 
     /**
-     * Get the property mapper function for a specific property name
+     * Get the property mapper function for a specific property name.
+     * <p>
+     * It is assumed the caller knows the correct return type for the mapper, otherwise a
+     * {@link ClassCastException} will be thrown at runtime.
      *
      * @param propertyName the property name
+     * @param <R>          the result type of the the mapper for the given property
      * @return the Function that will be triggered
      */
-    @SuppressWarnings("rawtypes")
-    public Function getPropertyMapper(String propertyName) {
-        return mappers.get(propertyName);
+    @SuppressWarnings("unchecked")
+    public <R> Function<T, R> getPropertyMapper(String propertyName) {
+        return (Function<T, R>) mappers.get(propertyName);
     }
 
     @SuppressWarnings("unchecked")
