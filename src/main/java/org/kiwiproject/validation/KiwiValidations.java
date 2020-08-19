@@ -14,6 +14,11 @@ import java.util.Set;
 /**
  * Static utilities related to Jakarta Bean Validation (formerly Java Bean Validation).
  * Relies on the Bean Validation API.
+ * <p>
+ * <strong>Dependency requirements:</strong>
+ * <p>
+ * The {@code jakarta.validation:jakarta.validation-api} dependency and some implementation such as Hibernate Validator
+ * ({@code org.hibernate.validator:hibernate-validator} must be available at runtime.
  */
 @UtilityClass
 @Slf4j
