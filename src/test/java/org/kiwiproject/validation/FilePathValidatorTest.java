@@ -83,6 +83,14 @@ class FilePathValidatorTest {
         }
 
         @Test
+        void whenPathExists_ButIsDirectory() {
+            var path = Fixtures.fixturePath("FilePathValidatorTest").toString();
+            config.setFilePath1(path);
+
+            assertOnePropertyViolation(validator, config, "filePath1");
+        }
+
+        @Test
         void whenInvalidPathExceptionThrown() {
             config.setFilePath1("\0");  // "Nul" character is not allowed in paths
 
