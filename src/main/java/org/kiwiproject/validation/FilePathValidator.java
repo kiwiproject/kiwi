@@ -31,7 +31,7 @@ public class FilePathValidator implements ConstraintValidator<FilePath, String> 
             var file = Path.of(value).toFile();
             return file.exists() && file.isFile();
         } catch (Exception e) {
-            LOG.trace("Exception thrown validating path [{}]", value, e);
+            LOG.warn("Exception thrown validating path [{}]", value, e);
             return false;
         }
     }
