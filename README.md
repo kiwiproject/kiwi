@@ -2,6 +2,7 @@
 [![Build Status](https://travis-ci.com/kiwiproject/kiwi.svg?branch=master)](https://travis-ci.com/kiwiproject/kiwi)
 [![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=kiwiproject_kiwi&metric=alert_status)](https://sonarcloud.io/dashboard?id=kiwiproject_kiwi)
 [![Coverage](https://sonarcloud.io/api/project_badges/measure?project=kiwiproject_kiwi&metric=coverage)](https://sonarcloud.io/dashboard?id=kiwiproject_kiwi)
+[![javadoc](https://javadoc.io/badge2/org.kiwiproject/kiwi/javadoc.svg)](https://javadoc.io/doc/org.kiwiproject/kiwi)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](https://opensource.org/licenses/MIT)
 
 Kiwi is a utility library. It contains a variety of utilities that we have built over time and find useful.
