@@ -105,6 +105,26 @@ public class KiwiValidations {
     }
 
     /**
+     * Adds an error to the {@link ConstraintValidatorContext} using the specified template and property name,
+     * thereby overriding the constraint's default message.
+     * <p>
+     * This is intended to be used when a validation annotation applies at the type level, as opposed to a field
+     * or method. The {@code propertyName} can be used to specify the property node that the violation should be
+     * attached to. For example, if a validator validates multiple fields and the annotation is applied to the
+     * type, then this can be used to specify which field a constraint violation applies to.
+     *
+     * @param context      the validator context
+     * @param template     the template to use
+     * @param propertyName the property name to attach constrain violations to
+     */
+    public static void addError(ConstraintValidatorContext context, String template, String propertyName) {
+        context.disableDefaultConstraintViolation();
+        context.buildConstraintViolationWithTemplate(template)
+                .addPropertyNode(propertyName)
+                .addConstraintViolation();
+    }
+
+    /**
      * Finds the value of the specified property <em>by direct field access</em>.
      * <p>
      * This is provided for validators to obtain the value of a specific field, and will only be useful when

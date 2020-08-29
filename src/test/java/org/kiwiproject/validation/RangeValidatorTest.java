@@ -51,23 +51,23 @@ class RangeValidatorTest {
         }
     }
 
+    /**
+     * @implNote In these cases, there should be a WARN level log, but we're not going to try to test
+     * that side-effect, and will just rely instead on manual inspection.
+     */
     @Nested
     class UnsupportedTypes {
 
-        /**
-         * @implNote In this case, there should be a WARN level log, but we're not going to try to test
-         * that side-effect, and will just rely instead on manual inspection.
-         */
         @Test
         void shouldBeInvalid() {
             var obj = new HasUnsupportedType(LocalDate.now());
-            assertPropertyViolations(validator, obj, "value");
+            assertPropertyViolations(validator, obj, "value", "unknown validation error");
         }
 
         @Test
         void shouldBeInvalid_WhenNotComparable() {
             var obj = new HasAnIncomparable(new AnIncomparable());
-            assertPropertyViolations(validator, obj, "value");
+            assertPropertyViolations(validator, obj, "value", "unknown validation error");
         }
     }
 
@@ -340,7 +340,7 @@ class RangeValidatorTest {
         AnIncomparable value;
     }
 
-    static class AnIncomparable {
+    private static class AnIncomparable {
     }
 
     @Builder

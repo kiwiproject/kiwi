@@ -30,6 +30,21 @@ public class ValidationTestHelper {
         assertThat(violations).hasSize(numExpectedViolations);
     }
 
+    public static void assertViolations(Validator validator, Object object, String... expectedCombinedMessages) {
+        var violations = validator.validate(object);
+
+        var actualCombinedMessages = KiwiConstraintViolations.simpleCombinedErrorMessages(violations);
+
+        var missingMessages = Arrays.stream(expectedCombinedMessages)
+                .filter(value -> !actualCombinedMessages.contains(value))
+                .collect(toUnmodifiableList());
+
+        if (!missingMessages.isEmpty()) {
+            fail("Messages [%s] not found in actual messages %s",
+                    String.join(",", missingMessages), actualCombinedMessages);
+        }
+    }
+
     public static void assertOnePropertyViolation(Validator validator, Object object, String propertyName) {
         assertPropertyViolations(validator, object, propertyName, 1);
     }

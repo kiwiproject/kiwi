@@ -3,32 +3,23 @@ package org.kiwiproject.validation;
 import static com.google.common.base.Verify.verify;
 import static java.util.Objects.isNull;
 import static java.util.Objects.nonNull;
-import static org.apache.commons.lang3.StringUtils.isBlank;
+import static org.kiwiproject.validation.InternalKiwiValidators.TEMPLATE_REQUIRED;
+import static org.kiwiproject.validation.InternalKiwiValidators.toComparableOrNull;
 
 import lombok.extern.slf4j.Slf4j;
-import org.kiwiproject.json.JsonHelper;
 
 import javax.validation.ConstraintValidator;
 import javax.validation.ConstraintValidatorContext;
-import java.math.BigDecimal;
-import java.math.BigInteger;
-import java.time.Instant;
-import java.util.Date;
 
 /**
  * Validator for @{@link Range}.
- *
- * @implNote A singleton JsonHelper created using {@link JsonHelper#newDropwizardJsonHelper()} is used for JSON parsing.
  */
 @Slf4j
 public class RangeValidator implements ConstraintValidator<Range, Object> {
 
-    private static final String ERROR_REQUIRED = "{org.kiwiproject.validation.Required.message}";
     private static final String TEMPLATE_BETWEEN = "{org.kiwiproject.validation.Range.between.message}";
     private static final String TEMPLATE_LESS_THAN_OR_EQ = "{org.kiwiproject.validation.Range.lessThanOrEq.message}";
     private static final String TEMPLATE_GREATER_THAN_OR_EQ = "{org.kiwiproject.validation.Range.greaterThanOrEq.message}";
-
-    private static final JsonHelper JSON_HELPER = JsonHelper.newDropwizardJsonHelper();
 
     private Range range;
 
@@ -48,6 +39,7 @@ public class RangeValidator implements ConstraintValidator<Range, Object> {
                 validity = checkMinMax((Comparable) value, context);
             }
         } catch (Exception e) {
+            KiwiValidations.addError(context, "unknown validation error");
             logWarning(value, e);
             validity = Validity.INVALID;
         }
@@ -61,7 +53,7 @@ public class RangeValidator implements ConstraintValidator<Range, Object> {
                 return Validity.VALID;
             }
 
-            KiwiValidations.addError(context, ERROR_REQUIRED);
+            KiwiValidations.addError(context, TEMPLATE_REQUIRED);
             return Validity.INVALID;
         }
 
@@ -80,49 +72,6 @@ public class RangeValidator implements ConstraintValidator<Range, Object> {
         }
 
         return checkMinOrMax(context, min, max, value);
-    }
-
-    /**
-     * @implNote This is non-ideal with the massive if/else if/else, but since we have to check each type we
-     * support, I cannot think of a "better" or "cleaner" way to do this without it becoming so abstract that
-     * it becomes unreadable. Interestingly, neither IntelliJ not Sonar is complaining...maybe we don't have the
-     * appropriate rules enabled. Suggestions for improvement welcome!
-     */
-    private static Comparable<?> toComparableOrNull(String minOrMax, Comparable<?> value) {
-        if (isBlank(minOrMax) || isNull(value)) {
-            return null;
-        }
-
-        Comparable<?> typedValue;
-
-        if (value instanceof Double) {
-            typedValue = Double.valueOf(minOrMax);
-        } else if (value instanceof Float) {
-            typedValue = Float.valueOf(minOrMax);
-        } else if (value instanceof Byte) {
-            typedValue = Byte.valueOf(minOrMax);
-        } else if (value instanceof Short) {
-            typedValue = Short.valueOf(minOrMax);
-        } else if (value instanceof Integer) {
-            typedValue = Integer.valueOf(minOrMax);
-        } else if (value instanceof Long) {
-            typedValue = Long.valueOf(minOrMax);
-        } else if (value instanceof BigDecimal) {
-            typedValue = new BigDecimal(minOrMax);
-        } else if (value instanceof BigInteger) {
-            typedValue = new BigInteger(minOrMax);
-        } else if (value instanceof Date) {
-            typedValue = new Date(Long.parseLong(minOrMax));
-        } else if (value instanceof Instant) {
-            typedValue = Instant.ofEpochMilli(Long.parseLong(minOrMax));
-        } else if (minOrMax.stripLeading().startsWith("{")) {
-            typedValue = JSON_HELPER.toObject(minOrMax, value.getClass());
-        } else {
-            var message = "This validators does not support validating objects of type: " + value.getClass().getName();
-            throw new IllegalArgumentException(message);
-        }
-
-        return typedValue;
     }
 
     private static boolean hasBothMinAndMax(Comparable<?> min, Comparable<?> max) {
