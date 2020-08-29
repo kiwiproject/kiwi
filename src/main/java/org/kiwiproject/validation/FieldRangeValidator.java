@@ -56,7 +56,7 @@ public class FieldRangeValidator implements ConstraintValidator<FieldRange, Obje
     private Validity checkValidity(Comparable<Object> start, Comparable<Object> end, ConstraintValidatorContext context) {
         var validity = checkMinMax(start, end, context);
 
-        if (validity == Validity.VALID) {
+        if (validity == Validity.CONTINUE) {
             // check null first as checkRange checks won't work if null
             validity = checkNull(start, end, context);
 
@@ -69,7 +69,7 @@ public class FieldRangeValidator implements ConstraintValidator<FieldRange, Obje
     }
 
     private Validity checkMinMax(Comparable<Object> start, Comparable<Object> end, ConstraintValidatorContext context) {
-        var validity = Validity.VALID;
+        var validity = Validity.CONTINUE;
 
         var min = toComparableOrNull(fieldRange.min(), start);
         if (nonNull(min) && start.compareTo(min) < 0) {
