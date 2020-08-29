@@ -36,7 +36,7 @@ import java.lang.annotation.Target;
 @Retention(RUNTIME)
 public @interface Required {
 
-    String message() default "{org.kiwiproject.validation.Required.message}";
+    String message() default InternalKiwiValidators.TEMPLATE_REQUIRED;
 
     Class<?>[] groups() default {};
 

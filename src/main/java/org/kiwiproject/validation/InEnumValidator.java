@@ -80,7 +80,7 @@ public class InEnumValidator implements ConstraintValidator<InEnum, String> {
                 return true;
             }
 
-            addCustomErrorMessage(context);
+            KiwiValidations.addError(context, errorMessage);
             return false;
         }
 
@@ -89,7 +89,7 @@ public class InEnumValidator implements ConstraintValidator<InEnum, String> {
             return true;
         }
 
-        addCustomErrorMessage(context);
+        KiwiValidations.addError(context, errorMessage);
         return false;
     }
 
@@ -105,8 +105,4 @@ public class InEnumValidator implements ConstraintValidator<InEnum, String> {
         return inEnum.ignoreCase() ? uppercase(value) : value;
     }
 
-    private void addCustomErrorMessage(ConstraintValidatorContext context) {
-        context.disableDefaultConstraintViolation();
-        context.buildConstraintViolationWithTemplate(errorMessage).addConstraintViolation();
-    }
 }

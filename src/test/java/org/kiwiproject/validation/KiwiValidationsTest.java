@@ -5,6 +5,7 @@ import static java.lang.annotation.ElementType.CONSTRUCTOR;
 import static java.lang.annotation.ElementType.FIELD;
 import static java.lang.annotation.ElementType.METHOD;
 import static java.lang.annotation.ElementType.PARAMETER;
+import static java.lang.annotation.ElementType.TYPE;
 import static java.lang.annotation.ElementType.TYPE_USE;
 import static java.lang.annotation.RetentionPolicy.RUNTIME;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -156,6 +157,20 @@ class KiwiValidationsTest {
             assertThat(violation.getPropertyPath()).hasToString("name");
             assertThat(violation.getMessage()).isEqualTo("'The Awesome' will always be regarded as invalid! (sorry)");
         }
+
+        @Test
+        void shouldAddErrorFromGivenTemplateAndPropertyName() {
+            var altThing = new AlternateThing();
+            altThing.setName("The Awesome");
+
+            var violations = KiwiValidations.validate(altThing);
+
+            assertThat(violations).hasSize(1);
+
+            var violation = violations.stream().findFirst().orElseThrow();
+            assertThat(violation.getPropertyPath()).hasToString("theProperty");
+            assertThat(violation.getMessage()).isEqualTo("will always be regarded as invalid! (oops)");
+        }
     }
 
     /**
@@ -193,10 +208,54 @@ class KiwiValidationsTest {
     /**
      * Used with {@link AddError}.
      */
+    @Documented
+    @Constraint(validatedBy = AlwaysInvalidTypeValidator.class)
+    @Target({TYPE})
+    @Retention(RUNTIME)
+    @interface AlwaysInvalidType {
+        String message() default "";
+
+        Class<?>[] groups() default {};
+
+        Class<? extends Payload>[] payload() default {};
+
+        String suffix() default "(oops)";
+    }
+
+    /**
+     * Used with {@link AddError}.
+     * <p>
+     * <strong>Must be public (otherwise Hibernate Validator cannot instantiate it)</strong>
+     */
+    public static class AlwaysInvalidTypeValidator implements ConstraintValidator<AlwaysInvalidType, AlternateThing> {
+
+        @Override
+        public boolean isValid(AlternateThing value, ConstraintValidatorContext context) {
+            KiwiValidations.addError(context,
+                    "will always be regarded as invalid! {suffix}",
+                    "theProperty");
+
+            return false;
+        }
+    }
+
+    /**
+     * Used with {@link AddError}.
+     */
     @Data
     static class Thing {
 
         @AlwaysInvalid(suffix = "(sorry)")
+        private String name;
+    }
+
+    /**
+     * Used with {@link AddError}.
+     */
+    @Data
+    @AlwaysInvalidType
+    static class AlternateThing {
+
         private String name;
     }
 
