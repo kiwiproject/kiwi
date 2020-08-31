@@ -72,7 +72,8 @@ public class KiwiValidations {
     /**
      * Validate the given object using the singleton validator instance against the {@link Default} group.
      *
-     * @param <T> the object type
+     * @param object the object to validate
+     * @param <T>    the object type
      * @return validation results
      */
     public static <T> Set<ConstraintViolation<T>> validate(T object) {
