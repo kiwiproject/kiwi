@@ -1,6 +1,6 @@
 package org.kiwiproject.retry;
 
-import static org.postgresql.shaded.com.ongres.scram.common.util.Preconditions.checkArgument;
+import static com.google.common.base.Preconditions.checkArgument;
 
 import lombok.experimental.UtilityClass;
 import org.slf4j.Logger;
