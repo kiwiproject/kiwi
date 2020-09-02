@@ -1,0 +1,6 @@
+{
+  "itemId": "42",
+  "code": 422,
+  "message": "must not be null",
+  "fieldName": "firstName"
+}
