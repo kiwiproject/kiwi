@@ -6,7 +6,7 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status.Family;
 
 @UtilityClass
-public class Responses {
+public class KiwiResponses {
 
     public static boolean successful(Response response) {
         return successful(response.getStatus());

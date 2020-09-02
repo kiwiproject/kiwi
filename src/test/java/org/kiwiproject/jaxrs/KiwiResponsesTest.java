@@ -14,14 +14,14 @@ import java.util.Arrays;
 import java.util.function.Consumer;
 
 @ExtendWith(SoftAssertionsExtension.class)
-class ResponsesTest {
+class KiwiResponsesTest {
 
     @Test
     void testSuccessful_ForStatusCodes(SoftAssertions softly) {
         forEachStatus(status -> {
             int statusCode = status.getStatusCode();
             boolean successfulFamily = successful(Family.familyOf(statusCode));
-            softly.assertThat(Responses.successful(statusCode))
+            softly.assertThat(KiwiResponses.successful(statusCode))
                     .describedAs("Status code: %d", statusCode)
                     .isEqualTo(successfulFamily);
         });
@@ -32,7 +32,7 @@ class ResponsesTest {
         forEachStatus(status -> {
             int statusCode = status.getStatusCode();
             boolean successfulFamily = successful(Family.familyOf(statusCode));
-            softly.assertThat(Responses.notSuccessful(statusCode))
+            softly.assertThat(KiwiResponses.notSuccessful(statusCode))
                     .describedAs("Status code: %d", statusCode)
                     .isNotEqualTo(successfulFamily);
         });
@@ -42,7 +42,7 @@ class ResponsesTest {
     void testSuccessful_ForStatus(SoftAssertions softly) {
         forEachStatus(status -> {
             boolean successfulFamily = successful(Family.familyOf(status.getStatusCode()));
-            softly.assertThat(Responses.successful(status))
+            softly.assertThat(KiwiResponses.successful(status))
                     .describedAs("Status: %s (%d)", status, status.getStatusCode())
                     .isEqualTo(successfulFamily);
         });
@@ -52,7 +52,7 @@ class ResponsesTest {
     void testNotSuccessful_ForStatus(SoftAssertions softly) {
         forEachStatus(status -> {
             boolean successfulFamily = successful(Family.familyOf(status.getStatusCode()));
-            softly.assertThat(Responses.notSuccessful(status))
+            softly.assertThat(KiwiResponses.notSuccessful(status))
                     .describedAs("Status: %s (%d)", status, status.getStatusCode())
                     .isNotEqualTo(successfulFamily);
         });
@@ -76,8 +76,8 @@ class ResponsesTest {
                 return "OK";
             }
         };
-        softly.assertThat(Responses.successful(type)).isTrue();
-        softly.assertThat(Responses.notSuccessful(type)).isFalse();
+        softly.assertThat(KiwiResponses.successful(type)).isTrue();
+        softly.assertThat(KiwiResponses.notSuccessful(type)).isFalse();
     }
 
     @Test
@@ -98,8 +98,8 @@ class ResponsesTest {
                 return "Server Error";
             }
         };
-        softly.assertThat(Responses.successful(type)).isFalse();
-        softly.assertThat(Responses.notSuccessful(type)).isTrue();
+        softly.assertThat(KiwiResponses.successful(type)).isFalse();
+        softly.assertThat(KiwiResponses.notSuccessful(type)).isTrue();
     }
 
     @Test
@@ -108,7 +108,7 @@ class ResponsesTest {
             Response response = mock(Response.class);
             when(response.getStatus()).thenReturn(status.getStatusCode());
             boolean successfulFamily = successful(Family.familyOf(status.getStatusCode()));
-            softly.assertThat(Responses.successful(response))
+            softly.assertThat(KiwiResponses.successful(response))
                     .describedAs("Status: %s (%d)", status, status.getStatusCode())
                     .isEqualTo(successfulFamily);
         });
@@ -120,7 +120,7 @@ class ResponsesTest {
             Response response = mock(Response.class);
             when(response.getStatus()).thenReturn(status.getStatusCode());
             boolean successfulFamily = successful(Family.familyOf(status.getStatusCode()));
-            softly.assertThat(Responses.notSuccessful(response))
+            softly.assertThat(KiwiResponses.notSuccessful(response))
                     .describedAs("Status: %s (%d)", status, status.getStatusCode())
                     .isNotEqualTo(successfulFamily);
         });
@@ -130,7 +130,7 @@ class ResponsesTest {
     void testNotSuccessful_ForFamily(SoftAssertions softly) {
         Arrays.stream(Family.values()).forEach(family -> {
             boolean successfulFamily = successful(family);
-            softly.assertThat(Responses.notSuccessful(family))
+            softly.assertThat(KiwiResponses.notSuccessful(family))
                     .describedAs("Family: %s", family)
                     .isNotEqualTo(successfulFamily);
         });
