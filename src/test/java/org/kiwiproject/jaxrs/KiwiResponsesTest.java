@@ -10,6 +10,7 @@ import static javax.ws.rs.core.MediaType.WILDCARD;
 import static javax.ws.rs.core.MediaType.WILDCARD_TYPE;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatCode;
+import static org.assertj.core.api.Assertions.catchThrowable;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
@@ -18,6 +19,7 @@ import static org.mockito.Mockito.when;
 
 import org.assertj.core.api.SoftAssertions;
 import org.assertj.core.api.junit.jupiter.SoftAssertionsExtension;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -27,11 +29,22 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status.Family;
 import java.util.Arrays;
+import java.util.Optional;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Consumer;
 import java.util.stream.IntStream;
 
 @ExtendWith(SoftAssertionsExtension.class)
 class KiwiResponsesTest {
+
+    private AtomicInteger successCount;
+    private AtomicInteger failureCount;
+
+    @BeforeEach
+    void setUp() {
+        successCount = new AtomicInteger();
+        failureCount = new AtomicInteger();
+    }
 
     @Nested
     class GetMediaType {
@@ -397,6 +410,368 @@ class KiwiResponsesTest {
                     assertThat(KiwiResponses.otherFamily(newResponseWithStatusCode(statusCode)))
                             .describedAs("Status: %d", statusCode)
                             .isTrue());
+        }
+    }
+
+    @Nested
+    class OnSuccessOrFailure {
+
+        @Test
+        void shouldCallSuccessConsumer_ForSuccessfulResponse() {
+            var response = newMockResponseWithStatus(Response.Status.ACCEPTED);
+
+            KiwiResponses.onSuccessOrFailure(response,
+                    successResponse -> successCount.incrementAndGet(),
+                    failResponse -> failureCount.incrementAndGet());
+
+            assertThat(successCount).hasValue(1);
+            assertThat(failureCount).hasValue(0);
+
+            verify(response).close();
+        }
+
+        @Test
+        void shouldCallFailedConsumer_ForSuccessfulResponse_WhenCloseThrowsException() {
+            var response = newMockResponseWithStatus(Response.Status.ACCEPTED);
+
+            doThrow(new ProcessingException("error processing...")).when(response).close();
+
+            KiwiResponses.onSuccessOrFailure(response,
+                    successResponse -> successCount.incrementAndGet(),
+                    failResponse -> failureCount.incrementAndGet());
+
+            assertThat(successCount).hasValue(1);
+            assertThat(failureCount).hasValue(0);
+
+            verify(response).close();
+        }
+
+        @Test
+        void shouldCallFailedConsumer_ForUnsuccessfulResponse() {
+            var response = newMockResponseWithStatus(Response.Status.FORBIDDEN);
+
+            KiwiResponses.onSuccessOrFailure(response,
+                    successResponse -> successCount.incrementAndGet(),
+                    failResponse -> failureCount.incrementAndGet());
+
+            assertThat(successCount).hasValue(0);
+            assertThat(failureCount).hasValue(1);
+
+            verify(response).close();
+        }
+    }
+
+    @Nested
+    class OnSuccessOrFailureThrow {
+
+        @Test
+        void shouldCallSuccessConsumer_ForSuccessfulResponse() {
+            var response = newMockResponseWithStatus(Response.Status.CREATED);
+
+            KiwiResponses.onSuccessOrFailureThrow(response,
+                    successResponse -> successCount.incrementAndGet(),
+                    failResponse -> {
+                        failureCount.incrementAndGet();
+                        return new CustomKiwiResponsesRuntimeException(failResponse);
+                    });
+
+            assertThat(successCount).hasValue(1);
+            assertThat(failureCount).hasValue(0);
+
+            verify(response).close();
+        }
+
+        @Test
+        void shouldThrow_ForUnsuccessfulResponse() {
+            var response = newMockResponseWithStatus(Response.Status.PAYMENT_REQUIRED);
+
+            var thrown = catchThrowable(() ->
+                    KiwiResponses.onSuccessOrFailureThrow(response,
+                            successResponse -> successCount.incrementAndGet(),
+                            failResponse -> {
+                                failureCount.incrementAndGet();
+                                return new CustomKiwiResponsesRuntimeException(failResponse);
+                            }));
+
+            assertThat(thrown).isExactlyInstanceOf(CustomKiwiResponsesRuntimeException.class);
+
+            assertThat(successCount).hasValue(0);
+            assertThat(failureCount).hasValue(1);
+
+            verify(response).close();
+        }
+    }
+
+    @Nested
+    class OnSuccess {
+
+        @Test
+        void shouldCallSuccessConsumer_ForSuccessfulResponse() {
+            var response = newMockResponseWithStatus(Response.Status.OK);
+
+            KiwiResponses.onSuccess(response, successResponse -> successCount.incrementAndGet());
+
+            assertThat(successCount).hasValue(1);
+
+            verify(response).close();
+        }
+
+        @Test
+        void shouldNotCallSuccessConsumer_ForUnsuccessfulResponse() {
+            var response = newMockResponseWithStatus(Response.Status.GATEWAY_TIMEOUT);
+
+            KiwiResponses.onSuccess(response, successResponse -> successCount.incrementAndGet());
+
+            assertThat(successCount).hasValue(0);
+
+            verify(response).close();
+        }
+    }
+
+    @Nested
+    class OnSuccessWithResult {
+
+        @Test
+        void shouldReturnResult_ForSuccessfulResponse() {
+            var response = newMockResponseWithStatus(Response.Status.OK);
+
+            Optional<Integer> count = KiwiResponses.onSuccessWithResult(response,
+                    successResponse -> successCount.incrementAndGet());
+
+            assertThat(count).hasValue(1);
+            assertThat(successCount).hasValue(1);
+
+            verify(response).close();
+        }
+
+        @Test
+        void shouldReturnEmptyOptional_ForUnsuccessfulResponse() {
+            var response = newMockResponseWithStatus(Response.Status.UNSUPPORTED_MEDIA_TYPE);
+
+            Optional<Integer> count = KiwiResponses.onSuccessWithResult(response,
+                    successResponse -> successCount.incrementAndGet());
+
+            assertThat(count).isEmpty();
+            assertThat(successCount).hasValue(0);
+
+            verify(response).close();
+        }
+    }
+
+    @Nested
+    class OnFailure {
+
+        @Test
+        void shouldNotCallFailConsumer_ForSuccessfulResponse() {
+            var response = newMockResponseWithStatus(Response.Status.CREATED);
+
+            KiwiResponses.onFailure(response, failResponse -> failureCount.incrementAndGet());
+
+            assertThat(failureCount).hasValue(0);
+
+            verify(response).close();
+        }
+
+        @Test
+        void shouldCallFailConsumer_ForUnsuccessfulResponse() {
+            var response = newMockResponseWithStatus(Response.Status.CONFLICT);
+
+            KiwiResponses.onFailure(response, failResponse -> failureCount.incrementAndGet());
+
+            assertThat(failureCount).hasValue(1);
+
+            verify(response).close();
+        }
+    }
+
+    @Nested
+    class OnFailureThrow {
+
+        @Test
+        void shouldNotThrow_ForSuccessfulResponse() {
+            var response = newMockResponseWithStatus(Response.Status.CREATED);
+
+            KiwiResponses.onFailureThrow(response, failResponse -> {
+                failureCount.incrementAndGet();
+                return new CustomKiwiResponsesRuntimeException(response);
+            });
+
+            assertThat(failureCount).hasValue(0);
+
+            verify(response).close();
+        }
+
+        @Test
+        void shouldThrow_ForSuccessfulResponse() {
+            var response = newMockResponseWithStatus(Response.Status.EXPECTATION_FAILED);
+
+            var thrown = catchThrowable(() ->
+                    KiwiResponses.onFailureThrow(response, failResponse -> {
+                        failureCount.incrementAndGet();
+                        return new CustomKiwiResponsesRuntimeException(response);
+                    }));
+
+            assertThat(thrown).isExactlyInstanceOf(CustomKiwiResponsesRuntimeException.class);
+
+            assertThat(failureCount).hasValue(1);
+
+            verify(response).close();
+        }
+    }
+
+    @Nested
+    class OnSuccessWithResultOrFailure {
+
+        @Test
+        void shouldReturnResult_ForSuccessfulResult() {
+            var response = newMockResponseWithStatus(Response.Status.NO_CONTENT);
+
+            Optional<Integer> count = KiwiResponses.onSuccessWithResultOrFailure(response,
+                    successResponse -> successCount.incrementAndGet(),
+                    failResponse -> failureCount.incrementAndGet());
+
+            assertThat(count).hasValue(1);
+
+            assertThat(successCount).hasValue(1);
+            assertThat(failureCount).hasValue(0);
+
+            verify(response).close();
+        }
+
+        @Test
+        void shouldReturnEmptyOptional_ForUnsuccessfulResult() {
+            var response = newMockResponseWithStatus(Response.Status.METHOD_NOT_ALLOWED);
+
+            Optional<Integer> count = KiwiResponses.onSuccessWithResultOrFailure(response,
+                    successResponse -> successCount.incrementAndGet(),
+                    failResponse -> failureCount.incrementAndGet());
+
+            assertThat(count).isEmpty();
+
+            assertThat(successCount).hasValue(0);
+            assertThat(failureCount).hasValue(1);
+
+            verify(response).close();
+        }
+    }
+
+    @Nested
+    class OnSuccessOrFailureWithResult {
+
+        @Test
+        void shouldCallSuccessFunction_ForSuccessfulResponse() {
+            var response = newMockResponseWithStatus(Response.Status.OK);
+
+            var result = KiwiResponses.onSuccessOrFailureWithResult(response,
+                    successResponse -> 42,
+                    failResponse -> -1);
+
+            assertThat(result).isEqualTo(42);
+
+            verify(response).close();
+        }
+
+        @Test
+        void shouldCallFailFunction_ForUnsuccessfulResponse() {
+            var response = newMockResponseWithStatus(Response.Status.INTERNAL_SERVER_ERROR);
+
+            var result = KiwiResponses.onSuccessOrFailureWithResult(response,
+                    successResponse -> 42,
+                    failResponse -> -1);
+
+            assertThat(result).isEqualTo(-1);
+
+            verify(response).close();
+        }
+    }
+
+    @Nested
+    class OnSuccessWithResultOrFailureThrow {
+
+        @Test
+        void shouldReturnResult_ForSuccessfulResponse() {
+            var response = newMockResponseWithStatus(Response.Status.PARTIAL_CONTENT);
+
+            var result = KiwiResponses.onSuccessWithResultOrFailureThrow(response,
+                    successResponse -> 42,
+                    CustomKiwiResponsesRuntimeException::new);
+
+            assertThat(result).isEqualTo(42);
+
+            verify(response).close();
+        }
+
+        @Test
+        void shouldThrow_ForUnsuccessfulResponse() {
+            var response = newMockResponseWithStatus(Response.Status.NOT_ACCEPTABLE);
+
+            var thrown = catchThrowable(() -> KiwiResponses.onSuccessWithResultOrFailureThrow(response,
+                    successResponse -> 42,
+                    CustomKiwiResponsesRuntimeException::new));
+
+            assertThat(thrown)
+                    .isExactlyInstanceOf(CustomKiwiResponsesRuntimeException.class)
+                    .hasMessage("Kiwi received failed response with status: 406");
+
+            verify(response).close();
+        }
+    }
+
+    @Nested
+    class Accept {
+
+        @Test
+        void shouldAccept_SuccessfulResponses() {
+            var response = newMockResponseWithStatus(Response.Status.NO_CONTENT);
+
+            assertAccepts(response);
+        }
+
+        @Test
+        void shouldAccept_UnsuccessfulResponses() {
+            var response = newMockResponseWithStatus(Response.Status.BAD_REQUEST);
+
+            assertAccepts(response);
+        }
+
+        private void assertAccepts(Response response) {
+            KiwiResponses.accept(response, response1 -> successCount.incrementAndGet());
+
+            assertThat(successCount).hasValue(1);
+
+            verify(response).close();
+        }
+    }
+
+    @Nested
+    class Apply {
+
+        @Test
+        void shouldApply_SuccessfulResponses() {
+            var response = newMockResponseWithStatus(Response.Status.CREATED);
+
+            assertApplies(response);
+        }
+
+        @Test
+        void shouldApply_UnsuccessfulResponses() {
+            var response = newMockResponseWithStatus(Response.Status.UNAUTHORIZED);
+
+            assertApplies(response);
+        }
+
+        private void assertApplies(Response response) {
+            var result = KiwiResponses.apply(response, response1 -> 84);
+
+            assertThat(result).isEqualTo(84);
+
+            verify(response).close();
+        }
+    }
+
+    private static class CustomKiwiResponsesRuntimeException extends RuntimeException {
+        CustomKiwiResponsesRuntimeException(Response response) {
+            super("Kiwi received failed response with status: " + response.getStatus());
         }
     }
 

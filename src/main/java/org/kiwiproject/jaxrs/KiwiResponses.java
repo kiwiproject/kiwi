@@ -10,6 +10,8 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status.Family;
 import java.util.Optional;
+import java.util.function.Consumer;
+import java.util.function.Function;
 
 /**
  * Static utilities related to JAX-RS responses.
@@ -17,6 +19,8 @@ import java.util.Optional;
 @UtilityClass
 @Slf4j
 public class KiwiResponses {
+
+    private static final Consumer<Response> NO_OP_RESPONSE_CONSUMER = new NoOpResponseConsumer();
 
     /**
      * Return a media type suitable for use as the value of a corresponding HTTP header. This will consist
@@ -170,22 +174,6 @@ public class KiwiResponses {
     }
 
     /**
-     * Closes the given {@link Response}, which can be {@code null}, swallowing any exceptions and logging them
-     * at INFO level.
-     *
-     * @param response the response object
-     */
-    public static void closeQuietly(Response response) {
-        if (nonNull(response)) {
-            try {
-                response.close();
-            } catch (Exception e) {
-                LOG.info("Error closing response", e);
-            }
-        }
-    }
-
-    /**
      * Check if the given response has status 200 OK.
      *
      * @param response the response object
@@ -308,4 +296,278 @@ public class KiwiResponses {
         return response.getStatusInfo().getFamily() == family;
     }
 
+    /**
+     * Given a {@link Response}, perform an action depending on whether it was successful ({@code successConsumer})
+     * or failed ({@code failedConsumer}).
+     * <p>
+     * Ensures the response is closed after performing the action.
+     *
+     * @param response        the response object
+     * @param successConsumer the action to run if the response is successful
+     * @param failedConsumer  the action to run if the response is not successful
+     */
+    public static void onSuccessOrFailure(Response response,
+                                          Consumer<Response> successConsumer,
+                                          Consumer<Response> failedConsumer) {
+        checkArgumentNotNull(response);
+        checkArgumentNotNull(successConsumer);
+        checkArgumentNotNull(failedConsumer);
+
+        try {
+            if (successful(response)) {
+                successConsumer.accept(response);
+            } else {
+                failedConsumer.accept(response);
+            }
+        } finally {
+            closeQuietly(response);
+        }
+    }
+
+    /**
+     * Given a {@link Response}, perform an action if it was successful ({@code successConsumer} or throw an
+     * exception supplied by {@code throwingFun}.
+     * <p>
+     * Ensures the response is closed after performing the action.
+     *
+     * @param response        the response object
+     * @param successConsumer the action to run if the response is successful
+     * @param throwingFun     a function that creates an appropriate (subclass of) RuntimeException
+     * @throws RuntimeException the result of {@code throwingFun}
+     */
+    public static void onSuccessOrFailureThrow(Response response,
+                                               Consumer<Response> successConsumer,
+                                               Function<Response, ? extends RuntimeException> throwingFun) {
+        checkArgumentNotNull(response);
+        checkArgumentNotNull(successConsumer);
+        checkArgumentNotNull(throwingFun);
+
+        try {
+            if (successful(response)) {
+                successConsumer.accept(response);
+            } else {
+                throw throwingFun.apply(response);
+            }
+        } finally {
+            closeQuietly(response);
+        }
+    }
+
+    /**
+     * Given a {@link Response}, perform an action only if it was successful ({@code successConsumer}. No action
+     * is performed for an unsuccessful response.
+     * <p>
+     * Ensures the response is closed after performing the action.
+     *
+     * @param response        the response object
+     * @param successConsumer the action to run if the response is successful
+     */
+    public static void onSuccess(Response response, Consumer<Response> successConsumer) {
+        onSuccessOrFailure(response, successConsumer, NO_OP_RESPONSE_CONSUMER);
+    }
+
+    /**
+     * Given a {@link Response}, perform an action that returns a result only if it was successful ({@code successFun}).
+     * No action is performer for an unsuccessful response.
+     * <p>
+     * Ensures the response is closed after performing the action.
+     *
+     * @param response   the response object
+     * @param successFun the function to apply if the response is successful
+     * @param <T>        the result type
+     * @return an Optional containing a result for successful responses, or an empty Optional
+     */
+    public static <T> Optional<T> onSuccessWithResult(Response response, Function<Response, T> successFun) {
+        return onSuccessWithResultOrFailure(response, successFun, NO_OP_RESPONSE_CONSUMER);
+    }
+
+    /**
+     * Given a {@link Response}, perform an action only if it was <em>not</em> successful ({@code failedConsumer}).
+     * No action is performed for a successful response.
+     * <p>
+     * Ensures the response is closed after performing the action.
+     *
+     * @param response       the response object
+     * @param failedConsumer the action to run if the response is not successful
+     */
+    public static void onFailure(Response response, Consumer<Response> failedConsumer) {
+        onSuccessOrFailure(response, NO_OP_RESPONSE_CONSUMER, failedConsumer);
+    }
+
+    /**
+     * Given a {@link Response}, throw a (subclass of) {@link RuntimeException} for failed responses using
+     * {@code throwingFun}. No action is performed for a successful response.
+     * <p>
+     * Ensures the response is closed after performing the action.
+     *
+     * @param response    the response object
+     * @param throwingFun a function that creates an appropriate (subclass of) RuntimeException
+     * @throws RuntimeException the result of {@code throwingFun}
+     */
+    public static void onFailureThrow(Response response,
+                                      Function<Response, ? extends RuntimeException> throwingFun) {
+        checkArgumentNotNull(response);
+        checkArgumentNotNull(throwingFun);
+
+        try {
+            if (notSuccessful(response)) {
+                throw throwingFun.apply(response);
+            }
+        } finally {
+            closeQuietly(response);
+        }
+    }
+
+    /**
+     * Given a {@link Response}, perform an action that returns a result if the response was
+     * successful ({@code successFun}) or perform an action if the response was unsuccessful ({@code failedConsumer}.
+     * <p>
+     * Ensures the response is closed after performing the action.
+     *
+     * @param response       the response object
+     * @param successFun     the function to apply if the response is successful
+     * @param failedConsumer the action to run if the response is not successful
+     * @param <T>            the result type
+     * @return the result from {@code successFun} for successful responses, or an empty Optional for unsuccessful ones
+     */
+    public static <T> Optional<T> onSuccessWithResultOrFailure(Response response,
+                                                               Function<Response, T> successFun,
+                                                               Consumer<Response> failedConsumer) {
+        checkArgumentNotNull(response);
+        checkArgumentNotNull(successFun);
+        checkArgumentNotNull(failedConsumer);
+
+        T result = null;
+        try {
+            if (successful(response)) {
+                result = successFun.apply(response);
+            } else {
+                failedConsumer.accept(response);
+            }
+        } finally {
+            closeQuietly(response);
+        }
+
+        return Optional.ofNullable(result);
+    }
+
+    /**
+     * Given a {@link Response}, perform an action that returns a result if the response was
+     * successful ({@code successFun}) or if not successful ({@code failedFun}).
+     * <p>
+     * Ensures the response is closed after performing the action.
+     *
+     * @param response   the response object
+     * @param successFun the function to apply if the response is successful
+     * @param failedFun  the function to apply if the response is not successful
+     * @param <T>        the result type
+     * @return the result from applying either {@code successFun} or {@code failedFun}
+     */
+    public static <T> T onSuccessOrFailureWithResult(Response response,
+                                                     Function<Response, T> successFun,
+                                                     Function<Response, T> failedFun) {
+        checkArgumentNotNull(response);
+        checkArgumentNotNull(successFun);
+        checkArgumentNotNull(failedFun);
+
+        try {
+            return successful(response) ? successFun.apply(response) : failedFun.apply(response);
+        } finally {
+            closeQuietly(response);
+        }
+    }
+
+    /**
+     * Given a {@link Response}, perform an action that returns a result if it was successful ({@code successFun}
+     * or throw a (subclass of ) {@link RuntimeException} if it failed ({@code throwingFun}).
+     * <p>
+     * Ensures the response is closed after performing the action.
+     *
+     * @param response    the response object
+     * @param successFun  the function to apply if the response is successful
+     * @param throwingFun a function that creates an appropriate (subclass of) RuntimeException
+     * @param <T>         the result type
+     * @return the result from applying {@code successFun}
+     * @throws RuntimeException the result of {@code throwingFun}
+     */
+    public static <T> T onSuccessWithResultOrFailureThrow(Response response,
+                                                          Function<Response, T> successFun,
+                                                          Function<Response, ? extends RuntimeException> throwingFun) {
+        checkArgumentNotNull(response);
+        checkArgumentNotNull(successFun);
+        checkArgumentNotNull(throwingFun);
+
+        try {
+            if (successful(response)) {
+                return successFun.apply(response);
+            }
+
+            throw throwingFun.apply(response);
+        } finally {
+            closeQuietly(response);
+        }
+    }
+
+    /**
+     * Given a {@link Response}, perform some action using the supplied consumer.
+     * <p>
+     * Ensures the response is closed after performing the action.
+     *
+     * @param response         the response object
+     * @param responseConsumer the action to run
+     */
+    public static void accept(Response response, Consumer<Response> responseConsumer) {
+        checkArgumentNotNull(response);
+        checkArgumentNotNull(responseConsumer);
+
+        try {
+            responseConsumer.accept(response);
+        } finally {
+            closeQuietly(response);
+        }
+    }
+
+    /**
+     * Given a {@link Response}, perform an action tha returns a result using the given function.
+     * <p>
+     * Ensures the response is closed after performing the action.
+     *
+     * @param response the response object
+     * @param fun      the function to apply to the response
+     * @param <T>      the result type
+     * @return the result of applying the given function
+     */
+    public static <T> T apply(Response response, Function<Response, T> fun) {
+        checkArgumentNotNull(response);
+        checkArgumentNotNull(fun);
+
+        try {
+            return fun.apply(response);
+        } finally {
+            closeQuietly(response);
+        }
+    }
+
+    /**
+     * Closes the given {@link Response}, which can be {@code null}, swallowing any exceptions and logging them
+     * at INFO level.
+     *
+     * @param response the response object
+     */
+    public static void closeQuietly(Response response) {
+        if (nonNull(response)) {
+            try {
+                response.close();
+            } catch (Exception e) {
+                LOG.info("Error closing response", e);
+            }
+        }
+    }
+
+    private static class NoOpResponseConsumer implements Consumer<Response> {
+        @Override
+        public void accept(Response response) {
+            // no-op
+        }
+    }
 }
