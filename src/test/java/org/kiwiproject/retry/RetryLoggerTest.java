@@ -3,6 +3,7 @@ package org.kiwiproject.retry;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
 import static org.kiwiproject.collect.KiwiLists.first;
+import static org.kiwiproject.util.MiscConstants.POSSIBLE_DROPWIZARD_LOGGING_FAILURE_WARNING;
 
 import ch.qos.logback.classic.Logger;
 import org.junit.jupiter.api.AfterEach;
@@ -28,6 +29,9 @@ class RetryLoggerTest {
     @BeforeEach
     void setUp() {
         appender = (InMemoryAppender) LOG.getAppender("MEMORY");
+        assertThat(appender)
+                .describedAs(POSSIBLE_DROPWIZARD_LOGGING_FAILURE_WARNING)
+                .isNotNull();
     }
 
     @AfterEach

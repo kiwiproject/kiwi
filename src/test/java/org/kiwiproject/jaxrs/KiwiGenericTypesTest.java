@@ -76,6 +76,7 @@ class KiwiGenericTypesTest {
     }
 
     private static final ResourceExtension RESOURCES = ResourceExtension.builder()
+            .bootstrapLogging(false)
             .addResource(new GenericTypeTestResource())
             .build();
 

@@ -2,6 +2,7 @@ package org.kiwiproject.logging;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.kiwiproject.logging.LazyLogParameterSupplier.lazy;
+import static org.kiwiproject.util.MiscConstants.POSSIBLE_DROPWIZARD_LOGGING_FAILURE_WARNING;
 
 import lombok.Value;
 import lombok.extern.slf4j.Slf4j;
@@ -25,25 +26,33 @@ class LazyLogParameterSupplierTest {
     @Test
     void shouldGetFromSupplier_WhenLogLevel_IsActive() {
         LOG.info("The result at {} level is {}", "info", lazy(this::expensiveToCreateString));
-        assertThat(wasCalled).isTrue();
+        assertThat(wasCalled)
+                .describedAs(POSSIBLE_DROPWIZARD_LOGGING_FAILURE_WARNING)
+                .isTrue();
     }
 
     @Test
     void shouldGetFromSupplier_WhenLogLevel_IsActive_AndSupplierReturnsNull() {
         LOG.info("The result at {} level is {}", "info", lazy(this::expensiveReturningNull));
-        assertThat(wasCalled).isTrue();
+        assertThat(wasCalled)
+                .describedAs(POSSIBLE_DROPWIZARD_LOGGING_FAILURE_WARNING)
+                .isTrue();
     }
 
     @Test
     void shouldGetFromSupplier_WhenLogLevel_IsActive_AndSupplierReturnsComplexObject() {
         LOG.debug("The result at {} level is {}", "debug", lazy(this::expensiveToCreateThing));
-        assertThat(wasCalled).isTrue();
+        assertThat(wasCalled)
+                .describedAs(POSSIBLE_DROPWIZARD_LOGGING_FAILURE_WARNING)
+                .isTrue();
     }
 
     @Test
     void shouldNotGetFromSupplier_WhenLogLevel_IsNotActive() {
         LOG.trace("The result at {} level is {}", "trace", lazy(this::expensiveToCreateNumber));
-        assertThat(wasCalled).isFalse();
+        assertThat(wasCalled)
+                .describedAs(POSSIBLE_DROPWIZARD_LOGGING_FAILURE_WARNING)
+                .isFalse();
     }
 
     private String expensiveToCreateString() {
