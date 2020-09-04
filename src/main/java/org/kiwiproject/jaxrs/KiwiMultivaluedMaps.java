@@ -1,6 +1,5 @@
 package org.kiwiproject.jaxrs;
 
-import static com.google.common.collect.Lists.newArrayList;
 import static com.google.common.collect.Lists.partition;
 import static org.kiwiproject.base.KiwiPreconditions.checkArgumentNotNull;
 import static org.kiwiproject.base.KiwiPreconditions.checkEvenItemCount;
@@ -16,6 +15,7 @@ import javax.ws.rs.core.MultivaluedHashMap;
 import javax.ws.rs.core.MultivaluedMap;
 import java.util.List;
 import java.util.Map;
+import java.util.function.BiConsumer;
 
 /**
  * Static utilities for working with {@link MultivaluedMap} instances.
@@ -32,16 +32,9 @@ public class KiwiMultivaluedMaps {
      * @implNote the actual type returned is currently a {@link MultivaluedHashMap}
      */
     public static MultivaluedMap<String, String> newMultivaluedMap(String... items) {
-        checkEvenItemCount(items);
-
-        var map = new MultivaluedHashMap<String, String>();
-        List<List<String>> kvPairs = partition(newArrayList(items), 2);
-        for (List<String> kvPair : kvPairs) {
-            var key = first(kvPair);
-            var value = second(kvPair);
-            map.add(key, value);
-        }
-        return map;
+        return newMultivaluedMap(
+                (accumulator, kvPair) -> accumulator.add(first(kvPair), second(kvPair)),
+                items);
     }
 
     /**
@@ -57,16 +50,27 @@ public class KiwiMultivaluedMaps {
      * @implNote the actual type returned is currently a {@link MultivaluedHashMap}
      */
     public static MultivaluedMap<String, String> newSingleValuedParameterMap(String... items) {
+        return newMultivaluedMap(
+                (accumulator, kvPair) -> accumulator.putSingle(first(kvPair), second(kvPair)),
+                items);
+    }
+
+    /**
+     * @param consumer BiConsumer that accepts the accumulator MultivaluedMap and a List of String which
+     *                 contains a key/value pair
+     * @param items    the items to accumulate into a new MultivaluedMap, in pairs of items e.g. k1, v1, k2, v2, etc
+     * @return the accumulating MultivaluedMap
+     */
+    private static MultivaluedMap<String, String> newMultivaluedMap(
+            BiConsumer<MultivaluedMap<String, String>, List<String>> consumer,
+            String... items) {
+
         checkEvenItemCount(items);
 
-        var map = new MultivaluedHashMap<String, String>();
-        List<List<String>> kvPairs = partition(newArrayList(items), 2);
-        for (List<String> kvPair : kvPairs) {
-            var key = first(kvPair);
-            var value = second(kvPair);
-            map.putSingle(key, value);
-        }
-        return map;
+        var accumulator = new MultivaluedHashMap<String, String>();
+        List<List<String>> kvPairs = partition(List.of(items), 2);
+        kvPairs.forEach(kvPair -> consumer.accept(accumulator, kvPair));
+        return accumulator;
     }
 
     /**
