@@ -12,6 +12,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
 import org.junit.jupiter.params.provider.ValueSource;
+import org.slf4j.LoggerFactory;
 
 import javax.validation.Validator;
 import java.time.LocalDate;
@@ -129,6 +130,15 @@ class FieldRangeValidatorTest {
                     .season1(Season.SUMMER)
                     .season2(Season.SPRING)  // invalid (summer ordinal > spring ordinal)
                     .build();
+
+            // TODO Temporary!!!
+            var logger = LoggerFactory.getLogger(WhenNoMinOrMax.class);
+            logger.info("localTime1: {} ; localTime2: {}", obj.getLocalTime1(), obj.getLocalTime2());
+            logger.info("localTime1.compareTo(localTime2) = {}", obj.getLocalTime1().compareTo(obj.getLocalTime2()));
+            var violations = validator.validate(obj);
+            violations.forEach(v ->
+                    logger.info("{} {}", v.getPropertyPath(), v.getMessage()));
+            // TODO End Temporary!!!
 
             assertViolations(validator, obj,
                     "localTime1 must occur before localTime2",
