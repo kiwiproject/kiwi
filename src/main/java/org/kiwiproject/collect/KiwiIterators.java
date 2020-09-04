@@ -20,7 +20,7 @@ import java.util.function.Supplier;
 @UtilityClass
 public class KiwiIterators {
 
-    public static final String NOT_ENOUGH_VALUES_ERROR = "need at least 2 elements to cycle";
+    private static final String NOT_ENOUGH_VALUES_ERROR = "need at least 1 element to cycle";
 
     /**
      * Returns a <em>thread-safe</em> iterator that cycles indefinitely over the elements of {@code iterable}, base
@@ -39,8 +39,8 @@ public class KiwiIterators {
      * @return an Iterator that cycles through the given Iterable without terminating
      */
     public static <T> Iterator<T> cycleForever(Iterable<T> iterable) {
-        ImmutableList<T> elements = ImmutableList.copyOf(iterable);
-        checkArgument(elements.size() > 1, NOT_ENOUGH_VALUES_ERROR);
+        var elements = ImmutableList.copyOf(iterable);
+        checkArgument(!elements.isEmpty(), NOT_ENOUGH_VALUES_ERROR);
         return new ThreadSafeCyclicIterator<>(elements);
     }
 
@@ -62,7 +62,7 @@ public class KiwiIterators {
      */
     @SafeVarargs
     public static <T> Iterator<T> cycleForever(T... elements) {
-        checkArgument(elements.length > 1, NOT_ENOUGH_VALUES_ERROR);
+        checkArgument(elements.length > 0, NOT_ENOUGH_VALUES_ERROR);
         return new ThreadSafeCyclicIterator<>(newArrayList(elements));
     }
 
