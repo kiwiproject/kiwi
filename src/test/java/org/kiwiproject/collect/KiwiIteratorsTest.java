@@ -2,7 +2,6 @@ package org.kiwiproject.collect;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.assertj.core.api.Assertions.fail;
 
 import org.assertj.core.util.Lists;
 import org.junit.jupiter.api.BeforeEach;
@@ -37,33 +36,27 @@ class KiwiIteratorsTest {
     void testCycleForever_ThrowsIllegalArgumentException_WhenSupplyEmptyIterable() {
         assertThatThrownBy(() -> KiwiIterators.cycleForever(new ArrayList<>()))
                 .isExactlyInstanceOf(IllegalArgumentException.class)
-                .hasMessage("need at least 2 elements to cycle");
+                .hasMessage("need at least 1 element to cycle");
     }
 
     @Test
     void testCycleForever_ThrowsIllegalArgumentException_WhenDoNotPassAnyVarArgs() {
         assertThatThrownBy(KiwiIterators::cycleForever)
                 .isExactlyInstanceOf(IllegalArgumentException.class)
-                .hasMessage("need at least 2 elements to cycle");
+                .hasMessage("need at least 1 element to cycle");
     }
 
     @Test
     void testCycleForever_DoesNotPermitRemovingElements() {
-        tryRemoveElement(KiwiIterators.cycleForever(colorShades));
-    }
+        var cycler = KiwiIterators.cycleForever(colorShades);
 
-    private <E> void tryRemoveElement(Iterator<E> cycler) {
-        try {
-            cycler.remove();
-            fail("should not allow remove() on cycler");
-        } catch (Exception e) {
-            assertThat(e).isExactlyInstanceOf(UnsupportedOperationException.class)
-                    .hasMessageStartingWith("unsupported");
-        }
+        assertThatThrownBy(cycler::remove)
+                .isExactlyInstanceOf(UnsupportedOperationException.class)
+                .hasMessageStartingWith("unsupported");
     }
 
     @Test
-    void testCycleForever_ModificationsToOriginalCollection_ShouldNotEffectCycler() {
+    void testCycleForever_ModificationsToOriginalCollection_ShouldNotAffectCycler() {
         Iterator<String> cycleForever = KiwiIterators.cycleForever(colorShades);
         colorShades.add("lighter");
         colorShades.add("medium");
@@ -85,6 +78,14 @@ class KiwiIteratorsTest {
         assertThatThrownBy(() -> cycleForever.forEachRemaining(System.out::println))
                 .isExactlyInstanceOf(UnsupportedOperationException.class)
                 .hasMessageStartingWith("unsupported");
+    }
+
+    @Test
+    void testCycleForever_WhenOnlyOneElement() {
+        Iterator<Integer> cycleForever = KiwiIterators.cycleForever(42);
+        for (int i = 0; i < 500; i++) {
+            assertThat(cycleForever.next()).isEqualTo(42);
+        }
     }
 
     @Test
