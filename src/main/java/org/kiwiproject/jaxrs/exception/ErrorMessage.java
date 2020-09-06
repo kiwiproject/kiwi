@@ -32,9 +32,8 @@ public class ErrorMessage {
     private static final String KEY_ITEM_ID = "itemId";
     private static final String KEY_MESSAGE = "message";
 
-    // TODO These were originally package-private with @VisibleForTesting annotation; not sure if they need to be
-    private static final String DEFAULT_MSG = "Unknown error";
-    private static final int DEFAULT_CODE = 500;
+    static final String DEFAULT_MSG = "Unknown error";
+    static final int DEFAULT_CODE = 500;
 
     private final int code;
     private final String fieldName;
