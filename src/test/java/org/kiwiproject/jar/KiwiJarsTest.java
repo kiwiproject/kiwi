@@ -17,7 +17,7 @@ import java.util.List;
 
 @DisplayName("Jars")
 @Slf4j
-class JarsTest {
+class KiwiJarsTest {
 
     /**
      * Use Guava's {@link Ticker} class as the "classInJar" for these tests.
@@ -26,7 +26,7 @@ class JarsTest {
 
     @Test
     void shouldGetPathComponents() {
-        var pathComponents = Jars.getPathComponents(CLASS_IN_JAR);
+        var pathComponents = KiwiJars.getPathComponents(CLASS_IN_JAR);
         LOG.trace("pathComponents: {}", pathComponents);
 
         var version = secondToLast(pathComponents);
@@ -49,14 +49,14 @@ class JarsTest {
     void shouldLogExceptionAndReturnEmptyList_WhenHandlingExceptionsGettingPathComponents() {
         var securityException = new SecurityException("Access Denied!");
 
-        var list = Jars.logExceptionAndReturnEmptyList(securityException, CLASS_IN_JAR);
+        var list = KiwiJars.logExceptionAndReturnEmptyList(securityException, CLASS_IN_JAR);
 
         assertThat(list).isEmpty();
     }
 
     @Test
     void shouldGetPath() {
-        var path = Jars.getPath(CLASS_IN_JAR).orElse(null);
+        var path = KiwiJars.getPath(CLASS_IN_JAR).orElse(null);
         LOG.trace("path: {}", path);
 
         assertThat(path)
@@ -68,10 +68,10 @@ class JarsTest {
 
     @Test
     void shouldGetDirectoryPath() {
-        var dirPath = Jars.getDirectoryPath(CLASS_IN_JAR).orElse(null);
+        var dirPath = KiwiJars.getDirectoryPath(CLASS_IN_JAR).orElse(null);
         LOG.trace("dirPath: {}", dirPath);
 
-        var jarPath = Jars.getPath(CLASS_IN_JAR).orElseThrow();
+        var jarPath = KiwiJars.getPath(CLASS_IN_JAR).orElseThrow();
         var jarFile = new File(jarPath);
 
         assertThat(dirPath).isEqualTo(jarFile.getParent());
@@ -83,23 +83,23 @@ class JarsTest {
         @ParameterizedTest
         @NullAndEmptySource
         void shouldReturnEmptyOptional_WhenGivenEmptyOrNullList(List<String> list) {
-            assertThat(Jars.joined(list)).isEmpty();
+            assertThat(KiwiJars.joined(list)).isEmpty();
         }
 
         @Test
         void shouldReturnItem_WhenGivenSingleElementList() {
-            assertThat(Jars.joined(List.of("item"))).contains("item");
+            assertThat(KiwiJars.joined(List.of("item"))).contains("item");
         }
 
         @Test
         void shouldJoinItems_WhenGivenMultipleElementList() {
-            assertThat(Jars.joined(List.of("part1", "part2", "part3")))
+            assertThat(KiwiJars.joined(List.of("part1", "part2", "part3")))
                     .contains("part1" + File.separator + "part2" + File.separator + "part3");
         }
 
         @Test
         void shouldReturnItemsWithLeadingFileSeparator_WhenListHasEmptyFirstElement() {
-            assertThat(Jars.joined(List.of("", "part1", "part2", "part3")))
+            assertThat(KiwiJars.joined(List.of("", "part1", "part2", "part3")))
                     .contains(File.separator + "part1" + File.separator + "part2" + File.separator + "part3");
         }
     }
