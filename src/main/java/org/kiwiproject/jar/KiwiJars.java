@@ -23,7 +23,7 @@ import java.util.Optional;
  */
 @Slf4j
 @UtilityClass
-public class Jars {
+public class KiwiJars {
 
     /**
      * Get the path components of the JAR file path that the given class lives in, or an empty list if the path
