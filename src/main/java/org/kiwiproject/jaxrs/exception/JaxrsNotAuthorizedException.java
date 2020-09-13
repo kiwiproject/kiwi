@@ -5,6 +5,9 @@ package org.kiwiproject.jaxrs.exception;
  */
 public class JaxrsNotAuthorizedException extends JaxrsException {
 
+    /**
+     * The status code for all instances of this exception.
+     */
     public static final int CODE = 401;
 
     /**

@@ -26,11 +26,10 @@ import java.util.Map;
 @Slf4j
 public class ErrorMessage {
 
-    // TODO These were originally public; not sure why or if they need to be
-    private static final String KEY_CODE = "code";
-    private static final String KEY_FIELD_NAME = "fieldName";
-    private static final String KEY_ITEM_ID = "itemId";
-    private static final String KEY_MESSAGE = "message";
+    public static final String KEY_CODE = "code";
+    public static final String KEY_FIELD_NAME = "fieldName";
+    public static final String KEY_ITEM_ID = "itemId";
+    public static final String KEY_MESSAGE = "message";
 
     static final String DEFAULT_MSG = "Unknown error";
     static final int DEFAULT_CODE = 500;
