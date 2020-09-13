@@ -4,6 +4,8 @@ import static java.util.Objects.nonNull;
 import static java.util.stream.Collectors.toList;
 import static org.kiwiproject.base.KiwiPreconditions.checkArgumentNotNull;
 
+import com.google.common.annotations.VisibleForTesting;
+
 import javax.validation.ConstraintViolation;
 import javax.validation.constraints.NotNull;
 import java.util.List;
@@ -98,9 +100,10 @@ public class JaxrsValidationException extends JaxrsException {
         return buildErrorMessage(itemId, violation, violation.getPropertyPath().toString());
     }
 
-    private static ErrorMessage buildErrorMessage(String itemId,
-                                                  @NotNull ConstraintViolation<?> violation,
-                                                  String fieldName) {
+    @VisibleForTesting
+    static ErrorMessage buildErrorMessage(String itemId,
+                                          @NotNull ConstraintViolation<?> violation,
+                                          String fieldName) {
         checkArgumentNotNull(violation, "violation cannot be null");
         var fieldNameOrPropertyPath = nonNull(fieldName) ? fieldName : violation.getPropertyPath().toString();
         return new ErrorMessage(itemId, CODE, violation.getMessage(), fieldNameOrPropertyPath);

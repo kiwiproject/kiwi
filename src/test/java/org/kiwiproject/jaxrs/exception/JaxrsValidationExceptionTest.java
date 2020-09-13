@@ -1,6 +1,7 @@
 package org.kiwiproject.jaxrs.exception;
 
 import static java.util.Comparator.comparing;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.kiwiproject.collect.KiwiLists.first;
 import static org.kiwiproject.collect.KiwiLists.second;
 import static org.kiwiproject.collect.KiwiLists.third;
@@ -11,6 +12,7 @@ import org.assertj.core.api.SoftAssertions;
 import org.assertj.core.api.junit.jupiter.SoftAssertionsExtension;
 import org.hibernate.validator.constraints.Length;
 import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.kiwiproject.validation.KiwiValidations;
@@ -126,6 +128,30 @@ class JaxrsValidationExceptionTest {
                 new TreeSet<ConstraintViolation<Person>>(comparing(violation -> violation.getPropertyPath().toString()));
         sortedViolations.addAll(violations);
         return sortedViolations;
+    }
+
+    @Nested
+    class BuildErrorMessage {
+
+        @Test
+        void shouldUseGivenFieldName() {
+            var bob = new Person("Bob", "", null);
+            var violation = KiwiValidations.validate(bob).iterator().next();
+
+            var errorMessage = JaxrsValidationException.buildErrorMessage("42", violation, "Email address");
+
+            assertThat(errorMessage.getFieldName()).isEqualTo("Email address");
+        }
+
+        @Test
+        void shouldUsePropertyPath_WhenFieldNameIsNull() {
+            var contactDetail = new ContactDetail("bob");
+            var violation = KiwiValidations.validate(contactDetail).iterator().next();
+
+            var errorMessage = JaxrsValidationException.buildErrorMessage("42", violation, null);
+
+            assertThat(errorMessage.getFieldName()).isEqualTo("emailAddress");
+        }
     }
 
     @AllArgsConstructor
