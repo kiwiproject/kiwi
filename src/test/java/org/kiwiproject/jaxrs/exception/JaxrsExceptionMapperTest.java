@@ -3,6 +3,9 @@ package org.kiwiproject.jaxrs.exception;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.entry;
 import static org.assertj.core.util.Lists.newArrayList;
+import static org.kiwiproject.jaxrs.JaxRsTestHelper.assertResponseEntityHasOneErrorMessage;
+import static org.kiwiproject.jaxrs.JaxRsTestHelper.assertResponseMediaType;
+import static org.kiwiproject.jaxrs.JaxRsTestHelper.assertStatusCode;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -38,19 +41,9 @@ class JaxrsExceptionMapperTest {
             var ex = new JaxrsException((String) null);
             var response = mapper.toResponse(ex);
 
-            assertThat(response.getStatus()).isEqualTo(ErrorMessage.DEFAULT_CODE);
-            assertThat(response.getMediaType()).isEqualTo(MediaType.APPLICATION_JSON_TYPE);
-
-            var entityObj = response.getEntity();
-            assertThat(entityObj).isInstanceOf(Map.class);
-
-            //noinspection unchecked
-            var entity = (Map<String, Object>) entityObj;
-            assertThat(entity).containsOnly(
-                    entry("errors", List.of(
-                            new ErrorMessage(ErrorMessage.DEFAULT_CODE, ErrorMessage.DEFAULT_MSG))
-                    )
-            );
+            assertStatusCode(response, ErrorMessage.DEFAULT_CODE);
+            assertResponseMediaType(response, MediaType.APPLICATION_JSON);
+            assertResponseEntityHasOneErrorMessage(response, ErrorMessage.DEFAULT_CODE, ErrorMessage.DEFAULT_MSG);
         }
 
         @Test
@@ -63,8 +56,8 @@ class JaxrsExceptionMapperTest {
 
             var response = mapper.toResponse(ex);
 
-            assertThat(response.getStatus()).isEqualTo(statusCode);
-            assertThat(response.getMediaType()).isEqualTo(MediaType.APPLICATION_JSON_TYPE);
+            assertStatusCode(response, statusCode);
+            assertResponseMediaType(response, MediaType.APPLICATION_JSON);
 
             var entityObj = response.getEntity();
             assertThat(entityObj).isInstanceOf(Map.class);
@@ -87,8 +80,8 @@ class JaxrsExceptionMapperTest {
 
             var response = mapper.toResponse(ex);
 
-            assertThat(response.getStatus()).isEqualTo(statusCode);
-            assertThat(response.getMediaType()).isEqualTo(MediaType.APPLICATION_JSON_TYPE);
+            assertStatusCode(response, statusCode);
+            assertResponseMediaType(response, MediaType.APPLICATION_JSON);
 
             var entityObj = response.getEntity();
             assertThat(entityObj).isInstanceOf(Map.class);
