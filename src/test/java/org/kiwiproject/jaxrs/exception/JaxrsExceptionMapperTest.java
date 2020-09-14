@@ -194,7 +194,9 @@ class JaxrsExceptionMapperTest {
             assertThat(ex).isNotNull();
             assertThat(ex.getStatusCode()).isEqualTo(statusCode);
 
-            assertThat(ex.getErrors()).isEmpty();
+            assertThat(ex.getErrors()).containsExactly(
+                    new ErrorMessage(ErrorMessage.DEFAULT_CODE, ErrorMessage.DEFAULT_MSG)
+            );
             assertThat(ex.getOtherData()).containsOnly(
                     entry("key1", "value1"),
                     entry("key2", "value2")
@@ -294,7 +296,21 @@ class JaxrsExceptionMapperTest {
     class ToJaxrsExceptionFromMap {
 
         @Test
-        void whenResponseContainsMapEntity_WithErrorsValueHavingNullsAndErrorMessages() {
+        void whenMapIsEmpty() {
+            var statusCode = 400;
+            var ex = JaxrsExceptionMapper.toJaxrsException(statusCode, Map.of());
+
+            assertThat(ex).isNotNull();
+            assertThat(ex.getStatusCode()).isEqualTo(statusCode);
+
+            assertThat(ex.getErrors()).containsExactly(
+                    new ErrorMessage(statusCode, ErrorMessage.DEFAULT_MSG)
+            );
+            assertThat(ex.getOtherData()).isEmpty();
+        }
+
+        @Test
+        void whenMapHasNullsAndErrorMessages() {
             var statusCode = 400;
             var error1 = new ErrorMessage(400, "You submitted invalid data");
             var error2 = new ErrorMessage("42", 401, "You are not authorized to change this data", "emailAddress");
