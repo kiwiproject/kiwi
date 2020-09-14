@@ -94,6 +94,22 @@ public class JaxrsValidationException extends JaxrsException {
         setErrors(errorMessages);
     }
 
+    /**
+     * New instance with given {@link ErrorMessage} objects.
+     * <p>
+     * It is assumed but not checked that the {@link ErrorMessage} objects are due to 422 errors.
+     * Therefore it is possible to instantiate an instance with errors that have some other status
+     * code.
+     *
+     * @param errorMessages non-null list of error messages
+     */
+    public JaxrsValidationException(List<ErrorMessage> errorMessages) {
+        super(VALIDATION_FAILED_MESSAGE, CODE);
+
+        checkArgumentNotNull(errorMessages);
+        setErrors(errorMessages);
+    }
+
     private static ErrorMessage buildErrorMessage(String itemId,
                                                   @NotNull ConstraintViolation<?> violation) {
         checkArgumentNotNull(violation, "violation cannot be null");
@@ -107,5 +123,16 @@ public class JaxrsValidationException extends JaxrsException {
         checkArgumentNotNull(violation, "violation cannot be null");
         var fieldNameOrPropertyPath = nonNull(fieldName) ? fieldName : violation.getPropertyPath().toString();
         return new ErrorMessage(itemId, CODE, violation.getMessage(), fieldNameOrPropertyPath);
+    }
+
+    /**
+     * Factory method to create validation exception from a non-null list of {@link ErrorMessage}.
+     *
+     * @param errorMessages non-null list of error messages
+     * @return a new {@link JaxrsValidationException} instance
+     * @see #JaxrsValidationException(List)
+     */
+    public static JaxrsValidationException ofErrorMessages(List<ErrorMessage> errorMessages) {
+        return new JaxrsValidationException(errorMessages);
     }
 }
