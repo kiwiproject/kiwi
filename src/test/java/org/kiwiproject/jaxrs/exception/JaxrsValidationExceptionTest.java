@@ -122,6 +122,17 @@ class JaxrsValidationExceptionTest {
         softly.assertThat(lastNameError.getMessage()).isEqualTo("length must be between 2 and 255");
     }
 
+    @Test
+    void shouldConstructFromListOfErrorMessages(SoftAssertions softly) {
+        var itemId = "168";
+        var error1 = new ErrorMessage(itemId, 422, "must not be blank", "lastName");
+        var error2 = new ErrorMessage(itemId, 422, "must be a well-formed email address", "emailAddress");
+        var ex = JaxrsValidationException.ofErrorMessages(List.of(error1, error2));
+
+        softly.assertThat(first(ex.getErrors())).isEqualTo(error1);
+        softly.assertThat(second(ex.getErrors())).isEqualTo(error2);
+    }
+
     private static TreeSet<ConstraintViolation<Person>> validateAndSort(Person person) {
         var violations = KiwiValidations.validate(person);
         var sortedViolations =
