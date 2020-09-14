@@ -148,6 +148,7 @@ public class JaxrsExceptionMapper implements ExceptionMapper<JaxrsException> {
         if (KiwiMaps.isNullOrEmpty(entity) || !entity.containsKey(KEY_ERRORS)) {
             var ex = new JaxrsException((String) null, status);
             ex.setOtherData(entity);
+            return ex;
         }
 
         try {
