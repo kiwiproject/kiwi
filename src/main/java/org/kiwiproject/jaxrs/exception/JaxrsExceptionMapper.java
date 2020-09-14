@@ -12,6 +12,7 @@ import org.kiwiproject.json.JsonHelper;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.ext.ExceptionMapper;
+import javax.ws.rs.ext.Provider;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -19,8 +20,11 @@ import java.util.Objects;
 
 /**
  * Map a {@link JaxrsException} to a {@link Response}.
+ * <p>
+ * The mapped response has the status of the given {@link JaxrsException} and media type JSON.
  */
 @Slf4j
+@Provider
 public class JaxrsExceptionMapper implements ExceptionMapper<JaxrsException> {
 
     /**
@@ -44,9 +48,12 @@ public class JaxrsExceptionMapper implements ExceptionMapper<JaxrsException> {
 
     /**
      * Convert the given {@link JaxrsException} to a JSON response.
+     * <p>
+     * The response entity contains the information in the JaxrsException.
      *
      * @param exception the exception to convert
      * @return a response
+     * @see #buildResponseEntity(JaxrsException)
      */
     public static Response buildResponse(JaxrsException exception) {
         return buildResponseBuilder(exception).build();
@@ -54,9 +61,12 @@ public class JaxrsExceptionMapper implements ExceptionMapper<JaxrsException> {
 
     /**
      * Convert the given {@link JaxrsException} to a JSON response <em>builder</em>.
+     * <p>
+     * The response entity contains the information in the JaxrsException.
      *
      * @param exception the exception to convert
      * @return a response builder
+     * @see #buildResponseEntity(JaxrsException)
      */
     public static Response.ResponseBuilder buildResponseBuilder(JaxrsException exception) {
         return Response.status(exception.getStatusCode())
