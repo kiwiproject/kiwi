@@ -29,15 +29,19 @@ public class JaxRsTestHelper {
     public static void assertResponseEntityHasOneErrorMessage(Response response,
                                                               int expectedStatusCode,
                                                               String expectedMessage) {
-        var entityObj = response.getEntity();
-        assertThat(entityObj).isInstanceOf(Map.class);
-
-        //noinspection unchecked
-        var entity = (Map<String, Object>) entityObj;
+        Map<String, Object> entity = assertHasMapEntity(response);
         assertThat(entity).containsOnly(
                 entry("errors", List.of(
                         new ErrorMessage(expectedStatusCode, expectedMessage))
                 )
         );
+    }
+
+    public static Map<String, Object> assertHasMapEntity(Response response) {
+        var entityObj = response.getEntity();
+        assertThat(entityObj).isInstanceOf(Map.class);
+
+        //noinspection unchecked
+        return (Map<String, Object>) entityObj;
     }
 }

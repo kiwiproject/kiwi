@@ -3,6 +3,7 @@ package org.kiwiproject.jaxrs.exception;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.entry;
 import static org.assertj.core.util.Lists.newArrayList;
+import static org.kiwiproject.jaxrs.JaxRsTestHelper.assertHasMapEntity;
 import static org.kiwiproject.jaxrs.JaxRsTestHelper.assertResponseEntityHasOneErrorMessage;
 import static org.kiwiproject.jaxrs.JaxRsTestHelper.assertResponseMediaType;
 import static org.kiwiproject.jaxrs.JaxRsTestHelper.assertStatusCode;
@@ -59,11 +60,7 @@ class JaxrsExceptionMapperTest {
             assertStatusCode(response, statusCode);
             assertResponseMediaType(response, MediaType.APPLICATION_JSON);
 
-            var entityObj = response.getEntity();
-            assertThat(entityObj).isInstanceOf(Map.class);
-
-            //noinspection unchecked
-            var entity = (Map<String, Object>) entityObj;
+            var entity = assertHasMapEntity(response);
             assertThat(entity).containsOnly(
                     entry("errors", List.of(lastNameError, emailError))
             );
@@ -83,11 +80,7 @@ class JaxrsExceptionMapperTest {
             assertStatusCode(response, statusCode);
             assertResponseMediaType(response, MediaType.APPLICATION_JSON);
 
-            var entityObj = response.getEntity();
-            assertThat(entityObj).isInstanceOf(Map.class);
-
-            //noinspection unchecked
-            var entity = (Map<String, Object>) entityObj;
+            var entity = assertHasMapEntity(response);
             assertThat(entity).containsOnly(
                     entry("errors", List.of(lastNameError, emailError)),
                     entry("other1", 1),
