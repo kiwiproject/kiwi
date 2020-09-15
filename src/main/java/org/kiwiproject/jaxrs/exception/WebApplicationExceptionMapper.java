@@ -6,7 +6,7 @@ import javax.ws.rs.ext.ExceptionMapper;
 import javax.ws.rs.ext.Provider;
 
 /**
- * Map {@link IllegalStateException} to {@link Response}.
+ * Map {@link WebApplicationException} to {@link Response}.
  * <p>
  * The mapped response has status code 500 (Bad Request) and media type JSON.
  */
