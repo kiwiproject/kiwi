@@ -1,8 +1,8 @@
 package org.kiwiproject.jaxrs.exception;
 
 import static org.kiwiproject.jaxrs.JaxRsTestHelper.assertResponseEntityHasOneErrorMessage;
-import static org.kiwiproject.jaxrs.JaxRsTestHelper.assertResponseMediaType;
-import static org.kiwiproject.jaxrs.JaxRsTestHelper.assertStatusCode;
+import static org.kiwiproject.jaxrs.JaxRsTestHelper.assertResponseStatusCode;
+import static org.kiwiproject.jaxrs.JaxRsTestHelper.assertResponseType;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -27,8 +27,8 @@ class IllegalArgumentExceptionMapperTest {
         var ex = new IllegalArgumentException();
         var response = mapper.toResponse(ex);
 
-        assertStatusCode(response, BAD_REQUEST_STATUS);
-        assertResponseMediaType(response, MediaType.APPLICATION_JSON);
+        assertResponseStatusCode(response, BAD_REQUEST_STATUS);
+        assertResponseType(response, MediaType.APPLICATION_JSON);
         assertResponseEntityHasOneErrorMessage(response, BAD_REQUEST_STATUS, ErrorMessage.DEFAULT_MSG);
     }
 
@@ -38,8 +38,8 @@ class IllegalArgumentExceptionMapperTest {
         var ex = new IllegalArgumentException(message);
         var response = mapper.toResponse(ex);
 
-        assertStatusCode(response, BAD_REQUEST_STATUS);
-        assertResponseMediaType(response, MediaType.APPLICATION_JSON);
+        assertResponseStatusCode(response, BAD_REQUEST_STATUS);
+        assertResponseType(response, MediaType.APPLICATION_JSON);
         assertResponseEntityHasOneErrorMessage(response, BAD_REQUEST_STATUS, message);
     }
 }

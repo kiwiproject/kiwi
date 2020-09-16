@@ -1,8 +1,8 @@
 package org.kiwiproject.jaxrs.exception;
 
 import static org.kiwiproject.jaxrs.JaxRsTestHelper.assertResponseEntityHasOneErrorMessage;
-import static org.kiwiproject.jaxrs.JaxRsTestHelper.assertResponseMediaType;
-import static org.kiwiproject.jaxrs.JaxRsTestHelper.assertStatusCode;
+import static org.kiwiproject.jaxrs.JaxRsTestHelper.assertResponseStatusCode;
+import static org.kiwiproject.jaxrs.JaxRsTestHelper.assertResponseType;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -34,8 +34,8 @@ class WebApplicationExceptionMapperTest {
         var ex = new WebApplicationException(exceptionResponse);
         var response = mapper.toResponse(ex);
 
-        assertStatusCode(response, statusCode);
-        assertResponseMediaType(response, MediaType.APPLICATION_JSON);
+        assertResponseStatusCode(response, statusCode);
+        assertResponseType(response, MediaType.APPLICATION_JSON);
         assertResponseEntityHasOneErrorMessage(response, statusCode, ex.getMessage());
     }
 
@@ -50,8 +50,8 @@ class WebApplicationExceptionMapperTest {
         var ex = new WebApplicationException(message, exceptionResponse);
         var response = mapper.toResponse(ex);
 
-        assertStatusCode(response, statusCode);
-        assertResponseMediaType(response, MediaType.APPLICATION_JSON);
+        assertResponseStatusCode(response, statusCode);
+        assertResponseType(response, MediaType.APPLICATION_JSON);
         assertResponseEntityHasOneErrorMessage(response, statusCode, message);
     }
 }

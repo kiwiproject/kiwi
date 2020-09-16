@@ -2,8 +2,8 @@ package org.kiwiproject.jaxrs.exception;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.kiwiproject.jaxrs.JaxRsTestHelper.assertHasMapEntity;
-import static org.kiwiproject.jaxrs.JaxRsTestHelper.assertResponseMediaType;
-import static org.kiwiproject.jaxrs.JaxRsTestHelper.assertStatusCode;
+import static org.kiwiproject.jaxrs.JaxRsTestHelper.assertResponseStatusCode;
+import static org.kiwiproject.jaxrs.JaxRsTestHelper.assertResponseType;
 
 import lombok.Builder;
 import lombok.Value;
@@ -27,6 +27,8 @@ import java.util.List;
 @DisplayName("ConstraintViolationExceptionMapper")
 class ConstraintViolationExceptionMapperTest {
 
+    private static final int UNPROCESSABLE_ENTITY_STATUS = 422;
+
     private ConstraintViolationExceptionMapper mapper;
 
     @BeforeEach
@@ -34,13 +36,13 @@ class ConstraintViolationExceptionMapperTest {
         mapper = new ConstraintViolationExceptionMapper();
     }
 
-    // This is here only so that if Response.Status ever adds 422, we'll know about it...
+    // This is here only so that if Response.Status ever adds 422 Unprocessable Entity, we'll know about it...
     @Nested
     class FromStatusCode {
 
         @Test
         void shouldReturnNullFor422() {
-            assertThat(Response.Status.fromStatusCode(422)).isNull();
+            assertThat(Response.Status.fromStatusCode(UNPROCESSABLE_ENTITY_STATUS)).isNull();
         }
     }
 
@@ -59,9 +61,8 @@ class ConstraintViolationExceptionMapperTest {
 
             var response = ConstraintViolationExceptionMapper.buildResponse(violations);
 
-            var expectedStatusCode = 422;
-            assertStatusCode(response, expectedStatusCode);
-            assertResponseMediaType(response, MediaType.APPLICATION_JSON);
+            assertResponseStatusCode(response, UNPROCESSABLE_ENTITY_STATUS);
+            assertResponseType(response, MediaType.APPLICATION_JSON);
 
             var entity = assertHasMapEntity(response);
             assertThat(entity).containsOnlyKeys("errors");
@@ -70,8 +71,8 @@ class ConstraintViolationExceptionMapperTest {
             var errors = (List<ErrorMessage>) entity.get("errors");
 
             assertThat(errors).containsExactlyInAnyOrder(
-                    new ErrorMessage(expectedStatusCode, "must not be blank", "model"),
-                    new ErrorMessage(expectedStatusCode, "must be greater than or equal to 0", "mileage")
+                    new ErrorMessage(UNPROCESSABLE_ENTITY_STATUS, "must not be blank", "model"),
+                    new ErrorMessage(UNPROCESSABLE_ENTITY_STATUS, "must be greater than or equal to 0", "mileage")
             );
         }
     }
@@ -91,9 +92,8 @@ class ConstraintViolationExceptionMapperTest {
 
             var response = mapper.toResponse(new ConstraintViolationException(violations));
 
-            var expectedStatusCode = 422;
-            assertStatusCode(response, expectedStatusCode);
-            assertResponseMediaType(response, MediaType.APPLICATION_JSON);
+            assertResponseStatusCode(response, UNPROCESSABLE_ENTITY_STATUS);
+            assertResponseType(response, MediaType.APPLICATION_JSON);
 
             var entity = assertHasMapEntity(response);
             assertThat(entity).containsOnlyKeys("errors");
