@@ -14,16 +14,53 @@ import java.util.Map;
 @UtilityClass
 public class JaxRsTestHelper {
 
-    public static void assertStatusCode(Response response, int expectedStatusCode) {
+    public static void assertResponseStatusCode(Response response, Response.Status expectedStatusCode) {
+        assertResponseStatusCode(response, expectedStatusCode.getStatusCode());
+    }
+
+    public static void assertResponseStatusCode(Response response, int expectedStatusCode) {
         assertThat(response.getStatus()).isEqualTo(expectedStatusCode);
     }
 
-    public static void assertResponseMediaType(Response response, String expectedType) {
-        assertResponseMediaType(response, MediaType.valueOf(expectedType));
+    public static void assertResponseType(Response response, String expectedType) {
+        assertResponseType(response, MediaType.valueOf(expectedType));
     }
 
-    public static void assertResponseMediaType(Response response, MediaType expectedType) {
+    public static void assertResponseType(Response response, MediaType expectedType) {
         assertThat(response.getMediaType()).isEqualTo(expectedType);
+    }
+
+    public static void assertCreatedResponseWithLocation(Response response, String expectedLocation) {
+        assertResponseStatusCode(response, Response.Status.CREATED);
+
+        assertThat(response.getHeaders().getFirst("Location")).hasToString(expectedLocation);
+    }
+
+    public static void assertOkResponse(Response response) {
+        assertResponseStatusCode(response, Response.Status.OK);
+    }
+
+    public static <T> void assertStatusAndResponseEntity(Response response,
+                                                         Response.Status expectedStatus,
+                                                         T expectedEntity) {
+        assertResponseStatusCode(response, expectedStatus.getStatusCode());
+        assertResponseEntity(response, expectedEntity);
+    }
+
+    public static <T> void assertResponseEntity(Response response, T expectedEntity) {
+        var entity = assertNonNullResponseEntity(response, expectedEntity.getClass());
+        assertThat(entity).isSameAs(expectedEntity);
+    }
+
+    public static <T> T assertNonNullResponseEntity(Response response, Class<T> expectedType) {
+        var entity = response.getEntity();
+        assertThat(entity).isInstanceOf(expectedType);
+
+        return expectedType.cast(entity);
+    }
+
+    public static void assertCustomHeaderFirstValue(Response response, String headerName, Object expectedValue) {
+        assertThat(response.getHeaders().getFirst(headerName)).isEqualTo(expectedValue);
     }
 
     public static void assertResponseEntityHasOneErrorMessage(Response response,
