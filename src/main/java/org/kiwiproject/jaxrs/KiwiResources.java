@@ -34,8 +34,7 @@ public class KiwiResources {
     private static final Map<String, Object> EMPTY_HEADERS = Map.of();
 
     /**
-     * Verifies that {@code resourceEntity} is not null, otherwise throws a {@link JaxrsNotFoundException}
-     * which contains a 404 status and JSON entity describing the error.
+     * Verifies that {@code resourceEntity} is not null, otherwise throws a {@link JaxrsNotFoundException}.
      *
      * @param resourceEntity the resource entity to verify
      * @param <T>            the object type
@@ -46,8 +45,7 @@ public class KiwiResources {
     }
 
     /**
-     * Verifies that {@code resourceEntity} contains a value, otherwise throws a {@link JaxrsNotFoundException}
-     * which contains a 404 status and JSON entity describing the error.
+     * Verifies that {@code resourceEntity} contains a value, otherwise throws a {@link JaxrsNotFoundException}.
      *
      * @param resourceEntity the resource entity to verify
      * @param <T>            the object type
@@ -61,8 +59,7 @@ public class KiwiResources {
     }
 
     /**
-     * Verifies that {@code resourceEntity} is not null, otherwise throws a {@link JaxrsNotFoundException}
-     * which contains a 404 status and JSON entity describing the error.
+     * Verifies that {@code resourceEntity} is not null, otherwise throws a {@link JaxrsNotFoundException}.
      *
      * @param resourceEntity the resource entity to verify
      * @param entityType     a Class representing the entity type, used in error messages
@@ -76,8 +73,7 @@ public class KiwiResources {
     }
 
     /**
-     * Verifies that {@code resourceEntity} contains a value, otherwise throws {@link JaxrsNotFoundException}
-     * which contains a 404 status and JSON entity describing the error.
+     * Verifies that {@code resourceEntity} contains a value, otherwise throws {@link JaxrsNotFoundException}.
      *
      * @param resourceEntity the resource entity to verify
      * @param entityType     a Class representing the entity type, used in error messages
@@ -94,8 +90,7 @@ public class KiwiResources {
     }
 
     /**
-     * Verifies that {@code resourceEntity} is not null, otherwise throws {@link JaxrsNotFoundException}
-     * which contains a 404 status and JSON entity describing the error.
+     * Verifies that {@code resourceEntity} is not null, otherwise throws {@link JaxrsNotFoundException}.
      *
      * @param resourceEntity  the resource entity to verify
      * @param notFoundMessage the error message to include in the response entity
@@ -109,8 +104,7 @@ public class KiwiResources {
     }
 
     /**
-     * Verifies that {@code resourceEntity} contains a value, otherwise throws {@link JaxrsNotFoundException}
-     * which contains a 404 status and JSON entity describing the error.
+     * Verifies that {@code resourceEntity} contains a value, otherwise throws {@link JaxrsNotFoundException}.
      *
      * @param resourceEntity  the resource entity to verify
      * @param notFoundMessage the error message to include in the response entity
