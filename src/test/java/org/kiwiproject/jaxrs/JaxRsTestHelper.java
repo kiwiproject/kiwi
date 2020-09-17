@@ -22,6 +22,10 @@ public class JaxRsTestHelper {
         assertThat(response.getStatus()).isEqualTo(expectedStatusCode);
     }
 
+    public static void assertJsonResponseType(Response response) {
+        assertResponseType(response, MediaType.APPLICATION_JSON_TYPE);
+    }
+
     public static void assertResponseType(Response response, String expectedType) {
         assertResponseType(response, MediaType.valueOf(expectedType));
     }
@@ -38,6 +42,26 @@ public class JaxRsTestHelper {
 
     public static void assertOkResponse(Response response) {
         assertResponseStatusCode(response, Response.Status.OK);
+    }
+
+    public static void assertNoContentResponse(Response response) {
+        assertResponseStatusCode(response, Response.Status.NO_CONTENT);
+    }
+
+    public static void assertAcceptedResponse(Response response) {
+        assertResponseStatusCode(response, Response.Status.ACCEPTED);
+    }
+
+    public static void assertNotFoundResponse(Response response) {
+        assertResponseStatusCode(response, Response.Status.NOT_FOUND);
+    }
+
+    public static void assertBadRequestResponse(Response response) {
+        assertResponseStatusCode(response, Response.Status.BAD_REQUEST);
+    }
+
+    public static void assertUnauthorizedFoundResponse(Response response) {
+        assertResponseStatusCode(response, Response.Status.UNAUTHORIZED);
     }
 
     public static <T> void assertStatusAndResponseEntity(Response response,
