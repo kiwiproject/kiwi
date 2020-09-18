@@ -3,12 +3,12 @@ package org.kiwiproject.jaxrs;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatCode;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.kiwiproject.jaxrs.JaxRsTestHelper.assertCreatedResponseWithLocation;
-import static org.kiwiproject.jaxrs.JaxRsTestHelper.assertCustomHeaderFirstValue;
-import static org.kiwiproject.jaxrs.JaxRsTestHelper.assertOkResponse;
-import static org.kiwiproject.jaxrs.JaxRsTestHelper.assertResponseEntity;
-import static org.kiwiproject.jaxrs.JaxRsTestHelper.assertResponseType;
-import static org.kiwiproject.jaxrs.JaxRsTestHelper.assertStatusAndResponseEntity;
+import static org.kiwiproject.jaxrs.JaxrsTestHelper.assertCreatedResponseWithLocation;
+import static org.kiwiproject.jaxrs.JaxrsTestHelper.assertCustomHeaderFirstValue;
+import static org.kiwiproject.jaxrs.JaxrsTestHelper.assertOkResponse;
+import static org.kiwiproject.jaxrs.JaxrsTestHelper.assertResponseEntity;
+import static org.kiwiproject.jaxrs.JaxrsTestHelper.assertResponseType;
+import static org.kiwiproject.jaxrs.JaxrsTestHelper.assertStatusAndResponseEntity;
 
 import lombok.Value;
 import org.junit.jupiter.api.DisplayName;

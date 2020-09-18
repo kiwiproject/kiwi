@@ -11,8 +11,15 @@ import javax.ws.rs.core.Response;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * This is a subset of the methods in the class of the same name in the
+ * <a href="https://github.com/kiwiproject/kiwi-test">kiwi-test</a> library.
+ * <p>
+ * We can't use kiwi-test here otherwise we would create a cyclic dependency since kiwi-test
+ * depends on kiwi.
+ */
 @UtilityClass
-public class JaxRsTestHelper {
+public class JaxrsTestHelper {
 
     public static void assertResponseStatusCode(Response response, Response.Status expectedStatusCode) {
         assertResponseStatusCode(response, expectedStatusCode.getStatusCode());

@@ -1,14 +1,14 @@
 package org.kiwiproject.jaxrs;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.kiwiproject.jaxrs.JaxRsTestHelper.assertAcceptedResponse;
-import static org.kiwiproject.jaxrs.JaxRsTestHelper.assertCreatedResponseWithLocation;
-import static org.kiwiproject.jaxrs.JaxRsTestHelper.assertJsonResponseType;
-import static org.kiwiproject.jaxrs.JaxRsTestHelper.assertNoContentResponse;
-import static org.kiwiproject.jaxrs.JaxRsTestHelper.assertNotFoundResponse;
-import static org.kiwiproject.jaxrs.JaxRsTestHelper.assertOkResponse;
-import static org.kiwiproject.jaxrs.JaxRsTestHelper.assertResponseEntity;
-import static org.kiwiproject.jaxrs.JaxRsTestHelper.assertResponseEntityHasOneErrorMessage;
+import static org.kiwiproject.jaxrs.JaxrsTestHelper.assertAcceptedResponse;
+import static org.kiwiproject.jaxrs.JaxrsTestHelper.assertCreatedResponseWithLocation;
+import static org.kiwiproject.jaxrs.JaxrsTestHelper.assertJsonResponseType;
+import static org.kiwiproject.jaxrs.JaxrsTestHelper.assertNoContentResponse;
+import static org.kiwiproject.jaxrs.JaxrsTestHelper.assertNotFoundResponse;
+import static org.kiwiproject.jaxrs.JaxrsTestHelper.assertOkResponse;
+import static org.kiwiproject.jaxrs.JaxrsTestHelper.assertResponseEntity;
+import static org.kiwiproject.jaxrs.JaxrsTestHelper.assertResponseEntityHasOneErrorMessage;
 
 import lombok.Value;
 import org.junit.jupiter.api.DisplayName;

@@ -1,8 +1,8 @@
 package org.kiwiproject.jaxrs.exception;
 
-import static org.kiwiproject.jaxrs.JaxRsTestHelper.assertResponseEntityHasOneErrorMessage;
-import static org.kiwiproject.jaxrs.JaxRsTestHelper.assertResponseStatusCode;
-import static org.kiwiproject.jaxrs.JaxRsTestHelper.assertResponseType;
+import static org.kiwiproject.jaxrs.JaxrsTestHelper.assertResponseEntityHasOneErrorMessage;
+import static org.kiwiproject.jaxrs.JaxrsTestHelper.assertResponseStatusCode;
+import static org.kiwiproject.jaxrs.JaxrsTestHelper.assertResponseType;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
