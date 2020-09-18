@@ -2,14 +2,14 @@ package org.kiwiproject.jaxrs;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.entry;
-import static org.kiwiproject.jaxrs.JaxRsTestHelper.assertAcceptedResponse;
-import static org.kiwiproject.jaxrs.JaxRsTestHelper.assertBadRequestResponse;
-import static org.kiwiproject.jaxrs.JaxRsTestHelper.assertCreatedResponseWithLocation;
-import static org.kiwiproject.jaxrs.JaxRsTestHelper.assertJsonResponseType;
-import static org.kiwiproject.jaxrs.JaxRsTestHelper.assertNoContentResponse;
-import static org.kiwiproject.jaxrs.JaxRsTestHelper.assertNotFoundResponse;
-import static org.kiwiproject.jaxrs.JaxRsTestHelper.assertOkResponse;
-import static org.kiwiproject.jaxrs.JaxRsTestHelper.assertUnauthorizedFoundResponse;
+import static org.kiwiproject.jaxrs.JaxrsTestHelper.assertAcceptedResponse;
+import static org.kiwiproject.jaxrs.JaxrsTestHelper.assertBadRequestResponse;
+import static org.kiwiproject.jaxrs.JaxrsTestHelper.assertCreatedResponseWithLocation;
+import static org.kiwiproject.jaxrs.JaxrsTestHelper.assertJsonResponseType;
+import static org.kiwiproject.jaxrs.JaxrsTestHelper.assertNoContentResponse;
+import static org.kiwiproject.jaxrs.JaxrsTestHelper.assertNotFoundResponse;
+import static org.kiwiproject.jaxrs.JaxrsTestHelper.assertOkResponse;
+import static org.kiwiproject.jaxrs.JaxrsTestHelper.assertUnauthorizedFoundResponse;
 
 import io.dropwizard.testing.junit5.DropwizardExtensionsSupport;
 import io.dropwizard.testing.junit5.ResourceExtension;

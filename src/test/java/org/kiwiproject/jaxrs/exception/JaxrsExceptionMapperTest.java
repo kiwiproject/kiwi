@@ -3,10 +3,10 @@ package org.kiwiproject.jaxrs.exception;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.entry;
 import static org.assertj.core.util.Lists.newArrayList;
-import static org.kiwiproject.jaxrs.JaxRsTestHelper.assertHasMapEntity;
-import static org.kiwiproject.jaxrs.JaxRsTestHelper.assertResponseEntityHasOneErrorMessage;
-import static org.kiwiproject.jaxrs.JaxRsTestHelper.assertResponseStatusCode;
-import static org.kiwiproject.jaxrs.JaxRsTestHelper.assertResponseType;
+import static org.kiwiproject.jaxrs.JaxrsTestHelper.assertHasMapEntity;
+import static org.kiwiproject.jaxrs.JaxrsTestHelper.assertResponseEntityHasOneErrorMessage;
+import static org.kiwiproject.jaxrs.JaxrsTestHelper.assertResponseStatusCode;
+import static org.kiwiproject.jaxrs.JaxrsTestHelper.assertResponseType;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
