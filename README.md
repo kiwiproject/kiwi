@@ -4,7 +4,7 @@
 [![Coverage](https://sonarcloud.io/api/project_badges/measure?project=kiwiproject_kiwi&metric=coverage)](https://sonarcloud.io/dashboard?id=kiwiproject_kiwi)
 [![javadoc](https://javadoc.io/badge2/org.kiwiproject/kiwi/javadoc.svg)](https://javadoc.io/doc/org.kiwiproject/kiwi)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](https://opensource.org/licenses/MIT)
-![Maven Central](https://img.shields.io/maven-central/v/org.kiwiproject/kiwi)
+[![Maven Central](https://img.shields.io/maven-central/v/org.kiwiproject/kiwi)](https://search.maven.org/search?q=g:org.kiwiproject%20a:kiwi)
 
 Kiwi is a utility library. It contains a variety of utilities that we have built over time and find useful.
 In general, we look first to either Google Guava or Apache Commons for utilities, but if they don't have something
