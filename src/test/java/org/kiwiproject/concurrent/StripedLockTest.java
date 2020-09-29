@@ -74,7 +74,7 @@ class StripedLockTest {
 
         var completableFutures = List.of(
                 Async.doAsync(() -> lock.runWithWriteLock(recorder1.id, () -> recorder1.record(task))),
-                Async.doAsync(() -> lock.runWithReadLock(recorder2.id, () -> recorder2.record(task)))
+                Async.doAsync(() -> lock.runWithWriteLock(recorder2.id, () -> recorder2.record(task)))
         );
 
         waitForAll(completableFutures);
@@ -91,7 +91,7 @@ class StripedLockTest {
 
         var completableFutures = List.of(
                 Async.doAsync(() -> lock.runWithWriteLock(recorder1.id, () -> recorder1.record(task))),
-                Async.doAsync(() -> lock.runWithReadLock(recorder2.id, () -> recorder2.record(task)))
+                Async.doAsync(() -> lock.runWithWriteLock(recorder2.id, () -> recorder2.record(task)))
         );
 
         waitForAll(completableFutures);
