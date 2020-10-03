@@ -25,7 +25,7 @@ import java.time.ZoneId;
  * of the various methods in various time zones.
  */
 @Slf4j
-class KiwiXmlConvertersSamples {
+class KiwiXmlConvertersSamplesTest {
 
     // Suppress Sonar "Tests should include assertions"
     @SuppressWarnings("java:S2699")
