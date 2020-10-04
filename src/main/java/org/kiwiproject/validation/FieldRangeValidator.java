@@ -37,6 +37,7 @@ public class FieldRangeValidator implements ConstraintValidator<FieldRange, Obje
         try {
             var start = getFieldValueAsComparable(value, fieldRange.startField());
             var end = getFieldValueAsComparable(value, fieldRange.endField());
+            LOG.trace("Validating value: {} ; start: {} ; end: {}", value, start, end);
 
             validity = checkValidity(start, end, context);
         } catch (Exception e) {
