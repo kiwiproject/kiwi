@@ -5,8 +5,6 @@ import static org.kiwiproject.validation.ValidationTestHelper.assertViolations;
 
 import lombok.Builder;
 import lombok.Getter;
-import lombok.ToString;
-import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -21,7 +19,6 @@ import java.time.LocalTime;
 import java.time.Year;
 import java.time.ZonedDateTime;
 
-@Slf4j
 @DisplayName("FieldRangeValidator")
 class FieldRangeValidatorTest {
 
@@ -132,8 +129,6 @@ class FieldRangeValidatorTest {
                     .season1(Season.SUMMER)
                     .season2(Season.SPRING)  // invalid (summer ordinal > spring ordinal)
                     .build();
-
-            LOG.info("NoMinOrMax: {}", obj);
 
             assertViolations(validator, obj,
                     "localTime1 must occur before localTime2",
@@ -360,7 +355,6 @@ class FieldRangeValidatorTest {
         private final Integer mm2;
     }
 
-    @ToString
     @Builder
     @Getter
     @FieldRange(startField = "localDate1", endField = "localDate2")
