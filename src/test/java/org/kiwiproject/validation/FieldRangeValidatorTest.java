@@ -115,11 +115,14 @@ class FieldRangeValidatorTest {
         void shouldBeAbleToSupportAnyComparable() {
             var nowZdt = ZonedDateTime.now();
 
+            // Hard-code time to ensure we don't fail when between midnight and 1AM. See #376
+            var localTime1 = LocalTime.of(14, 35);
+
             var obj = NoMinOrMax.builder()
                     .localDate1(LocalDate.now())
                     .localDate2(LocalDate.now().plusDays(1))  // valid
-                    .localTime1(LocalTime.now())
-                    .localTime2(LocalTime.now().minusHours(1))  // invalid
+                    .localTime1(localTime1)
+                    .localTime2(localTime1.minusHours(1))  // invalid
                     .zdt1(nowZdt)
                     .zdt2(nowZdt)  // invalid
                     .zdt3(nowZdt)
