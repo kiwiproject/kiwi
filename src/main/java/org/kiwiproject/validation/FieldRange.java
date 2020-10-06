@@ -29,11 +29,18 @@ import java.lang.annotation.Target;
  * In addition to ensuring that the start and end fields define a valid range, you can also constrain them to minimum
  * and/or maximum values.
  * <p>
- * Finally, this validator's type support depends on whether minimum and maximum values are specified as part of the
+ * This validator's type support depends on whether minimum and maximum values are specified as part of the
  * configuration. If minimum and/or maximum are specified, then the supported types are the same as those supported
  * by {@link Range} since the minimum/maximum values must be converted from strings into the type of object that
  * the start and end fields are. If there are no minimum or maximum values defined, then any type that implements
  * {@link Comparable} is supported.
+ * <p>
+ * Finally, assuming there are no minimum or maximum values specified and that the type being validated contains
+ * only a <em>time</em> component, e.g. {@link java.time.LocalTime LocalTime}, then there is an edge case between
+ * 12:00 AM (00:00) and 1:00 AM (01:00) that may result in unexpected validation failures. For example, if the first
+ * time in the range is 11:56 PM (23:56) and the second is 12:15 AM (00:15), then without a date to indicate whether
+ * the times cross a midnight boundary, this range will be considered as invalid. The reason is simply that within a
+ * single day (again because there is no date component to indicate otherwise), 12:15 AM always comes before 23:56 PM.
  */
 @Documented
 @Constraint(validatedBy = {FieldRangeValidator.class})
