@@ -49,7 +49,7 @@
         <javassist.version>3.27.0-GA</javassist.version>
         <jetty-server.version>9.4.30.v20200611</jetty-server.version>
         <joda-time.version>2.10.6</joda-time.version>
-        <lombok.version>1.18.12</lombok.version>
+        <lombok.version>1.18.16</lombok.version>
         <postgresql.version>42.2.12</postgresql.version>
         <spring.version>5.2.6.RELEASE</spring.version>
         <stax2-api.version>4.2.1</stax2-api.version>
