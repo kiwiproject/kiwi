@@ -1,0 +1,19 @@
+version: 2
+updates:
+  - package-ecosystem: "maven"
+    directory: "/"
+    schedule:
+      interval: "daily"
+    assignees:
+      - "sleberknight"
+      - "chrisrohr"
+    reviewers:
+      - "sleberknight"
+      - "chrisrohr"
+    allow:
+      - dependency-name: "org.kiwiproject:*"
+      - dependency-name: "io.dropwizard:*"
+      - dependency-name: "org.projectlombok:lombok"
+      - dependency-name: "org.assertj:assertj-core"
+      - dependency-name: "org.junit.jupiter:*"
+      - dependency-name: "org.mockito:mockito-core"
