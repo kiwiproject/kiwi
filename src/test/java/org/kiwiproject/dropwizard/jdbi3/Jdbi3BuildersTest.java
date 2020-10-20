@@ -1,12 +1,10 @@
 package org.kiwiproject.dropwizard.jdbi3;
 
+import static java.util.stream.Collectors.toList;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.ArgumentMatchers.eq;
+import static org.kiwiproject.collect.KiwiLists.first;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
@@ -15,20 +13,22 @@ import static org.mockito.Mockito.when;
 
 import com.codahale.metrics.MetricRegistry;
 import com.codahale.metrics.health.HealthCheckRegistry;
+import io.dropwizard.db.DataSourceFactory;
 import io.dropwizard.db.ManagedDataSource;
 import io.dropwizard.db.PooledDataSourceFactory;
 import io.dropwizard.jdbi3.JdbiHealthCheck;
+import io.dropwizard.lifecycle.JettyManaged;
+import io.dropwizard.lifecycle.Managed;
 import io.dropwizard.lifecycle.setup.LifecycleEnvironment;
 import io.dropwizard.setup.Environment;
+import org.h2.Driver;
+import org.jdbi.v3.core.Jdbi;
 import org.jdbi.v3.core.h2.H2DatabasePlugin;
 import org.jdbi.v3.sqlobject.SqlObjectPlugin;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
-
-import java.sql.Connection;
-import java.sql.SQLException;
 
 @DisplayName("Jdbi3Builders")
 class Jdbi3BuildersTest {
@@ -40,25 +40,35 @@ class Jdbi3BuildersTest {
     private static final String NAMED_HEALTH_CHECK = "aHealthCheck";
 
     private Environment environment;
-    private MetricRegistry metricRegistry;
     private LifecycleEnvironment lifecycleEnvironment;
     private HealthCheckRegistry healthCheckRegistry;
     private PooledDataSourceFactory pooledDataSourceFactory;
+    private ManagedDataSource managedDataSource;
 
     @BeforeEach
     void setUp() {
         environment = mock(Environment.class);
 
-        healthCheckRegistry = mock(HealthCheckRegistry.class);
+        healthCheckRegistry = new HealthCheckRegistry();
         when(environment.healthChecks()).thenReturn(healthCheckRegistry);
 
-        metricRegistry = mock(MetricRegistry.class);
-        when(environment.metrics()).thenReturn(metricRegistry);
+        when(environment.metrics()).thenReturn(new MetricRegistry());
 
-        lifecycleEnvironment = spy(new LifecycleEnvironment(metricRegistry));
+        lifecycleEnvironment = new LifecycleEnvironment(new MetricRegistry());
         when(environment.lifecycle()).thenReturn(lifecycleEnvironment);
 
-        pooledDataSourceFactory = mock(PooledDataSourceFactory.class);
+        pooledDataSourceFactory = inMemoryH2DataSourceFactory();
+        managedDataSource = pooledDataSourceFactory.build(new MetricRegistry(), "testDataSource");
+    }
+
+    private static DataSourceFactory inMemoryH2DataSourceFactory() {
+        var factory = new DataSourceFactory();
+        factory.setDriverClass(Driver.class.getName());
+        factory.setUrl("jdbc:h2:mem:");
+        factory.setUser("");
+        factory.setPassword("");
+        factory.setInitialSize(1);
+        return factory;
     }
 
     @Nested
@@ -70,7 +80,7 @@ class Jdbi3BuildersTest {
                     .isThrownBy(() -> Jdbi3Builders.buildManagedJdbi(null, pooledDataSourceFactory))
                     .withMessage(NULL_ENV_MSG);
 
-            verifyNoInteractions(environment, metricRegistry, lifecycleEnvironment, healthCheckRegistry, pooledDataSourceFactory);
+            verifyNoInteractions(environment);
         }
 
         @Test
@@ -79,59 +89,51 @@ class Jdbi3BuildersTest {
                     .isThrownBy(() -> Jdbi3Builders.buildManagedJdbi(environment, null))
                     .withMessage(NULL_DATA_SOURCE_FACTORY_MSG);
 
-            verifyNoInteractions(environment, metricRegistry, lifecycleEnvironment, healthCheckRegistry, pooledDataSourceFactory);
+            verifyNoInteractions(environment);
         }
 
         @Test
-        void whenProperlyConfiguredReturnsJdbi() throws SQLException {
-            var managedDataSource = mockManagedDataSource();
-            when(pooledDataSourceFactory.build(any(MetricRegistry.class), anyString())).thenReturn(managedDataSource);
-
+        void whenProperlyConfiguredReturnsJdbi() {
             var jdbi = Jdbi3Builders.buildManagedJdbi(environment, pooledDataSourceFactory);
-            assertThat(jdbi).isNotNull();
+            assertCanGetConnection(jdbi);
 
-            verifyMocksWhenBuildingManagedDataSource(managedDataSource, DEFAULT_HEALTH_CHECK);
+            verifyAndAssertWhenBuildingManagedDataSource(DEFAULT_HEALTH_CHECK);
         }
 
         @Test
-        void whenUsingTheJdbiVarArgs() throws SQLException {
-            var managedDataSource = mockManagedDataSource();
-            when(pooledDataSourceFactory.build(any(MetricRegistry.class), anyString())).thenReturn(managedDataSource);
-
-            // JDBI doesn't seem to care if ou pass it the same plugin multiple times ... don't know how it functions though
+        void whenUsingTheJdbiVarArgs() {
             var jdbi = Jdbi3Builders.buildManagedJdbi(environment,
                     pooledDataSourceFactory,
                     new SqlObjectPlugin(),
                     new H2DatabasePlugin(),
                     new H2DatabasePlugin());
 
-            assertThat(jdbi).isNotNull();
+            assertCanGetConnection(jdbi);
 
-            verifyMocksWhenBuildingManagedDataSource(managedDataSource, DEFAULT_HEALTH_CHECK);
+            verifyAndAssertWhenBuildingManagedDataSource(DEFAULT_HEALTH_CHECK);
         }
     }
 
-    private ManagedDataSource mockManagedDataSource() throws SQLException {
-        var connection = mock(Connection.class);
-        var managedDataSource = mock(ManagedDataSource.class);
-        when(managedDataSource.getConnection()).thenReturn(connection);
-
-        return managedDataSource;
-    }
-
-    private void verifyMocksWhenBuildingManagedDataSource(ManagedDataSource managedDataSource, String healthCheckName) {
+    private void verifyAndAssertWhenBuildingManagedDataSource(String healthCheckName) {
         verify(environment, times(2)).metrics();
         verify(environment).lifecycle();
         verify(environment).healthChecks();
+        //noinspection ResultOfMethodCallIgnored
         verify(environment).getHealthCheckExecutorService();
-        verify(lifecycleEnvironment).manage(eq(managedDataSource));
-        verify(healthCheckRegistry).register(eq(healthCheckName), any(JdbiHealthCheck.class));
-        verify(pooledDataSourceFactory).build(eq(metricRegistry), eq(healthCheckName));
-        verify(pooledDataSourceFactory).getValidationQuery();
-        verify(pooledDataSourceFactory).getValidationQueryTimeout();
-        verify(pooledDataSourceFactory).isAutoCommentsEnabled();
 
-        verifyNoMoreInteractions(environment, metricRegistry, lifecycleEnvironment, healthCheckRegistry, pooledDataSourceFactory);
+        var managedClasses = lifecycleEnvironment.getManagedObjects()
+                .stream()
+                .map(lifeCycle -> (JettyManaged) lifeCycle)
+                .map(JettyManaged::getManaged)
+                .map(Managed::getClass)
+                .collect(toList());
+        assertThat(managedClasses).hasSize(1);
+        var firstManagedClass = first(managedClasses);
+        assertThat(firstManagedClass.getInterfaces()).contains(ManagedDataSource.class);
+
+        assertThat(healthCheckRegistry.getHealthCheck(healthCheckName)).isInstanceOf(JdbiHealthCheck.class);
+
+        verifyNoMoreInteractions(environment);
     }
 
     @Nested
@@ -142,7 +144,7 @@ class Jdbi3BuildersTest {
                     .isThrownBy(() -> Jdbi3Builders.buildManagedJdbi(null, pooledDataSourceFactory, NAMED_HEALTH_CHECK))
                     .withMessage(NULL_ENV_MSG);
 
-            verifyNoInteractions(environment, metricRegistry, lifecycleEnvironment, healthCheckRegistry, pooledDataSourceFactory);
+            verifyNoInteractions(environment);
         }
 
         @Test
@@ -151,26 +153,19 @@ class Jdbi3BuildersTest {
                     .isThrownBy(() -> Jdbi3Builders.buildManagedJdbi(environment, null, NAMED_HEALTH_CHECK))
                     .withMessage(NULL_DATA_SOURCE_FACTORY_MSG);
 
-            verifyNoInteractions(environment, metricRegistry, lifecycleEnvironment, healthCheckRegistry, pooledDataSourceFactory);
+            verifyNoInteractions(environment);
         }
 
         @Test
-        void whenProperlyConfiguredReturnsJdbi() throws SQLException {
-            var managedDataSource = mockManagedDataSource();
-            when(pooledDataSourceFactory.build(any(MetricRegistry.class), anyString())).thenReturn(managedDataSource);
-
+        void whenProperlyConfiguredReturnsJdbi() {
             var jdbi = Jdbi3Builders.buildManagedJdbi(environment, pooledDataSourceFactory, NAMED_HEALTH_CHECK);
-            assertThat(jdbi).isNotNull();
+            assertCanGetConnection(jdbi);
 
-            verifyMocksWhenBuildingManagedDataSource(managedDataSource, NAMED_HEALTH_CHECK);
+            verifyAndAssertWhenBuildingManagedDataSource(NAMED_HEALTH_CHECK);
         }
 
         @Test
-        void whenUsingTheJdbiVarArgs() throws SQLException {
-            var managedDataSource = mockManagedDataSource();
-            when(pooledDataSourceFactory.build(any(MetricRegistry.class), anyString())).thenReturn(managedDataSource);
-
-            // JDBI doesn't seem to care if ou pass it the same plugin multiple times ... don't know how it functions though
+        void whenUsingTheJdbiVarArgs() {
             var jdbi = Jdbi3Builders.buildManagedJdbi(environment,
                     pooledDataSourceFactory,
                     NAMED_HEALTH_CHECK,
@@ -178,32 +173,31 @@ class Jdbi3BuildersTest {
                     new H2DatabasePlugin(),
                     new H2DatabasePlugin());
 
-            assertThat(jdbi).isNotNull();
+            assertCanGetConnection(jdbi);
 
-            verifyMocksWhenBuildingManagedDataSource(managedDataSource, NAMED_HEALTH_CHECK);
+
+            verifyAndAssertWhenBuildingManagedDataSource(NAMED_HEALTH_CHECK);
         }
     }
 
     @Nested
     class WithEnvironmentPooledDataSourceFactoryAndManagedDataSource {
         @Test
-        void whenEnvironmentIsNullThrowsIllegalStateException() throws SQLException {
-            var managedDataSource = mockManagedDataSource();
+        void whenEnvironmentIsNullThrowsIllegalStateException() {
             assertThatIllegalArgumentException()
                     .isThrownBy(() -> Jdbi3Builders.buildManagedJdbi(null, pooledDataSourceFactory, managedDataSource))
                     .withMessage(NULL_ENV_MSG);
 
-            verifyNoInteractions(environment, metricRegistry, lifecycleEnvironment, healthCheckRegistry, pooledDataSourceFactory);
+            verifyNoInteractions(environment);
         }
 
         @Test
-        void whenPooledDataSourceFactoryIsNullThrowsIllegalStateException() throws SQLException {
-            var managedDataSource = mockManagedDataSource();
+        void whenPooledDataSourceFactoryIsNullThrowsIllegalStateException() {
             assertThatIllegalArgumentException()
                     .isThrownBy(() -> Jdbi3Builders.buildManagedJdbi(environment, null, managedDataSource))
                     .withMessage(NULL_DATA_SOURCE_FACTORY_MSG);
 
-            verifyNoInteractions(environment, metricRegistry, lifecycleEnvironment, healthCheckRegistry, pooledDataSourceFactory);
+            verifyNoInteractions(environment);
         }
 
         @Test
@@ -212,26 +206,20 @@ class Jdbi3BuildersTest {
                     .isThrownBy(() -> Jdbi3Builders.buildManagedJdbi(environment, pooledDataSourceFactory, (ManagedDataSource) null))
                     .withMessage(NULL_DATA_SOURCE_MSG);
 
-            verifyNoInteractions(environment, metricRegistry, lifecycleEnvironment, healthCheckRegistry, pooledDataSourceFactory);
+            verifyNoInteractions(environment);
         }
 
         @Test
-        void whenProperlyConfiguredReturnsJdbi() throws SQLException {
-            var managedDataSource = mockManagedDataSource();
-            when(pooledDataSourceFactory.build(any(MetricRegistry.class), anyString())).thenReturn(managedDataSource);
-
+        void whenProperlyConfiguredReturnsJdbi() {
             var jdbi = Jdbi3Builders.buildManagedJdbi(environment, pooledDataSourceFactory, managedDataSource);
-            assertThat(jdbi).isNotNull();
+            assertCanGetConnection(jdbi);
 
-            verifyMocksWhenGivenAManagedDataSource(managedDataSource, DEFAULT_HEALTH_CHECK);
+
+            verifyAndAssertWhenGivenAManagedDataSource(managedDataSource, DEFAULT_HEALTH_CHECK);
         }
 
         @Test
-        void whenUsingTheJdbiVarArgs() throws SQLException {
-            var managedDataSource = mockManagedDataSource();
-            when(pooledDataSourceFactory.build(any(MetricRegistry.class), anyString())).thenReturn(managedDataSource);
-
-            // JDBI doesn't seem to care if ou pass it the same plugin multiple times ... don't know how it functions though
+        void whenUsingTheJdbiVarArgs() {
             var jdbi = Jdbi3Builders.buildManagedJdbi(environment,
                     pooledDataSourceFactory,
                     managedDataSource,
@@ -239,46 +227,50 @@ class Jdbi3BuildersTest {
                     new H2DatabasePlugin(),
                     new H2DatabasePlugin());
 
-            assertThat(jdbi).isNotNull();
+            assertCanGetConnection(jdbi);
 
-            verifyMocksWhenGivenAManagedDataSource(managedDataSource, DEFAULT_HEALTH_CHECK);
+
+            verifyAndAssertWhenGivenAManagedDataSource(managedDataSource, DEFAULT_HEALTH_CHECK);
         }
     }
 
-    private void verifyMocksWhenGivenAManagedDataSource(ManagedDataSource managedDataSource, String healthCheckName) {
+    private void verifyAndAssertWhenGivenAManagedDataSource(ManagedDataSource managedDataSource, String healthCheckName) {
         verify(environment).metrics();
         verify(environment).lifecycle();
         verify(environment).healthChecks();
+        //noinspection ResultOfMethodCallIgnored
         verify(environment).getHealthCheckExecutorService();
-        verify(lifecycleEnvironment).manage(eq(managedDataSource));
-        verify(healthCheckRegistry).register(eq(healthCheckName), any(JdbiHealthCheck.class));
-        verify(pooledDataSourceFactory).getValidationQuery();
-        verify(pooledDataSourceFactory).getValidationQueryTimeout();
-        verify(pooledDataSourceFactory).isAutoCommentsEnabled();
 
-        verifyNoMoreInteractions(environment, metricRegistry, lifecycleEnvironment, healthCheckRegistry, pooledDataSourceFactory);
+        var managedObjects = lifecycleEnvironment.getManagedObjects()
+                .stream()
+                .map(lifeCycle -> (JettyManaged) lifeCycle)
+                .map(JettyManaged::getManaged)
+                .collect(toList());
+        assertThat(managedObjects).containsExactly(managedDataSource);
+
+        assertThat(healthCheckRegistry.getHealthCheck(healthCheckName)).isInstanceOf(JdbiHealthCheck.class);
+
+        verifyNoMoreInteractions(environment);
     }
 
     @Nested
     class WithEnvironmentPooledDataSourceFactoryManagedDataSourceAndAHealthCheckName {
         @Test
-        void whenEnvironmentIsNullThrowsIllegalStateException() throws SQLException {
-            var managedDataSource = mockManagedDataSource();
+        void whenEnvironmentIsNullThrowsIllegalStateException() {
             assertThatIllegalArgumentException()
                     .isThrownBy(() -> Jdbi3Builders.buildManagedJdbi(null, pooledDataSourceFactory, managedDataSource, NAMED_HEALTH_CHECK))
                     .withMessage(NULL_ENV_MSG);
 
-            verifyNoInteractions(environment, metricRegistry, lifecycleEnvironment, healthCheckRegistry, pooledDataSourceFactory);
+            verifyNoInteractions(environment);
         }
 
         @Test
-        void whenPooledDataSourceFactoryIsNullThrowsIllegalStateException() throws SQLException {
-            var managedDataSource = mockManagedDataSource();
+        void whenPooledDataSourceFactoryIsNullThrowsIllegalStateException() {
             assertThatIllegalArgumentException()
                     .isThrownBy(() -> Jdbi3Builders.buildManagedJdbi(environment, null, managedDataSource, NAMED_HEALTH_CHECK))
                     .withMessage(NULL_DATA_SOURCE_FACTORY_MSG);
 
-            verifyNoInteractions(environment, metricRegistry, lifecycleEnvironment, healthCheckRegistry, pooledDataSourceFactory);
+            verifyNoInteractions(environment);
         }
 
         @Test
@@ -287,26 +279,20 @@ class Jdbi3BuildersTest {
                     .isThrownBy(() -> Jdbi3Builders.buildManagedJdbi(environment, pooledDataSourceFactory, null, NAMED_HEALTH_CHECK))
                     .withMessage(NULL_DATA_SOURCE_MSG);
 
-            verifyNoInteractions(environment, metricRegistry, lifecycleEnvironment, healthCheckRegistry, pooledDataSourceFactory);
+            verifyNoInteractions(environment);
         }
 
         @Test
-        void whenProperlyConfiguredReturnsJdbi() throws SQLException {
-            var managedDataSource = mockManagedDataSource();
-            when(pooledDataSourceFactory.build(any(MetricRegistry.class), anyString())).thenReturn(managedDataSource);
-
+        void whenProperlyConfiguredReturnsJdbi() {
             var jdbi = Jdbi3Builders.buildManagedJdbi(environment, pooledDataSourceFactory, managedDataSource, NAMED_HEALTH_CHECK);
-            assertThat(jdbi).isNotNull();
+            assertCanGetConnection(jdbi);
 
-            verifyMocksWhenGivenAManagedDataSource(managedDataSource, NAMED_HEALTH_CHECK);
+
+            verifyAndAssertWhenGivenAManagedDataSource(managedDataSource, NAMED_HEALTH_CHECK);
         }
 
         @Test
-        void whenUsingTheJdbiVarArgs() throws SQLException {
-            var managedDataSource = mockManagedDataSource();
-            when(pooledDataSourceFactory.build(any(MetricRegistry.class), anyString())).thenReturn(managedDataSource);
-
-            // JDBI doesn't seem to care if ou pass it the same plugin multiple times ... don't know how it functions though
+        void whenUsingTheJdbiVarArgs() {
             var jdbi = Jdbi3Builders.buildManagedJdbi(environment,
                     pooledDataSourceFactory,
                     managedDataSource,
@@ -315,9 +301,16 @@ class Jdbi3BuildersTest {
                     new H2DatabasePlugin(),
                     new H2DatabasePlugin());
 
-            assertThat(jdbi).isNotNull();
+            assertCanGetConnection(jdbi);
 
-            verifyMocksWhenGivenAManagedDataSource(managedDataSource, NAMED_HEALTH_CHECK);
+
+            verifyAndAssertWhenGivenAManagedDataSource(managedDataSource, NAMED_HEALTH_CHECK);
         }
+    }
+
+    private void assertCanGetConnection(Jdbi jdbi) {
+        assertThat(jdbi).isNotNull();
+
+        jdbi.useHandle(handle -> assertThat(handle.getConnection()).isNotNull());
     }
 }

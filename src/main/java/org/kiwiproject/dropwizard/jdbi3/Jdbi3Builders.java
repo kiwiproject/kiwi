@@ -17,6 +17,16 @@ import java.util.Arrays;
 
 /**
  * Utilities for building Dropwizard-managed {@link Jdbi} version 3 instances.
+ * <p>
+ * The {@link Jdbi} factory methods in this class will automatically search for and install the appropriate
+ * {@link JdbiPlugin} when the database is H2 or Postgres. The H2 plugin is {@code org.jdbi.v3.core.h2.H2DatabasePlugin}
+ * and the Postgres plugin is {@code org.jdbi.v3.postgres.PostgresPlugin}.
+ * <p>
+ * The {@link SqlObjectPlugin} is always installed, and is assumed to be on the classpath.
+ * <p>
+ * Note also that when installing plugins, JDBI ignores duplicates (e.g. if you attempt to install more than one
+ * {@link SqlObjectPlugin}) <em>only when the plugin is designed as a "single-install" plugin</em>. JDBI plugins
+ * are "single-install" when they extend the package-private {@code JdbiPlugin.Singleton} class.
  */
 @Slf4j
 @UtilityClass
@@ -61,12 +71,12 @@ public class Jdbi3Builders {
                                         PooledDataSourceFactory dataSourceFactory,
                                         String healthCheckName,
                                         JdbiPlugin... jdbiPlugins) {
-       checkArgumentNotNull(environment, NULL_ENVIRONMENT_MESSAGE);
-       checkArgumentNotNull(dataSourceFactory, NULL_DATA_SOURCE_FACTORY_NAME);
+        checkArgumentNotNull(environment, NULL_ENVIRONMENT_MESSAGE);
+        checkArgumentNotNull(dataSourceFactory, NULL_DATA_SOURCE_FACTORY_NAME);
 
-       var dataSource = dataSourceFactory.build(environment.metrics(), healthCheckName);
+        var managedDataSource = dataSourceFactory.build(environment.metrics(), healthCheckName);
 
-       return buildManagedJdbi(environment, dataSourceFactory, dataSource, healthCheckName, jdbiPlugins);
+        return buildManagedJdbi(environment, dataSourceFactory, managedDataSource, healthCheckName, jdbiPlugins);
     }
 
     /**
@@ -96,7 +106,7 @@ public class Jdbi3Builders {
      *
      * @param environment       the {@link Environment}
      * @param dataSourceFactory the {@link PooledDataSourceFactory}
-     * @param dataSource        the {@link ManagedDataSource}
+     * @param managedDataSource the {@link ManagedDataSource}
      * @param healthCheckName   the health check's name
      * @param jdbiPlugins       any other {@link JdbiPlugin} objects desired
      * @return the {@link Jdbi} instance
@@ -105,24 +115,29 @@ public class Jdbi3Builders {
      */
     public static Jdbi buildManagedJdbi(Environment environment,
                                         PooledDataSourceFactory dataSourceFactory,
-                                        ManagedDataSource dataSource,
+                                        ManagedDataSource managedDataSource,
                                         String healthCheckName,
                                         JdbiPlugin... jdbiPlugins) {
         checkArgumentNotNull(environment, NULL_ENVIRONMENT_MESSAGE);
         checkArgumentNotNull(dataSourceFactory, NULL_DATA_SOURCE_FACTORY_NAME);
-        checkArgumentNotNull(dataSource, NULL_DATA_SOURCE_MESSAGE);
+        checkArgumentNotNull(managedDataSource, NULL_DATA_SOURCE_MESSAGE);
 
         var factory = new JdbiFactory();
-        var jdbi = factory.build(environment, dataSourceFactory, dataSource, healthCheckName);
+        var jdbi = factory.build(environment, dataSourceFactory, managedDataSource, healthCheckName);
 
-        installPlugins(jdbi, jdbiPlugins);
+        installPlugins(jdbi, dataSourceFactory, jdbiPlugins);
 
         LOG.debug("Created JDBI v3 instance: {}", jdbi);
 
         return jdbi;
     }
 
-    private static void installPlugins(Jdbi jdbi, JdbiPlugin... jdbiPlugins) {
+    private static void installPlugins(Jdbi jdbi, PooledDataSourceFactory dataSourceFactory, JdbiPlugin... jdbiPlugins) {
+        DatabaseType.pluginFromDatabaseUrl(dataSourceFactory.getUrl()).ifPresent(plugin -> {
+            LOG.debug("Installing database plugin {}", plugin.getClass().getName());
+            jdbi.installPlugin(plugin);
+        });
+
         jdbi.installPlugin(new SqlObjectPlugin());
 
         Arrays.stream(jdbiPlugins)
