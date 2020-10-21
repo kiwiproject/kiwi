@@ -70,6 +70,8 @@
         <jsr305.version>3.0.2</jsr305.version>
 
         <!-- Versions for test dependencies -->
+        <h2.version>1.4.200</h2.version>
+        <jdbi3.version>3.14.4</jdbi3.version>
         <jersey-test-framework-core.version>2.31</jersey-test-framework-core.version>
 
     </properties>
@@ -533,6 +535,20 @@
                     <artifactId>jakarta.servlet-api</artifactId>
                 </exclusion>
             </exclusions>
+        </dependency>
+
+        <dependency>
+            <groupId>com.h2database</groupId>
+            <artifactId>h2</artifactId>
+            <version>${h2.version}</version>
+            <scope>test</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.jdbi</groupId>
+            <artifactId>jdbi3-postgres</artifactId>
+            <version>${jdbi3.version}</version>
+            <scope>test</scope>
         </dependency>
 
     </dependencies>
