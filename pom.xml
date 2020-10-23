@@ -31,15 +31,15 @@
 
         <!-- Versions for required dependencies -->
         <commons-lang3.version>3.11</commons-lang3.version>
-        <guava.version>29.0-jre</guava.version>
+        <guava.version>30.0-jre</guava.version>
 
         <!-- Versions for provided dependencies -->
         <commons-io.version>2.6</commons-io.version>
         <commons-text.version>1.9</commons-text.version>
         <dropwizard.version>2.0.14</dropwizard.version>
         <dropwizard.modules.dropwizard-jdbi.version>2.0.12</dropwizard.modules.dropwizard-jdbi.version>
-        <hibernate-validator.version>6.1.4.Final</hibernate-validator.version>
-        <httpclient.version>4.5.12</httpclient.version>
+        <hibernate-validator.version>6.1.6.Final</hibernate-validator.version>
+        <httpclient.version>4.5.13</httpclient.version>
         <guava-retrying.version>2.0.0</guava-retrying.version>
         <jackson.version>2.10.5</jackson.version>
         <jakarta.annotation-api.version>1.3.5</jakarta.annotation-api.version>
@@ -47,9 +47,9 @@
         <jakarta.ws.rs.rs-api.version>2.1.6</jakarta.ws.rs.rs-api.version>
         <jakarta.xml.bind-api.version>2.3.3</jakarta.xml.bind-api.version>
         <javassist.version>3.27.0-GA</javassist.version>
-        <joda-time.version>2.10.6</joda-time.version>
+        <joda-time.version>2.10.7</joda-time.version>
         <lombok.version>1.18.16</lombok.version>
-        <metrics-jdbi3.version>4.1.12.1</metrics-jdbi3.version>
+        <metrics-jdbi3.version>4.1.14</metrics-jdbi3.version>
         <postgresql.version>42.2.12</postgresql.version>
         <spring.version>5.2.6.RELEASE</spring.version>
         <stax2-api.version>4.2.1</stax2-api.version>
@@ -71,8 +71,8 @@
 
         <!-- Versions for test dependencies -->
         <h2.version>1.4.200</h2.version>
-        <jdbi3.version>3.14.4</jdbi3.version>
-        <jersey-test-framework-core.version>2.31</jersey-test-framework-core.version>
+        <jdbi3.version>3.17.0</jdbi3.version>
+        <jersey-test-framework-core.version>2.32</jersey-test-framework-core.version>
 
     </properties>
 
@@ -103,16 +103,8 @@
             <version>${guava.version}</version>
             <exclusions>
                 <exclusion>
-                    <groupId>com.google.code.findbugs</groupId>
-                    <artifactId>jsr305</artifactId>
-                </exclusion>
-                <exclusion>
                     <groupId>com.google.errorprone</groupId>
                     <artifactId>error_prone_annotations</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>com.google.j2objc</groupId>
-                    <artifactId>j2objc-annotations</artifactId>
                 </exclusion>
                 <exclusion>
                     <groupId>org.checkerframework</groupId>
@@ -135,12 +127,6 @@
             <artifactId>commons-text</artifactId>
             <version>${commons-text.version}</version>
             <scope>provided</scope>
-            <exclusions>
-                <exclusion>
-                    <groupId>org.apache.commons</groupId>
-                    <artifactId>commons-lang3</artifactId>
-                </exclusion>
-            </exclusions>
         </dependency>
 
         <dependency>
@@ -162,28 +148,12 @@
                     <artifactId>jackson-databind</artifactId>
                 </exclusion>
                 <exclusion>
-                    <groupId>com.fasterxml.jackson.module</groupId>
-                    <artifactId>jackson-module-jaxb-annotations</artifactId>
-                </exclusion>
-                <exclusion>
                     <groupId>jakarta.annotation</groupId>
                     <artifactId>jakarta.annotation-api</artifactId>
                 </exclusion>
                 <exclusion>
-                    <groupId>org.glassfish</groupId>
-                    <artifactId>jakarta.el</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>jakarta.xml.bind</groupId>
-                    <artifactId>jakarta.xml.bind-api</artifactId>
-                </exclusion>
-                <exclusion>
                     <groupId>org.javassist</groupId>
                     <artifactId>javassist</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>org.eclipse.jetty</groupId>
-                    <artifactId>jetty-server</artifactId>
                 </exclusion>
                 <exclusion>
                     <groupId>joda-time</groupId>
@@ -198,10 +168,6 @@
             <version>${dropwizard.modules.dropwizard-jdbi.version}</version>
             <scope>provided</scope>
             <exclusions>
-                <exclusion>
-                    <groupId>io.dropwizard</groupId>
-                    <artifactId>dropwizard-configuration</artifactId>
-                </exclusion>
                 <exclusion>
                     <groupId>io.dropwizard</groupId>
                     <artifactId>dropwizard-core</artifactId>
@@ -237,6 +203,10 @@
                 <exclusion>
                     <groupId>org.eclipse.jetty</groupId>
                     <artifactId>jetty-util</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>joda-time</groupId>
+                    <artifactId>joda-time</artifactId>
                 </exclusion>
             </exclusions>
         </dependency>
@@ -447,12 +417,6 @@
             <artifactId>metrics-jdbi3</artifactId>
             <version>${metrics-jdbi3.version}</version>
             <scope>provided</scope>
-            <exclusions>
-                <exclusion>
-                    <groupId>org.jdbi</groupId>
-                    <artifactId>jdbi3-core</artifactId>
-                </exclusion>
-            </exclusions>
         </dependency>
 
         <dependency>
@@ -512,16 +476,6 @@
             <artifactId>dropwizard-testing</artifactId>
             <version>${dropwizard.version}</version>
             <scope>test</scope>
-            <exclusions>
-                <exclusion>
-                    <groupId>jakarta.xml.bind</groupId>
-                    <artifactId>jakarta.xml.bind-api</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>junit</groupId>
-                    <artifactId>junit</artifactId>
-                </exclusion>
-            </exclusions>
         </dependency>
 
         <dependency>
