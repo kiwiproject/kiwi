@@ -36,7 +36,7 @@
         <!-- Versions for provided dependencies -->
         <commons-io.version>2.6</commons-io.version>
         <commons-text.version>1.9</commons-text.version>
-        <dropwizard.version>2.0.13</dropwizard.version>
+        <dropwizard.version>2.0.14</dropwizard.version>
         <dropwizard.modules.dropwizard-jdbi.version>2.0.12</dropwizard.modules.dropwizard-jdbi.version>
         <hibernate-validator.version>6.1.4.Final</hibernate-validator.version>
         <httpclient.version>4.5.12</httpclient.version>
