@@ -24,7 +24,7 @@ import java.util.function.Supplier;
  * permitting selective (e.g. in unit tests) forcing of synchronous behavior for things that would normally
  * execute asynchronously. This applies only to some methods, so read the method's documentation before assuming.
  * <p>
- * Use the {@code doAsync} methods when you need to control concurrent behavior and make things deterministic
+ * Use the {@code xxxAsync} methods when you need to control concurrent behavior and make things deterministic
  * during unit tests (e.g. blocking on futures). Note this does actually change the true behavior of the code under
  * test, since methods will execute synchronously, so use with care, caution, and understanding.
  *
@@ -73,6 +73,39 @@ public class Async {
 
     /**
      * Execute the given {@link Runnable} asynchronously. This uses the common fork join pool as the executor.
+     * <p>
+     * This is an alias method for {@link #doAsync(Runnable)} to provide a way to avoid ambiguity in certain
+     * situations.
+     *
+     * @param func the code to run asynchronously
+     * @return a {@link CompletableFuture} with no result
+     * @see ForkJoinPool#commonPool()
+     * @see #runAsync(Runnable, Executor)
+     */
+    public static CompletableFuture<Void> runAsync(Runnable func) {
+        return doAsync(func);
+    }
+
+    /**
+     * Execute the given {@link Runnable} asynchronously using the given {@link Executor}.
+     * <p>
+     * Essentially, wraps {@link CompletableFuture#runAsync(Runnable, Executor)} but allowing synchronous behavior
+     * if mode is {@link Mode#DISABLED}.
+     * <p>
+     * This is an alias method for {@link #doAsync(Runnable, Executor)} to provide a way to avoid ambiguity in certain
+     * situations.
+     *
+     * @param func     the code to run asynchronously
+     * @param executor the {@link Executor} to use
+     * @return a {@link CompletableFuture} with no result
+     * @see CompletableFuture#runAsync(Runnable, Executor)
+     */
+    public static CompletableFuture<Void> runAsync(Runnable func, Executor executor) {
+        return doAsync(func, executor);
+    }
+
+    /**
+     * Execute the given {@link Runnable} asynchronously. This uses the common fork join pool as the executor.
      *
      * @param func the code to run asynchronously
      * @return a {@link CompletableFuture} with no result
@@ -101,6 +134,44 @@ public class Async {
     /**
      * Execute the given {@link Supplier} asynchronously to return a result, using the common fork join pool
      * as the executor.
+     * <p>
+     * This is an alias method for {@link #doAsync(Supplier)} to provide a way to avoid ambiguity in certain
+     * situations.
+     *
+     * @param supplier the code to run asynchronously
+     * @param <T>      the type of object being supplied
+     * @return the result returned by the supplier
+     * @see ForkJoinPool#commonPool()
+     * @see #doAsync(Supplier, Executor)
+     */
+    public static <T> CompletableFuture<T> supplyAsync(Supplier<T> supplier) {
+        return doAsync(supplier);
+    }
+
+    /**
+     * Execute the given {@link Supplier} asynchronously to return a result, using the common fork join pool
+     * as the executor.
+     * <p>
+     * Essentially, wraps {@link CompletableFuture#supplyAsync(Supplier, Executor)} but allowing synchronous behavior
+     * if mode is {@link Mode#DISABLED}.
+     * <p>
+     * This is an alias method for {@link #doAsync(Supplier, Executor)} to provide a way to avoid ambiguity in certain
+     * situations.
+     *
+     * @param supplier the code to run asynchronously
+     * @param executor the {@link Executor} to use
+     * @param <T>      the type of object being supplied
+     * @return the result returned by the supplier
+     * @see ForkJoinPool#commonPool()
+     * @see CompletableFuture#supplyAsync(Supplier, Executor)
+     */
+    public static <T> CompletableFuture<T> supplyAsync(Supplier<T> supplier, Executor executor) {
+        return doAsync(supplier, executor);
+    }
+
+    /**
+     * Execute the given {@link Supplier} asynchronously to return a result, using the common fork join pool
+     * as the executor.
      *
      * @param supplier the code to run asynchronously
      * @param <T>      the type of object being supplied
@@ -117,7 +188,7 @@ public class Async {
      * as the executor.
      * <p>
      * Essentially, wraps {@link CompletableFuture#supplyAsync(Supplier, Executor)} but allowing synchronous behavior
-     * * if mode is {@link Mode#DISABLED}.
+     * if mode is {@link Mode#DISABLED}.
      *
      * @param supplier the code to run asynchronously
      * @param executor the {@link Executor} to use

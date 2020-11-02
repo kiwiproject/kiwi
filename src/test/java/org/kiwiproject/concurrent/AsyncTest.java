@@ -9,12 +9,16 @@ import static org.awaitility.Durations.FIVE_HUNDRED_MILLISECONDS;
 
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.kiwiproject.concurrent.Async.Mode;
 
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -26,212 +30,338 @@ class AsyncTest {
         Async.setUnitTestAsyncMode(Mode.ENABLED);
     }
 
-    @Test
-    void testSetUnitTestAsyncMode_RequiresNonNullArgument() {
-        assertThatThrownBy(() -> Async.setUnitTestAsyncMode(null))
-                .isExactlyInstanceOf(IllegalArgumentException.class);
+    @Nested
+    class SetUnitTestAsyncMode {
+
+        @Test
+        void shouldRequireNonNullArgument() {
+            assertThatThrownBy(() -> Async.setUnitTestAsyncMode(null))
+                    .isExactlyInstanceOf(IllegalArgumentException.class);
+        }
     }
 
-    @Test
-    void testDoAsync_Runnable_NonBlocking() {
-        var task = new ConcurrentTask();
-        CompletableFuture<Void> future = Async.doAsync(task::run);
+    /**
+     * These tests call runAsync(Runnable) since it simply delegates to doAsync(Runnable).
+     */
+    @Nested
+    class DoAsyncWithRunnable {
 
-        // verify that immediately after triggering run, the count is still 0
-        assertThat(task.getCurrentCount()).isZero();
-        confirmCompletion(task);
+        @Test
+        void shouldNotBlock_WhenAsyncModeIsEnabled() {
+            var task = new ConcurrentTask();
+            CompletableFuture<Void> future = Async.runAsync(task::run);
 
-        assertThat(future).isCompleted();
+            // verify that immediately after triggering run, the count is still 0
+            assertThat(task.getCurrentCount()).isZero();
+            confirmCompletion(task);
+
+            assertThat(future).isCompleted();
+        }
+
+        @Test
+        void shouldBlock_WhenAsyncModeIsDisabled() {
+            Async.setUnitTestAsyncMode(Mode.DISABLED);
+            var task = new ConcurrentTask();
+            CompletableFuture<Void> future = Async.runAsync(task::run);
+
+            // verify that immediately after triggering run with mode=DISABLED, the count is 1
+            assertThat(task.getCurrentCount()).isOne();
+
+            assertThat(future).isCompleted();
+        }
     }
 
-    @Test
-    void testDoAsync_Runnable_WithBlocking() {
-        Async.setUnitTestAsyncMode(Mode.DISABLED);
-        var task = new ConcurrentTask();
-        CompletableFuture<Void> future = Async.doAsync(task::run);
+    /**
+     * These tests call runAsync(Runnable, Executor) since it simply delegates to doAsync(Runnable, Executor).
+     */
+    @Nested
+    class DoAsyncWithRunnableAndExecutor {
 
-        // verify that immediately after triggering run with mode=DISABLED, the count is 1
-        assertThat(task.getCurrentCount()).isOne();
+        private ExecutorService executor;
 
-        assertThat(future).isCompleted();
+        @BeforeEach
+        void setUp() {
+            executor = Executors.newSingleThreadExecutor();
+        }
+
+        @AfterEach
+        void tearDown() {
+            executor.shutdownNow();
+        }
+
+        @Test
+        void shouldNotBlock_WhenAsyncModeIsEnabled() {
+            var task = new ConcurrentTask();
+            CompletableFuture<Void> future = Async.runAsync(task::run, executor);
+
+            // verify that immediately after triggering run, the count is still 0
+            assertThat(task.getCurrentCount()).isZero();
+            confirmCompletion(task);
+
+            assertThat(future).isCompleted();
+        }
+
+        @Test
+        void shouldBlock_WhenAsyncModeIsDisabled() {
+            Async.setUnitTestAsyncMode(Mode.DISABLED);
+            var task = new ConcurrentTask();
+            CompletableFuture<Void> future = Async.runAsync(task::run, executor);
+
+            // verify that immediately after triggering run with mode=DISABLED, the count is 1
+            assertThat(task.getCurrentCount()).isOne();
+
+            assertThat(future).isCompleted();
+        }
     }
 
-    @Test
-    void testWaitIfAsyncDisabled_WhenFutureCompletesExceptionally() {
-        Async.setUnitTestAsyncMode(Mode.DISABLED);
+    @Nested
+    class WaitIfAsyncDisabled {
 
-        var future = CompletableFuture.failedFuture(new RuntimeException("boom"));
+        @Test
+        void shouldNotThrowAnException_WhenFutureCompletesExceptionally() {
+            Async.setUnitTestAsyncMode(Mode.DISABLED);
 
-        assertThatCode(() -> Async.waitIfAsyncDisabled(future)).doesNotThrowAnyException();
+            var future = CompletableFuture.failedFuture(new RuntimeException("boom"));
+
+            assertThatCode(() -> Async.waitIfAsyncDisabled(future)).doesNotThrowAnyException();
+        }
     }
 
-    @Test
-    void testDoAsync_Supplier_NonBlocking() {
-        var task = new ConcurrentTask();
-        CompletableFuture<Integer> future = Async.doAsync(task::supply);
+    /**
+     * These tests call supplyAsync(Runnable) since it simply delegates to supplyAsync(Runnable).
+     */
+    @Nested
+    class DoAsyncWithSupplier {
 
-        // verify that immediately after triggering run, the count is still 0
-        assertThat(task.getCurrentCount()).isZero();
-        confirmCompletion(task);
+        @Test
+        void shouldNotBlock_WhenAsyncModeIsEnabled() {
+            var task = new ConcurrentTask();
+            CompletableFuture<Integer> future = Async.supplyAsync(task::supply);
 
-        assertThat(future).isCompleted();
-        assertThat(future.getNow(-1)).isEqualTo(task.getCurrentCount());
+            // verify that immediately after triggering run, the count is still 0
+            assertThat(task.getCurrentCount()).isZero();
+            confirmCompletion(task);
+
+            assertThat(future).isCompleted();
+            assertThat(future.getNow(-1)).isEqualTo(task.getCurrentCount());
+        }
+
+        @Test
+        void shouldBlock_WhenAsyncModeIsDisabled() {
+            Async.setUnitTestAsyncMode(Mode.DISABLED);
+            var task = new ConcurrentTask();
+            CompletableFuture<Integer> future = Async.supplyAsync(task::supply);
+
+            // verify that immediately after triggering run with mode=DISABLED, the count is 1
+            assertThat(task.getCurrentCount()).isOne();
+
+            assertThat(future).isCompleted();
+            assertThat(future.getNow(-1)).isEqualTo(task.getCurrentCount());
+        }
     }
 
-    @Test
-    void testDoAsync_Supplier_WithBlocking() {
-        Async.setUnitTestAsyncMode(Mode.DISABLED);
-        var task = new ConcurrentTask();
-        CompletableFuture<Integer> future = Async.doAsync(task::supply);
+    /**
+     * These tests call supplyAsync(Runnable, Executor) since it simply delegates to supplyAsync(Runnable, Executor).
+     */
+    @Nested
+    class DoAsyncWithSupplierAndExecutor {
 
-        // verify that immediately after triggering run with mode=DISABLED, the count is 1
-        assertThat(task.getCurrentCount()).isOne();
+        private ExecutorService executor;
 
-        assertThat(future).isCompleted();
-        assertThat(future.getNow(-1)).isEqualTo(task.getCurrentCount());
+        @BeforeEach
+        void setUp() {
+            executor = Executors.newSingleThreadExecutor();
+        }
+
+        @AfterEach
+        void tearDown() {
+            executor.shutdownNow();
+        }
+
+        @Test
+        void shouldNotBlock_WhenAsyncModeIsEnabled() {
+            var task = new ConcurrentTask();
+            CompletableFuture<Integer> future = Async.supplyAsync(task::supply, executor);
+
+            // verify that immediately after triggering run, the count is still 0
+            assertThat(task.getCurrentCount()).isZero();
+            confirmCompletion(task);
+
+            assertThat(future).isCompleted();
+            assertThat(future.getNow(-1)).isEqualTo(task.getCurrentCount());
+        }
+
+        @Test
+        void shouldBlock_WhenAsyncModeIsDisabled() {
+            Async.setUnitTestAsyncMode(Mode.DISABLED);
+            var task = new ConcurrentTask();
+            CompletableFuture<Integer> future = Async.supplyAsync(task::supply, executor);
+
+            // verify that immediately after triggering run with mode=DISABLED, the count is 1
+            assertThat(task.getCurrentCount()).isOne();
+
+            assertThat(future).isCompleted();
+            assertThat(future.getNow(-1)).isEqualTo(task.getCurrentCount());
+        }
     }
 
-    @Test
-    void testWaitFor_WhenTimesOut() {
-        var task = new ConcurrentTask();
-        CompletableFuture<Integer> future = Async.doAsync(task::supply);
+    @Nested
+    class WaitFor {
 
-        assertThatThrownBy(() -> Async.waitFor(future, 5, TimeUnit.MILLISECONDS))
-                .isExactlyInstanceOf(AsyncException.class)
-                .hasMessage("Timeout occurred: maximum wait specified as 5 MILLISECONDS")
-                .hasCauseInstanceOf(TimeoutException.class);
+        @Test
+        void shouldSucceed_WhenTheFutureCompletes_BeforeTimeout() {
+            var task = new ConcurrentTask();
+            CompletableFuture<Integer> future = Async.doAsync(task::supply);
 
-        assertThat(task.getCurrentCount()).isZero();
+            Async.waitFor(future, 250, TimeUnit.MILLISECONDS);
+
+            confirmCompletion(task);
+
+            assertThat(future).isCompleted();
+        }
+
+        @Test
+        void shouldThrowAsyncException_WhenTimesOut_BeforeTheFutureCompletes() {
+            var task = new ConcurrentTask();
+            CompletableFuture<Integer> future = Async.doAsync(task::supply);
+
+            assertThatThrownBy(() -> Async.waitFor(future, 5, TimeUnit.MILLISECONDS))
+                    .isExactlyInstanceOf(AsyncException.class)
+                    .hasMessage("Timeout occurred: maximum wait specified as 5 MILLISECONDS")
+                    .hasCauseInstanceOf(TimeoutException.class);
+
+            assertThat(task.getCurrentCount()).isZero();
+        }
     }
 
-    @Test
-    void testWaitFor_WhenCompletes() {
-        var task = new ConcurrentTask();
-        CompletableFuture<Integer> future = Async.doAsync(task::supply);
+    @Nested
+    class WaitForAll {
 
-        Async.waitFor(future, 150, TimeUnit.MILLISECONDS);
+        @Test
+        void shouldSucceed_WhenAllTheFuturesComplete_BeforeTimeout() {
+            var task1 = new ConcurrentTask();
+            CompletableFuture<Integer> future1 = Async.doAsync(task1::supply);
 
-        confirmCompletion(task);
+            var task2 = new ConcurrentTask();
+            CompletableFuture<Integer> future2 = Async.doAsync(task2::supply);
 
-        assertThat(future).isCompleted();
+            var task3 = new ConcurrentTask();
+            CompletableFuture<Integer> future3 = Async.doAsync(task3::supply);
+
+            var futures = List.of(future1, future2, future3);
+            Async.waitForAll(futures, 500, TimeUnit.MILLISECONDS);
+
+            confirmCompletion(task1);
+            confirmCompletion(task2);
+            confirmCompletion(task3);
+
+            assertThat(future1).isCompleted();
+            assertThat(future2).isCompleted();
+            assertThat(future3).isCompleted();
+        }
+
+        @Test
+        void shouldThrowAsyncException_WhenTimesOut_BeforeAllFuturesComplete() {
+            var task1 = new ConcurrentTask();
+            CompletableFuture<Integer> future1 = Async.doAsync(task1::supply);
+
+            var task2 = new ConcurrentTask();
+            CompletableFuture<Integer> future2 = Async.doAsync(task2::supply);
+
+            var task3 = new ConcurrentTask();
+            CompletableFuture<Integer> future3 = Async.doAsync(task3::supply);
+
+            var futures = List.of(future1, future2, future3);
+            assertThatThrownBy(() -> Async.waitForAll(futures, 5, TimeUnit.MILLISECONDS))
+                    .isExactlyInstanceOf(AsyncException.class)
+                    .hasMessage("Timeout occurred: maximum wait specified as 5 MILLISECONDS")
+                    .hasCauseInstanceOf(TimeoutException.class);
+
+            assertThat(task1.getCurrentCount()).isZero();
+            assertThat(task2.getCurrentCount()).isZero();
+            assertThat(task3.getCurrentCount()).isZero();
+        }
     }
 
-    @Test
-    void testWaitForAll_WhenTimesOut() {
-        var task1 = new ConcurrentTask();
-        CompletableFuture<Integer> future1 = Async.doAsync(task1::supply);
+    @Nested
+    class WaitForAllIgnoringType {
 
-        var task2 = new ConcurrentTask();
-        CompletableFuture<Integer> future2 = Async.doAsync(task2::supply);
+        @SuppressWarnings({"rawtypes", "unchecked"})
+        @Test
+        void shouldSucceed_WhenAllTheFuturesComplete_BeforeTimeout() {
+            var task1 = new ConcurrentTask();
+            CompletableFuture future1 = Async.doAsync(task1::supply);
 
-        var task3 = new ConcurrentTask();
-        CompletableFuture<Integer> future3 = Async.doAsync(task3::supply);
+            var task2 = new ConcurrentTask();
+            CompletableFuture future2 = Async.doAsync(task2::supply);
 
-        var futures = List.of(future1, future2, future3);
-        assertThatThrownBy(() -> Async.waitForAll(futures, 5, TimeUnit.MILLISECONDS))
-                .isExactlyInstanceOf(AsyncException.class)
-                .hasMessage("Timeout occurred: maximum wait specified as 5 MILLISECONDS")
-                .hasCauseInstanceOf(TimeoutException.class);
+            var task3 = new ConcurrentTask();
+            CompletableFuture future3 = Async.doAsync(task3::supply);
 
-        assertThat(task1.getCurrentCount()).isZero();
-        assertThat(task2.getCurrentCount()).isZero();
-        assertThat(task3.getCurrentCount()).isZero();
+            var futures = List.of(future1, future2, future3);
+            Async.waitForAllIgnoringType(futures, 500, TimeUnit.MILLISECONDS);
+
+            confirmCompletion(task1);
+            confirmCompletion(task2);
+            confirmCompletion(task3);
+
+            assertThat(future1).isCompleted();
+            assertThat(future2).isCompleted();
+            assertThat(future3).isCompleted();
+        }
+
+        @SuppressWarnings("rawtypes")
+        @Test
+        void shouldThrowAsyncException_WhenTimesOut_BeforeAllFuturesComplete() {
+            var task1 = new ConcurrentTask();
+            CompletableFuture future1 = Async.doAsync(task1::supply);
+
+            var task2 = new ConcurrentTask();
+            CompletableFuture future2 = Async.doAsync(task2::supply);
+
+            var task3 = new ConcurrentTask();
+            CompletableFuture future3 = Async.doAsync(task3::supply);
+
+            var futures = List.of(future1, future2, future3);
+            assertThatThrownBy(() -> Async.waitForAllIgnoringType(futures, 5, TimeUnit.MILLISECONDS))
+                    .isExactlyInstanceOf(AsyncException.class)
+                    .hasMessage("Timeout occurred: maximum wait specified as 5 MILLISECONDS")
+                    .hasCauseInstanceOf(TimeoutException.class);
+
+            assertThat(task1.getCurrentCount()).isZero();
+            assertThat(task2.getCurrentCount()).isZero();
+            assertThat(task3.getCurrentCount()).isZero();
+        }
     }
 
-    @Test
-    void testWaitForAll_WhenCompletes() {
-        var task1 = new ConcurrentTask();
-        CompletableFuture<Integer> future1 = Async.doAsync(task1::supply);
+    @Nested
+    class WithMaxTimeout {
 
-        var task2 = new ConcurrentTask();
-        CompletableFuture<Integer> future2 = Async.doAsync(task2::supply);
+        @Test
+        void testWithMaxTimeout() {
+            var task = new ConcurrentTask();
+            CompletableFuture<Integer> future = Async.doAsync(task::supply);
+            CompletableFuture<Integer> futureWithTimeout = Async.withMaxTimeout(future, 5, TimeUnit.MILLISECONDS);
 
-        var task3 = new ConcurrentTask();
-        CompletableFuture<Integer> future3 = Async.doAsync(task3::supply);
+            // verify that immediately after triggering run, the count is still 0
+            assertThat(task.getCurrentCount()).isZero();
 
-        var futures = List.of(future1, future2, future3);
-        Async.waitForAll(futures, 500, TimeUnit.MILLISECONDS);
+            await().atMost(FIVE_HUNDRED_MILLISECONDS).until(futureWithTimeout::isCompletedExceptionally);
 
-        confirmCompletion(task1);
-        confirmCompletion(task2);
-        confirmCompletion(task3);
+            assertThat(futureWithTimeout)
+                    .hasFailedWithThrowableThat()
+                    .isExactlyInstanceOf(AsyncException.class)
+                    .hasMessage("Timeout occurred: maximum wait specified as 5 MILLISECONDS")
+                    .hasCauseInstanceOf(TimeoutException.class);
 
-        assertThat(future1).isCompleted();
-        assertThat(future2).isCompleted();
-        assertThat(future3).isCompleted();
-    }
+            var thrown = catchThrowable(futureWithTimeout::get);
+            assertThat(thrown)
+                    .isInstanceOf(ExecutionException.class)
+                    .hasCauseExactlyInstanceOf(AsyncException.class);
 
-    @SuppressWarnings("rawtypes")
-    @Test
-    void testWaitForAllIgnoringType_WhenTimesOut() {
-        var task1 = new ConcurrentTask();
-        CompletableFuture future1 = Async.doAsync(task1::supply);
-
-        var task2 = new ConcurrentTask();
-        CompletableFuture future2 = Async.doAsync(task2::supply);
-
-        var task3 = new ConcurrentTask();
-        CompletableFuture future3 = Async.doAsync(task3::supply);
-
-        var futures = List.of(future1, future2, future3);
-        assertThatThrownBy(() -> Async.waitForAllIgnoringType(futures, 5, TimeUnit.MILLISECONDS))
-                .isExactlyInstanceOf(AsyncException.class)
-                .hasMessage("Timeout occurred: maximum wait specified as 5 MILLISECONDS")
-                .hasCauseInstanceOf(TimeoutException.class);
-
-        assertThat(task1.getCurrentCount()).isZero();
-        assertThat(task2.getCurrentCount()).isZero();
-        assertThat(task3.getCurrentCount()).isZero();
-    }
-
-    @SuppressWarnings({"rawtypes", "unchecked"})
-    @Test
-    void testWaitForAllIgnoringType_WhenCompletes() {
-        var task1 = new ConcurrentTask();
-        CompletableFuture future1 = Async.doAsync(task1::supply);
-
-        var task2 = new ConcurrentTask();
-        CompletableFuture future2 = Async.doAsync(task2::supply);
-
-        var task3 = new ConcurrentTask();
-        CompletableFuture future3 = Async.doAsync(task3::supply);
-
-        var futures = List.of(future1, future2, future3);
-        Async.waitForAllIgnoringType(futures, 500, TimeUnit.MILLISECONDS);
-
-        confirmCompletion(task1);
-        confirmCompletion(task2);
-        confirmCompletion(task3);
-
-        assertThat(future1).isCompleted();
-        assertThat(future2).isCompleted();
-        assertThat(future3).isCompleted();
-    }
-
-    @Test
-    void testWithMaxTimeout() {
-        var task = new ConcurrentTask();
-        CompletableFuture<Integer> future = Async.doAsync(task::supply);
-        CompletableFuture<Integer> futureWithTimeout = Async.withMaxTimeout(future, 5, TimeUnit.MILLISECONDS);
-
-        // verify that immediately after triggering run, the count is still 0
-        assertThat(task.getCurrentCount()).isZero();
-
-        await().atMost(FIVE_HUNDRED_MILLISECONDS).until(futureWithTimeout::isCompletedExceptionally);
-
-        assertThat(futureWithTimeout)
-                .hasFailedWithThrowableThat()
-                .isExactlyInstanceOf(AsyncException.class)
-                .hasMessage("Timeout occurred: maximum wait specified as 5 MILLISECONDS")
-                .hasCauseInstanceOf(TimeoutException.class);
-
-        var thrown = catchThrowable(futureWithTimeout::get);
-        assertThat(thrown)
-                .isInstanceOf(ExecutionException.class)
-                .hasCauseExactlyInstanceOf(AsyncException.class);
-
-        var cause = thrown.getCause();
-        assertThat(cause).hasMessage("Timeout occurred: maximum wait specified as 5 MILLISECONDS");
+            var cause = thrown.getCause();
+            assertThat(cause).hasMessage("Timeout occurred: maximum wait specified as 5 MILLISECONDS");
+        }
     }
 
     private void confirmCompletion(ConcurrentTask task) {
