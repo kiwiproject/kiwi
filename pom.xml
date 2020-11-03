@@ -34,7 +34,7 @@
         <guava.version>30.0-jre</guava.version>
 
         <!-- Versions for provided dependencies -->
-        <commons-io.version>2.6</commons-io.version>
+        <commons-io.version>2.8.0</commons-io.version>
         <commons-text.version>1.9</commons-text.version>
         <dropwizard.version>2.0.14</dropwizard.version>
         <dropwizard.modules.dropwizard-jdbi.version>2.0.12</dropwizard.modules.dropwizard-jdbi.version>
@@ -47,11 +47,12 @@
         <jakarta.ws.rs.rs-api.version>2.1.6</jakarta.ws.rs.rs-api.version>
         <jakarta.xml.bind-api.version>2.3.3</jakarta.xml.bind-api.version>
         <javassist.version>3.27.0-GA</javassist.version>
+        <jaxws-rt.version>2.3.3</jaxws-rt.version>
         <joda-time.version>2.10.7</joda-time.version>
         <lombok.version>1.18.16</lombok.version>
         <metrics-jdbi3.version>4.1.14</metrics-jdbi3.version>
         <postgresql.version>42.2.12</postgresql.version>
-        <spring.version>5.2.6.RELEASE</spring.version>
+        <spring.version>5.3.0</spring.version>
         <stax2-api.version>4.2.1</stax2-api.version>
         <!--
         NOTE:
@@ -73,7 +74,6 @@
         <h2.version>1.4.200</h2.version>
         <jdbi3.version>3.17.0</jdbi3.version>
         <jersey-test-framework-core.version>2.32</jersey-test-framework-core.version>
-
     </properties>
 
     <dependencies>
@@ -372,7 +372,7 @@
         <dependency>
             <groupId>com.sun.xml.ws</groupId>
             <artifactId>jaxws-rt</artifactId>
-            <version>2.3.2</version>
+            <version>${jaxws-rt.version}</version>
             <scope>provided</scope>
             <exclusions>
                 <exclusion>
