@@ -1,4 +1,4 @@
-package org.kiwiproject.hibernate5;
+package org.kiwiproject.hibernate;
 
 import static com.google.common.base.Preconditions.checkArgument;
 import static com.google.common.collect.Lists.newArrayList;
