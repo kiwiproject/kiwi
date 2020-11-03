@@ -2,8 +2,11 @@ package org.kiwiproject.base;
 
 import static com.google.common.collect.Lists.newArrayList;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatCode;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.assertj.core.api.Assertions.catchThrowable;
 import static org.assertj.core.util.Sets.newLinkedHashSet;
+import static org.kiwiproject.base.KiwiPreconditions.MAX_PORT_NUMBER;
 import static org.kiwiproject.base.KiwiPreconditions.checkArgumentNotNull;
 import static org.kiwiproject.base.KiwiPreconditions.requireNotBlank;
 import static org.kiwiproject.base.KiwiPreconditions.requireNotNull;
@@ -12,10 +15,12 @@ import static org.kiwiproject.base.KiwiPreconditions.requireNotNullElseGet;
 
 import org.assertj.core.api.SoftAssertions;
 import org.assertj.core.api.junit.jupiter.SoftAssertionsExtension;
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ArgumentsSource;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.kiwiproject.util.BlankStringArgumentsProvider;
 
 import java.util.ArrayList;
@@ -320,4 +325,277 @@ class KiwiPreconditionsTest {
         assertThat(requireNotBlank(value, "{} cannot be null", "foo")).isEqualTo(value);
     }
 
+    @Nested
+    class CheckPositive {
+
+        @Test
+        void shouldThrowException_WhenIntValue_IsNegative() {
+            assertThatThrownBy(() -> KiwiPreconditions.checkPositive(-1))
+                    .isInstanceOf(IllegalStateException.class)
+                    .hasMessage("value must be a positive number");
+        }
+
+        @Test
+        void shouldThrowException_WhenIntValue_IsZero() {
+            assertThatThrownBy(() -> KiwiPreconditions.checkPositive(0))
+                    .isInstanceOf(IllegalStateException.class)
+                    .hasMessage("value must be a positive number");
+        }
+
+        @Test
+        void shouldNotThrowException_WhenIntValue_IsPositive() {
+            assertThatCode(() -> KiwiPreconditions.checkPositive(1)).doesNotThrowAnyException();
+        }
+
+        @Test
+        void shouldThrowException_WhenLongValue_IsNegative() {
+            assertThatThrownBy(() -> KiwiPreconditions.checkPositive(-1L))
+                    .isInstanceOf(IllegalStateException.class)
+                    .hasMessage("value must be a positive number");
+        }
+
+        @Test
+        void shouldThrowException_WhenLongValue_IsZero() {
+            assertThatThrownBy(() -> KiwiPreconditions.checkPositive(0L))
+                    .isInstanceOf(IllegalStateException.class)
+                    .hasMessage("value must be a positive number");
+        }
+
+        @Test
+        void shouldNotThrowException_WhenLongValue_IsPositive() {
+            assertThatCode(() -> KiwiPreconditions.checkPositive(1L)).doesNotThrowAnyException();
+        }
+    }
+
+    @Nested
+    class CheckPositiveOrZero {
+
+        @Test
+        void shouldThrowException_WhenIntValue_IsNegative() {
+            assertThatThrownBy(() -> KiwiPreconditions.checkPositiveOrZero(-1))
+                    .isInstanceOf(IllegalStateException.class)
+                    .hasMessage("value must be positive or zero");
+        }
+
+        @Test
+        void shouldNotThrowException_WhenIntValue_IsZero() {
+            assertThatCode(() -> KiwiPreconditions.checkPositiveOrZero(0)).doesNotThrowAnyException();
+        }
+
+        @Test
+        void shouldNotThrowException_WhenIntValue_IsPositive() {
+            assertThatCode(() -> KiwiPreconditions.checkPositiveOrZero(1)).doesNotThrowAnyException();
+        }
+
+        @Test
+        void shouldThrowException_WhenLongValue_IsNegative() {
+            assertThatThrownBy(() -> KiwiPreconditions.checkPositiveOrZero(-1L))
+                    .isInstanceOf(IllegalStateException.class)
+                    .hasMessage("value must be positive or zero");
+        }
+
+        @Test
+        void shouldThrowException_WhenLongValue_IsZero() {
+            assertThatCode(() -> KiwiPreconditions.checkPositiveOrZero(0L)).doesNotThrowAnyException();
+        }
+
+        @Test
+        void shouldNotThrowException_WhenLongValue_IsPositive() {
+            assertThatCode(() -> KiwiPreconditions.checkPositiveOrZero(1L)).doesNotThrowAnyException();
+        }
+    }
+
+    @Nested
+    class RequirePositive {
+
+        @Test
+        void shouldThrowException_WhenIntValue_IsNegative() {
+            assertThatThrownBy(() -> KiwiPreconditions.requirePositive(-1))
+                    .isInstanceOf(IllegalStateException.class)
+                    .hasMessage("value must be a positive number");
+        }
+
+        @Test
+        void shouldThrowException_WhenIntValue_IsZero() {
+            assertThatThrownBy(() -> KiwiPreconditions.requirePositive(0))
+                    .isInstanceOf(IllegalStateException.class)
+                    .hasMessage("value must be a positive number");
+        }
+
+        @Test
+        void shouldReturnValue_WhenIntValue_IsPositive() {
+            assertThat(KiwiPreconditions.requirePositive(1)).isEqualTo(1);
+        }
+
+        @Test
+        void shouldThrowException_WhenLongValue_IsNegative() {
+            assertThatThrownBy(() -> KiwiPreconditions.requirePositive(-1L))
+                    .isInstanceOf(IllegalStateException.class)
+                    .hasMessage("value must be a positive number");
+        }
+
+        @Test
+        void shouldThrowException_WhenLongValue_IsZero() {
+            assertThatThrownBy(() -> KiwiPreconditions.requirePositive(0L))
+                    .isInstanceOf(IllegalStateException.class)
+                    .hasMessage("value must be a positive number");
+        }
+
+        @Test
+        void shouldReturnValue_WhenLongValue_IsPositive() {
+            assertThat(KiwiPreconditions.requirePositive(1L)).isEqualTo(1L);
+        }
+    }
+
+    @Nested
+    class RequirePositiveOrZero {
+
+        @Test
+        void shouldThrowException_WhenIntValue_IsNegative() {
+            assertThatThrownBy(() -> KiwiPreconditions.requirePositiveOrZero(-1))
+                    .isInstanceOf(IllegalStateException.class)
+                    .hasMessage("value must be positive or zero");
+        }
+
+        @Test
+        void shouldReturnValue_WhenIntValue_IsZero() {
+            assertThat(KiwiPreconditions.requirePositiveOrZero(0)).isZero();
+        }
+
+        @Test
+        void shouldReturnValue_WhenIntValue_IsPositive() {
+            assertThat(KiwiPreconditions.requirePositiveOrZero(1)).isEqualTo(1);
+        }
+
+        @Test
+        void shouldThrowException_WhenLongValue_IsNegative() {
+            assertThatThrownBy(() -> KiwiPreconditions.requirePositiveOrZero(-1L))
+                    .isInstanceOf(IllegalStateException.class)
+                    .hasMessage("value must be positive or zero");
+        }
+
+        @Test
+        void shouldReturnValue_WhenLongValue_IsZero() {
+            assertThat(KiwiPreconditions.requirePositiveOrZero(0L)).isZero();
+        }
+
+        @Test
+        void shouldReturnValue_WhenLongValue_IsPositive() {
+            assertThat(KiwiPreconditions.requirePositiveOrZero(1L)).isEqualTo(1L);
+        }
+    }
+
+    @Nested
+    class CheckValidPort {
+
+        @Test
+        void shouldThrowException_WhenPort_IsNegative() {
+            assertThatThrownBy(() -> KiwiPreconditions.checkValidPort(-1))
+                    .isInstanceOf(IllegalStateException.class)
+                    .hasMessage("port must be between 0 and " + KiwiPreconditions.MAX_PORT_NUMBER);
+        }
+
+        @Test
+        void shouldThrowException_WhenPort_IsTooHigh() {
+            assertThatThrownBy(() -> KiwiPreconditions.checkValidPort(MAX_PORT_NUMBER + 1))
+                    .isInstanceOf(IllegalStateException.class)
+                    .hasMessage("port must be between 0 and " + KiwiPreconditions.MAX_PORT_NUMBER);
+        }
+
+        @ParameterizedTest
+        @ValueSource(ints = { 0, 1, MAX_PORT_NUMBER })
+        void shouldNotThrowException_WhenPort_IsValid(int port) {
+            assertThatCode(() -> KiwiPreconditions.checkValidPort(port)).doesNotThrowAnyException();
+        }
+
+    }
+
+    @Nested
+    class RequireValidPort {
+
+        @Test
+        void shouldThrowException_WhenPort_IsNegative() {
+            assertThatThrownBy(() -> KiwiPreconditions.requireValidPort(-1))
+                    .isInstanceOf(IllegalStateException.class)
+                    .hasMessage("port must be between 0 and " + KiwiPreconditions.MAX_PORT_NUMBER);
+        }
+
+        @Test
+        void shouldThrowException_WhenPort_IsTooHigh() {
+            assertThatThrownBy(() -> KiwiPreconditions.requireValidPort(MAX_PORT_NUMBER + 1))
+                    .isInstanceOf(IllegalStateException.class)
+                    .hasMessage("port must be between 0 and " + KiwiPreconditions.MAX_PORT_NUMBER);
+        }
+
+        @ParameterizedTest
+        @ValueSource(ints = { 0, 1, MAX_PORT_NUMBER })
+        void shouldReturnPort_WhenPort_IsValid(int port) {
+            assertThat(KiwiPreconditions.requireValidPort(port)).isEqualTo(port);
+        }
+
+    }
+
+    @Nested
+    class CheckValidNonZeroPort {
+
+        @Test
+        void shouldThrowException_WhenPort_IsNegative() {
+            assertThatThrownBy(() -> KiwiPreconditions.checkValidNonZeroPort(-1))
+                    .isInstanceOf(IllegalStateException.class)
+                    .hasMessage("port must be between 1 and " + KiwiPreconditions.MAX_PORT_NUMBER);
+        }
+
+        @Test
+        void shouldThrowException_WhenPort_IsZero() {
+            assertThatThrownBy(() -> KiwiPreconditions.checkValidNonZeroPort(0))
+                    .isInstanceOf(IllegalStateException.class)
+                    .hasMessage("port must be between 1 and " + KiwiPreconditions.MAX_PORT_NUMBER);
+        }
+
+        @Test
+        void shouldThrowException_WhenPort_IsTooHigh() {
+            assertThatThrownBy(() -> KiwiPreconditions.checkValidNonZeroPort(MAX_PORT_NUMBER + 1))
+                    .isInstanceOf(IllegalStateException.class)
+                    .hasMessage("port must be between 1 and " + KiwiPreconditions.MAX_PORT_NUMBER);
+        }
+
+        @ParameterizedTest
+        @ValueSource(ints = { 1, MAX_PORT_NUMBER })
+        void shouldNotThrowException_WhenPort_IsValid(int port) {
+            assertThatCode(() -> KiwiPreconditions.checkValidNonZeroPort(port)).doesNotThrowAnyException();
+        }
+
+    }
+
+    @Nested
+    class RequireValidNonZeroPort {
+
+        @Test
+        void shouldThrowException_WhenPort_IsNegative() {
+            assertThatThrownBy(() -> KiwiPreconditions.requireValidNonZeroPort(-1))
+                    .isInstanceOf(IllegalStateException.class)
+                    .hasMessage("port must be between 1 and " + KiwiPreconditions.MAX_PORT_NUMBER);
+        }
+
+        @Test
+        void shouldThrowException_WhenPort_IsZero() {
+            assertThatThrownBy(() -> KiwiPreconditions.requireValidNonZeroPort(0))
+                    .isInstanceOf(IllegalStateException.class)
+                    .hasMessage("port must be between 1 and " + KiwiPreconditions.MAX_PORT_NUMBER);
+        }
+
+        @Test
+        void shouldThrowException_WhenPort_IsTooHigh() {
+            assertThatThrownBy(() -> KiwiPreconditions.requireValidNonZeroPort(MAX_PORT_NUMBER + 1))
+                    .isInstanceOf(IllegalStateException.class)
+                    .hasMessage("port must be between 1 and " + KiwiPreconditions.MAX_PORT_NUMBER);
+        }
+
+        @ParameterizedTest
+        @ValueSource(ints = { 1, MAX_PORT_NUMBER })
+        void shouldReturnPort_WhenPort_IsValid(int port) {
+            assertThat(KiwiPreconditions.requireValidNonZeroPort(port)).isEqualTo(port);
+        }
+
+    }
 }
