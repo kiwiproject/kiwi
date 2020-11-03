@@ -1,5 +1,6 @@
 package org.kiwiproject.base;
 
+import static com.google.common.base.Preconditions.checkState;
 import static java.util.Objects.isNull;
 import static java.util.Objects.nonNull;
 import static java.util.Objects.requireNonNull;
@@ -7,6 +8,7 @@ import static org.apache.commons.lang3.StringUtils.isBlank;
 import static org.apache.commons.lang3.StringUtils.isNotBlank;
 import static org.kiwiproject.base.KiwiStrings.format;
 
+import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.Preconditions;
 import lombok.SneakyThrows;
 import lombok.experimental.UtilityClass;
@@ -28,6 +30,9 @@ import java.util.function.Supplier;
  */
 @UtilityClass
 public class KiwiPreconditions {
+
+    @VisibleForTesting
+    static final int MAX_PORT_NUMBER = 65_535;
 
     /**
      * Ensures the truth of an expression involving one or more parameters to the calling method.
@@ -321,6 +326,142 @@ public class KiwiPreconditions {
         T value = requireNotNull(supplier.get(), "supplier must return a non-null object");
 
         return isNull(obj) ? value : obj;
+    }
+
+    /**
+     * Ensures int {@code value} is a positive number (greater than zero).
+     *
+     * @param value the value to check for positivity
+     * @throws IllegalStateException if the value is not positive (e.g. greater than zero)
+     * @see Preconditions#checkState(boolean, Object)
+     */
+    public static void checkPositive(int value) {
+        checkState(value > 0, "value must be a positive number");
+    }
+
+    /**
+     * Ensures long {@code value} is a positive number (greater than zero).
+     *
+     * @param value the value to check for positivity
+     * @throws IllegalStateException if the value is not positive (e.g. greater than zero)
+     * @see Preconditions#checkState(boolean, Object)
+     */
+    public static void checkPositive(long value) {
+        checkState(value > 0, "value must be a positive number");
+    }
+
+    /**
+     * Ensures int {@code value} is a positive number (greater than zero) or zero.
+     *
+     * @param value the value to check for positivity
+     * @throws IllegalStateException if the value is not positive or zero
+     * @see Preconditions#checkState(boolean, Object)
+     */
+    public static void checkPositiveOrZero(int value) {
+        checkState(value >= 0, "value must be positive or zero");
+    }
+
+    /**
+     * Ensures long {@code value} is a positive number (greater than zero) or zero.
+     *
+     * @param value the value to check for positivity
+     * @throws IllegalStateException if the value is not positive or zero
+     * @see Preconditions#checkState(boolean, Object)
+     */
+    public static void checkPositiveOrZero(long value) {
+        checkState(value >= 0, "value must be positive or zero");
+    }
+
+    /**
+     * Returns the int value if it is positive, throwing an {@link IllegalStateException} if not positive.
+     *
+     * @param value the value to check for positivity
+     * @return the given value if positive
+     * @throws IllegalStateException if the value is not positive
+     */
+    public static int requirePositive(int value) {
+        checkPositive(value);
+        return value;
+    }
+
+    /**
+     * Returns the long value if it is positive, throwing an {@link IllegalStateException} if not positive.
+     *
+     * @param value the value to check for positivity
+     * @return the given value if positive
+     * @throws IllegalStateException if the value is not positive
+     */
+    public static long requirePositive(long value) {
+        checkPositive(value);
+        return value;
+    }
+
+    /**
+     * Returns the int value if it is positive or zero, throwing an {@link IllegalStateException} if not positive or zero.
+     *
+     * @param value the value to check for positivity or zero
+     * @return the given value if positive or zero
+     * @throws IllegalStateException if the value is not positive zero
+     */
+    public static int requirePositiveOrZero(int value) {
+        checkPositiveOrZero(value);
+        return value;
+    }
+
+    /**
+     * Returns the long value if it is positive or zero, throwing an {@link IllegalStateException} if not positive or zero.
+     *
+     * @param value the value to check for positivity or zero
+     * @return the given value if positive or zero
+     * @throws IllegalStateException if the value is not positive zero
+     */
+    public static long requirePositiveOrZero(long value) {
+        checkPositiveOrZero(value);
+        return value;
+    }
+
+    /**
+     * Ensures given port is valid, between 0 and {@link #MAX_PORT_NUMBER}.
+     *
+     * @param port the port to check for validity
+     * @throws IllegalStateException if port is not valid
+     */
+    public static void checkValidPort(int port) {
+        checkState(port >= 0 && port <= MAX_PORT_NUMBER, "port must be between 0 and %s", MAX_PORT_NUMBER);
+    }
+
+    /**
+     * Returns the given port if it is valid
+     *
+     * @param port the port to check for validity
+     * @return the given port if valid
+     * @throws IllegalStateException if port is not valid
+     */
+    public static int requireValidPort(int port) {
+        checkValidPort(port);
+        return port;
+    }
+
+    /**
+     * Ensures given port is valid (excluding zero), between 1 and {@link #MAX_PORT_NUMBER}.
+     *
+     * @param port the port to check for validity
+     * @throws IllegalStateException if port is not valid
+     */
+    public static void checkValidNonZeroPort(int port) {
+        checkState(port > 0 && port <= MAX_PORT_NUMBER, "port must be between 1 and %s", MAX_PORT_NUMBER);
+    }
+
+    /**
+     * Returns the given port if it is valid (excluding zero)
+     *
+     * @param port the port to check for validity
+     * @return the given port if valid
+     * @throws IllegalStateException if port is not valid
+     */
+    public static int requireValidNonZeroPort(int port) {
+        checkValidNonZeroPort(port);
+        return port;
     }
 
 }
