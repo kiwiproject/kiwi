@@ -34,10 +34,13 @@
         <guava.version>30.0-jre</guava.version>
 
         <!-- Versions for provided dependencies -->
+        <byte-buddy.version>1.10.15</byte-buddy.version>
         <commons-io.version>2.8.0</commons-io.version>
         <commons-text.version>1.9</commons-text.version>
         <dropwizard.version>2.0.14</dropwizard.version>
         <dropwizard.modules.dropwizard-jdbi.version>2.0.12</dropwizard.modules.dropwizard-jdbi.version>
+        <FastInfoset.version>1.2.18</FastInfoset.version>
+        <hibernate.version>5.4.22.Final</hibernate.version>
         <hibernate-validator.version>6.1.6.Final</hibernate-validator.version>
         <httpclient.version>4.5.13</httpclient.version>
         <guava-retrying.version>2.0.0</guava-retrying.version>
@@ -54,6 +57,7 @@
         <postgresql.version>42.2.12</postgresql.version>
         <spring.version>5.3.0</spring.version>
         <stax2-api.version>4.2.1</stax2-api.version>
+        <stax-ex.version>1.8.3</stax-ex.version>
         <!--
         NOTE:
         There is a conflict between jackson-dataformat-xml and jaxws-rt in the
@@ -114,6 +118,13 @@
         </dependency>
 
         <!-- provided dependencies -->
+
+        <dependency>
+            <groupId>net.bytebuddy</groupId>
+            <artifactId>byte-buddy</artifactId>
+            <version>${byte-buddy.version}</version>
+            <scope>provided</scope>
+        </dependency>
 
         <dependency>
             <groupId>commons-io</groupId>
@@ -237,6 +248,13 @@
         </dependency>
 
         <dependency>
+            <groupId>com.sun.xml.fastinfoset</groupId>
+            <artifactId>FastInfoset</artifactId>
+            <version>${FastInfoset.version}</version>
+            <scope>provided</scope>
+        </dependency>
+
+        <dependency>
             <groupId>com.github.rholder</groupId>
             <artifactId>guava-retrying</artifactId>
             <version>${guava-retrying.version}</version>
@@ -249,6 +267,31 @@
                 <exclusion>
                     <groupId>com.google.code.findbugs</groupId>
                     <artifactId>jsr305</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+
+        <dependency>
+            <groupId>org.hibernate</groupId>
+            <artifactId>hibernate-core</artifactId>
+            <version>${hibernate.version}</version>
+            <scope>provided</scope>
+            <exclusions>
+                <exclusion>
+                    <groupId>net.bytebuddy</groupId>
+                    <artifactId>byte-buddy</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>com.sun.xml.fastinfoset</groupId>
+                    <artifactId>FastInfoset</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>org.javassist</groupId>
+                    <artifactId>javassist</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>org.jvnet.staxex</groupId>
+                    <artifactId>stax-ex</artifactId>
                 </exclusion>
             </exclusions>
         </dependency>
@@ -437,6 +480,13 @@
             <groupId>org.codehaus.woodstox</groupId>
             <artifactId>stax2-api</artifactId>
             <version>${stax2-api.version}</version>
+            <scope>provided</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.jvnet.staxex</groupId>
+            <artifactId>stax-ex</artifactId>
+            <version>${stax-ex.version}</version>
             <scope>provided</scope>
         </dependency>
 
