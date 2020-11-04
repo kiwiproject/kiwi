@@ -10,7 +10,6 @@ import lombok.experimental.UtilityClass;
 import java.lang.reflect.Array;
 import java.util.Arrays;
 import java.util.Comparator;
-import java.util.List;
 import java.util.Optional;
 import java.util.stream.IntStream;
 
@@ -172,7 +171,7 @@ public class KiwiArrays {
      * @return the penultimate item in items
      * @throws IllegalArgumentException if the array does not contain at least two items
      * @throws NullPointerException     if the array is null
-     * @see #secondToLast(List)
+     * @see #secondToLast(Object[])
      */
     public static <T> T penultimate(T[] items) {
         checkMinimumSize(items, 2);

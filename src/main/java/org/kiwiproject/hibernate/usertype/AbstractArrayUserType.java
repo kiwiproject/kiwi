@@ -29,6 +29,8 @@ public abstract class AbstractArrayUserType implements UserType {
     /**
      * Implementors should return the specific database type name that the array contains, e.g. {@code TEXT} if the
      * database array type is {@code TEXT[]}.
+     *
+     * @return the database type name
      */
     public abstract String databaseTypeName();
 
