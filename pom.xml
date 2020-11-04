@@ -37,7 +37,7 @@
         <byte-buddy.version>1.10.15</byte-buddy.version>
         <commons-io.version>2.8.0</commons-io.version>
         <commons-text.version>1.9</commons-text.version>
-        <dropwizard.version>2.0.14</dropwizard.version>
+        <dropwizard.version>2.0.15</dropwizard.version>
         <dropwizard.modules.dropwizard-jdbi.version>2.0.12</dropwizard.modules.dropwizard-jdbi.version>
         <FastInfoset.version>1.2.18</FastInfoset.version>
         <hibernate.version>5.4.22.Final</hibernate.version>
@@ -55,6 +55,8 @@
         <lombok.version>1.18.16</lombok.version>
         <metrics-jdbi3.version>4.1.14</metrics-jdbi3.version>
         <postgresql.version>42.2.18</postgresql.version>
+        <metrics-jetty9.version>4.1.14</metrics-jetty9.version>
+        <postgresql.version>42.2.12</postgresql.version>
         <spring.version>5.3.0</spring.version>
         <stax2-api.version>4.2.1</stax2-api.version>
         <stax-ex.version>1.8.3</stax-ex.version>
@@ -462,6 +464,19 @@
             <artifactId>metrics-jdbi3</artifactId>
             <version>${metrics-jdbi3.version}</version>
             <scope>provided</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>io.dropwizard.metrics</groupId>
+            <artifactId>metrics-jetty9</artifactId>
+            <version>${metrics-jetty9.version}</version>
+            <scope>provided</scope>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.eclipse.jetty</groupId>
+                    <artifactId>jetty-server</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
 
         <dependency>
