@@ -54,6 +54,7 @@
         <joda-time.version>2.10.7</joda-time.version>
         <lombok.version>1.18.16</lombok.version>
         <metrics-jdbi3.version>4.1.14</metrics-jdbi3.version>
+        <postgresql.version>42.2.18</postgresql.version>
         <metrics-jetty9.version>4.1.14</metrics-jetty9.version>
         <postgresql.version>42.2.12</postgresql.version>
         <spring.version>5.3.0</spring.version>
@@ -76,9 +77,11 @@
         <jsr305.version>3.0.2</jsr305.version>
 
         <!-- Versions for test dependencies -->
+        <embedded-postgres.version>1.2.6</embedded-postgres.version>
         <h2.version>1.4.200</h2.version>
         <jdbi3.version>3.17.0</jdbi3.version>
         <jersey-test-framework-core.version>2.32</jersey-test-framework-core.version>
+        <liquibase.version>3.8.9</liquibase.version>
     </properties>
 
     <dependencies>
@@ -481,6 +484,12 @@
             <artifactId>postgresql</artifactId>
             <version>${postgresql.version}</version>
             <scope>provided</scope>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.checkerframework</groupId>
+                    <artifactId>checker-qual</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
 
         <dependency>
@@ -543,6 +552,31 @@
         </dependency>
 
         <dependency>
+            <groupId>io.zonky.test</groupId>
+            <artifactId>embedded-postgres</artifactId>
+            <version>${embedded-postgres.version}</version>
+            <scope>test</scope>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.apache.commons</groupId>
+                    <artifactId>commons-lang3</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>commons-io</groupId>
+                    <artifactId>commons-io</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>org.postgresql</groupId>
+                    <artifactId>postgresql</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>org.slf4j</groupId>
+                    <artifactId>slf4j-api</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+
+        <dependency>
             <groupId>org.glassfish.jersey.test-framework</groupId>
             <artifactId>jersey-test-framework-core</artifactId>
             <version>${jersey-test-framework-core.version}</version>
@@ -567,6 +601,23 @@
             <artifactId>jdbi3-postgres</artifactId>
             <version>${jdbi3.version}</version>
             <scope>test</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.liquibase</groupId>
+            <artifactId>liquibase-core</artifactId>
+            <version>${liquibase.version}</version>
+            <scope>test</scope>
+            <exclusions>
+                <exclusion>
+                    <groupId>javax.xml.bind</groupId>
+                    <artifactId>jaxb-api</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>org.slf4j</groupId>
+                    <artifactId>slf4j-api</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
 
     </dependencies>
