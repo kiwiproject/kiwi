@@ -45,7 +45,7 @@ public class BeanConverter<T> {
      */
     @Getter
     @Setter
-    private Set<String> exclusionList = Sets.newHashSet("class", "new");
+    private Set<String> exclusions = Sets.newHashSet("class", "new");
 
     /**
      * Allows for a failed conversion to throw an exception if {@code true}; otherwise just logs a failure if {@code false}
@@ -105,7 +105,7 @@ public class BeanConverter<T> {
 
         // remove exclusions
         return propertyNames.stream()
-                .filter(not(prop -> exclusionList.contains(prop)))
+                .filter(not(prop -> exclusions.contains(prop)))
                 .collect(toSet());
     }
 

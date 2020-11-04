@@ -54,7 +54,7 @@ class BeanConverterTest {
         );
 
         var converter = new BeanConverter<Map<String, Object>>();
-        converter.setExclusionList(Set.of("numberField"));
+        converter.setExclusions(Set.of("numberField"));
 
         var testData = converter.convert(input, new TestData());
 
@@ -81,9 +81,9 @@ class BeanConverterTest {
     @Test
     void testBasicConvertTypeToMap_WithExclusions() {
         var converter = new BeanConverter<TestData>();
-        converter.setExclusionList(Set.of("numberField", "mapField"));
+        converter.setExclusions(Set.of("numberField", "mapField"));
 
-        assertThat(converter.getExclusionList()).contains("numberField", "mapField");
+        assertThat(converter.getExclusions()).contains("numberField", "mapField");
 
         var output = converter.convert(constructTestData(), KiwiMaps.newHashMap());
 
