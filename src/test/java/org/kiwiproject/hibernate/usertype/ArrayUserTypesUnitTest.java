@@ -6,12 +6,14 @@ import lombok.Value;
 import org.assertj.core.api.SoftAssertions;
 import org.assertj.core.api.junit.jupiter.SoftAssertionsExtension;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 
 import java.io.Serializable;
 
+@DisplayName("ArrayUserTypes (Unit)")
 class ArrayUserTypesUnitTest {
 
     private AbstractArrayUserType arrayUserType;
