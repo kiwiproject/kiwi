@@ -91,7 +91,8 @@ class VaultConfigurationTest {
 
             assertThat(copy)
                     .isNotSameAs(original)
-                    .isEqualToComparingFieldByField(original);
+                    .usingRecursiveComparison()
+                    .isEqualTo(original);
         }
     }
 
