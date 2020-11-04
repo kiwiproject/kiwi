@@ -46,6 +46,26 @@ class BeanConverterTest {
     }
 
     @Test
+    void testBasicConvertMapToTargetType_WithExclusions() {
+        var input = Map.of(
+                "numberField", 1,
+                "stringField", "foo",
+                "mapField", Map.of("innerFoo", "innerBar")
+        );
+
+        var converter = new BeanConverter<Map<String, Object>>();
+        converter.setExclusions(Set.of("numberField"));
+
+        var testData = converter.convert(input, new TestData());
+
+        assertThat(testData.getNumberField())
+                .describedAs("numberField should have been excluded!")
+                .isNull();
+        assertThat(testData.getStringField()).isEqualTo("foo");
+        assertThat(testData.getMapField()).contains(entry("innerFoo", "innerBar"));
+    }
+
+    @Test
     void testBasicConvertTypeToMap() {
         var converter = new BeanConverter<TestData>();
 
@@ -61,9 +81,9 @@ class BeanConverterTest {
     @Test
     void testBasicConvertTypeToMap_WithExclusions() {
         var converter = new BeanConverter<TestData>();
-        converter.setExclusionList(Set.of("numberField", "mapField"));
+        converter.setExclusions(Set.of("numberField", "mapField"));
 
-        assertThat(converter.getExclusionList()).contains("numberField", "mapField");
+        assertThat(converter.getExclusions()).contains("numberField", "mapField");
 
         var output = converter.convert(constructTestData(), KiwiMaps.newHashMap());
 
@@ -158,6 +178,7 @@ class BeanConverterTest {
             // The following MUST declare a variable else the exception is not thrown.
             // It does not, however, matter whether it is declared with an explicit type.
             assertThatThrownBy(() -> {
+                //noinspection unused
                 var aDouble = badResultTypeMapper.apply(testData);
             }).describedAs("should throw when try to assign result whether explicit type or using LVTI (var)")
                     .isExactlyInstanceOf(ClassCastException.class);
