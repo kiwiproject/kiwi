@@ -81,7 +81,7 @@ public class BeanConverter<T> {
         var inputWrapper = new BeanWrapperImpl(input);
         var targetWrapper = new BeanWrapperImpl(target);
 
-        var propertyNames = getPropertyList(input, inputWrapper);
+        var propertyNames = getPropertySet(input, inputWrapper);
 
         // This can not be a foreach because if failOnError is true, the exceptions need to bubble.
         for (String propName : propertyNames) {
@@ -100,19 +100,23 @@ public class BeanConverter<T> {
         return target;
     }
 
-    @SuppressWarnings("unchecked")
-    protected Set<String> getPropertyList(T input, BeanWrapper inputWrapper) {
-        var propertyNames = Stream.of(inputWrapper.getPropertyDescriptors())
-                .map(PropertyDescriptor::getName)
-                .collect(toSet());
-
-        if (input instanceof Map) {
-            propertyNames.addAll(((Map<String, ?>) input).keySet());
-        }
+    protected Set<String> getPropertySet(T input, BeanWrapper inputWrapper) {
+        var propertyNames = getPropertyNamesAsSet(input, inputWrapper);
 
         // remove exclusions
         return propertyNames.stream()
                 .filter(not(prop -> exclusionList.contains(prop)))
+                .collect(toSet());
+    }
+
+    @SuppressWarnings({"unchecked", "rawtypes"})
+    private static <T> Set<String> getPropertyNamesAsSet(T input, BeanWrapper inputWrapper) {
+        if (input instanceof Map) {
+            return ((Map) input).keySet();
+        }
+
+        return Stream.of(inputWrapper.getPropertyDescriptors())
+                .map(PropertyDescriptor::getName)
                 .collect(toSet());
     }
 
