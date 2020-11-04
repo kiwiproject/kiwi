@@ -1,0 +1,9 @@
+{
+  "name": "Alice",
+  "age": 42,
+  "country": "France",
+  "languages": [
+    "French",
+    "English"
+  ]
+}

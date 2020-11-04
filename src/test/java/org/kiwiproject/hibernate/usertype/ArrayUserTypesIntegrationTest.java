@@ -1,31 +1,29 @@
 package org.kiwiproject.hibernate.usertype;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.kiwiproject.base.KiwiStrings.f;
+import static org.kiwiproject.hibernate.usertype.UserTypeTestHelpers.buildHibernateConfiguration;
+import static org.kiwiproject.hibernate.usertype.UserTypeTestHelpers.preparedDbExtensionFor;
 
-import io.zonky.test.db.postgres.embedded.LiquibasePreparer;
-import io.zonky.test.db.postgres.junit5.EmbeddedPostgresExtension;
 import io.zonky.test.db.postgres.junit5.PreparedDbExtension;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
-import org.hibernate.cfg.Configuration;
-import org.hibernate.dialect.PostgreSQL95Dialect;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
-import org.postgresql.Driver;
 
 import java.io.Serializable;
 
+@DisplayName("ArrayUserTypes (Integration)")
 class ArrayUserTypesIntegrationTest {
 
     @RegisterExtension
-    static final PreparedDbExtension POSTGRES = EmbeddedPostgresExtension.preparedDatabase(
-            LiquibasePreparer.forClasspathLocation("hibernate/UserTypeTests/array-usertype-migration.xml"));
+    static final PreparedDbExtension POSTGRES =
+            preparedDbExtensionFor("hibernate/UserTypeTests/array-usertype-migration.xml");
 
     private static SessionFactory sessionFactory;
 
@@ -33,18 +31,7 @@ class ArrayUserTypesIntegrationTest {
 
     @BeforeAll
     static void beforeAll() {
-        var connectionInfo = POSTGRES.getConnectionInfo();
-        var url = f("jdbc:postgresql://localhost:{}/{}", connectionInfo.getPort(), connectionInfo.getDbName());
-
-        var config = new Configuration();
-        config.setProperty("hibernate.connection.driver_class", Driver.class.getName());
-        config.setProperty("hibernate.connection.url", url);
-        config.setProperty("hibernate.connection.username", connectionInfo.getUser());
-        config.setProperty("hibernate.connection.password", "");
-        config.setProperty("hibernate.dialect", PostgreSQL95Dialect.class.getName());
-
-        config.addAnnotatedClass(SampleEntity.class);
-
+        var config = buildHibernateConfiguration(POSTGRES.getConnectionInfo(), SampleEntity.class);
         sessionFactory = config.buildSessionFactory();
     }
 
@@ -130,14 +117,7 @@ class ArrayUserTypesIntegrationTest {
     }
 
     private Serializable saveAndClearSession(SampleEntity entity) {
-        var id = session.save(entity);
-        assertThat(id)
-                .describedAs("Entity should have been flushed to database and now have an assigned ID")
-                .isNotNull();
-
-        session.clear();
-
-        return id;
+        return UserTypeTestHelpers.saveAndClearSession(session, entity);
     }
 
 }
