@@ -4,6 +4,7 @@ import static com.google.common.base.Preconditions.checkNotNull;
 import static com.google.common.base.Preconditions.checkState;
 import static com.google.common.collect.Lists.newArrayList;
 import static java.util.Collections.emptyList;
+import static java.util.Objects.isNull;
 import static org.kiwiproject.base.KiwiPreconditions.checkArgumentNotNull;
 import static org.kiwiproject.collect.KiwiLists.isNotNullOrEmpty;
 import static org.kiwiproject.collect.KiwiLists.isNullOrEmpty;
@@ -15,8 +16,12 @@ import lombok.extern.slf4j.Slf4j;
 import java.io.File;
 import java.net.URLDecoder;
 import java.nio.charset.StandardCharsets;
+import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
+import java.util.jar.Manifest;
 
 /**
  * Utilities for working with Java JAR files.
@@ -88,5 +93,65 @@ public class KiwiJars {
         }
 
         return Optional.of(String.join(File.separator, parts));
+    }
+
+    public static Optional<String> resolveSingleValueFromJarManifest(String manifestEntryName) {
+        return resolveSingleValueFromJarManifest(KiwiJars.class.getClassLoader(), manifestEntryName);
+    }
+
+    public static Optional<String> resolveSingleValueFromJarManifest(ClassLoader classLoader, String manifestEntryName) {
+        try {
+            var url = classLoader.getResource("META-INF/MANIFEST.MF");
+
+            LOG.trace("Using manifest URL: {}", url);
+
+            if (isNull(url)) {
+                return Optional.empty();
+            }
+
+            try (var in = url.openStream()) {
+                var manifest = new Manifest(in);
+                return readEntry(manifest, manifestEntryName);
+            }
+        } catch (Exception e) {
+            LOG.warn("Unable to locate {} from JAR", manifestEntryName, e);
+        }
+
+        return Optional.empty();
+    }
+
+    public static Map<String, String> resolveValuesFromJarManifest(String... manifestEntryNames) {
+        return resolveValuesFromJarManifest(KiwiJars.class.getClassLoader(), manifestEntryNames);
+    }
+
+    public static Map<String, String> resolveValuesFromJarManifest(ClassLoader classLoader, String... manifestEntryNames) {
+        var entries = new HashMap<String, String>();
+
+        try {
+            var url = classLoader.getResource("META-INF/MANIFEST.MF");
+
+            LOG.trace("Using manifest URL: {}", url);
+
+            if (isNull(url)) {
+                return entries;
+            }
+
+            try (var in = url.openStream()) {
+                var manifest = new Manifest(in);
+
+                Arrays.stream(manifestEntryNames).forEach(manifestEntryName -> {
+                    var entry = readEntry(manifest, manifestEntryName);
+                    entry.ifPresent(value -> entries.put(manifestEntryName, value));
+                });
+            }
+        } catch (Exception e) {
+            LOG.warn("Unable to locate values from JAR", e);
+        }
+
+        return entries;
+    }
+
+    private static Optional<String> readEntry(Manifest manifest, String manifestEntryName) {
+        return Optional.ofNullable(manifest.getMainAttributes().getValue(manifestEntryName));
     }
 }
