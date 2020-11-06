@@ -95,10 +95,23 @@ public class KiwiJars {
         return Optional.of(String.join(File.separator, parts));
     }
 
+    /**
+     * Resolves a given entry name from the manifest file (if found) in the current class loader.
+     *
+     * @param manifestEntryName The name of the property to resolve
+     * @return an {@link Optional} containing the resolved value or {@code Optional.empty()} if not
+     */
     public static Optional<String> resolveSingleValueFromJarManifest(String manifestEntryName) {
         return resolveSingleValueFromJarManifest(KiwiJars.class.getClassLoader(), manifestEntryName);
     }
 
+    /**
+     * Resolves a given entry name from the manifest file (if found) from the given class loader.
+     *
+     * @param classLoader       The class loader to find the manifest file to search
+     * @param manifestEntryName The name of the property to resolve
+     * @return an {@link Optional} containing the resolved value or {@code Optional.empty()} if not
+     */
     public static Optional<String> resolveSingleValueFromJarManifest(ClassLoader classLoader, String manifestEntryName) {
         try {
             var url = classLoader.getResource("META-INF/MANIFEST.MF");
@@ -120,10 +133,22 @@ public class KiwiJars {
         return Optional.empty();
     }
 
+    /**
+     * Resolves all of the given entry names from the manifest (if found) from the current class loader.
+     *
+     * @param manifestEntryNames an array of names to resolve from the manifest
+     * @return a {@link Map<String,String>} of resolved entries
+     */
     public static Map<String, String> resolveValuesFromJarManifest(String... manifestEntryNames) {
         return resolveValuesFromJarManifest(KiwiJars.class.getClassLoader(), manifestEntryNames);
     }
 
+    /**
+     * Resolves all of the given entry names from the manifest (if found) from the given class loader.
+     *
+     * @param manifestEntryNames an array of names to resolve from the manifest
+     * @return a {@link Map<String,String>} of resolved entries
+     */
     public static Map<String, String> resolveValuesFromJarManifest(ClassLoader classLoader, String... manifestEntryNames) {
         var entries = new HashMap<String, String>();
 
