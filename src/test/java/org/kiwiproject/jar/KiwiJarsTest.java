@@ -110,23 +110,23 @@ class KiwiJarsTest {
     }
 
     @Nested
-    class ResolveSingleValueFromJarManifest {
+    class ReadSingleValueFromJarManifest {
 
         @Test
-        void shouldResolveAnActualValueFromTheManifestInTheGivenCurrentClassLoader() throws IOException {
-            URLClassLoader classLoader = new URLClassLoader(
+        void shouldReadAnActualValueFromTheManifestInTheGivenCurrentClassLoader() throws IOException {
+            var classLoader = new URLClassLoader(
                     new URL[] {Fixtures.fixturePath("KiwiJars/KiwiTestSample.jar").toUri().toURL()},
                     this.getClass().getClassLoader()
             );
 
-            var value = KiwiJars.resolveSingleValueFromJarManifest(classLoader, "Sample-Attribute", url -> url.getPath().contains("KiwiTestSample"));
+            var value = KiwiJars.readSingleValueFromJarManifest(classLoader, "Sample-Attribute", url -> url.getPath().contains("KiwiTestSample"));
 
             assertThat(value).isPresent().hasValue("the-value");
         }
 
         @Test
         void shouldReturnOptionalEmptyIfValueCouldNotBeFoundInManifest() {
-            var value = KiwiJars.resolveSingleValueFromJarManifest("foo");
+            var value = KiwiJars.readSingleValueFromJarManifest("foo");
 
             assertThat(value).isEmpty();
         }
@@ -134,16 +134,16 @@ class KiwiJarsTest {
     }
 
     @Nested
-    class ResolveValuesFromJarManifest {
+    class ReadValuesFromJarManifest {
 
         @Test
-        void shouldResolveActualValuesFromTheManifestInTheGivenCurrentClassLoader() throws IOException {
-            URLClassLoader classLoader = new URLClassLoader(
+        void shouldReadActualValuesFromTheManifestInTheGivenCurrentClassLoader() throws IOException {
+            var classLoader = new URLClassLoader(
                     new URL[] {Fixtures.fixturePath("KiwiJars/KiwiTestSample.jar").toUri().toURL()},
                     this.getClass().getClassLoader()
             );
 
-            var value = KiwiJars.resolveValuesFromJarManifest(classLoader, url -> url.getPath().contains("KiwiTestSample"), "Sample-Attribute", "Main-Class");
+            var value = KiwiJars.readValuesFromJarManifest(classLoader, url -> url.getPath().contains("KiwiTestSample"), "Sample-Attribute", "Main-Class");
 
             assertThat(value).contains(
                     entry("Sample-Attribute", "the-value"),
@@ -153,7 +153,7 @@ class KiwiJarsTest {
 
         @Test
         void shouldReturnOptionalEmptyIfValuesCouldNotBeFoundInManifest() {
-            var value = KiwiJars.resolveValuesFromJarManifest("foo");
+            var value = KiwiJars.readValuesFromJarManifest("foo");
 
             assertThat(value).isEmpty();
         }

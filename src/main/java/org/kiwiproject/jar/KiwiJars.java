@@ -105,8 +105,19 @@ public class KiwiJars {
      * @param manifestEntryName The name of the property to resolve
      * @return an {@link Optional} containing the resolved value or {@code Optional.empty()} if not
      */
-    public static Optional<String> resolveSingleValueFromJarManifest(String manifestEntryName) {
-        return resolveSingleValueFromJarManifest(KiwiJars.class.getClassLoader(), manifestEntryName, null);
+    public static Optional<String> readSingleValueFromJarManifest(String manifestEntryName) {
+        return readSingleValueFromJarManifest(KiwiJars.class.getClassLoader(), manifestEntryName, null);
+    }
+
+    /**
+     * Resolves a given entry name from the manifest file (if found) from the given class loader.
+     *
+     * @param classLoader       The class loader to find the manifest file to search
+     * @param manifestEntryName The name of the property to resolve
+     * @return an {@link Optional} containing the resolved value or {@code Optional.empty()} if not
+     */
+    public static Optional<String> readSingleValueFromJarManifest(ClassLoader classLoader, String manifestEntryName) {
+        return readSingleValueFromJarManifest(classLoader, manifestEntryName, null);
     }
 
     /**
@@ -120,7 +131,7 @@ public class KiwiJars {
      * really only needed if there are multiple jars loaded in the classpath all containing manifest files.
      */
     @SuppressWarnings("java:S2259")
-    public static Optional<String> resolveSingleValueFromJarManifest(ClassLoader classLoader, String manifestEntryName, Predicate<URL> manifestFilter) {
+    public static Optional<String> readSingleValueFromJarManifest(ClassLoader classLoader, String manifestEntryName, Predicate<URL> manifestFilter) {
         try {
 
             List<URL> urls;
@@ -155,7 +166,7 @@ public class KiwiJars {
         return Optional.empty();
     }
 
-    private Optional<String> readEntry(URL url, String manifestEntryName) {
+    private static Optional<String> readEntry(URL url, String manifestEntryName) {
         try (var in = url.openStream()) {
             var manifest = new Manifest(in);
             return readEntry(manifest, manifestEntryName);
@@ -176,8 +187,19 @@ public class KiwiJars {
      * @param manifestEntryNames an array of names to resolve from the manifest
      * @return a {@code Map<String,String>} of resolved entries
      */
-    public static Map<String, String> resolveValuesFromJarManifest(String... manifestEntryNames) {
-        return resolveValuesFromJarManifest(KiwiJars.class.getClassLoader(), null, manifestEntryNames);
+    public static Map<String, String> readValuesFromJarManifest(String... manifestEntryNames) {
+        return readValuesFromJarManifest(KiwiJars.class.getClassLoader(), null, manifestEntryNames);
+    }
+
+    /**
+     * Resolves all of the given entry names from the manifest (if found) from the given class loader.
+     *
+     * @param classLoader           the classloader to search for manifest files in
+     * @param manifestEntryNames    an array of names to resolve from the manifest
+     * @return a {@code Map<String,String>} of resolved entries
+     */
+    public static Map<String, String> readValuesFromJarManifest(ClassLoader classLoader, String... manifestEntryNames) {
+        return readValuesFromJarManifest(classLoader, null, manifestEntryNames);
     }
 
     /**
@@ -190,11 +212,11 @@ public class KiwiJars {
      * @implNote If this code is called from a "fat-jar" with single manifest file, then the filter predicate is not needed. The predicate filter is
      * really only needed if there are multiple jars loaded in the classpath all containing manifest files.
      */
-    public static Map<String, String> resolveValuesFromJarManifest(ClassLoader classLoader, Predicate<URL> manifestFilter, String... manifestEntryNames) {
+    public static Map<String, String> readValuesFromJarManifest(ClassLoader classLoader, Predicate<URL> manifestFilter, String... manifestEntryNames) {
         var entries = new HashMap<String, String>();
 
         Arrays.stream(manifestEntryNames).forEach(manifestEntryName -> {
-            var entry = resolveSingleValueFromJarManifest(classLoader, manifestEntryName, manifestFilter);
+            var entry = readSingleValueFromJarManifest(classLoader, manifestEntryName, manifestFilter);
             entry.ifPresent(value -> entries.put(manifestEntryName, value));
         });
 
