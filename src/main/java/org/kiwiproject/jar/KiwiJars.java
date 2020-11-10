@@ -161,9 +161,8 @@ public class KiwiJars {
 
         } catch (Exception e) {
             LOG.warn("Unable to locate {} from JAR", manifestEntryName, e);
+            return Optional.empty();
         }
-
-        return Optional.empty();
     }
 
     private static Optional<String> readEntry(URL url, String manifestEntryName) {
@@ -172,9 +171,8 @@ public class KiwiJars {
             return readEntry(manifest, manifestEntryName);
         } catch (Exception e) {
             LOG.warn("Unable to read manifest", e);
+            return Optional.empty();
         }
-
-        return Optional.empty();
     }
 
     private static Optional<String> readEntry(Manifest manifest, String manifestEntryName) {

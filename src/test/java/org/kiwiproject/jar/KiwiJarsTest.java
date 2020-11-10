@@ -113,7 +113,7 @@ class KiwiJarsTest {
     class ReadSingleValueFromJarManifest {
 
         @Test
-        void shouldReadAnActualValueFromTheManifestInTheGivenCurrentClassLoader() throws IOException {
+        void shouldReadAnActualValueFromTheManifest_WithGivenClassLoaderAndPredicate() throws IOException {
             var classLoader = new URLClassLoader(
                     new URL[] {Fixtures.fixturePath("KiwiJars/KiwiTestSample.jar").toUri().toURL()},
                     this.getClass().getClassLoader()
@@ -125,7 +125,28 @@ class KiwiJarsTest {
         }
 
         @Test
-        void shouldReturnOptionalEmptyIfValueCouldNotBeFoundInManifest() {
+        void shouldReturnOptionalEmptyIfManifestFileCouldNotBeFound() {
+            var value = KiwiJars.readSingleValueFromJarManifest(this.getClass().getClassLoader(), "foo", url -> false);
+
+            assertThat(value).isEmpty();
+        }
+
+        @Test
+        void shouldReturnOptionalEmptyIfValueCouldNotBeFoundInManifest_UsingClassLoaderAndPredicate() {
+            var value = KiwiJars.readSingleValueFromJarManifest(this.getClass().getClassLoader(), "foo", url -> true);
+
+            assertThat(value).isEmpty();
+        }
+
+        @Test
+        void shouldReturnOptionalEmptyIfValueCouldNotBeFoundInManifest_UsingClassLoader() {
+            var value = KiwiJars.readSingleValueFromJarManifest(this.getClass().getClassLoader(), "foo");
+
+            assertThat(value).isEmpty();
+        }
+
+        @Test
+        void shouldReturnOptionalEmptyIfValueCouldNotBeFoundInManifest_UsingDefaultClassLoader() {
             var value = KiwiJars.readSingleValueFromJarManifest("foo");
 
             assertThat(value).isEmpty();
@@ -137,7 +158,7 @@ class KiwiJarsTest {
     class ReadValuesFromJarManifest {
 
         @Test
-        void shouldReadActualValuesFromTheManifestInTheGivenCurrentClassLoader() throws IOException {
+        void shouldReadActualValuesFromTheManifest_WithGivenClassLoaderAndPredicate() throws IOException {
             var classLoader = new URLClassLoader(
                     new URL[] {Fixtures.fixturePath("KiwiJars/KiwiTestSample.jar").toUri().toURL()},
                     this.getClass().getClassLoader()
@@ -152,7 +173,21 @@ class KiwiJarsTest {
         }
 
         @Test
-        void shouldReturnOptionalEmptyIfValuesCouldNotBeFoundInManifest() {
+        void shouldReturnEmptyMapIfValuesCouldNotBeFoundInManifest_UsingClassLoaderAndPredicate() {
+            var value = KiwiJars.readValuesFromJarManifest(this.getClass().getClassLoader(), url -> true, "foo");
+
+            assertThat(value).isEmpty();
+        }
+
+        @Test
+        void shouldReturnEmptyMapIfValuesCouldNotBeFoundInManifest_UsingClassLoader() {
+            var value = KiwiJars.readValuesFromJarManifest(this.getClass().getClassLoader(), "foo");
+
+            assertThat(value).isEmpty();
+        }
+
+        @Test
+        void shouldReturnEmptyMapIfValuesCouldNotBeFoundInManifest_UsingDefaultClassLoader() {
             var value = KiwiJars.readValuesFromJarManifest("foo");
 
             assertThat(value).isEmpty();
