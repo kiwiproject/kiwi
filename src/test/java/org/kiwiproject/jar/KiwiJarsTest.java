@@ -1,6 +1,7 @@
 package org.kiwiproject.jar;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.entry;
 import static org.kiwiproject.collect.KiwiLists.first;
 import static org.kiwiproject.collect.KiwiLists.secondToLast;
 
@@ -11,8 +12,12 @@ import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.NullAndEmptySource;
+import org.kiwiproject.internal.Fixtures;
 
 import java.io.File;
+import java.io.IOException;
+import java.net.URL;
+import java.net.URLClassLoader;
 import java.util.List;
 
 @DisplayName("Jars")
@@ -102,5 +107,91 @@ class KiwiJarsTest {
             assertThat(KiwiJars.joined(List.of("", "part1", "part2", "part3")))
                     .contains(File.separator + "part1" + File.separator + "part2" + File.separator + "part3");
         }
+    }
+
+    @Nested
+    class ReadSingleValueFromJarManifest {
+
+        @Test
+        void shouldReadAnActualValueFromTheManifest_WithGivenClassLoaderAndPredicate() throws IOException {
+            var classLoader = new URLClassLoader(
+                    new URL[] {Fixtures.fixturePath("KiwiJars/KiwiTestSample.jar").toUri().toURL()},
+                    this.getClass().getClassLoader()
+            );
+
+            var value = KiwiJars.readSingleValueFromJarManifest(classLoader, "Sample-Attribute", url -> url.getPath().contains("KiwiTestSample"));
+
+            assertThat(value).isPresent().hasValue("the-value");
+        }
+
+        @Test
+        void shouldReturnOptionalEmptyIfManifestFileCouldNotBeFound() {
+            var value = KiwiJars.readSingleValueFromJarManifest(this.getClass().getClassLoader(), "foo", url -> false);
+
+            assertThat(value).isEmpty();
+        }
+
+        @Test
+        void shouldReturnOptionalEmptyIfValueCouldNotBeFoundInManifest_UsingClassLoaderAndPredicate() {
+            var value = KiwiJars.readSingleValueFromJarManifest(this.getClass().getClassLoader(), "foo", url -> true);
+
+            assertThat(value).isEmpty();
+        }
+
+        @Test
+        void shouldReturnOptionalEmptyIfValueCouldNotBeFoundInManifest_UsingClassLoader() {
+            var value = KiwiJars.readSingleValueFromJarManifest(this.getClass().getClassLoader(), "foo");
+
+            assertThat(value).isEmpty();
+        }
+
+        @Test
+        void shouldReturnOptionalEmptyIfValueCouldNotBeFoundInManifest_UsingDefaultClassLoader() {
+            var value = KiwiJars.readSingleValueFromJarManifest("foo");
+
+            assertThat(value).isEmpty();
+        }
+
+    }
+
+    @Nested
+    class ReadValuesFromJarManifest {
+
+        @Test
+        void shouldReadActualValuesFromTheManifest_WithGivenClassLoaderAndPredicate() throws IOException {
+            var classLoader = new URLClassLoader(
+                    new URL[] {Fixtures.fixturePath("KiwiJars/KiwiTestSample.jar").toUri().toURL()},
+                    this.getClass().getClassLoader()
+            );
+
+            var value = KiwiJars.readValuesFromJarManifest(classLoader, url -> url.getPath().contains("KiwiTestSample"), "Sample-Attribute", "Main-Class");
+
+            assertThat(value).contains(
+                    entry("Sample-Attribute", "the-value"),
+                    entry("Main-Class", "KiwiTestClass")
+            );
+        }
+
+        @Test
+        void shouldReturnEmptyMapIfValuesCouldNotBeFoundInManifest_UsingClassLoaderAndPredicate() {
+            var value = KiwiJars.readValuesFromJarManifest(this.getClass().getClassLoader(), url -> true, "foo");
+
+            assertThat(value).isEmpty();
+        }
+
+        @Test
+        void shouldReturnEmptyMapIfValuesCouldNotBeFoundInManifest_UsingClassLoader() {
+            var value = KiwiJars.readValuesFromJarManifest(this.getClass().getClassLoader(), "foo");
+
+            assertThat(value).isEmpty();
+        }
+
+        @Test
+        void shouldReturnEmptyMapIfValuesCouldNotBeFoundInManifest_UsingDefaultClassLoader() {
+            var value = KiwiJars.readValuesFromJarManifest("foo");
+
+            assertThat(value).isEmpty();
+        }
+
     }
 }
