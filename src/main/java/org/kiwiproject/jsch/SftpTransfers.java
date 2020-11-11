@@ -71,6 +71,23 @@ public class SftpTransfers {
     }
 
     /**
+     * Will change the remote directory or create it if it doesn't exist.
+     *
+     * @implNote One way to determine if the directory already exists is to attempt to change to it. If an exception
+     * is thrown, catch it and attempt to create the directory and then change to it. There doesn't seem to be any
+     * (obvious) way to check existence in JSch otherwise.
+     */
+    private static void changeOrCreateRemoteDirectory(ChannelSftp channel, Path path) throws SftpException {
+        try {
+            changeToRemoteDirectory(channel, path);
+        } catch (SftpException e) {
+            LOG.debug("Directory {} did not exist. Will create it", path, e);
+            channel.mkdir(path.toString());
+            changeToRemoteDirectory(channel, path);
+        }
+    }
+
+    /**
      * Recursively gets files off of a remote server starting in the given path and stores the files locally in the
      * given path and given filename. The local path will be determined through the given {@code BiFunction} supplier
      * which is provided the current remote path and current remote filename. The local filename will be determined
@@ -144,6 +161,13 @@ public class SftpTransfers {
                 Files.copy(inputStream, resolvedLocalPath, StandardCopyOption.REPLACE_EXISTING);
             }
         });
+    }
+
+    private static void ensureLocalDirectoryExists(Path path) throws IOException {
+        if (!Files.exists(path)) {
+            LOG.debug("Local storage directory {} doesn't exist. Creating.", path);
+            Files.createDirectories(path);
+        }
     }
 
     /**
@@ -221,33 +245,9 @@ public class SftpTransfers {
         });
     }
 
-    /**
-     * Will change the remote directory or create it if it doesn't exist.
-     *
-     * @implNote One way to determine if the directory already exists is to attempt to change to it. If an exception
-     * is thrown, catch it and attempt to create the directory and then change to it. There doesn't seem to be any
-     * (obvious) way to check existence in JSch otherwise.
-     */
-    private static void changeOrCreateRemoteDirectory(ChannelSftp channel, Path path) throws SftpException {
-        try {
-            changeToRemoteDirectory(channel, path);
-        } catch (SftpException e) {
-            LOG.debug("Directory {} did not exist. Will create it", path, e);
-            channel.mkdir(path.toString());
-            changeToRemoteDirectory(channel, path);
-        }
-    }
-
     private static void changeToRemoteDirectory(ChannelSftp channel, Path path) throws SftpException {
         LOG.debug("Attempting to change to {} on the remote host", path);
         channel.cd(path.toString());
         LOG.debug("Successfully changed directory on the remote host");
-    }
-
-    private static void ensureLocalDirectoryExists(Path path) throws IOException {
-        if (!Files.exists(path)) {
-            LOG.debug("Local storage directory {} doesn't exist. Creating.", path);
-            Files.createDirectories(path);
-        }
     }
 }

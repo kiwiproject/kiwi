@@ -138,6 +138,30 @@ public class SftpConnector {
         }
     }
 
+    private void setSessionKeyExchangeType(Session session, String keyExchangeType) {
+        KiwiJSchHelpers.setSessionKeyExchangeType(session, keyExchangeType);
+        LOG.debug("Set key exchange type [{}] for host {}", keyExchangeType, config.getHost());
+    }
+
+    private void addAuthToSession() throws JSchException {
+        addAuthToSession(config, jsch, session);
+    }
+
+    @VisibleForTesting
+    static void addAuthToSession(SftpConfig config, JSch jsch, Session session) throws JSchException {
+        if (isNotBlank(config.getPrivateKeyFilePath())) {
+            LOG.debug("Using private key '{}' to connect", config.getPrivateKeyFilePath());
+            jsch.addIdentity(config.getPrivateKeyFilePath());
+
+        } else if (isNotBlank(config.getPassword())) {
+            LOG.debug("Using password to connect");
+            session.setPassword(config.getPassword());
+
+        } else {
+            throw new SftpTransfersException("Missing a private key and a password; cannot authenticate to the SFTP server");
+        }
+    }
+
     private void disableStrictHostKeyCheckingIfConfigured() {
         disableStrictHostKeyCheckingIfConfigured(config, session);
     }
@@ -188,29 +212,5 @@ public class SftpConnector {
     private void validateSftpIsConnected() {
         checkState(nonNull(sftpChannel), SFTP_NOT_CONNECTED);
         checkState(sftpChannel.isConnected(), SFTP_NOT_CONNECTED);
-    }
-
-    private void setSessionKeyExchangeType(Session session, String keyExchangeType) {
-        KiwiJSchHelpers.setSessionKeyExchangeType(session, keyExchangeType);
-        LOG.debug("Set key exchange type [{}] for host {}", keyExchangeType, config.getHost());
-    }
-
-    private void addAuthToSession() throws JSchException {
-        addAuthToSession(config, jsch, session);
-    }
-
-    @VisibleForTesting
-    static void addAuthToSession(SftpConfig config, JSch jsch, Session session) throws JSchException {
-        if (isNotBlank(config.getPrivateKeyFilePath())) {
-            LOG.debug("Using private key '{}' to connect", config.getPrivateKeyFilePath());
-            jsch.addIdentity(config.getPrivateKeyFilePath());
-
-        } else if (isNotBlank(config.getPassword())) {
-            LOG.debug("Using password to connect");
-            session.setPassword(config.getPassword());
-
-        } else {
-            throw new SftpTransfersException("Missing a private key and a password; cannot authenticate to the SFTP server");
-        }
     }
 }
