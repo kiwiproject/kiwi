@@ -173,8 +173,6 @@ public class SftpTransfers {
     /**
      * Gets a file off of a remote server with the given path and given filename and returns the contents of the file
      * as a {@code String}.
-     * <p>
-     * TODO: Should we handle binary files?
      *
      * @param remotePath     path on the remote server where the file is located
      * @param remoteFilename name of the file to pull from the remote server
@@ -195,8 +193,6 @@ public class SftpTransfers {
 
     /**
      * Returns a list of files that exist in the given path on the remote server.
-     * <p>
-     * TODO: Add override to pass in a filter predicate?
      *
      * @param remotePath path on the remote server to list files
      * @return a list of filenames that exist in the given path
@@ -207,8 +203,6 @@ public class SftpTransfers {
 
     /**
      * Returns a list of directories that exist in the given path on the remote server.
-     * <p>
-     * TODO: Add override to pass in a filter predicate?
      *
      * @param remotePath path on the remote server to list directories
      * @return a list of directories that exist in the given path
