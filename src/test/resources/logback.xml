@@ -30,6 +30,14 @@
         <appender-ref ref="MEMORY"/>
     </logger>
 
+    <!-- The following loggers MUST exist for JSchSlf4jLoggerTest -->
+    <logger name="jsch-logger-TRACE" level="TRACE"/>
+    <logger name="jsch-logger-DEBUG" level="DEBUG"/>
+    <logger name="jsch-logger-INFO" level="INFO"/>
+    <logger name="jsch-logger-WARN" level="WARN"/>
+    <logger name="jsch-logger-ERROR" level="ERROR"/>
+    <logger name="org.kiwiproject.jsch.JSchSlf4jLogger" level="WARN"/>
+
     <root level="INFO">
         <appender-ref ref="STDOUT"/>
     </root>
