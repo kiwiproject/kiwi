@@ -1,0 +1,12 @@
+{
+  "port": 42,
+  "host": "localhost",
+  "user": "bob",
+  "preferredAuthentications": "publickey",
+  "privateKeyFilePath": "/home/bob/.ssh/id_rsa",
+  "knownHostsFile": "/home/bob/.ssh/known_hosts",
+  "remoteBasePath": "/data_shared/development/my-service/remote-base-path",
+  "errorPath": "/data_shared/development/my-service/transfer-errors",
+  "disableStrictHostChecking": true,
+  "timeout": "10 seconds"
+}
