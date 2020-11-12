@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
+
+    <bean id="sampleTestBean1" class="org.kiwiproject.spring.context.SampleTestBean">
+        <constructor-arg value="test bean 1"/>
+        <constructor-arg value="42"/>
+    </bean>
+
+    <bean id="sampleTestBean2" class="org.kiwiproject.spring.context.SampleTestBean">
+        <constructor-arg value="test bean 2"/>
+        <constructor-arg value="84"/>
+    </bean>
+
+    <bean id="otherTestBean" class="org.kiwiproject.spring.context.OtherTestBean">
+        <constructor-arg value="other bean 1"/>
+        <constructor-arg value="1024"/>
+        <constructor-arg ref="sampleTestBean1"/>
+    </bean>
+
+</beans>
