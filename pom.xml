@@ -59,6 +59,7 @@
         <metrics-jetty9.version>4.1.14</metrics-jetty9.version>
         <postgresql.version>42.2.12</postgresql.version>
         <spring.version>5.3.0</spring.version>
+        <spring-data-mongodb.version>2.2.11.RELEASE</spring-data-mongodb.version>
         <stax2-api.version>4.2.1</stax2-api.version>
         <stax-ex.version>1.8.3</stax-ex.version>
         <!--
@@ -83,6 +84,7 @@
         <jdbi3.version>3.17.0</jdbi3.version>
         <jersey-test-framework-core.version>2.32</jersey-test-framework-core.version>
         <liquibase.version>3.8.9</liquibase.version>
+        <mongo-java-server.version>1.36.0</mongo-java-server.version>
     </properties>
 
     <dependencies>
@@ -514,6 +516,35 @@
             <scope>provided</scope>
         </dependency>
 
+        <!-- TODO Need exclusions until we can bring Spring Data Mongo fully up-to-date -->
+        <dependency>
+            <groupId>org.springframework.data</groupId>
+            <artifactId>spring-data-mongodb</artifactId>
+            <version>${spring-data-mongodb.version}</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.springframework</groupId>
+                    <artifactId>spring-beans</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>org.springframework</groupId>
+                    <artifactId>spring-context</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>org.springframework</groupId>
+                    <artifactId>spring-core</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>org.springframework</groupId>
+                    <artifactId>spring-expression</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>org.slf4j</groupId>
+                    <artifactId>slf4j-api</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+
         <dependency>
             <groupId>org.codehaus.woodstox</groupId>
             <artifactId>stax2-api</artifactId>
@@ -633,6 +664,13 @@
                     <artifactId>slf4j-api</artifactId>
                 </exclusion>
             </exclusions>
+        </dependency>
+
+        <dependency>
+            <groupId>de.bwaldvogel</groupId>
+            <artifactId>mongo-java-server</artifactId>
+            <version>${mongo-java-server.version}</version>
+            <scope>test</scope>
         </dependency>
 
     </dependencies>
