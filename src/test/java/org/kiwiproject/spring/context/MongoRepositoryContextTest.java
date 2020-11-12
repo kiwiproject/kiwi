@@ -3,23 +3,20 @@ package org.kiwiproject.spring.context;
 import static java.util.stream.Collectors.toSet;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatCode;
-import static org.kiwiproject.spring.util.MongoTestHelpers.mongoConnectionString;
-import static org.kiwiproject.spring.util.MongoTestHelpers.startInMemoryMongoServer;
 
-import de.bwaldvogel.mongo.MongoServer;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import org.bson.Document;
-import org.junit.jupiter.api.AfterAll;
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.RegisterExtension;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
+import org.kiwiproject.junit.jupiter.MongoServerExtension;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.event.AbstractMongoEventListener;
 import org.springframework.data.mongodb.core.mapping.event.AfterLoadEvent;
@@ -35,24 +32,15 @@ import java.util.Optional;
 @DisplayName("MongoRepositoryContext")
 class MongoRepositoryContextTest {
 
-    private static MongoServer mongoServer;
+    @RegisterExtension
+    static final MongoServerExtension MONGO_SERVER_EXTENSION = new MongoServerExtension();
 
     private MongoRepositoryContext mongoRepositoryContext;
 
-    @BeforeAll
-    static void beforeAll() {
-        mongoServer = startInMemoryMongoServer();
-    }
-
-    @AfterAll
-    static void afterAll() {
-        mongoServer.shutdownNow();
-    }
-
     @BeforeEach
     void setUp() {
-        String mongoUri = mongoConnectionString(mongoServer);
-        mongoRepositoryContext = new MongoRepositoryContext(mongoUri);
+        var connectionString = MONGO_SERVER_EXTENSION.getConnectionString();
+        mongoRepositoryContext = new MongoRepositoryContext(connectionString);
     }
 
     @Nested
