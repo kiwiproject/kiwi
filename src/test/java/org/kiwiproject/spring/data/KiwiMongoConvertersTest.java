@@ -1,10 +1,10 @@
 package org.kiwiproject.spring.data;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.kiwiproject.base.KiwiStrings.f;
+import static org.kiwiproject.spring.util.MongoTestHelpers.newMongoTemplate;
+import static org.kiwiproject.spring.util.MongoTestHelpers.startInMemoryMongoServer;
 
 import de.bwaldvogel.mongo.MongoServer;
-import de.bwaldvogel.mongo.backend.memory.MemoryBackend;
 import org.bson.BsonUndefined;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
@@ -13,7 +13,6 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.data.mongodb.core.MongoTemplate;
-import org.springframework.data.mongodb.core.SimpleMongoClientDbFactory;
 
 @DisplayName("KiwiMongoConverters")
 class KiwiMongoConvertersTest {
@@ -34,10 +33,7 @@ class KiwiMongoConvertersTest {
 
     @BeforeEach
     void setUp() {
-        var addr = mongoServer.getLocalAddress();
-        var connectionString = f("mongodb://{}:{}/kiwi_mongo_converters_test", addr.getHostName(), addr.getPort());
-        var factory = new SimpleMongoClientDbFactory(connectionString);
-        mongoTemplate = new MongoTemplate(factory);
+        mongoTemplate = newMongoTemplate(mongoServer);
     }
 
     @Nested
@@ -63,12 +59,4 @@ class KiwiMongoConvertersTest {
             assertThat(converter.convert(new BsonUndefined())).isNull();
         }
     }
-
-
-    private static MongoServer startInMemoryMongoServer() {
-        var mongoServer = new MongoServer(new MemoryBackend());
-        mongoServer.bind();
-        return mongoServer;
-    }
-
 }
