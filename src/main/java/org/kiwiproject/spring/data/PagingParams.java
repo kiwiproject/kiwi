@@ -8,6 +8,10 @@ import org.springframework.data.domain.Sort;
  * Note this allows standard pagination properties like page and limit, but also provides for two levels of
  * sorting, a "primary" and a "secondary". For example, you might want to sort people's names by last name descending,
  * then by first name ascending.
+ * <p>
+ * Note also that if there is only one sort, only the primary sort and direction should be set. If the primary
+ * sort is not defined, but the secondary sort is defined, then the behavior is up to the implementation. e.g. it
+ * may choose to ignore the secondary sort entirely, or it might treat the secondary sort as the primary one.
  *
  * @implNote Our specific needs have never required more than primary and second sorts, which is why there are only
  * these two levels.
