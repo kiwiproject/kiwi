@@ -33,6 +33,7 @@ public class KiwiMongoConverters {
      *
      * @param template   the MongoTemplate
      * @param converters the converters to add to MongoTemplate's existing converter
+     * @return the template instance, for method chaining
      * @throws IllegalArgumentException if the given MongoTemplate's {@link Converter} is <em>not</em>
      *                                  a {@link MappingMongoConverter}
      * @see org.springframework.data.mongodb.core.convert.AbstractMongoConverter#setCustomConversions(CustomConversions)

@@ -116,6 +116,17 @@ public class SftpConfig {
     /**
      * All-args constructor.
      *
+     * @param port                      the remote port
+     * @param host                      the remote host
+     * @param user                      the SFTP username
+     * @param password                  the SFTP password
+     * @param privateKeyFilePath        path to private key file
+     * @param preferredAuthentications  comma-separated list of authentications to attempt
+     * @param remoteBasePath            root directory of the remote SFTP location
+     * @param errorPath                 local directory to write out any errors if SFTP fails
+     * @param knownHostsFile            path to the known hosts file
+     * @param disableStrictHostChecking if true, we will set {@code StrictHostKeyChecking=no}
+     * @param timeout                   the SFTP connection timeout
      * @implNote This is intentionally not using Lombok because using {@link lombok.AllArgsConstructor} together
      * with @{@link Builder} results in an all-args constructor that does not respect {@link lombok.Builder.Default}.
      * As a result we need to handle the defaults ourselves. This is intended to be used during deserialization
