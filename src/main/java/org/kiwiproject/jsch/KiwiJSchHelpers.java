@@ -25,6 +25,7 @@ public class KiwiJSchHelpers {
      *
      * @param host       the host name or IP to match
      * @param knownHosts the known hosts
+     * @return an Optional containing the detected key exchange type, or an empty Optional
      * @implNote Finds the <em>first</em> matching known host entry
      */
     public static Optional<String> detectKeyExchangeTypeForHost(String host, HostKeyRepository knownHosts) {
