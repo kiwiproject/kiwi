@@ -40,7 +40,8 @@ public class PagingRequest implements PagingParams {
     /**
      * The page number. Default is zero.
      * <p>
-     * Note this does not preclude using either zero or one-based page numbering.
+     * Note this does not preclude using either zero or one-based page numbering, but other classes may require
+     * one or the other page numbering scheme.
      */
     @QueryParam("page")
     @DefaultValue("0")
