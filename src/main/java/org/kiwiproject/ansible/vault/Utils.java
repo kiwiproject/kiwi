@@ -11,9 +11,6 @@ import java.nio.charset.StandardCharsets;
 @UtilityClass
 class Utils {
 
-    // TODO This came as part of the ansible.vault package (see #272). Consider:
-    //  - moving readProcessXxx methods into KiwiIO
-
     static String readProcessOutput(Process process) {
         return readInputStreamAsString(process.getInputStream());
     }
