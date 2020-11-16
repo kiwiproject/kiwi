@@ -15,6 +15,7 @@ import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.NullAndEmptySource;
+import org.junit.jupiter.params.provider.ValueSource;
 
 import javax.validation.Validator;
 import java.util.HashMap;
@@ -45,6 +46,13 @@ class RequiredValidatorTest {
     class ValidatingStrings {
 
         @ParameterizedTest
+        @ValueSource(strings = {"a", "aa", "a string"})
+        void shouldValidateNonBlankStrings(String value) {
+            var obj = new RequiredDefaults(value);
+            assertNoPropertyViolations(validator, obj, "value");
+        }
+
+        @ParameterizedTest
         @NullAndEmptySource
         void shouldRequireNonBlankOrEmptyString(String value) {
             var obj = new RequiredDefaults(value);
@@ -66,6 +74,19 @@ class RequiredValidatorTest {
 
     @Nested
     class ValidatingCollections {
+
+        @Test
+        void shouldValidateNonEmptyCollections() {
+            var obj = HasCollectionsAndMaps.builder()
+                    .requiredList(List.of("a", "b", "c"))
+                    .requiredOrEmptyList(List.of(1, 2, 3))
+                    .requiredSet(Set.of("one", "two", "three"))
+                    .requiredOrEmptySet(Set.of(4, 5, 6))
+                    .requiredMap(Map.of("a", 1, "b", 2, "c", 3))
+                    .requiredOrEmptyMap(Map.of("d", 4))
+                    .build();
+            assertNoViolations(validator, obj);
+        }
 
         @ParameterizedTest
         @NullAndEmptySource
@@ -130,9 +151,16 @@ class RequiredValidatorTest {
         class WhenHasNoIsEmptyMethod {
 
             @Test
-            void shouldBeValid() {
+            void shouldBeValid_WhenGivenNonNullObject() {
                 var person = new Person("Alice", new ContactInfo());
                 assertNoViolations(validator, person);
+            }
+
+            @Test
+            void shouldNotBeValid_WhenGivenNullObject() {
+                var person = new Person();
+                assertOnePropertyViolation(validator, person, "name");
+                assertOnePropertyViolation(validator, person, "contactInfo");
             }
         }
 
