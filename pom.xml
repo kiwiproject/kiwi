@@ -82,6 +82,11 @@
         <jdbi3.version>3.17.0</jdbi3.version>
         <jersey-test-framework-core.version>2.32</jersey-test-framework-core.version>
         <liquibase.version>3.8.9</liquibase.version>
+
+        <!-- Sonar properties -->
+        <sonar.projectKey>kiwiproject_kiwi</sonar.projectKey>
+        <sonar.organization>kiwiproject</sonar.organization>
+        <sonar.host.url>https://sonarcloud.io</sonar.host.url>
     </properties>
 
     <dependencies>
