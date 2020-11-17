@@ -12,6 +12,10 @@ import org.springframework.data.domain.Sort;
  * Note also that if there is only one sort, only the primary sort and direction should be set. If the primary
  * sort is not defined, but the secondary sort is defined, then the behavior is up to the implementation. e.g. it
  * may choose to ignore the secondary sort entirely, or it might treat the secondary sort as the primary one.
+ * <p>
+ * A page number and page size limit should always be specified. Sorting parameters are optional, but as mentioned
+ * above, the primary sort property and direction should be specified when only one level of sorting is required.
+ * Both primary and secondary sort can be specified when two levels are required.
  *
  * @implNote Our specific needs have never required more than primary and second sorts, which is why there are only
  * these two levels.
