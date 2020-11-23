@@ -10,6 +10,7 @@ import static org.kiwiproject.base.KiwiStrings.TAB;
 import static org.kiwiproject.base.KiwiStrings.blankToNull;
 import static org.kiwiproject.base.KiwiStrings.f;
 import static org.kiwiproject.base.KiwiStrings.format;
+import static org.kiwiproject.base.KiwiStrings.nullSafeSplitOnCommas;
 import static org.kiwiproject.base.KiwiStrings.splitOnCommas;
 import static org.kiwiproject.base.KiwiStrings.splitToList;
 import static org.kiwiproject.base.KiwiStrings.splitWithTrimAndOmitEmpty;
@@ -192,6 +193,27 @@ class KiwiStringsTest {
             }
         }
 
+        @Nested
+        class NullSafeOnCommas {
+
+            @Test
+            void shouldReturnEmptyList_WithNullArgument() {
+                assertThat(nullSafeSplitOnCommas(null)).isEmpty();
+            }
+
+            @Test
+            void shouldReturnEmptyList_WithEmptyArgument() {
+                var strings = newArrayList(nullSafeSplitOnCommas(""));
+                assertThat(strings).isEmpty();
+            }
+
+            @Test
+            void shouldReturnEmptyList_WithBlankArgument() {
+                var strings = newArrayList(nullSafeSplitOnCommas("  "));
+                assertThat(strings).isEmpty();
+            }
+        }
+
         private List<String> expectedListForSplits() {
             return newArrayList("this", "is", "a", "string");
         }
@@ -291,7 +313,7 @@ class KiwiStringsTest {
         }
 
         @ParameterizedTest
-        @ValueSource(strings = { "a ", " a", " a "})
+        @ValueSource(strings = {"a ", " a", " a "})
         void shouldReturnValues_WithNonWhitespaceCharacters(String argument) {
             var result = blankToNull(argument);
             assertThat(result).isEqualTo(argument);

@@ -183,6 +183,22 @@ public final class KiwiStrings {
     }
 
     /**
+     * Convenience method that splits the given comma-delimited {@link CharSequence}, omitting any empty strings and
+     * trimming leading and trailing whitespace. Returns an <i>immutable</i> list.
+     *
+     * @param sequence the character sequence to be split, may be null
+     * @return an immutable list containing the split strings, or an empty list if {@code sequence} is blank
+     * @see #splitWithTrimAndOmitEmpty(CharSequence, char)
+     */
+    public static List<String> nullSafeSplitOnCommas(CharSequence sequence) {
+        if (isBlank(sequence)) {
+            return List.of();
+        }
+
+        return splitOnCommas(sequence);
+    }
+
+    /**
      * Returns a null if the input string is all whitespace characters or null.
      *
      * @param sequence a possibly null, blank, or zero length String.
