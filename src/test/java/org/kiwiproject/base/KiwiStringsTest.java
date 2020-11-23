@@ -191,6 +191,12 @@ class KiwiStringsTest {
                 var strings = newArrayList(splitOnCommas("  "));
                 assertThat(strings).isEmpty();
             }
+
+            @Test
+            void shouldSplit() {
+                var strings = splitOnCommas(" this, is, , , a, string ");
+                assertThat(strings).containsExactlyElementsOf(expectedListForSplits());
+            }
         }
 
         @Nested
@@ -203,14 +209,20 @@ class KiwiStringsTest {
 
             @Test
             void shouldReturnEmptyList_WithEmptyArgument() {
-                var strings = newArrayList(nullSafeSplitOnCommas(""));
+                var strings = nullSafeSplitOnCommas("");
                 assertThat(strings).isEmpty();
             }
 
             @Test
             void shouldReturnEmptyList_WithBlankArgument() {
-                var strings = newArrayList(nullSafeSplitOnCommas("  "));
+                var strings = nullSafeSplitOnCommas("  ");
                 assertThat(strings).isEmpty();
+            }
+
+            @Test
+            void shouldSplit() {
+                var strings = nullSafeSplitOnCommas(" this, is, , , a, string ");
+                assertThat(strings).containsExactlyElementsOf(expectedListForSplits());
             }
         }
 
