@@ -10,6 +10,7 @@ import static org.kiwiproject.base.KiwiStrings.TAB;
 import static org.kiwiproject.base.KiwiStrings.blankToNull;
 import static org.kiwiproject.base.KiwiStrings.f;
 import static org.kiwiproject.base.KiwiStrings.format;
+import static org.kiwiproject.base.KiwiStrings.nullSafeSplitOnCommas;
 import static org.kiwiproject.base.KiwiStrings.splitOnCommas;
 import static org.kiwiproject.base.KiwiStrings.splitToList;
 import static org.kiwiproject.base.KiwiStrings.splitWithTrimAndOmitEmpty;
@@ -190,6 +191,39 @@ class KiwiStringsTest {
                 var strings = newArrayList(splitOnCommas("  "));
                 assertThat(strings).isEmpty();
             }
+
+            @Test
+            void shouldSplit() {
+                var strings = splitOnCommas(" this, is, , , a, string ");
+                assertThat(strings).containsExactlyElementsOf(expectedListForSplits());
+            }
+        }
+
+        @Nested
+        class NullSafeOnCommas {
+
+            @Test
+            void shouldReturnEmptyList_WithNullArgument() {
+                assertThat(nullSafeSplitOnCommas(null)).isEmpty();
+            }
+
+            @Test
+            void shouldReturnEmptyList_WithEmptyArgument() {
+                var strings = nullSafeSplitOnCommas("");
+                assertThat(strings).isEmpty();
+            }
+
+            @Test
+            void shouldReturnEmptyList_WithBlankArgument() {
+                var strings = nullSafeSplitOnCommas("  ");
+                assertThat(strings).isEmpty();
+            }
+
+            @Test
+            void shouldSplit() {
+                var strings = nullSafeSplitOnCommas(" this, is, , , a, string ");
+                assertThat(strings).containsExactlyElementsOf(expectedListForSplits());
+            }
         }
 
         private List<String> expectedListForSplits() {
@@ -291,7 +325,7 @@ class KiwiStringsTest {
         }
 
         @ParameterizedTest
-        @ValueSource(strings = { "a ", " a", " a "})
+        @ValueSource(strings = {"a ", " a", " a "})
         void shouldReturnValues_WithNonWhitespaceCharacters(String argument) {
             var result = blankToNull(argument);
             assertThat(result).isEqualTo(argument);
