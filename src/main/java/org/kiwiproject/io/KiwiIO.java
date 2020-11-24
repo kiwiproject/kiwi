@@ -12,10 +12,12 @@ import javax.xml.stream.XMLStreamReader;
 import javax.xml.stream.XMLStreamWriter;
 import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.Closeable;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.UncheckedIOException;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
@@ -321,6 +323,81 @@ public class KiwiIO {
      */
     public static Stream<String> streamLinesFrom(InputStream stream, Charset charset) {
         return new BufferedReader(new InputStreamReader(stream, charset)).lines();
+    }
+
+    /**
+     * Read the input stream of the give {@link Process} as a String using {@code UTF-8} as the String encoding.
+     *
+     * @param process the process
+     * @return the process' input stream as a UTF-8 encoded string
+     * @see Process#getInputStream()
+     */
+    public static String readInputStreamOf(Process process) {
+        return readInputStreamOf(process, StandardCharsets.UTF_8);
+    }
+
+    /**
+     * Read the input stream of the give {@link Process} as a String using the the specified {@link Charset} for the
+     * string encoding.
+     *
+     * @param process the process
+     * @param charset the charset
+     * @return the process' input stream as a string, encoded using the specified charset
+     * @see Process#getInputStream()
+     */
+    public static String readInputStreamOf(Process process, Charset charset) {
+        return readInputStreamAsString(process.getInputStream(), charset);
+    }
+
+    /**
+     * Read the error stream of the give {@link Process} as a String using {@code UTF-8} as the string encoding.
+     *
+     * @param process the process
+     * @return the process' error stream as a UTF-8 encoded string
+     * @see Process#getErrorStream()
+     */
+    public static String readErrorStreamOf(Process process) {
+        return readErrorStreamOf(process, StandardCharsets.UTF_8);
+    }
+
+    /**
+     * Read the error stream of the give {@link Process} as a String using the the specified {@link Charset} for the
+     * string encoding.
+     *
+     * @param process the process
+     * @param charset the charset
+     * @return the process' error stream as a string, encoded using the specified charset
+     * @see Process#getErrorStream()
+     */
+    public static String readErrorStreamOf(Process process, Charset charset) {
+        return readInputStreamAsString(process.getErrorStream(), charset);
+    }
+
+    /**
+     * Convert the given {@link InputStream} to a {@code UTF-8} encoded String.
+     *
+     * @param inputStream the input stream
+     * @return the input stream as a UTF-8 encoded string
+     */
+    public static String readInputStreamAsString(InputStream inputStream) {
+        return readInputStreamAsString(inputStream, StandardCharsets.UTF_8);
+    }
+
+    /**
+     * Convert the given {@link InputStream} to a String using the given {@link Charset} for the string encoding.
+     *
+     * @param inputStream the input stream
+     * @param charset     the charset
+     * @return the input stream as a string, encoded using the specified charset
+     */
+    public static String readInputStreamAsString(InputStream inputStream, Charset charset) {
+        try {
+            var outputStream = new ByteArrayOutputStream();
+            inputStream.transferTo(outputStream);
+            return outputStream.toString(charset);
+        } catch (IOException e) {
+            throw new UncheckedIOException("Error converting InputStream to String using Charset " + charset, e);
+        }
     }
 
 }

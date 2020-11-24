@@ -2,8 +2,6 @@ package org.kiwiproject.ansible.vault;
 
 import static com.google.common.base.Preconditions.checkArgument;
 import static org.apache.commons.lang3.StringUtils.isBlank;
-import static org.kiwiproject.ansible.vault.Utils.readProcessErrorOutput;
-import static org.kiwiproject.ansible.vault.Utils.readProcessOutput;
 import static org.kiwiproject.base.KiwiPreconditions.checkArgumentNotBlank;
 import static org.kiwiproject.base.KiwiPreconditions.checkArgumentNotNull;
 import static org.kiwiproject.base.KiwiStrings.f;
@@ -13,6 +11,7 @@ import static org.kiwiproject.logging.LazyLogParameterSupplier.lazy;
 import com.google.common.annotations.VisibleForTesting;
 import lombok.extern.slf4j.Slf4j;
 import org.kiwiproject.base.process.ProcessHelper;
+import org.kiwiproject.io.KiwiIO;
 
 import java.io.IOException;
 import java.io.UncheckedIOException;
@@ -331,7 +330,7 @@ public class VaultEncryptionHelper {
 
     private String executeVaultCommandReturningStdout(OsCommand osCommand) {
         var vaultProcess = executeVaultCommand(osCommand);
-        return readProcessOutput(vaultProcess);
+        return KiwiIO.readInputStreamOf(vaultProcess);
     }
 
     private Process executeVaultCommand(OsCommand osCommand) {
@@ -343,7 +342,7 @@ public class VaultEncryptionHelper {
         LOG.debug("ansible-vault exit code: {}", exitCode);
 
         if (exitCode != 0) {
-            var rawErrorOutput = readProcessErrorOutput(vaultProcess);
+            var rawErrorOutput = KiwiIO.readErrorStreamOf(vaultProcess);
             var errorOutput = isBlank(rawErrorOutput) ? "[no stderr]" : rawErrorOutput.trim();
             LOG.debug("Error output: [{}]", errorOutput);
 
