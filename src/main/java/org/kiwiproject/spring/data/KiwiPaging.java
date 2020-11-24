@@ -1,12 +1,12 @@
 package org.kiwiproject.spring.data;
 
-import static com.google.common.base.Preconditions.checkArgument;
 import static com.google.common.collect.Lists.newArrayList;
 import static com.google.common.collect.Lists.partition;
 import static java.util.Objects.nonNull;
 import static java.util.stream.Collectors.toList;
 import static org.kiwiproject.base.KiwiPreconditions.checkArgumentNotNull;
 import static org.kiwiproject.base.KiwiPreconditions.checkEvenItemCount;
+import static org.kiwiproject.base.KiwiPreconditions.checkPositiveOrZero;
 import static org.kiwiproject.collect.KiwiArrays.isNullOrEmpty;
 import static org.kiwiproject.collect.KiwiLists.first;
 import static org.kiwiproject.collect.KiwiLists.isNullOrEmpty;
@@ -62,8 +62,7 @@ public class KiwiPaging {
      * even {@code { null, null, null, null}}
      */
     public static Pageable createPageable(int pageNumber, int sizePerPage, Object... sortDirectionAndFieldNamePairs) {
-        // TODO Use KiwiPreconditions checkPositive once get version having message
-        checkArgument(pageNumber >= 0, "pageNumber cannot be negative");
+        checkPositiveOrZero(pageNumber, "pageNumber cannot be negative");
         checkPageSize(sizePerPage);
 
         var sort = constructSortChainFromPairs(sortDirectionAndFieldNamePairs);

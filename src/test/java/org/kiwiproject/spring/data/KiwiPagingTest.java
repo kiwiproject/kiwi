@@ -141,7 +141,7 @@ class KiwiPagingTest {
         @ValueSource(ints = {-10, -1})
         void shouldNotAllowNegativePageNumbers(int pageNumber) {
             assertThatThrownBy(() -> KiwiPaging.createPageable(pageNumber, 0))
-                    .isExactlyInstanceOf(IllegalArgumentException.class)
+                    .isExactlyInstanceOf(IllegalStateException.class)
                     .hasMessage("pageNumber cannot be negative");
         }
 
