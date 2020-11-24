@@ -90,9 +90,7 @@
         <sonar.projectKey>kiwiproject_kiwi</sonar.projectKey>
         <sonar.organization>kiwiproject</sonar.organization>
         <sonar.host.url>https://sonarcloud.io</sonar.host.url>
-        <sonar.coverage.exclusions>
-            org/kiwiproject/spring/data/PagingQuery.java
-        </sonar.coverage.exclusions>
+        <sonar.coverage.exclusions>org/kiwiproject/spring/data/PagingQuery.java</sonar.coverage.exclusions>
     </properties>
 
     <dependencies>
