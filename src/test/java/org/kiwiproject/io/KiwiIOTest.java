@@ -3,8 +3,11 @@ package org.kiwiproject.io;
 import static java.util.stream.Collectors.joining;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatCode;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -27,6 +30,7 @@ import java.io.OutputStream;
 import java.io.Reader;
 import java.io.StringReader;
 import java.io.StringWriter;
+import java.io.UncheckedIOException;
 import java.io.Writer;
 import java.net.ServerSocket;
 import java.net.Socket;
@@ -38,225 +42,229 @@ import java.util.Arrays;
 @DisplayName("KiwiIO")
 class KiwiIOTest {
 
-    @SuppressWarnings("ConstantConditions")
-    @Test
-    void testCloseQuietly_NullReader() {
-        Reader reader = null;
-        assertThatCode(() -> KiwiIO.closeQuietly(reader)).doesNotThrowAnyException();
-    }
+    @Nested
+    class CloseQuietly {
 
-    @Test
-    void testCloseQuietly_Reader() {
-        Reader reader = new StringReader("the quick brown fox jumped over the lazy dod");
-        assertThatCode(() -> KiwiIO.closeQuietly(reader)).doesNotThrowAnyException();
-    }
+        @SuppressWarnings("ConstantConditions")
+        @Test
+        void shouldClose_NullReader() {
+            Reader reader = null;
+            assertThatCode(() -> KiwiIO.closeQuietly(reader)).doesNotThrowAnyException();
+        }
 
-    @Test
-    void testCloseQuietly_Reader_WhenThrowsOnClose() throws IOException {
-        Reader reader = mock(Reader.class);
-        doThrow(new IOException("I cannot read")).when(reader).close();
-        assertThatCode(() -> KiwiIO.closeQuietly(reader)).doesNotThrowAnyException();
-    }
+        @Test
+        void shouldClose_Reader() {
+            Reader reader = new StringReader("the quick brown fox jumped over the lazy dod");
+            assertThatCode(() -> KiwiIO.closeQuietly(reader)).doesNotThrowAnyException();
+        }
 
-    @SuppressWarnings("ConstantConditions")
-    @Test
-    void testCloseQuietly_NullWriter() {
-        Writer writer = null;
-        assertThatCode(() -> KiwiIO.closeQuietly(writer)).doesNotThrowAnyException();
-    }
+        @Test
+        void shouldClose_Reader_WhenThrowsOnClose() throws IOException {
+            var reader = mock(Reader.class);
+            doThrow(new IOException("I cannot read")).when(reader).close();
+            assertThatCode(() -> KiwiIO.closeQuietly(reader)).doesNotThrowAnyException();
+        }
 
-    @Test
-    void testCloseQuietly_Writer() {
-        Writer writer = new StringWriter();
-        assertThatCode(() -> KiwiIO.closeQuietly(writer)).doesNotThrowAnyException();
-    }
+        @SuppressWarnings("ConstantConditions")
+        @Test
+        void shouldClose_NullWriter() {
+            Writer writer = null;
+            assertThatCode(() -> KiwiIO.closeQuietly(writer)).doesNotThrowAnyException();
+        }
 
-    @Test
-    void testCloseQuietly_Writer_WhenThrowsOnClose() throws IOException {
-        Writer writer = mock(Writer.class);
-        doThrow(new IOException("I cannot write")).when(writer).close();
-        assertThatCode(() -> KiwiIO.closeQuietly(writer)).doesNotThrowAnyException();
-    }
+        @Test
+        void shouldClose_Writer() {
+            Writer writer = new StringWriter();
+            assertThatCode(() -> KiwiIO.closeQuietly(writer)).doesNotThrowAnyException();
+        }
 
-    @SuppressWarnings("ConstantConditions")
-    @Test
-    void testCloseQuietly_NullInputStream() {
-        InputStream stream = null;
-        assertThatCode(() -> KiwiIO.closeQuietly(stream)).doesNotThrowAnyException();
-    }
+        @Test
+        void shouldClose_Writer_WhenThrowsOnClose() throws IOException {
+            var writer = mock(Writer.class);
+            doThrow(new IOException("I cannot write")).when(writer).close();
+            assertThatCode(() -> KiwiIO.closeQuietly(writer)).doesNotThrowAnyException();
+        }
 
-    @Test
-    void testCloseQuietly_InputStream() {
-        InputStream stream = new ByteArrayInputStream(new byte[]{0, 1, 2});
-        assertThatCode(() -> KiwiIO.closeQuietly(stream)).doesNotThrowAnyException();
-    }
+        @SuppressWarnings("ConstantConditions")
+        @Test
+        void shouldClose_NullInputStream() {
+            InputStream stream = null;
+            assertThatCode(() -> KiwiIO.closeQuietly(stream)).doesNotThrowAnyException();
+        }
 
-    @Test
-    void testCloseQuietly_InputStream_WhenThrowsOnClose() throws IOException {
-        InputStream stream = mock(InputStream.class);
-        doThrow(new IOException("I cannot read")).when(stream).close();
-        assertThatCode(() -> KiwiIO.closeQuietly(stream)).doesNotThrowAnyException();
-    }
+        @Test
+        void shouldClose_InputStream() {
+            InputStream stream = new ByteArrayInputStream(new byte[]{0, 1, 2});
+            assertThatCode(() -> KiwiIO.closeQuietly(stream)).doesNotThrowAnyException();
+        }
 
-    @SuppressWarnings("ConstantConditions")
-    @Test
-    void testCloseQuietly_NullOutputStream() {
-        OutputStream stream = null;
-        assertThatCode(() -> KiwiIO.closeQuietly(stream)).doesNotThrowAnyException();
-    }
+        @Test
+        void shouldClose_InputStream_WhenThrowsOnClose() throws IOException {
+            var stream = mock(InputStream.class);
+            doThrow(new IOException("I cannot read")).when(stream).close();
+            assertThatCode(() -> KiwiIO.closeQuietly(stream)).doesNotThrowAnyException();
+        }
 
-    @Test
-    void testCloseQuietly_OutputStream() {
-        OutputStream stream = new ByteArrayOutputStream();
-        assertThatCode(() -> KiwiIO.closeQuietly(stream)).doesNotThrowAnyException();
-    }
+        @SuppressWarnings("ConstantConditions")
+        @Test
+        void shouldClose_NullOutputStream() {
+            OutputStream stream = null;
+            assertThatCode(() -> KiwiIO.closeQuietly(stream)).doesNotThrowAnyException();
+        }
 
-    @Test
-    void testCloseQuietly_OutputStream_WhenThrowsOnClose() throws IOException {
-        OutputStream stream = mock(OutputStream.class);
-        doThrow(new IOException("I cannot stream")).when(stream).close();
-        assertThatCode(() -> KiwiIO.closeQuietly(stream)).doesNotThrowAnyException();
-    }
+        @Test
+        void shouldClose_OutputStream() {
+            OutputStream stream = new ByteArrayOutputStream();
+            assertThatCode(() -> KiwiIO.closeQuietly(stream)).doesNotThrowAnyException();
+        }
 
-    @SuppressWarnings("ConstantConditions")
-    @Test
-    void testCloseQuietly_NullSocket() {
-        Socket socket = null;
-        assertThatCode(() -> KiwiIO.closeQuietly(socket)).doesNotThrowAnyException();
-    }
+        @Test
+        void shouldClose_OutputStream_WhenThrowsOnClose() throws IOException {
+            var stream = mock(OutputStream.class);
+            doThrow(new IOException("I cannot stream")).when(stream).close();
+            assertThatCode(() -> KiwiIO.closeQuietly(stream)).doesNotThrowAnyException();
+        }
 
-    @Test
-    void testCloseQuietly_Socket() {
-        Socket socket = new Socket();
-        assertThatCode(() -> KiwiIO.closeQuietly(socket)).doesNotThrowAnyException();
-    }
+        @SuppressWarnings("ConstantConditions")
+        @Test
+        void shouldClose_NullSocket() {
+            Socket socket = null;
+            assertThatCode(() -> KiwiIO.closeQuietly(socket)).doesNotThrowAnyException();
+        }
 
-    @Test
-    void testCloseQuietly_Socket_WhenThrowsOnClose() throws IOException {
-        Socket socket = mock(Socket.class);
-        doThrow(new IOException("I cannot read")).when(socket).close();
-        assertThatCode(() -> KiwiIO.closeQuietly(socket)).doesNotThrowAnyException();
-    }
+        @Test
+        void shouldClose_Socket() {
+            var socket = new Socket();
+            assertThatCode(() -> KiwiIO.closeQuietly(socket)).doesNotThrowAnyException();
+        }
 
-    @SuppressWarnings("ConstantConditions")
-    @Test
-    void testCloseQuietly_NullSelector() {
-        Selector selector = null;
-        assertThatCode(() -> KiwiIO.closeQuietly(selector)).doesNotThrowAnyException();
-    }
+        @Test
+        void shouldClose_Socket_WhenThrowsOnClose() throws IOException {
+            var socket = mock(Socket.class);
+            doThrow(new IOException("I cannot read")).when(socket).close();
+            assertThatCode(() -> KiwiIO.closeQuietly(socket)).doesNotThrowAnyException();
+        }
 
-    @Test
-    void testCloseQuietly_Selector() throws IOException {
-        Selector selector = Selector.open();
-        assertThatCode(() -> KiwiIO.closeQuietly(selector)).doesNotThrowAnyException();
-    }
+        @SuppressWarnings("ConstantConditions")
+        @Test
+        void shouldClose_NullSelector() {
+            Selector selector = null;
+            assertThatCode(() -> KiwiIO.closeQuietly(selector)).doesNotThrowAnyException();
+        }
 
-    @Test
-    void testCloseQuietly_Selector_WhenThrowsOnClose() throws IOException {
-        Selector socket = mock(Selector.class);
-        doThrow(new IOException("I cannot select")).when(socket).close();
-        assertThatCode(() -> KiwiIO.closeQuietly(socket)).doesNotThrowAnyException();
-    }
+        @Test
+        void shouldClose_Selector() throws IOException {
+            var selector = Selector.open();
+            assertThatCode(() -> KiwiIO.closeQuietly(selector)).doesNotThrowAnyException();
+        }
 
-    @SuppressWarnings("ConstantConditions")
-    @Test
-    void testCloseQuietly_NullServerSocket() {
-        ServerSocket socket = null;
-        assertThatCode(() -> KiwiIO.closeQuietly(socket)).doesNotThrowAnyException();
-    }
+        @Test
+        void shouldClose_Selector_WhenThrowsOnClose() throws IOException {
+            var socket = mock(Selector.class);
+            doThrow(new IOException("I cannot select")).when(socket).close();
+            assertThatCode(() -> KiwiIO.closeQuietly(socket)).doesNotThrowAnyException();
+        }
 
-    @Test
-    void testCloseQuietly_ServerSocket() throws IOException {
-        ServerSocket socket = new ServerSocket();
-        assertThatCode(() -> KiwiIO.closeQuietly(socket)).doesNotThrowAnyException();
-    }
+        @SuppressWarnings("ConstantConditions")
+        @Test
+        void shouldClose_NullServerSocket() {
+            ServerSocket socket = null;
+            assertThatCode(() -> KiwiIO.closeQuietly(socket)).doesNotThrowAnyException();
+        }
 
-    @Test
-    void testCloseQuietly_ServerSocket_WhenThrowsOnClose() throws IOException {
-        ServerSocket socket = mock(ServerSocket.class);
-        doThrow(new IOException("I cannot read")).when(socket).close();
-        assertThatCode(() -> KiwiIO.closeQuietly(socket)).doesNotThrowAnyException();
-    }
+        @Test
+        void shouldClose_ServerSocket() throws IOException {
+            var serverSocket = new ServerSocket();
+            assertThatCode(() -> KiwiIO.closeQuietly(serverSocket)).doesNotThrowAnyException();
+        }
 
-    @SuppressWarnings("ConstantConditions")
-    @Test
-    void testCloseQuietly_Closeables_Null() {
-        Closeable[] closeables = null;
-        assertThatCode(() -> KiwiIO.closeQuietly(closeables)).doesNotThrowAnyException();
-    }
+        @Test
+        void shouldClose_ServerSocket_WhenThrowsOnClose() throws IOException {
+            var serverSocket = mock(ServerSocket.class);
+            doThrow(new IOException("I cannot read")).when(serverSocket).close();
+            assertThatCode(() -> KiwiIO.closeQuietly(serverSocket)).doesNotThrowAnyException();
+        }
 
-    @Test
-    void testCloseQuietly_Closeables() {
-        Reader reader = new StringReader("the quick brown fox jumped over the lazy dog");
-        Writer writer = new StringWriter();
-        InputStream inputStream = new ByteArrayInputStream(new byte[]{0, 1, 2});
-        OutputStream outputStream = new ByteArrayOutputStream();
-        assertThatCode(() -> KiwiIO.closeQuietly(reader, writer, inputStream, outputStream))
-                .doesNotThrowAnyException();
-    }
+        @SuppressWarnings("ConstantConditions")
+        @Test
+        void shouldClose_Closeables_Null() {
+            Closeable[] closeables = null;
+            assertThatCode(() -> KiwiIO.closeQuietly(closeables)).doesNotThrowAnyException();
+        }
 
-    @Test
-    void testCloseQuietly_Closeables_WithSomeNullsSprinkledHereAndThere() {
-        Reader reader = new StringReader("the quick brown fox jumped over the lazy dog");
-        Writer writer = new StringWriter();
-        InputStream inputStream = new ByteArrayInputStream(new byte[]{0, 1, 2});
-        OutputStream outputStream = new ByteArrayOutputStream();
-        assertThatCode(() -> KiwiIO.closeQuietly(reader, null, writer, null, null, inputStream, null, outputStream))
-                .doesNotThrowAnyException();
-    }
+        @Test
+        void shouldClose_Closeables() {
+            Reader reader = new StringReader("the quick brown fox jumped over the lazy dog");
+            Writer writer = new StringWriter();
+            InputStream inputStream = new ByteArrayInputStream(new byte[]{0, 1, 2});
+            OutputStream outputStream = new ByteArrayOutputStream();
+            assertThatCode(() -> KiwiIO.closeQuietly(reader, writer, inputStream, outputStream))
+                    .doesNotThrowAnyException();
+        }
 
-    @Test
-    void testCloseQuietly_Closeables_WhenThrowOnClose() throws IOException {
-        Socket socket = mock(Socket.class);
-        doThrow(new IOException("I cannot read")).when(socket).close();
+        @Test
+        void shouldClose_Closeables_WithSomeNullsSprinkledHereAndThere() {
+            Reader reader = new StringReader("the quick brown fox jumped over the lazy dog");
+            Writer writer = new StringWriter();
+            InputStream inputStream = new ByteArrayInputStream(new byte[]{0, 1, 2});
+            OutputStream outputStream = new ByteArrayOutputStream();
+            assertThatCode(() -> KiwiIO.closeQuietly(reader, null, writer, null, null, inputStream, null, outputStream))
+                    .doesNotThrowAnyException();
+        }
 
-        Selector selector = mock(Selector.class);
-        doThrow(new IOException("I cannot read")).when(selector).close();
+        @Test
+        void shouldClose_Closeables_WhenThrowOnClose() throws IOException {
+            var socket = mock(Socket.class);
+            doThrow(new IOException("I cannot read")).when(socket).close();
 
-        ServerSocket serverSocket = mock(ServerSocket.class);
-        doThrow(new IOException("I cannot read")).when(serverSocket).close();
+            var selector = mock(Selector.class);
+            doThrow(new IOException("I cannot read")).when(selector).close();
 
-        assertThatCode(() -> KiwiIO.closeQuietly(socket, selector, serverSocket)).doesNotThrowAnyException();
-    }
+            var serverSocket = mock(ServerSocket.class);
+            doThrow(new IOException("I cannot read")).when(serverSocket).close();
 
-    @SuppressWarnings("ConstantConditions")
-    @Test
-    void testCloseQuietly_NullXMLStreamReader() {
-        XMLStreamReader xmlStreamReader = null;
-        assertThatCode(() -> KiwiIO.closeQuietly(xmlStreamReader)).doesNotThrowAnyException();
-    }
+            assertThatCode(() -> KiwiIO.closeQuietly(socket, selector, serverSocket)).doesNotThrowAnyException();
+        }
 
-    @Test
-    void testCloseQuietly_XMLStreamReader() throws XMLStreamException {
-        XMLStreamReader xmlStreamReader = XMLInputFactory.newInstance().createXMLStreamReader(new StringReader("<xml />"));
-        assertThatCode(() -> KiwiIO.closeQuietly(xmlStreamReader)).doesNotThrowAnyException();
-    }
+        @SuppressWarnings("ConstantConditions")
+        @Test
+        void shouldClose_NullXMLStreamReader() {
+            XMLStreamReader xmlStreamReader = null;
+            assertThatCode(() -> KiwiIO.closeQuietly(xmlStreamReader)).doesNotThrowAnyException();
+        }
 
-    @Test
-    void testCloseQuietly_XMLStreamReader_WhenThrowsOnClose() throws XMLStreamException {
-        XMLStreamReader xmlStreamReader = mock(XMLStreamReader.class);
-        doThrow(new XMLStreamException("I cannot stream XML")).when(xmlStreamReader).close();
-        assertThatCode(() -> KiwiIO.closeQuietly(xmlStreamReader)).doesNotThrowAnyException();
-    }
+        @Test
+        void shouldClose_XMLStreamReader() throws XMLStreamException {
+            var xmlStreamReader = XMLInputFactory.newInstance().createXMLStreamReader(new StringReader("<xml />"));
+            assertThatCode(() -> KiwiIO.closeQuietly(xmlStreamReader)).doesNotThrowAnyException();
+        }
 
-    @SuppressWarnings("ConstantConditions")
-    @Test
-    void testCloseQuietly_NullXMLStreamWriter() {
-        XMLStreamWriter xmlStreamWriter = null;
-        assertThatCode(() -> KiwiIO.closeQuietly(xmlStreamWriter)).doesNotThrowAnyException();
-    }
+        @Test
+        void shouldClose_XMLStreamReader_WhenThrowsOnClose() throws XMLStreamException {
+            var xmlStreamReader = mock(XMLStreamReader.class);
+            doThrow(new XMLStreamException("I cannot stream XML")).when(xmlStreamReader).close();
+            assertThatCode(() -> KiwiIO.closeQuietly(xmlStreamReader)).doesNotThrowAnyException();
+        }
 
-    @Test
-    void testCloseQuietly_XMLStreamWriter() throws XMLStreamException {
-        XMLStreamWriter xmlStreamWriter = XMLOutputFactory.newInstance().createXMLStreamWriter(new StringWriter());
-        assertThatCode(() -> KiwiIO.closeQuietly(xmlStreamWriter)).doesNotThrowAnyException();
-    }
+        @SuppressWarnings("ConstantConditions")
+        @Test
+        void shouldClose_NullXMLStreamWriter() {
+            XMLStreamWriter xmlStreamWriter = null;
+            assertThatCode(() -> KiwiIO.closeQuietly(xmlStreamWriter)).doesNotThrowAnyException();
+        }
 
-    @Test
-    void testCloseQuietly_XMLStreamWriter_WhenThrowsOnClose() throws XMLStreamException {
-        XMLStreamWriter xmlStreamWriter = mock(XMLStreamWriter.class);
-        doThrow(new XMLStreamException("I cannot stream XML")).when(xmlStreamWriter).close();
-        assertThatCode(() -> KiwiIO.closeQuietly(xmlStreamWriter)).doesNotThrowAnyException();
+        @Test
+        void shouldClose_XMLStreamWriter() throws XMLStreamException {
+            var xmlStreamWriter = XMLOutputFactory.newInstance().createXMLStreamWriter(new StringWriter());
+            assertThatCode(() -> KiwiIO.closeQuietly(xmlStreamWriter)).doesNotThrowAnyException();
+        }
+
+        @Test
+        void shouldClose_XMLStreamWriter_WhenThrowsOnClose() throws XMLStreamException {
+            var xmlStreamWriter = mock(XMLStreamWriter.class);
+            doThrow(new XMLStreamException("I cannot stream XML")).when(xmlStreamWriter).close();
+            assertThatCode(() -> KiwiIO.closeQuietly(xmlStreamWriter)).doesNotThrowAnyException();
+        }
     }
 
     @Nested
@@ -265,14 +273,14 @@ class KiwiIOTest {
         private ByteArrayInputStream inputStream;
 
         @Test
-        void testNoLines() {
+        void shouldContainNothing_WhenGivenNoLines() {
             inputStream = KiwiIO.newByteArrayInputStreamOfLines();
             assertAtEndOfByteArrayInputStream(inputStream);
         }
 
         @Test
-        void testOneLine() throws IOException {
-            String firstLine = "the quick brown fox...blah blah";
+        void shouldAcceptOneLine() throws IOException {
+            var firstLine = "the quick brown fox...blah blah";
             inputStream = KiwiIO.newByteArrayInputStreamOfLines(firstLine);
 
             BufferedReader reader = newBufferedReader();
@@ -281,14 +289,14 @@ class KiwiIOTest {
         }
 
         @Test
-        void testMoreThanOneLine() throws IOException {
-            String firstLine = "the quick brown fox...blah blah";
-            String secondLine = "jumped over";
-            String thirdLine = "the lazy brown dog";
+        void shouldAcceptMultipleLines() throws IOException {
+            var firstLine = "the quick brown fox...blah blah";
+            var secondLine = "jumped over";
+            var thirdLine = "the lazy brown dog";
 
             inputStream = KiwiIO.newByteArrayInputStreamOfLines(firstLine, secondLine, thirdLine);
 
-            BufferedReader reader = newBufferedReader();
+            var reader = newBufferedReader();
             assertThat(reader.readLine()).isEqualTo(firstLine);
             assertThat(reader.readLine()).isEqualTo(secondLine);
             assertThat(reader.readLine()).isEqualTo(thirdLine);
@@ -320,10 +328,10 @@ class KiwiIOTest {
         }
 
         @Nested
-        class WhenEvaluatingTheListReturningMethodsUsing {
+        class ThatReturnList {
 
             @Test
-            void emptyStreams_ReturnsNoLines() {
+            void shouldReturnNoLines_WhenEmptyStreams() {
                 process.inputStream = KiwiIO.emptyByteArrayInputStream();
                 process.errorStream = KiwiIO.emptyByteArrayInputStream();
 
@@ -332,7 +340,7 @@ class KiwiIOTest {
             }
 
             @Test
-            void multipleStringsInStreamUsingDefaultCharset_ReturnsListContainingSameStrings() {
+            void shouldReturnListContainingSameStrings_WhenMultipleStringsInStreamUsingDefaultCharset() {
                 process.inputStream = newInputStreamWithCharset(StandardCharsets.UTF_8, LINE_1, LINE_2, LINE_3, LINE_4);
                 process.errorStream = newInputStreamWithCharset(StandardCharsets.UTF_8, LINE_1, LINE_2, LINE_3, LINE_4);
 
@@ -341,7 +349,7 @@ class KiwiIOTest {
             }
 
             @Test
-            void multipleStringsInStreamUsingExplicitCharset_ReturnsListContainingSameStrings() {
+            void shouldReturnListContainingSameStrings_WhenMultipleStringsInStreamUsingExplicitCharset() {
                 process.inputStream = newInputStreamWithCharset(StandardCharsets.US_ASCII, LINE_1, LINE_2, LINE_3, LINE_4);
                 process.errorStream = newInputStreamWithCharset(StandardCharsets.US_ASCII, LINE_1, LINE_2, LINE_3, LINE_4);
 
@@ -351,10 +359,10 @@ class KiwiIOTest {
         }
 
         @Nested
-        class WhenEvaluatingTheStreamReturningMethodsUsing {
+        class ThatReturnStream {
 
             @Test
-            void emptyStreams_ReturnsAnEmptyStream() {
+            void shouldReturnAnEmptyStream_WhenEmptyStreams() {
                 process.inputStream = KiwiIO.emptyByteArrayInputStream();
                 process.errorStream = KiwiIO.emptyByteArrayInputStream();
 
@@ -363,7 +371,7 @@ class KiwiIOTest {
             }
 
             @Test
-            void multipleStringsInStreamUsingDefaultCharset_ReturnsStreamContainingSameStrings() {
+            void shouldReturnStreamContainingSameStrings_WhenMultipleStringsInStreamUsingDefaultCharset() {
                 process.inputStream = newInputStreamWithCharset(StandardCharsets.UTF_8, LINE_1, LINE_2, LINE_3, LINE_4);
                 process.errorStream = newInputStreamWithCharset(StandardCharsets.UTF_8, LINE_1, LINE_2, LINE_3, LINE_4);
 
@@ -372,12 +380,77 @@ class KiwiIOTest {
             }
 
             @Test
-            void multipleStringsInStreamUsingExplicitCharset_ReturnsStreamContainingSameStrings() {
+            void shouldReturnStreamContainingSameStrings_WhenMultipleStringsInStreamUsingExplicitCharset() {
                 process.inputStream = newInputStreamWithCharset(StandardCharsets.US_ASCII, LINE_1, LINE_2, LINE_3, LINE_4);
                 process.errorStream = newInputStreamWithCharset(StandardCharsets.US_ASCII, LINE_1, LINE_2, LINE_3, LINE_4);
 
                 assertThat(KiwiIO.streamLinesFromInputStreamOf(process, StandardCharsets.US_ASCII)).containsExactly(LINE_1, LINE_2, LINE_3, LINE_4);
                 assertThat(KiwiIO.streamLinesFromErrorStreamOf(process, StandardCharsets.US_ASCII)).containsExactly(LINE_1, LINE_2, LINE_3, LINE_4);
+            }
+        }
+
+        @Nested
+        class ThatReturnString {
+
+            @Test
+            void shouldReturnInputStreamOfProcess() {
+                process.inputStream = newInputStreamWithCharset(StandardCharsets.UTF_8, LINE_1, LINE_2, LINE_3, LINE_4);
+
+                assertThat(KiwiIO.readInputStreamOf(process))
+                        .isEqualTo(String.join(System.lineSeparator(), LINE_1, LINE_2, LINE_3, LINE_4));
+            }
+
+            @Test
+            void shouldReturnInputStreamOfProcess_UsingExplicitCharset() {
+                process.inputStream = newInputStreamWithCharset(StandardCharsets.US_ASCII, LINE_1, LINE_2, LINE_3, LINE_4);
+
+                assertThat(KiwiIO.readInputStreamOf(process, StandardCharsets.US_ASCII))
+                        .isEqualTo(String.join(System.lineSeparator(), LINE_1, LINE_2, LINE_3, LINE_4));
+            }
+
+            @Test
+            void shouldReadErrorStreamOfProcess() {
+                process.errorStream = newInputStreamWithCharset(StandardCharsets.UTF_8, LINE_1, LINE_2, LINE_3, LINE_4);
+
+                assertThat(KiwiIO.readErrorStreamOf(process))
+                        .isEqualTo(String.join(System.lineSeparator(), LINE_1, LINE_2, LINE_3, LINE_4));
+            }
+
+            @Test
+            void shouldReadErrorStreamOfProcess_UsingExplicitCharset() {
+                process.errorStream = newInputStreamWithCharset(StandardCharsets.US_ASCII, LINE_1, LINE_2, LINE_3, LINE_4);
+
+                assertThat(KiwiIO.readErrorStreamOf(process, StandardCharsets.US_ASCII))
+                        .isEqualTo(String.join(System.lineSeparator(), LINE_1, LINE_2, LINE_3, LINE_4));
+            }
+
+            @Test
+            void shouldReadInputStream() {
+                var inputStream = newInputStreamWithCharset(StandardCharsets.UTF_8, LINE_1, LINE_2, LINE_3, LINE_4);
+
+                assertThat(KiwiIO.readInputStreamAsString(inputStream))
+                        .isEqualTo(String.join(System.lineSeparator(), LINE_1, LINE_2, LINE_3, LINE_4));
+            }
+
+            @Test
+            void shouldReadInputStream_UsingExplicitCharset() {
+                var inputStream = newInputStreamWithCharset(StandardCharsets.US_ASCII, LINE_1, LINE_2, LINE_3, LINE_4);
+
+                assertThat(KiwiIO.readInputStreamAsString(inputStream, StandardCharsets.US_ASCII))
+                        .isEqualTo(String.join(System.lineSeparator(), LINE_1, LINE_2, LINE_3, LINE_4));
+            }
+
+            @Test
+            void shouldThrowUncheckedIOException_WhenIOExceptionIsThrown() throws IOException {
+                var inputStream = mock(InputStream.class);
+                var cause = new IOException("I/O error");
+                when(inputStream.transferTo(any(ByteArrayOutputStream.class)))
+                        .thenThrow(cause);
+
+                assertThatThrownBy(() -> KiwiIO.readInputStreamAsString(inputStream))
+                        .isExactlyInstanceOf(UncheckedIOException.class)
+                        .hasMessage("Error converting InputStream to String using Charset UTF-8")
+                        .hasCause(cause);
             }
         }
 
@@ -427,8 +500,8 @@ class KiwiIOTest {
     }
 
     @Test
-    void testEmptyByteArrayInputStream() {
-        ByteArrayInputStream inputStream = KiwiIO.emptyByteArrayInputStream();
+    void shouldCreateEmptyByteArrayInputStream() {
+        var inputStream = KiwiIO.emptyByteArrayInputStream();
         assertAtEndOfByteArrayInputStream(inputStream);
     }
 
