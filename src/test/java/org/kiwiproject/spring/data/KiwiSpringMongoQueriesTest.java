@@ -213,12 +213,16 @@ class KiwiSpringMongoQueriesTest {
         softly.assertThat(orderPage.getContent()).isEqualTo(expectedOrders);
     }
 
-    @Test
-    void shouldPaginate_AndSetLimitToOne_WhenNoneIsGiven(SoftAssertions softly) {
-        var pageNumber = 0;
-
+    @ParameterizedTest
+    @CsvSource({
+            " 0 , ",
+            " 0, 0 ",
+            " 0, -1 ",
+    })
+    void shouldPaginate_AndSetLimitToOne_WhenInvalidLimitIsGiven(Integer pageNumber, Integer limit, SoftAssertions softly) {
         var pagingParams = new PagingRequest();
         pagingParams.setPage(pageNumber);
+        pagingParams.setLimit(limit);
 
         var orderPage = KiwiSpringMongoQueries.paginate(mongoTemplate, pagingParams, Order.class);
 
@@ -234,11 +238,15 @@ class KiwiSpringMongoQueriesTest {
         softly.assertThat(orderPage.getContent()).isEqualTo(List.of(first(storedOrders)));
     }
 
-    @Test
-    void shouldPaginate_AndSetPageToZero_WhenNoneIsGiven(SoftAssertions softly) {
-        var limit = 5;
-
+    @ParameterizedTest
+    @CsvSource({
+            "  , 5 ",
+            " -1 , 5 ",
+            " -5 , 5 ",
+    })
+    void shouldPaginate_AndSetPageToZero_WhenInvalidPageIsGiven(Integer pageNumber, Integer limit, SoftAssertions softly) {
         var pagingParams = new PagingRequest();
+        pagingParams.setPage(pageNumber);
         pagingParams.setLimit(limit);
 
         var orderPage = KiwiSpringMongoQueries.paginate(mongoTemplate, pagingParams, Order.class);
@@ -343,6 +351,34 @@ class KiwiSpringMongoQueriesTest {
         softly.assertThat(orderPage.getSize()).isEqualTo(limit);
         softly.assertThat(orderPage.getSort()).isEqualTo(Sort.unsorted());
         softly.assertThat(orderPage.getContent()).isEqualTo(storedOrders.subList(0, limit));
+    }
+
+    @Test
+    void shouldIgnoreNullStartOrEnd_WhenAddingDateBounds(SoftAssertions softly) {
+        var pageNumber = 0;
+        var limit = 25;
+
+        var pagingParams = new PagingRequest();
+        pagingParams.setPage(pageNumber);
+        pagingParams.setLimit(limit);
+
+        var now = Instant.now();
+
+        // only lower bound
+        var startMillis = KiwiInstants.minusDays(now, 50).toEpochMilli();
+        var lowerBoundOrderPage = KiwiSpringMongoQueries.paginate(mongoTemplate, pagingParams, Order.class,
+                (pagingQuery, pagingRequest) ->
+                        addDateBounds(pagingQuery, "dateReceived", startMillis, null));
+
+        softly.assertThat(lowerBoundOrderPage.getTotalElements()).isEqualTo(storedOrderCount);
+
+        // only upper bound
+        var endMillis = KiwiInstants.plusDays(now, 30).toEpochMilli();
+        var upperBoundOrderPage = KiwiSpringMongoQueries.paginate(mongoTemplate, pagingParams, Order.class,
+                (pagingQuery, pagingRequest) ->
+                        addDateBounds(pagingQuery, "dateReceived", null, endMillis));
+
+        softly.assertThat(upperBoundOrderPage.getTotalElements()).isEqualTo(storedOrderCount);
     }
 
     @ParameterizedTest
