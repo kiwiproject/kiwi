@@ -1,7 +1,7 @@
 package org.kiwiproject.util;
 
 import lombok.extern.slf4j.Slf4j;
-import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
@@ -13,14 +13,14 @@ import java.nio.file.Path;
  * A "test" intended to help debug problems with the GitHub cache action. It only logs some information.
  */
 @DisplayName("GithubWorkflowCache")
+@SuppressWarnings("java:S2699")  // this isn't really a test, so we don't need assertions
 @Slf4j
-@SuppressWarnings("java:S2699")
 class GithubWorkflowCacheTest {
 
-    private String userDir;
+    private static String userDir;
 
-    @BeforeEach
-    void setUp() {
+    @BeforeAll
+    static void beforeAll() {
         userDir = System.getProperty("user.home");
         LOG.info("Home directory: {}", System.getProperty("user.home"));
     }
@@ -48,12 +48,12 @@ class GithubWorkflowCacheTest {
 
     private static void logFilesInDirectory(Path directory) throws IOException {
         if (Files.exists(directory) && Files.isDirectory(directory)) {
-            LOG.info("Listing {}:", directory);
+            LOG.info("Listing directory {}:", directory);
             Files.list(directory).forEach(path -> LOG.info("{}", path.toAbsolutePath()));
         } else {
             LOG.warn("Directory {} was not found!", directory.toAbsolutePath());
         }
 
-        LOG.info("----");
+        LOG.info("~~~~~~~~~~");
     }
 }
