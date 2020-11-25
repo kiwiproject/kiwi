@@ -79,7 +79,9 @@
         <jsr305.version>3.0.2</jsr305.version>
 
         <!-- Versions for test dependencies -->
+        <commons-compress.version>1.20</commons-compress.version>
         <embedded-postgres.version>1.2.6</embedded-postgres.version>
+        <embed.mongo.version>3.0.0</embed.mongo.version>
         <h2.version>1.4.200</h2.version>
         <jdbi3.version>3.17.0</jdbi3.version>
         <jersey-test-framework-core.version>2.32</jersey-test-framework-core.version>
@@ -90,7 +92,6 @@
         <sonar.projectKey>kiwiproject_kiwi</sonar.projectKey>
         <sonar.organization>kiwiproject</sonar.organization>
         <sonar.host.url>https://sonarcloud.io</sonar.host.url>
-        <sonar.coverage.exclusions>org/kiwiproject/spring/data/PagingQuery.java</sonar.coverage.exclusions>
     </properties>
 
     <dependencies>
@@ -597,6 +598,20 @@
         <!-- test dependencies -->
 
         <dependency>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>commons-compress</artifactId>
+            <version>${commons-compress.version}</version>
+            <scope>test</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>de.flapdoodle.embed</groupId>
+            <artifactId>de.flapdoodle.embed.mongo</artifactId>
+            <version>${embed.mongo.version}</version>
+            <scope>test</scope>
+        </dependency>
+
+        <dependency>
             <groupId>io.dropwizard</groupId>
             <artifactId>dropwizard-testing</artifactId>
             <version>${dropwizard.version}</version>
@@ -612,6 +627,10 @@
                 <exclusion>
                     <groupId>org.apache.commons</groupId>
                     <artifactId>commons-lang3</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>org.apache.commons</groupId>
+                    <artifactId>commons-compress</artifactId>
                 </exclusion>
                 <exclusion>
                     <groupId>commons-io</groupId>
