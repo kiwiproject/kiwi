@@ -29,6 +29,12 @@ jobs:
           path: ~/.m2
           key: ${{ runner.os }}-m2-${{ hashFiles('**/pom.xml') }}
           restore-keys: ${{ runner.os }}-m2
+      - name: Cache Embedded Mongo files
+        uses: actions/cache@v1
+        with:
+          path: ~/.embedmongo
+          key: ${{ runner.os }}-embedmongo
+          restore-keys: ${{ runner.os }}-embedmongo
       - name: Build and analyze
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # Needed to get PR information, if any

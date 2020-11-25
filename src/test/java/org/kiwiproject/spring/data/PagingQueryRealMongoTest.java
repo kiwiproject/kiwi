@@ -56,7 +56,7 @@ import java.util.function.Predicate;
  *     <li>4.4.2</li>
  * </ul>
  */
-@DisplayName("PagingQuery#aggregatePage")
+@DisplayName("PagingQuery (real MongoDB)")
 @ExtendWith(SoftAssertionsExtension.class)
 @Slf4j
 @EnabledIfSystemProperty(
@@ -67,7 +67,7 @@ import java.util.function.Predicate;
         named = "realMongoDB.url",
         matches = "mongodb://[a-zA-Z0-9-.]+:\\d+/?"
 )
-class PagingQueryAggregatePageTest {
+class PagingQueryRealMongoTest {
 
     private static MongoTemplate mongoTemplate;
 
