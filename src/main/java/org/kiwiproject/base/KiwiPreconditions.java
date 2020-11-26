@@ -487,8 +487,9 @@ public class KiwiPreconditions {
     /**
      * Returns the int {@code value} if it is a positive number (greater than zero), throwing an {@link IllegalStateException} if not positive.
      *
-     * @param value         the value to check for positivity
-     * @param errorMessage  the error message to put in the exception if not positive
+     * @param value        the value to check for positivity
+     * @param errorMessage the error message to put in the exception if not positive
+     * @return the given value if positive
      * @throws IllegalStateException if the value is not positive (e.g. greater than zero)
      * @see Preconditions#checkState(boolean, Object)
      */
@@ -503,6 +504,7 @@ public class KiwiPreconditions {
      * @param value                 the value to check for positivity
      * @param errorMessageTemplate  the error message template to use in the exception if not positive
      * @param errorMessageArgs      the arguments to populate into the error message template
+     * @return the given value if positive
      * @throws IllegalStateException if the value is not positive (e.g. greater than zero)
      * @see Preconditions#checkState(boolean, Object)
      */
@@ -528,6 +530,7 @@ public class KiwiPreconditions {
      *
      * @param value         the value to check for positivity
      * @param errorMessage  the error message to put in the exception if not positive
+     * @return the given value if positive
      * @throws IllegalStateException if the value is not positive (e.g. greater than zero)
      * @see Preconditions#checkState(boolean, Object)
      */
@@ -542,6 +545,7 @@ public class KiwiPreconditions {
      * @param value                 the value to check for positivity
      * @param errorMessageTemplate  the error message template to use in the exception if not positive
      * @param errorMessageArgs      the arguments to populate into the error message template
+     * @return the given value if positive
      * @throws IllegalStateException if the value is not positive (e.g. greater than zero)
      * @see Preconditions#checkState(boolean, Object)
      */
@@ -567,6 +571,7 @@ public class KiwiPreconditions {
      *
      * @param value         the value to check for positivity
      * @param errorMessage  the error message to put in the exception if not positive
+     * @return the given value if positive or zero
      * @throws IllegalStateException if the value is not positive (e.g. greater than zero)
      * @see Preconditions#checkState(boolean, Object)
      */
@@ -581,6 +586,7 @@ public class KiwiPreconditions {
      * @param value                 the value to check for positivity
      * @param errorMessageTemplate  the error message template to use in the exception if not positive
      * @param errorMessageArgs      the arguments to populate into the error message template
+     * @return the given value if positive or zero
      * @throws IllegalStateException if the value is not positive (e.g. greater than zero)
      * @see Preconditions#checkState(boolean, Object)
      */
@@ -606,6 +612,7 @@ public class KiwiPreconditions {
      *
      * @param value         the value to check for positivity
      * @param errorMessage  the error message to put in the exception if not positive
+     * @return the given value if positive or zero
      * @throws IllegalStateException if the value is not positive (e.g. greater than zero)
      * @see Preconditions#checkState(boolean, Object)
      */
@@ -620,6 +627,7 @@ public class KiwiPreconditions {
      * @param value                 the value to check for positivity
      * @param errorMessageTemplate  the error message template to use in the exception if not positive
      * @param errorMessageArgs      the arguments to populate into the error message template
+     * @return the given value if positive or zero
      * @throws IllegalStateException if the value is not positive (e.g. greater than zero)
      * @see Preconditions#checkState(boolean, Object)
      */
@@ -678,6 +686,7 @@ public class KiwiPreconditions {
      *
      * @param port          the port to check for validity
      * @param errorMessage  the error message to put in the exception if the port is not valid
+     * @return the given port if valid
      * @throws IllegalStateException if port is not valid
      */
     public static int requireValidPort(int port, String errorMessage) {
@@ -691,6 +700,7 @@ public class KiwiPreconditions {
      * @param port                  the port to check for validity
      * @param errorMessageTemplate  the error message template to use in the exception if port is not valid
      * @param errorMessageArgs      the arguments to populate into the error message template
+     * @return the given port if valid
      * @throws IllegalStateException if port is not valid
      */
     public static int requireValidPort(int port, String errorMessageTemplate, Object... errorMessageArgs) {
@@ -748,6 +758,7 @@ public class KiwiPreconditions {
      *
      * @param port          the port to check for validity
      * @param errorMessage  the error message to put in the exception if the port is not valid
+     * @return the given port if valid
      * @throws IllegalStateException if port is not valid
      */
     public static int requireValidNonZeroPort(int port, String errorMessage) {
@@ -761,6 +772,7 @@ public class KiwiPreconditions {
      * @param port                  the port to check for validity
      * @param errorMessageTemplate  the error message template to use in the exception if port is not valid
      * @param errorMessageArgs      the arguments to populate into the error message template
+     * @return the given port if valid
      * @throws IllegalStateException if port is not valid
      */
     public static int requireValidNonZeroPort(int port, String errorMessageTemplate, Object... errorMessageArgs) {
