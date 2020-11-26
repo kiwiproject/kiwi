@@ -33,6 +33,9 @@ public class KiwiPaging {
      * <p>
      * Since Spring's {@link Pageable} assumes zero-based page numbering, the {@link PagingParams} should use that
      * same convention or else the page numbering will be wrong.
+     *
+     * @param pagedRequest the paging parameters to use for the {@link Pageable}
+     * @return new {@link Pageable} instance
      */
     public static Pageable createPageable(PagingParams pagedRequest) {
         checkArgumentNotNull(pagedRequest, "pagedRequest cannot be null");
