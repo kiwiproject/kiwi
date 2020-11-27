@@ -40,7 +40,7 @@
         <dropwizard.version>2.0.16</dropwizard.version>
         <dropwizard.modules.dropwizard-jdbi.version>2.0.12</dropwizard.modules.dropwizard-jdbi.version>
         <FastInfoset.version>1.2.18</FastInfoset.version>
-        <hibernate.version>5.4.22.Final</hibernate.version>
+        <hibernate.version>5.4.24.Final</hibernate.version>
         <hibernate-validator.version>6.1.6.Final</hibernate-validator.version>
         <httpclient.version>4.5.13</httpclient.version>
         <guava-retrying.version>2.0.0</guava-retrying.version>
@@ -51,6 +51,7 @@
         <jakarta.xml.bind-api.version>2.3.3</jakarta.xml.bind-api.version>
         <javassist.version>3.27.0-GA</javassist.version>
         <jaxws-rt.version>2.3.3</jaxws-rt.version>
+        <jboss-logging.version>3.4.1.Final</jboss-logging.version>
         <joda-time.version>2.10.7</joda-time.version>
         <jsch.version>0.1.55</jsch.version>
         <lombok.version>1.18.16</lombok.version>
@@ -304,6 +305,10 @@
                     <artifactId>javassist</artifactId>
                 </exclusion>
                 <exclusion>
+                    <groupId>org.jboss.logging</groupId>
+                    <artifactId>jboss-logging</artifactId>
+                </exclusion>
+                <exclusion>
                     <groupId>org.jvnet.staxex</groupId>
                     <artifactId>stax-ex</artifactId>
                 </exclusion>
@@ -319,6 +324,10 @@
                 <exclusion>
                     <groupId>com.fasterxml</groupId>
                     <artifactId>classmate</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>org.jboss.logging</groupId>
+                    <artifactId>jboss-logging</artifactId>
                 </exclusion>
             </exclusions>
         </dependency>
@@ -453,6 +462,17 @@
                     <artifactId>woodstox-core</artifactId>
                 </exclusion>
             </exclusions>
+        </dependency>
+
+        <!--
+            Added due to dependency convergence conflicts between hibernate-core,
+            hibernate-commons-annotations, and hibernate-validator
+        -->
+        <dependency>
+            <groupId>org.jboss.logging</groupId>
+            <artifactId>jboss-logging</artifactId>
+            <version>${jboss-logging.version}</version>
+            <scope>provided</scope>
         </dependency>
 
         <dependency>
