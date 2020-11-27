@@ -54,9 +54,9 @@
         <joda-time.version>2.10.7</joda-time.version>
         <jsch.version>0.1.55</jsch.version>
         <lombok.version>1.18.16</lombok.version>
-        <metrics-jdbi3.version>4.1.14</metrics-jdbi3.version>
+        <metrics-jdbi3.version>4.1.16</metrics-jdbi3.version>
         <postgresql.version>42.2.18</postgresql.version>
-        <metrics-jetty9.version>4.1.14</metrics-jetty9.version>
+        <metrics-jetty9.version>4.1.16</metrics-jetty9.version>
         <postgresql.version>42.2.12</postgresql.version>
         <spring.version>5.3.0</spring.version>
         <spring-data-mongodb.version>2.2.11.RELEASE</spring-data-mongodb.version>
