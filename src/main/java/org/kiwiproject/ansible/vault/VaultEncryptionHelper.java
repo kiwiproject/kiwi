@@ -70,10 +70,10 @@ public class VaultEncryptionHelper {
     private static VaultConfiguration validateAndCopyVaultConfiguration(VaultConfiguration configuration) {
         checkArgumentNotBlank(configuration.getVaultPasswordFilePath(), "vaultPasswordFilePath is required");
         checkArgument(isExistingPath(configuration.getVaultPasswordFilePath()),
-                "vault password file does not exist: {}", configuration.getVaultPasswordFilePath());
+                "vault password file does not exist: %s", configuration.getVaultPasswordFilePath());
         checkArgumentNotBlank(configuration.getAnsibleVaultPath(), "ansibleVaultPath is required");
         checkArgument(isExistingPath(configuration.getAnsibleVaultPath()),
-                "ansible-vault executable does not exist: {}", configuration.getAnsibleVaultPath());
+                "ansible-vault executable does not exist: %s", configuration.getAnsibleVaultPath());
 
         return configuration.copyOf();
     }

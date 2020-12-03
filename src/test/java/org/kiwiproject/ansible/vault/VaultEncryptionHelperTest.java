@@ -22,6 +22,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
+import org.junit.jupiter.params.provider.NullAndEmptySource;
 import org.kiwiproject.base.process.ProcessHelper;
 import org.kiwiproject.collect.KiwiLists;
 import org.kiwiproject.internal.Fixtures;
@@ -87,11 +88,53 @@ class VaultEncryptionHelperTest {
         }
 
         @Test
-        void shouldValidateVaultConfiguration() {
-            var emptyConfig = new VaultConfiguration();
+        void shouldNotAllowNullProcessHelper() {
+            assertThatIllegalArgumentException()
+                    .isThrownBy(() -> new VaultEncryptionHelper(mock(VaultConfiguration.class), null));
+        }
+
+        @ParameterizedTest
+        @NullAndEmptySource
+        void shouldValidateVaultPasswordFilePath(String vaultPasswordFilePath) {
+            var config = new VaultConfiguration();
+            config.setVaultPasswordFilePath(vaultPasswordFilePath);
 
             assertThatIllegalArgumentException()
-                    .isThrownBy(() -> new VaultEncryptionHelper(emptyConfig));
+                    .isThrownBy(() -> new VaultEncryptionHelper(config))
+                    .withMessage("vaultPasswordFilePath is required");
+        }
+
+        @Test
+        void shouldValidateVaultPasswordFilePathExists() {
+            var config = new VaultConfiguration();
+            config.setVaultPasswordFilePath("/almost/certainly/does/not/exist.txt");
+
+            assertThatIllegalArgumentException()
+                    .isThrownBy(() -> new VaultEncryptionHelper(config))
+                    .withMessage("vault password file does not exist: %s", config.getVaultPasswordFilePath());
+        }
+
+        @ParameterizedTest
+        @NullAndEmptySource
+        void shouldValidateAnsibleVaultPath(String ansibleVaultPath) {
+            var config = new VaultConfiguration();
+            config.setVaultPasswordFilePath(configuration.getVaultPasswordFilePath());  // passes validation
+            config.setAnsibleVaultPath(ansibleVaultPath);
+
+            assertThatIllegalArgumentException()
+                    .isThrownBy(() -> new VaultEncryptionHelper(config))
+                    .withMessage("ansibleVaultPath is required");
+        }
+
+        @Test
+        void shouldValidateAnsibleVaultPathExists() {
+            var config = new VaultConfiguration();
+            config.setVaultPasswordFilePath(configuration.getVaultPasswordFilePath());  // passes validation
+            config.setAnsibleVaultPath("/almost/certainly/does/not/exist.txt");
+
+            assertThatIllegalArgumentException()
+                    .isThrownBy(() -> new VaultEncryptionHelper(config))
+                    .withMessage("ansible-vault executable does not exist: %s", config.getAnsibleVaultPath());
         }
     }
 
