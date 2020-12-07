@@ -15,6 +15,7 @@ import static org.kiwiproject.base.KiwiPreconditions.requireNotNullElseGet;
 
 import org.assertj.core.api.SoftAssertions;
 import org.assertj.core.api.junit.jupiter.SoftAssertionsExtension;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -25,6 +26,7 @@ import org.kiwiproject.util.BlankStringArgumentsProvider;
 
 import java.util.ArrayList;
 
+@DisplayName("KiwiPreconditions")
 @ExtendWith(SoftAssertionsExtension.class)
 class KiwiPreconditionsTest {
 
@@ -265,7 +267,7 @@ class KiwiPreconditionsTest {
         softly.assertThat(requireNotNullElse(null, "default value")).isEqualTo("default value");
         softly.assertThat(requireNotNullElse("a value", "default value")).isEqualTo("a value");
         softly.assertThatThrownBy(() -> requireNotNullElse(null, null))
-                    .isExactlyInstanceOf(IllegalArgumentException.class);
+                .isExactlyInstanceOf(IllegalArgumentException.class);
 
     }
 
