@@ -43,7 +43,7 @@ public class LocalPortChecker {
      * @return an optional containing the first open port, or an empty optional
      */
     public OptionalInt findFirstOpenPortAbove(int port) {
-        checkArgument(port >= 0 && port < MAX_PORT, "Invalid start port");
+        checkArgument(port >= 0 && port < MAX_PORT, "Invalid start port: %s", port);
 
         return IntStream.rangeClosed(port + 1, MAX_PORT)
                 .filter(this::isPortAvailable)
