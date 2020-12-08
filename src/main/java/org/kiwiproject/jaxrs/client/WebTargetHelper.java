@@ -5,14 +5,14 @@ import static org.apache.commons.lang3.StringUtils.isBlank;
 import static org.kiwiproject.base.KiwiPreconditions.checkArgumentNotBlank;
 import static org.kiwiproject.base.KiwiPreconditions.checkArgumentNotNull;
 import static org.kiwiproject.base.KiwiPreconditions.requireNotNull;
+import static org.kiwiproject.collect.KiwiArrays.isNullOrEmpty;
+import static org.kiwiproject.collect.KiwiLists.isNullOrEmpty;
+import static org.kiwiproject.collect.KiwiMaps.isNullOrEmpty;
 
 import com.google.common.annotations.Beta;
 import com.google.common.annotations.VisibleForTesting;
 import lombok.experimental.Delegate;
 import org.apache.commons.lang3.StringUtils;
-import org.kiwiproject.collect.KiwiArrays;
-import org.kiwiproject.collect.KiwiLists;
-import org.kiwiproject.collect.KiwiMaps;
 
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.WebTarget;
@@ -153,7 +153,7 @@ public class WebTargetHelper {
      * @return this instance
      */
     public WebTargetHelper queryParamFilterNotNull(String name, Object... values) {
-        if (KiwiArrays.isNullOrEmpty(values)) {
+        if (isNullOrEmpty(values)) {
             return this;
         }
 
@@ -168,7 +168,7 @@ public class WebTargetHelper {
      * @return this instance
      */
     public WebTargetHelper queryParamFilterNotNull(String name, List<Object> values) {
-        if (KiwiLists.isNullOrEmpty(values)) {
+        if (isNullOrEmpty(values)) {
             return this;
         }
 
@@ -231,7 +231,7 @@ public class WebTargetHelper {
      * @return this instance
      */
     public WebTargetHelper queryParamFilterNotBlank(String name, String... values) {
-        if (KiwiArrays.isNullOrEmpty(values)) {
+        if (isNullOrEmpty(values)) {
             return this;
         }
 
@@ -246,7 +246,7 @@ public class WebTargetHelper {
      * @return this instance
      */
     public WebTargetHelper queryParamFilterNotBlank(String name, List<String> values) {
-        if (KiwiLists.isNullOrEmpty(values)) {
+        if (isNullOrEmpty(values)) {
             return this;
         }
 
@@ -280,7 +280,7 @@ public class WebTargetHelper {
      * @return this instance
      */
     public WebTargetHelper queryParams(Map<String, Object> parameters) {
-        if (KiwiMaps.isNullOrEmpty(parameters)) {
+        if (isNullOrEmpty(parameters)) {
             return this;
         }
 
