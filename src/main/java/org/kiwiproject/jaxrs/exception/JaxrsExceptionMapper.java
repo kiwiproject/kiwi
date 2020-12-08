@@ -4,6 +4,7 @@ import static java.util.Collections.unmodifiableMap;
 import static java.util.Objects.isNull;
 import static java.util.stream.Collectors.toUnmodifiableList;
 import static org.apache.commons.lang3.StringUtils.isBlank;
+import static org.kiwiproject.collect.KiwiMaps.isNotNullOrEmpty;
 
 import lombok.extern.slf4j.Slf4j;
 import org.kiwiproject.collect.KiwiMaps;
@@ -78,16 +79,19 @@ public class JaxrsExceptionMapper implements ExceptionMapper<JaxrsException> {
      * Convert the given {@link JaxrsException} to a map that can be used as a JSON response entity.
      * <p>
      * The response entity will contain an "errors" key containing the {@link ErrorMessage} objects.
-     * If the exception contains any other data ({@link JaxrsException#getOtherData()}, those are inclued
-     * in the response entity.
+     * If the exception contains any other data ({@link JaxrsException#getOtherData()}), those key/value pairs
+     * are also included in the response entity. See the note in {@link JaxrsException#setOtherData(Map)} regarding
+     * the behavior if {@code otherData} contains an "errors" key.
      *
      * @param exception the exception to convert
      * @return a map that can be used as a response entity
+     * @see JaxrsException#getOtherData()
+     * @see JaxrsException#setOtherData(Map)
      */
     public static Map<String, Object> buildResponseEntity(JaxrsException exception) {
         var entity = new HashMap<String, Object>();
 
-        if (KiwiMaps.isNotNullOrEmpty(exception.getOtherData())) {
+        if (isNotNullOrEmpty(exception.getOtherData())) {
             entity.putAll(exception.getOtherData());
         }
 
