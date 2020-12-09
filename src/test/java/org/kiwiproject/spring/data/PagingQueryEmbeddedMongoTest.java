@@ -34,6 +34,16 @@ import org.springframework.data.mongodb.core.query.Criteria;
 import java.util.List;
 import java.util.function.Predicate;
 
+/**
+ * Uses Flapdoodle embedded Mongo which can be found on GitHub
+ * <a href="https://github.com/flapdoodle-oss/de.flapdoodle.embed.mongo">here</a>.
+ * <p>
+ * This test is currently only testing against Mongo 4 using {@link Version.Main#V4_0}.
+ * <p>
+ * Note that we also have {@link PagingQueryRealMongoTest} which executes against a real Mongo instance. It
+ * currently requires some manual setup, but allows you to execute the same tests against multiple Mongo
+ * versions, e.g. in Docker containers.
+ */
 @DisplayName("PagingQuery (embedded Mongo)")
 @ExtendWith(SoftAssertionsExtension.class)
 @Slf4j
