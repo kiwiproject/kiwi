@@ -327,6 +327,9 @@ public class KiwiIO {
 
     /**
      * Read the input stream of the give {@link Process} as a String using {@code UTF-8} as the String encoding.
+     * <p>
+     * Note that process output may contain one or more lines, which will therefore include line termination
+     * characters within or at the end of the returned string.
      *
      * @param process the process
      * @return the process' input stream as a UTF-8 encoded string
@@ -339,6 +342,9 @@ public class KiwiIO {
     /**
      * Read the input stream of the give {@link Process} as a String using the the specified {@link Charset} for the
      * string encoding.
+     * <p>
+     * Note that process output may contain one or more lines, which will therefore include line termination
+     * characters within or at the end of the returned string.
      *
      * @param process the process
      * @param charset the charset
@@ -351,6 +357,9 @@ public class KiwiIO {
 
     /**
      * Read the error stream of the give {@link Process} as a String using {@code UTF-8} as the string encoding.
+     * <p>
+     * Note that process output may contain one or more lines, which will therefore include line termination
+     * characters within or at the end of the returned string.
      *
      * @param process the process
      * @return the process' error stream as a UTF-8 encoded string
@@ -363,6 +372,9 @@ public class KiwiIO {
     /**
      * Read the error stream of the give {@link Process} as a String using the the specified {@link Charset} for the
      * string encoding.
+     * <p>
+     * Note that process output may contain one or more lines, which will therefore include line termination
+     * characters within or at the end of the returned string.
      *
      * @param process the process
      * @param charset the charset
