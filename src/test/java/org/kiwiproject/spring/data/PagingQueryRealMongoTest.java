@@ -33,12 +33,11 @@ import java.util.function.Predicate;
 /**
  * The code in {@link PagingQuery#aggregatePage(Class, AggregationOperation...)} blows up with a NPE whenever executing
  * it using the in-memory {@link de.bwaldvogel.mongo.MongoServer}, which is the only reason this test even exists.
+ * (And I have been unable to figure out exactly why it blows up.)
  * <p>
  * To use this test, you need a "real" MongoDB instance. For now, this test is only enabled when {@code realMongoDB}
  * and {@code realMongoDB.url} system properties are specified and match the expected values. This lets you run the
- * tests locally, even though they won't currently run in our CI environment. Assuming we even keep the aggregatePage
- * method, we'll want to look into using the Flapdoodle embedded Mongo which can be found on GitHub
- * <a href="https://github.com/flapdoodle-oss/de.flapdoodle.embed.mongo">here</a>.
+ * tests locally, even though they won't currently run in our CI environment.
  * <p>
  * One easy way is to run a Docker container:
  * {@code docker run -p 27017:27017 --name test-mongo-1 -d mongo:4.0.21}
@@ -55,6 +54,9 @@ import java.util.function.Predicate;
  *     <li>4.2.11</li>
  *     <li>4.4.2</li>
  * </ul>
+ * <p>
+ * Note that we also have {@link PagingQueryEmbeddedMongoTest} which always runs. It uses the Flapdoodle embedded
+ * Mongo which can be found on GitHub <a href="https://github.com/flapdoodle-oss/de.flapdoodle.embed.mongo">here</a>.
  */
 @DisplayName("PagingQuery (real MongoDB)")
 @ExtendWith(SoftAssertionsExtension.class)
