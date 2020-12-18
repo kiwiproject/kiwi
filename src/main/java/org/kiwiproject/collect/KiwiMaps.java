@@ -8,8 +8,10 @@ import lombok.experimental.UtilityClass;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.SortedMap;
 import java.util.TreeMap;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
 
 /**
  * Utility methods for working with {@link Map} instances
@@ -88,7 +90,7 @@ public class KiwiMaps {
      * @param <V>   the type of the values in the map
      * @return a new TreeMap with data from items
      */
-    public static <K extends Comparable, V> Map<K, V> newTreeMap(Object... items) {
+    public static <K extends Comparable, V> SortedMap<K, V> newTreeMap(Object... items) {
         checkEvenItemCount(items);
         var map = new TreeMap<K, V>();
         populate(map, items);
@@ -106,7 +108,7 @@ public class KiwiMaps {
      * @param <V>   the type of the values in the map
      * @return a new ConcurrentHashMap with data from items
      */
-    public static <K, V> Map<K, V> newConcurrentHashMap(Object... items) {
+    public static <K, V> ConcurrentMap<K, V> newConcurrentHashMap(Object... items) {
         checkEvenItemCount(items);
         var map = new ConcurrentHashMap<K, V>(items.length);
         populate(map, items);
