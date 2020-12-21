@@ -3,6 +3,7 @@ package org.kiwiproject.collect;
 import static java.util.stream.Collectors.toList;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.assertj.core.api.Assertions.entry;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -11,13 +12,19 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ArgumentsSource;
 import org.kiwiproject.util.BlankStringArgumentsProvider;
 
+import java.nio.file.Path;
+import java.time.LocalDate;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.SortedMap;
 import java.util.TreeMap;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
 
 @DisplayName("KiwiMaps")
 class KiwiMapsTest {
@@ -120,7 +127,39 @@ class KiwiMapsTest {
 
     @Test
     void testNewTreeMap_WhenNoItems() {
-        assertThat(KiwiMaps.newTreeMap()).isEmpty();
+        assertThat(KiwiMaps.<String, Object>newTreeMap()).isEmpty();
+        assertThat(KiwiMaps.<Integer, Object>newTreeMap()).isEmpty();
+        assertThat(KiwiMaps.<Path, Object>newTreeMap()).isEmpty();
+        assertThat(KiwiMaps.<LocalDate, Object>newTreeMap()).isEmpty();
+        assertThat(KiwiMaps.<ZonedDateTime, Object>newTreeMap()).isEmpty();
+    }
+
+    @Test
+    void testNewTreeMap_StringKeys_To_ObjectValues() {
+        SortedMap<String, Object> treeMap = KiwiMaps.newTreeMap("foo", 42, "bar", 84, "baz", 126);
+
+        List<String> transformed = treeMap.entrySet()
+                .stream()
+                .map(entry -> entry.getKey() + entry.getValue())
+                .collect(toList());
+
+        assertThat(transformed).containsExactly("bar84", "baz126", "foo42");
+    }
+
+    @Test
+    void testNewTreeMap_ZonedDateTimeKeys_To_ObjectValues() {
+        var id = ZoneId.of("America/New_York");
+        var dt1 = ZonedDateTime.now(id).minusMinutes(30);
+        var dt2 = ZonedDateTime.now(id).minusMinutes(20);
+        var dt3 = ZonedDateTime.now(id).minusMinutes(10);
+
+        var sortedEvents = KiwiMaps.<ZonedDateTime, String>newTreeMap(dt2, "event2", dt3, "event3", dt1, "event1");
+
+        assertThat(sortedEvents).containsExactly(
+                entry(dt1, "event1"),
+                entry(dt2, "event2"),
+                entry(dt3, "event3")
+        );
     }
 
     @Test
@@ -133,7 +172,7 @@ class KiwiMapsTest {
     @Test
     void testNewConcurrentHashMap() {
         Object[] items = wordToNumberArray();
-        Map<String, Integer> treeMap = KiwiMaps.newConcurrentHashMap(items);
+        ConcurrentMap<String, Integer> treeMap = KiwiMaps.newConcurrentHashMap(items);
         assertThat(treeMap)
                 .isExactlyInstanceOf(ConcurrentHashMap.class)
                 .containsAllEntriesOf(newWordNumberMap());

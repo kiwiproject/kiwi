@@ -90,7 +90,7 @@ public class KiwiMaps {
      * @param <V>   the type of the values in the map
      * @return a new TreeMap with data from items
      */
-    public static <K extends Comparable, V> SortedMap<K, V> newTreeMap(Object... items) {
+    public static <K extends Comparable<? super K>, V> SortedMap<K, V> newTreeMap(Object... items) {
         checkEvenItemCount(items);
         var map = new TreeMap<K, V>();
         populate(map, items);
