@@ -283,7 +283,7 @@ public class KiwiInternetAddresses {
      */
     public static List<String> findMatchingAddresses(List<String> subnetCidrs, List<String> ipAddresses) {
         return subnetCidrs.stream()
-                .map(KiwiCidrs::new)
+                .map(CidrRange::new)
                 .map(cidr -> ipAddresses.stream().filter(cidr::isInRange).findFirst())
                 .flatMap(Optional::stream)
                 .collect(toList());

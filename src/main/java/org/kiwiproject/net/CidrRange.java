@@ -16,7 +16,7 @@ import java.nio.ByteBuffer;
  */
 @SuppressWarnings("UnstableApiUsage")
 @Slf4j
-public class KiwiCidrs {
+public class CidrRange {
 
     private final InetAddress inetAddress;
     private final int prefixLength;
@@ -31,7 +31,7 @@ public class KiwiCidrs {
      *
      * @param cidr the CIDR to use for this instance.
      */
-    public KiwiCidrs(String cidr) {
+    public CidrRange(String cidr) {
 
         /* split CIDR to address and prefix part */
         if (cidr.contains("/")) {

@@ -9,11 +9,11 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
 
 @DisplayName("KiwiCidrs")
-class KiwiCidrsTest {
+class CidrRangeTest {
 
     @Test
     void shouldThrowIllegalArgumentExceptionIfNotValidCidr() {
-        assertThatThrownBy(() -> new KiwiCidrs("1.2.3.4"))
+        assertThatThrownBy(() -> new CidrRange("1.2.3.4"))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("not a valid CIDR format!");
     }
@@ -30,7 +30,7 @@ class KiwiCidrsTest {
         "2000::/16, 2000:0:0:0:0:0:0:0, 2000:ffff:ffff:ffff:ffff:ffff:ffff:ffff"
     })
     void shouldParseCidr(String cidr, String networkAddress, String broadcastAddress) {
-        var cidrs = new KiwiCidrs(cidr);
+        var cidrs = new CidrRange(cidr);
 
         assertThat(cidrs.getNetworkAddress()).isEqualTo(networkAddress);
         assertThat(cidrs.getBroadcastAddress()).isEqualTo(broadcastAddress);
@@ -48,7 +48,7 @@ class KiwiCidrsTest {
             "2000::/16, 2000:db8:0000:0000:0000:0000:0000:003f"
     })
     void shouldReturnTrueWhenAddressIsInRangeOfCidr(String cidr, String address) {
-        var cidrs = new KiwiCidrs(cidr);
+        var cidrs = new CidrRange(cidr);
 
         assertThat(cidrs.isInRange(address)).isTrue();
     }
@@ -62,7 +62,7 @@ class KiwiCidrsTest {
             "2000::/16, 2001:db8:0000:0000:0000:0000:0000:003f"
     })
     void shouldReturnFalseWhenAddressIsNotInRangeOfCidr(String cidr, String address) {
-        var cidrs = new KiwiCidrs(cidr);
+        var cidrs = new CidrRange(cidr);
 
         assertThat(cidrs.isInRange(address)).isFalse();
     }
