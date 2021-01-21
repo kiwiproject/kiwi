@@ -1,6 +1,7 @@
 package org.kiwiproject.net;
 
 import static com.google.common.base.Strings.nullToEmpty;
+import static java.util.stream.Collectors.toList;
 
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.net.HostAndPort;
@@ -13,10 +14,17 @@ import lombok.ToString;
 import lombok.experimental.UtilityClass;
 import lombok.extern.slf4j.Slf4j;
 
+import java.io.UncheckedIOException;
+import java.net.Inet4Address;
+import java.net.Inet6Address;
 import java.net.InetAddress;
 import java.net.MalformedURLException;
+import java.net.NetworkInterface;
+import java.net.SocketException;
 import java.net.URL;
 import java.net.UnknownHostException;
+import java.util.Collections;
+import java.util.List;
 import java.util.Optional;
 import java.util.function.Supplier;
 
@@ -176,6 +184,62 @@ public class KiwiInternetAddresses {
     }
 
     /**
+     * Finds the first IP Address on the machine that matches one of the given subnet CIDRs. The {@link IpScheme} is used
+     * to filter the IP addresses by IPv4 or IPv6.
+     *
+     * @param subnetCidrs   A list of CIDRs used to match against the machine's IP addresses.
+     * @param ipScheme      Whether to filter by IPv4 or IPv6
+     * @return the first found matching IP address
+     * @throws IllegalStateException if a matching IP address can not be found.
+     */
+    public static String findFirstMatchingAddress(List<String> subnetCidrs, IpScheme ipScheme) {
+        var ipAddresses = getEnumeratedNetworkAddresses(ipScheme);
+        return findFirstMatchingAddress(subnetCidrs, ipAddresses);
+    }
+
+    @VisibleForTesting
+    static List<String> getEnumeratedNetworkAddresses(IpScheme ipScheme) {
+        try {
+            var interfaces = NetworkInterface.getNetworkInterfaces();
+            return Collections.list(interfaces)
+                    .stream()
+                    .map(networkInterface -> getInterfaceIps(networkInterface, ipScheme))
+                    .flatMap(List::stream)
+                    .collect(toList());
+        } catch (SocketException e) {
+            throw new UncheckedIOException("Error getting enumeration of network interfaces.", e);
+        }
+    }
+
+    private static List<String> getInterfaceIps(NetworkInterface networkInterface, IpScheme ipScheme) {
+        var addresses = networkInterface.getInetAddresses();
+
+        return Collections.list(addresses)
+                .stream()
+                .filter(address -> ipScheme.getInetAddressClass().isAssignableFrom(address.getClass()))
+                .map(InetAddress::getHostAddress)
+                .collect(toList());
+    }
+
+    /**
+     * Finds the first IP Address from a given list of ip addresses that matches one of the given subnet CIDRs.
+     *
+     * @param subnetCidrs   A list of CIDRs used to match against the machine's IP addresses.
+     * @param ipAddresses   A list of IP addresses to search for a match.
+     * @return the first found matching IP address
+     * @throws IllegalStateException if a matching IP address can not be found.
+     */
+    public static String findFirstMatchingAddress(List<String> subnetCidrs, List<String> ipAddresses) {
+        return subnetCidrs.stream()
+                .map(KiwiCidrs::new)
+                .map(cidr -> ipAddresses.stream().filter(cidr::isInRange).findFirst())
+                .flatMap(Optional::stream)
+                .findFirst()
+                .orElseThrow(() ->
+                        new IllegalStateException("Unable to find IP address matching a valid subnet CIDR in: " + subnetCidrs));
+    }
+
+    /**
      * Simple value class encapsulating a host name and IP address
      */
     @Getter
@@ -215,6 +279,20 @@ public class KiwiInternetAddresses {
     static class InetAddressFinder {
         InetAddress getLocalHost() throws UnknownHostException {
             return InetAddress.getLocalHost();
+        }
+    }
+
+    /**
+     * Enum that defines the IP scheme to use when looking up a machine's IP addresses.
+     */
+    public enum IpScheme {
+        IPV6(Inet6Address.class), IPV4(Inet4Address.class);
+
+        @Getter
+        private final Class<? extends InetAddress> inetAddressClass;
+
+        IpScheme(Class<? extends InetAddress> inetAddressClass) {
+            this.inetAddressClass = inetAddressClass;
         }
     }
 }
