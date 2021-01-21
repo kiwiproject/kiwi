@@ -1,6 +1,7 @@
 package org.kiwiproject.net;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatIllegalStateException;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -8,16 +9,20 @@ import static org.mockito.Mockito.when;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.kiwiproject.net.KiwiInternetAddresses.InetAddressFinder;
+import org.kiwiproject.net.KiwiInternetAddresses.IpScheme;
 import org.kiwiproject.net.KiwiInternetAddresses.SimpleHostInfo;
 
 import java.net.InetAddress;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.UnknownHostException;
+import java.util.List;
 import java.util.function.Supplier;
 
+@SuppressWarnings("UnstableApiUsage")
 @DisplayName("KiwiInternetAddresses")
 class KiwiInternetAddressesTest {
 
@@ -233,4 +238,154 @@ class KiwiInternetAddressesTest {
             throw new RuntimeException(e);
         }
     }
+
+    @Test
+    void shouldGetEnumeratedNetworkAddresses() {
+        var ipv4Addresses = KiwiInternetAddresses.getEnumeratedNetworkAddresses(IpScheme.IPV4);
+        assertThat(ipv4Addresses).isNotEmpty();
+
+        var ipv6Addresses = KiwiInternetAddresses.getEnumeratedNetworkAddresses(IpScheme.IPV6);
+        assertThat(ipv6Addresses).isNotEmpty();
+    }
+
+    @Nested
+    class FindFirstMatchingAddress {
+
+        @Test
+        void shouldReturnOptionalEmptyWhenAddressIsNotFound() {
+            var subnetCidrs = List.of("192.168.50.0/24", "192.168.100.0/24", "192.168.150.0/24");
+            var ipAddresses = List.of("192.168.200.5");
+
+            var address = KiwiInternetAddresses.findFirstMatchingAddress(subnetCidrs, ipAddresses);
+
+            assertThat(address).isEmpty();
+        }
+
+        @Test
+        void shouldReturnOptionalWithAddressWhenAddressIsFound() {
+            var subnetCidrs = List.of("192.168.50.0/24", "192.168.100.0/24", "192.168.150.0/24");
+            var ipAddresses = List.of("192.168.100.5", "192.168.200.5", "192.168.10.5");
+
+            var address = KiwiInternetAddresses.findFirstMatchingAddress(subnetCidrs, ipAddresses);
+
+            assertThat(address).hasValue("192.168.100.5");
+        }
+
+        @Test
+        void shouldReturnOptionalWithFoundAddressThatMatchesAGivenIpv4CidrByLookingUpAddresses() {
+            var subnetCidrs = List.of("0.0.0.0/0");
+
+            var address = KiwiInternetAddresses.findFirstMatchingAddress(subnetCidrs, IpScheme.IPV4);
+
+            assertThat(address).isPresent();
+        }
+
+        @Test
+        void shouldReturnOptionalWithFoundAddressThatMatchesAGivenIpv6CidrByLookingUpAddresses() {
+            var subnetCidrs = List.of("::/0");
+
+            var address = KiwiInternetAddresses.findFirstMatchingAddress(subnetCidrs, IpScheme.IPV6);
+
+            assertThat(address).isPresent();
+        }
+
+        @Nested
+        class OrNull {
+
+            @Test
+            void shouldReturnNullWhenAddressIsNotFound() {
+                var subnetCidrs = List.of("192.168.50.0/24", "192.168.100.0/24", "192.168.150.0/24");
+                var ipAddresses = List.of("192.168.200.5");
+
+                var address = KiwiInternetAddresses.findFirstMatchingAddressOrNull(subnetCidrs, ipAddresses);
+
+                assertThat(address).isNull();
+            }
+
+            @Test
+            void shouldReturnAddressWhenAddressIsFound() {
+                var subnetCidrs = List.of("192.168.50.0/24", "192.168.100.0/24", "192.168.150.0/24");
+                var ipAddresses = List.of("192.168.100.5", "192.168.200.5", "192.168.10.5");
+
+                var address = KiwiInternetAddresses.findFirstMatchingAddressOrNull(subnetCidrs, ipAddresses);
+
+                assertThat(address).isEqualTo("192.168.100.5");
+            }
+        }
+
+        @Nested
+        class OrThrow {
+
+            @Test
+            void shouldThrowWhenAddressIsNotFound() {
+                var subnetCidrs = List.of("192.168.50.0/24", "192.168.100.0/24", "192.168.150.0/24");
+                var ipAddresses = List.of("192.168.200.5");
+
+                assertThatIllegalStateException()
+                        .isThrownBy(() -> KiwiInternetAddresses.findFirstMatchingAddressOrThrow(subnetCidrs, ipAddresses))
+                        .withMessageStartingWith("Unable to find IP address matching a valid subnet CIDR in: ");
+            }
+
+            @Test
+            void shouldReturnAddressWhenAddressIsFound() {
+                var subnetCidrs = List.of("192.168.50.0/24", "192.168.100.0/24", "192.168.150.0/24");
+                var ipAddresses = List.of("192.168.100.5", "192.168.200.5", "192.168.10.5");
+
+                var address = KiwiInternetAddresses.findFirstMatchingAddressOrThrow(subnetCidrs, ipAddresses);
+
+                assertThat(address).isEqualTo("192.168.100.5");
+            }
+
+            @Test
+            void shouldThrowIllegalStateWhenRequestedIPDoesNotMatchCidrScheme() {
+                assertThatIllegalStateException()
+                        .isThrownBy(() -> KiwiInternetAddresses.findFirstMatchingAddressOrThrow(List.of("127.0.0.1/8"), IpScheme.IPV6))
+                        .withMessageStartingWith("Unable to find IP address matching a valid subnet CIDR in: ");
+            }
+        }
+
+    }
+
+    @Nested
+    class FindMatchingAddresses {
+
+        @Test
+        void shouldReturnListOfMatchingAddresses() {
+            var subnetCidrs = List.of("192.168.50.0/24", "192.168.100.0/24", "192.168.150.0/24");
+            var ipAddresses = List.of("192.168.100.5", "192.168.200.5", "192.168.150.5");
+
+            var addresses = KiwiInternetAddresses.findMatchingAddresses(subnetCidrs, ipAddresses);
+
+            assertThat(addresses).contains("192.168.100.5", "192.168.150.5");
+        }
+
+        @Test
+        void shouldReturnEmptyListOfMatchingAddressesWhenNoMatchesFound() {
+            var subnetCidrs = List.of("192.168.50.0/24", "192.168.100.0/24", "192.168.150.0/24");
+            var ipAddresses = List.of("192.168.10.5", "192.168.20.5", "192.168.30.5");
+
+            var addresses = KiwiInternetAddresses.findMatchingAddresses(subnetCidrs, ipAddresses);
+
+            assertThat(addresses).isEmpty();
+        }
+
+        @Test
+        void shouldReturnListWithFoundAddressThatMatchesAGivenIpv4CidrByLookingUpAddresses() {
+            var subnetCidrs = List.of("0.0.0.0/0");
+
+            var address = KiwiInternetAddresses.findMatchingAddresses(subnetCidrs, IpScheme.IPV4);
+
+            assertThat(address).isNotEmpty();
+        }
+
+        @Test
+        void shouldReturnListWithFoundAddressThatMatchesAGivenIpv6CidrByLookingUpAddresses() {
+            var subnetCidrs = List.of("::/0");
+
+            var address = KiwiInternetAddresses.findMatchingAddresses(subnetCidrs, IpScheme.IPV6);
+
+            assertThat(address).isNotEmpty();
+        }
+    }
+
 }
