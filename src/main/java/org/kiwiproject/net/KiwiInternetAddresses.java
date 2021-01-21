@@ -184,17 +184,109 @@ public class KiwiInternetAddresses {
     }
 
     /**
-     * Finds the first IP Address on the machine that matches one of the given subnet CIDRs. The {@link IpScheme} is used
-     * to filter the IP addresses by IPv4 or IPv6.
+     * Finds the first IP address on the machine that matches one of the given subnet CIDRs or returns null if not found.
+     * The {@link IpScheme} is used to filter the IP addresses by IPv4 or IPv6.
+     *
+     * @param subnetCidrs   A list of CIDRs used to match against the machine's IP addresses.
+     * @param ipScheme      Whether to filter by IPv4 or IPv6.
+     * @return the first found matching IP address or null.
+     */
+    public static String findFirstMatchingAddressOrNull(List<String> subnetCidrs, IpScheme ipScheme) {
+        return findFirstMatchingAddress(subnetCidrs, ipScheme).orElse(null);
+    }
+
+    /**
+     * Finds the first IP address from a given list of ip addresses that matches one of the given subnet CIDRs or returns
+     * null if not found.
+     *
+     * @param subnetCidrs   A list of CIDRs used to match against the machine's IP addresses.
+     * @param ipAddresses   A list of IP addresses to search for a match.
+     * @return the first found matching IP address or null.
+     */
+    public static String findFirstMatchingAddressOrNull(List<String> subnetCidrs, List<String> ipAddresses) {
+        return findFirstMatchingAddress(subnetCidrs, ipAddresses).orElse(null);
+    }
+
+    /**
+     * Finds the first IP address on the machine that matches one of the given subnet CIDRs or throws
+     * IllegalStateException if not found. The {@link IpScheme} is used to filter the IP addresses by IPv4 or IPv6.
+     *
+     * @param subnetCidrs   A list of CIDRs used to match against the machine's IP addresses.
+     * @param ipScheme      Whether to filter by IPv4 or IPv6.
+     * @return the first found matching IP address.
+     * @throws IllegalStateException if a matching IP address can not be found.
+     */
+    public static String findFirstMatchingAddressOrThrow(List<String> subnetCidrs, IpScheme ipScheme) {
+        return findFirstMatchingAddress(subnetCidrs, ipScheme).orElseThrow(() ->
+                new IllegalStateException("Unable to find IP address matching a valid subnet CIDR in: " + subnetCidrs));
+    }
+
+    /**
+     * Finds the first IP address on the machine that matches one of the given subnet CIDRs or throws
+     * IllegalStateException if not found.
+     *
+     * @param subnetCidrs   A list of CIDRs used to match against the machine's IP addresses.
+     * @param ipAddresses   A list of IP addresses to search for a match.
+     * @return the first found matching IP address.
+     * @throws IllegalStateException if a matching IP address can not be found.
+     */
+    public static String findFirstMatchingAddressOrThrow(List<String> subnetCidrs, List<String> ipAddresses) {
+        return findFirstMatchingAddress(subnetCidrs, ipAddresses).orElseThrow(() ->
+                new IllegalStateException("Unable to find IP address matching a valid subnet CIDR in: " + subnetCidrs));
+    }
+
+    /**
+     * Attempts to find the first IP address on the machine that matches one of the given subnet CIDRs. The
+     * {@link IpScheme} is used to filter the IP addresses by IPv4 or IPv6.
      *
      * @param subnetCidrs   A list of CIDRs used to match against the machine's IP addresses.
      * @param ipScheme      Whether to filter by IPv4 or IPv6
-     * @return the first found matching IP address
-     * @throws IllegalStateException if a matching IP address can not be found.
+     * @return an Optional containing the first found matching IP address or {@link Optional#empty()} if not found.
      */
-    public static String findFirstMatchingAddress(List<String> subnetCidrs, IpScheme ipScheme) {
+    public static Optional<String> findFirstMatchingAddress(List<String> subnetCidrs, IpScheme ipScheme) {
         var ipAddresses = getEnumeratedNetworkAddresses(ipScheme);
         return findFirstMatchingAddress(subnetCidrs, ipAddresses);
+    }
+
+    /**
+     * Attempts to find the first IP address from a given list of ip addresses that matches one of the given subnet CIDRs.
+     *
+     * @param subnetCidrs   A list of CIDRs used to match against the machine's IP addresses.
+     * @param ipAddresses   A list of IP addresses to search for a match.
+     * @return an Optional containing the first found matching IP address or {@link Optional#empty()} if not found.
+     */
+    public static Optional<String> findFirstMatchingAddress(List<String> subnetCidrs, List<String> ipAddresses) {
+        return findMatchingAddresses(subnetCidrs, ipAddresses)
+                .stream()
+                .findFirst();
+    }
+
+    /**
+     * Finds all IP addresses on the machine that matches one of the given subnet CIDRs. The {@link IpScheme} is used to
+     * filter the IP addresses by IPv4 or IPv6.
+     *
+     * @param subnetCidrs   A list of CIDRs used to match against the machine's IP addresses.
+     * @param ipScheme      Whether to filter by IPv4 or IPv6
+     * @return a list of matching IP addresses.
+     */
+    public static List<String> findMatchingAddresses(List<String> subnetCidrs, IpScheme ipScheme) {
+        var ipAddresses = getEnumeratedNetworkAddresses(ipScheme);
+        return findMatchingAddresses(subnetCidrs, ipAddresses);
+    }
+
+    /**
+     * Finds all IP addresses from a given list of ip addresses that matches one of the given subnet CIDRs.
+     *
+     * @param subnetCidrs   A list of CIDRs used to match against the machine's IP addresses.
+     * @param ipAddresses   A list of IP addresses to search for a match.
+     * @return a list of matching IP addresses.
+     */
+    public static List<String> findMatchingAddresses(List<String> subnetCidrs, List<String> ipAddresses) {
+        return subnetCidrs.stream()
+                .map(KiwiCidrs::new)
+                .map(cidr -> ipAddresses.stream().filter(cidr::isInRange).findFirst())
+                .flatMap(Optional::stream)
+                .collect(toList());
     }
 
     @VisibleForTesting
@@ -219,24 +311,6 @@ public class KiwiInternetAddresses {
                 .filter(address -> ipScheme.getInetAddressClass().isAssignableFrom(address.getClass()))
                 .map(InetAddress::getHostAddress)
                 .collect(toList());
-    }
-
-    /**
-     * Finds the first IP Address from a given list of ip addresses that matches one of the given subnet CIDRs.
-     *
-     * @param subnetCidrs   A list of CIDRs used to match against the machine's IP addresses.
-     * @param ipAddresses   A list of IP addresses to search for a match.
-     * @return the first found matching IP address
-     * @throws IllegalStateException if a matching IP address can not be found.
-     */
-    public static String findFirstMatchingAddress(List<String> subnetCidrs, List<String> ipAddresses) {
-        return subnetCidrs.stream()
-                .map(KiwiCidrs::new)
-                .map(cidr -> ipAddresses.stream().filter(cidr::isInRange).findFirst())
-                .flatMap(Optional::stream)
-                .findFirst()
-                .orElseThrow(() ->
-                        new IllegalStateException("Unable to find IP address matching a valid subnet CIDR in: " + subnetCidrs));
     }
 
     /**

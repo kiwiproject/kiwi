@@ -9,9 +9,10 @@ import java.nio.ByteBuffer;
 
 /**
  * Small utility to analyze CIDR information.  Supports both IPv4 and IPv6.
- *
- * This utility was copied and enhanced from https://github.com/edazdarevic/CIDRUtils which has not been updated since
- * 2019 and seems to be unmaintained.
+ * <p>
+ * This utility was copied and enhanced from
+ * <a href="https://github.com/edazdarevic/CIDRUtils">https://github.com/edazdarevic/CIDRUtils</a> which has not been
+ * updated since 2019 and seems to be unmaintained.
  */
 @SuppressWarnings("UnstableApiUsage")
 @Slf4j
