@@ -53,7 +53,7 @@
         <jboss-logging.version>3.4.1.Final</jboss-logging.version>
         <joda-time.version>2.10.7</joda-time.version>
         <jsch.version>0.1.55</jsch.version>
-        <lombok.version>1.18.16</lombok.version>
+        <lombok.version>1.18.18</lombok.version>
         <metrics-jdbi3.version>4.1.16</metrics-jdbi3.version>
         <postgresql.version>42.2.18</postgresql.version>
         <metrics-jetty9.version>4.1.16</metrics-jetty9.version>
