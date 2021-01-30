@@ -1,6 +1,28 @@
 package org.kiwiproject.jsch;
 
-import com.jcraft.jsch.*;
+import static org.apache.commons.io.IOUtils.toInputStream;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.kiwiproject.internal.Fixtures.fixture;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.ArgumentMatchers.isA;
+import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.reset;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoMoreInteractions;
+import static org.mockito.Mockito.when;
+
+import com.jcraft.jsch.ChannelSftp;
+import com.jcraft.jsch.HostKey;
+import com.jcraft.jsch.HostKeyRepository;
+import com.jcraft.jsch.JSch;
+import com.jcraft.jsch.JSchException;
+import com.jcraft.jsch.Session;
+import com.jcraft.jsch.SftpATTRS;
+import com.jcraft.jsch.SftpException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -13,13 +35,6 @@ import java.nio.file.Path;
 import java.util.List;
 import java.util.Vector;
 import java.util.function.BiFunction;
-
-import static org.apache.commons.io.IOUtils.toInputStream;
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.kiwiproject.internal.Fixtures.fixture;
-import static org.mockito.ArgumentMatchers.*;
-import static org.mockito.Mockito.*;
 
 /**
  * @implNote This test has a lot more mocking than I would like, but I have not found an easy way yet to

@@ -1,5 +1,18 @@
 package org.kiwiproject.dropwizard.jdbi2;
 
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.spy;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoInteractions;
+import static org.mockito.Mockito.verifyNoMoreInteractions;
+import static org.mockito.Mockito.when;
+
 import com.codahale.metrics.MetricRegistry;
 import com.codahale.metrics.health.HealthCheckRegistry;
 import io.dropwizard.db.ManagedDataSource;
@@ -14,11 +27,6 @@ import org.junit.jupiter.api.Test;
 
 import java.sql.Connection;
 import java.sql.SQLException;
-
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
-import static org.mockito.ArgumentMatchers.*;
-import static org.mockito.Mockito.*;
 
 @DisplayName("Jdbi2Builders")
 class Jdbi2BuildersTest {
