@@ -1,28 +1,6 @@
 package org.kiwiproject.jsch;
 
-import static org.apache.commons.io.IOUtils.toInputStream;
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.kiwiproject.internal.Fixtures.fixture;
-import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.ArgumentMatchers.isA;
-import static org.mockito.Mockito.doThrow;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.reset;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyNoMoreInteractions;
-import static org.mockito.Mockito.when;
-
-import com.jcraft.jsch.ChannelSftp;
-import com.jcraft.jsch.HostKey;
-import com.jcraft.jsch.HostKeyRepository;
-import com.jcraft.jsch.JSch;
-import com.jcraft.jsch.JSchException;
-import com.jcraft.jsch.Session;
-import com.jcraft.jsch.SftpATTRS;
-import com.jcraft.jsch.SftpException;
+import com.jcraft.jsch.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -35,6 +13,13 @@ import java.nio.file.Path;
 import java.util.List;
 import java.util.Vector;
 import java.util.function.BiFunction;
+
+import static org.apache.commons.io.IOUtils.toInputStream;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.kiwiproject.internal.Fixtures.fixture;
+import static org.mockito.ArgumentMatchers.*;
+import static org.mockito.Mockito.*;
 
 /**
  * @implNote This test has a lot more mocking than I would like, but I have not found an easy way yet to
@@ -71,9 +56,9 @@ class SftpTransfersTest {
         when(jsch.getHostKeyRepository()).thenReturn(hostKeyRepository);
 
         // Mock establishment of a new Session
-        when(jsch.getSession(eq(config.getUser()), eq(config.getHost()), eq(config.getPort())))
+        when(jsch.getSession(config.getUser(), config.getHost(), config.getPort()))
                 .thenReturn(session);
-        when(session.openChannel(eq("sftp"))).thenReturn(channelSftp);
+        when(session.openChannel("sftp")).thenReturn(channelSftp);
         when(channelSftp.isConnected()).thenReturn(true);
 
         // Create new connector and transfer objects
@@ -193,7 +178,7 @@ class SftpTransfersTest {
             sftp.getAndStoreFile(Path.of(config.getRemoteBasePath()), tempDirForPulls, "test-file-to-pull.txt");
 
             verify(channelSftp).cd("/tmp");
-            verify(channelSftp).get(eq("test-file-to-pull.txt"));
+            verify(channelSftp).get("test-file-to-pull.txt");
 
             Path localPath = tempDirForPulls.resolve("test-file-to-pull.txt");
             assertThat(localPath).exists();
@@ -207,7 +192,7 @@ class SftpTransfersTest {
             sftp.getAndStoreFile(Path.of(config.getRemoteBasePath()), tempDirForPulls.resolve("shouldBeDeleted"), "test-file-to-pull.txt");
 
             verify(channelSftp).cd("/tmp");
-            verify(channelSftp).get(eq("test-file-to-pull.txt"));
+            verify(channelSftp).get("test-file-to-pull.txt");
 
             Path localPath = tempDirForPulls.resolve("shouldBeDeleted");
             assertThat(localPath.resolve("test-file-to-pull.txt")).exists();
@@ -221,7 +206,7 @@ class SftpTransfersTest {
             sftp.getAndStoreFile(Path.of(config.getRemoteBasePath()), tempDirForPulls, "test-file-to-pull.txt", "new-name.txt");
 
             verify(channelSftp).cd("/tmp");
-            verify(channelSftp).get(eq("test-file-to-pull.txt"));
+            verify(channelSftp).get("test-file-to-pull.txt");
 
             Path localPath = tempDirForPulls.resolve("new-name.txt");
             assertThat(localPath).exists();
@@ -238,7 +223,7 @@ class SftpTransfersTest {
                     .hasMessage(("1: Test exception"));
 
             verify(channelSftp).cd("/tmp");
-            verify(channelSftp).get(eq("test-file-to-pull.txt"));
+            verify(channelSftp).get("test-file-to-pull.txt");
 
             Path localPath = tempDirForPulls.resolve("new-name.txt");
             assertThat(localPath).doesNotExist();
@@ -268,10 +253,10 @@ class SftpTransfersTest {
 
             verify(channelSftp, times(2)).cd("/tmp");
             verify(channelSftp, times(2)).cd("/tmp/test-dir");
-            verify(channelSftp).get(eq("test-file-1.txt"));
-            verify(channelSftp).get(eq("test-file-2.txt"));
-            verify(channelSftp).get(eq("sub-test-file-1.txt"));
-            verify(channelSftp).get(eq("sub-test-file-2.txt"));
+            verify(channelSftp).get("test-file-1.txt");
+            verify(channelSftp).get("test-file-2.txt");
+            verify(channelSftp).get("sub-test-file-1.txt");
+            verify(channelSftp).get("sub-test-file-2.txt");
 
             assertThat(localPath).exists();
             assertThat(localPath.resolve("test-file-1.txt")).exists();
@@ -300,7 +285,7 @@ class SftpTransfersTest {
             assertThat(fileContent).isEqualTo(input);
 
             verify(channelSftp).cd("/tmp");
-            verify(channelSftp).get(eq("test-file-to-pull.txt"));
+            verify(channelSftp).get("test-file-to-pull.txt");
         }
 
         @Test
@@ -314,7 +299,7 @@ class SftpTransfersTest {
                     .hasMessage("1: Test exception");
 
             verify(channelSftp).cd("/tmp");
-            verify(channelSftp).get(eq("test-file-to-pull.txt"));
+            verify(channelSftp).get("test-file-to-pull.txt");
         }
     }
 
@@ -346,7 +331,7 @@ class SftpTransfersTest {
             sftp.deleteRemoteFile(Path.of(config.getRemoteBasePath()), "test-file-to-pull.txt");
 
             verify(channelSftp).cd("/tmp");
-            verify(channelSftp).rm(eq("test-file-to-pull.txt"));
+            verify(channelSftp).rm("test-file-to-pull.txt");
         }
     }
 

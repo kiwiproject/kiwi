@@ -1,21 +1,5 @@
 package org.kiwiproject.dropwizard.config;
 
-import static com.google.common.base.Preconditions.checkState;
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.SoftAssertions.assertSoftly;
-import static org.awaitility.Awaitility.await;
-import static org.awaitility.Durations.TEN_SECONDS;
-import static org.kiwiproject.validation.ValidationTestHelper.assertNoPropertyViolations;
-import static org.kiwiproject.validation.ValidationTestHelper.assertNoViolations;
-import static org.kiwiproject.validation.ValidationTestHelper.assertOnePropertyViolation;
-import static org.kiwiproject.validation.ValidationTestHelper.newValidator;
-import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.ArgumentMatchers.isA;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.spy;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
-
 import com.codahale.metrics.MetricRegistry;
 import com.codahale.metrics.health.HealthCheckRegistry;
 import io.dropwizard.lifecycle.setup.LifecycleEnvironment;
@@ -42,6 +26,16 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
+
+import static com.google.common.base.Preconditions.checkState;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.SoftAssertions.assertSoftly;
+import static org.awaitility.Awaitility.await;
+import static org.awaitility.Durations.TEN_SECONDS;
+import static org.kiwiproject.validation.ValidationTestHelper.*;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.ArgumentMatchers.isA;
+import static org.mockito.Mockito.*;
 
 @DisplayName("TimeBasedDirectoryCleanerConfig")
 @Slf4j
@@ -121,7 +115,8 @@ class TimeBasedDirectoryCleanerConfigTest {
 
     private void shutdownAndAwaitTermination(ScheduledExecutorService executorService) throws InterruptedException {
         executorService.shutdown();
-        executorService.awaitTermination(1, TimeUnit.SECONDS);
+        boolean terminated = executorService.awaitTermination(1, TimeUnit.SECONDS);
+        LOG.info("executorService terminated within timeout? {}", terminated);
     }
 
     /**
@@ -301,8 +296,8 @@ class TimeBasedDirectoryCleanerConfigTest {
                     isA(TimeBasedDirectoryCleanerHealthCheck.class));
 
             verify(lifecycleSpy).scheduledExecutorService(
-                    eq("timeBasedDirectoryCleaner(" + temporaryPath + ")-%d"),
-                    eq(true));
+                    "timeBasedDirectoryCleaner(" + temporaryPath + ")-%d",
+                    true);
         } finally {
             shutdownAndAwaitTermination(executorService);
         }
