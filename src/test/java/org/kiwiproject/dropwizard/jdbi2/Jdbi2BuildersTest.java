@@ -105,9 +105,9 @@ class Jdbi2BuildersTest {
         verify(environment).lifecycle();
         verify(environment).healthChecks();
         verify(environment).getHealthCheckExecutorService();
-        verify(lifecycleEnvironment).manage(eq(managedDataSource));
+        verify(lifecycleEnvironment).manage(managedDataSource);
         verify(healthCheckRegistry).register(eq(healthCheckName), any(DBIHealthCheck.class));
-        verify(pooledDataSourceFactory).build(eq(metricRegistry), eq(healthCheckName));
+        verify(pooledDataSourceFactory).build(metricRegistry, healthCheckName);
         verify(pooledDataSourceFactory).getValidationQuery();
         verify(pooledDataSourceFactory).getValidationQueryTimeout();
         verify(pooledDataSourceFactory).isAutoCommentsEnabled();
@@ -196,7 +196,7 @@ class Jdbi2BuildersTest {
         verify(environment).lifecycle();
         verify(environment).healthChecks();
         verify(environment).getHealthCheckExecutorService();
-        verify(lifecycleEnvironment).manage(eq(managedDataSource));
+        verify(lifecycleEnvironment).manage(managedDataSource);
         verify(healthCheckRegistry).register(eq(healthCheckName), any(DBIHealthCheck.class));
         verify(pooledDataSourceFactory).getValidationQuery();
         verify(pooledDataSourceFactory).getValidationQueryTimeout();

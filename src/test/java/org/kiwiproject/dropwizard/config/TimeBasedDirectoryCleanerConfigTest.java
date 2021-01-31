@@ -121,7 +121,8 @@ class TimeBasedDirectoryCleanerConfigTest {
 
     private void shutdownAndAwaitTermination(ScheduledExecutorService executorService) throws InterruptedException {
         executorService.shutdown();
-        executorService.awaitTermination(1, TimeUnit.SECONDS);
+        boolean terminated = executorService.awaitTermination(1, TimeUnit.SECONDS);
+        LOG.info("executorService terminated within timeout? {}", terminated);
     }
 
     /**
@@ -301,8 +302,8 @@ class TimeBasedDirectoryCleanerConfigTest {
                     isA(TimeBasedDirectoryCleanerHealthCheck.class));
 
             verify(lifecycleSpy).scheduledExecutorService(
-                    eq("timeBasedDirectoryCleaner(" + temporaryPath + ")-%d"),
-                    eq(true));
+                    "timeBasedDirectoryCleaner(" + temporaryPath + ")-%d",
+                    true);
         } finally {
             shutdownAndAwaitTermination(executorService);
         }

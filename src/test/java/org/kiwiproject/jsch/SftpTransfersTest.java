@@ -71,9 +71,9 @@ class SftpTransfersTest {
         when(jsch.getHostKeyRepository()).thenReturn(hostKeyRepository);
 
         // Mock establishment of a new Session
-        when(jsch.getSession(eq(config.getUser()), eq(config.getHost()), eq(config.getPort())))
+        when(jsch.getSession(config.getUser(), config.getHost(), config.getPort()))
                 .thenReturn(session);
-        when(session.openChannel(eq("sftp"))).thenReturn(channelSftp);
+        when(session.openChannel("sftp")).thenReturn(channelSftp);
         when(channelSftp.isConnected()).thenReturn(true);
 
         // Create new connector and transfer objects
@@ -193,7 +193,7 @@ class SftpTransfersTest {
             sftp.getAndStoreFile(Path.of(config.getRemoteBasePath()), tempDirForPulls, "test-file-to-pull.txt");
 
             verify(channelSftp).cd("/tmp");
-            verify(channelSftp).get(eq("test-file-to-pull.txt"));
+            verify(channelSftp).get("test-file-to-pull.txt");
 
             Path localPath = tempDirForPulls.resolve("test-file-to-pull.txt");
             assertThat(localPath).exists();
@@ -207,7 +207,7 @@ class SftpTransfersTest {
             sftp.getAndStoreFile(Path.of(config.getRemoteBasePath()), tempDirForPulls.resolve("shouldBeDeleted"), "test-file-to-pull.txt");
 
             verify(channelSftp).cd("/tmp");
-            verify(channelSftp).get(eq("test-file-to-pull.txt"));
+            verify(channelSftp).get("test-file-to-pull.txt");
 
             Path localPath = tempDirForPulls.resolve("shouldBeDeleted");
             assertThat(localPath.resolve("test-file-to-pull.txt")).exists();
@@ -221,7 +221,7 @@ class SftpTransfersTest {
             sftp.getAndStoreFile(Path.of(config.getRemoteBasePath()), tempDirForPulls, "test-file-to-pull.txt", "new-name.txt");
 
             verify(channelSftp).cd("/tmp");
-            verify(channelSftp).get(eq("test-file-to-pull.txt"));
+            verify(channelSftp).get("test-file-to-pull.txt");
 
             Path localPath = tempDirForPulls.resolve("new-name.txt");
             assertThat(localPath).exists();
@@ -238,7 +238,7 @@ class SftpTransfersTest {
                     .hasMessage(("1: Test exception"));
 
             verify(channelSftp).cd("/tmp");
-            verify(channelSftp).get(eq("test-file-to-pull.txt"));
+            verify(channelSftp).get("test-file-to-pull.txt");
 
             Path localPath = tempDirForPulls.resolve("new-name.txt");
             assertThat(localPath).doesNotExist();
@@ -268,10 +268,10 @@ class SftpTransfersTest {
 
             verify(channelSftp, times(2)).cd("/tmp");
             verify(channelSftp, times(2)).cd("/tmp/test-dir");
-            verify(channelSftp).get(eq("test-file-1.txt"));
-            verify(channelSftp).get(eq("test-file-2.txt"));
-            verify(channelSftp).get(eq("sub-test-file-1.txt"));
-            verify(channelSftp).get(eq("sub-test-file-2.txt"));
+            verify(channelSftp).get("test-file-1.txt");
+            verify(channelSftp).get("test-file-2.txt");
+            verify(channelSftp).get("sub-test-file-1.txt");
+            verify(channelSftp).get("sub-test-file-2.txt");
 
             assertThat(localPath).exists();
             assertThat(localPath.resolve("test-file-1.txt")).exists();
@@ -300,7 +300,7 @@ class SftpTransfersTest {
             assertThat(fileContent).isEqualTo(input);
 
             verify(channelSftp).cd("/tmp");
-            verify(channelSftp).get(eq("test-file-to-pull.txt"));
+            verify(channelSftp).get("test-file-to-pull.txt");
         }
 
         @Test
@@ -314,7 +314,7 @@ class SftpTransfersTest {
                     .hasMessage("1: Test exception");
 
             verify(channelSftp).cd("/tmp");
-            verify(channelSftp).get(eq("test-file-to-pull.txt"));
+            verify(channelSftp).get("test-file-to-pull.txt");
         }
     }
 
@@ -346,7 +346,7 @@ class SftpTransfersTest {
             sftp.deleteRemoteFile(Path.of(config.getRemoteBasePath()), "test-file-to-pull.txt");
 
             verify(channelSftp).cd("/tmp");
-            verify(channelSftp).rm(eq("test-file-to-pull.txt"));
+            verify(channelSftp).rm("test-file-to-pull.txt");
         }
     }
 
