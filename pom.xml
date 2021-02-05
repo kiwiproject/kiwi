@@ -43,8 +43,7 @@
         <hibernate.version>5.4.24.Final</hibernate.version>
         <hibernate-validator.version>6.1.6.Final</hibernate-validator.version>
         <httpclient.version>4.5.13</httpclient.version>
-        <jackson.version>2.10.5.1</jackson.version>
-        <jackson-addon.version>2.10.5</jackson-addon.version>
+        <jackson.version>[2.10.5,2.10.6]</jackson.version>
         <jakarta.annotation-api.version>1.3.5</jakarta.annotation-api.version>
         <jakarta-el.version>3.0.3</jakarta-el.version>
         <jakarta.ws.rs.rs-api.version>2.1.6</jakarta.ws.rs.rs-api.version>
@@ -337,7 +336,7 @@
         <dependency>
             <groupId>com.fasterxml.jackson.dataformat</groupId>
             <artifactId>jackson-dataformat-csv</artifactId>
-            <version>${jackson-addon.version}</version>
+            <version>${jackson.version}</version>
             <scope>provided</scope>
             <exclusions>
                 <exclusion>
@@ -350,7 +349,7 @@
         <dependency>
             <groupId>com.fasterxml.jackson.dataformat</groupId>
             <artifactId>jackson-dataformat-xml</artifactId>
-            <version>${jackson-addon.version}</version>
+            <version>${jackson.version}</version>
             <scope>provided</scope>
             <exclusions>
                 <exclusion>
@@ -367,7 +366,7 @@
         <dependency>
             <groupId>com.fasterxml.jackson.dataformat</groupId>
             <artifactId>jackson-dataformat-yaml</artifactId>
-            <version>${jackson-addon.version}</version>
+            <version>${jackson.version}</version>
             <scope>provided</scope>
             <exclusions>
                 <exclusion>
@@ -380,7 +379,7 @@
         <dependency>
             <groupId>com.fasterxml.jackson.datatype</groupId>
             <artifactId>jackson-datatype-guava</artifactId>
-            <version>${jackson-addon.version}</version>
+            <version>${jackson.version}</version>
             <scope>provided</scope>
             <exclusions>
                 <exclusion>
@@ -397,7 +396,7 @@
         <dependency>
             <groupId>com.fasterxml.jackson.module</groupId>
             <artifactId>jackson-module-jaxb-annotations</artifactId>
-            <version>${jackson-addon.version}</version>
+            <version>${jackson.version}</version>
             <scope>provided</scope>
             <exclusions>
                 <exclusion>
