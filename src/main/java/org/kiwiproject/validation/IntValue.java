@@ -18,12 +18,12 @@ import java.lang.annotation.Target;
  * The annotated element must have a value that can be converted to a Java int or {@link Integer}.
  */
 @Documented
-@Constraint(validatedBy = IntValidator.class)
+@Constraint(validatedBy = IntValueValidator.class)
 @Target({METHOD, FIELD, ANNOTATION_TYPE, CONSTRUCTOR, PARAMETER, TYPE_USE})
 @Retention(RetentionPolicy.RUNTIME)
-public @interface Int {
+public @interface IntValue {
 
-    String message() default "{org.kiwiproject.validation.Int.message}";
+    String message() default "{org.kiwiproject.validation.IntValue.message}";
 
     Class<?>[] groups() default {};
 

@@ -11,8 +11,8 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 
-@DisplayName("IntValidator")
-class IntValidatorTest {
+@DisplayName("IntValueValidator")
+class IntValueValidatorTest {
 
     private static final long ONE_BELOW_MAX_INTEGER = Integer.MIN_VALUE - 1L;
     private static final long ONE_ABOVE_MAX_INTEGER = Integer.MAX_VALUE + 1L;
@@ -78,13 +78,13 @@ class IntValidatorTest {
 
     @Value
     private static class SampleObject {
-        @Int
+        @IntValue
         String value;
     }
 
     @Value
     private static class SampleAllowNullObject {
-        @Int(allowNull = true)
+        @IntValue(allowNull = true)
         String value;
     }
 
