@@ -45,8 +45,16 @@ public class ValidationTestHelper {
         }
     }
 
+    public static void assertOnePropertyViolation(Object object, String propertyName) {
+        assertOnePropertyViolation(DEFAULT_VALIDATOR, object, propertyName);
+    }
+
     public static void assertOnePropertyViolation(Validator validator, Object object, String propertyName) {
         assertPropertyViolations(validator, object, propertyName, 1);
+    }
+
+    public static void assertNoPropertyViolations(Object object, String propertyName) {
+        assertNoPropertyViolations(DEFAULT_VALIDATOR, object, propertyName);
     }
 
     public static void assertNoPropertyViolations(Validator validator, Object object, String propertyName) {
@@ -59,6 +67,12 @@ public class ValidationTestHelper {
                                                 int numExpectedViolations) {
         var violations = validator.validateProperty(object, propertyName);
         assertThat(violations).hasSize(numExpectedViolations);
+    }
+
+    public static void assertPropertyViolations(Object object,
+                                                String propertyName,
+                                                String... expectedMessages) {
+        assertPropertyViolations(DEFAULT_VALIDATOR, object, propertyName, expectedMessages);
     }
 
     public static void assertPropertyViolations(Validator validator,
