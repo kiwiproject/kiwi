@@ -28,6 +28,7 @@ import java.io.IOException;
 import java.io.UncheckedIOException;
 import java.util.List;
 import java.util.Optional;
+import java.util.OptionalLong;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -204,6 +205,28 @@ public class Processes {
     public static long processId(Process process) {
         checkArgumentNotNull(process);
         return process.pid();
+    }
+
+    /**
+     * Get a process id, or "pid", if it is available from the {@link Process} implementation, wrapped inside
+     * an OptionalLong. If the pid is not available for whatever reason, return an empty OptionalLong.
+     *
+     * @param process the process to obtain the process id (pid) from
+     * @return an OptionalLong containing the process if of {@code process} or an empty OptionalLong if the
+     * {@link Process} implementation does not support getting the pid for whatever reason.
+     * @implNote the {@link Process#pid()} method says it can throw {@link UnsupportedOperationException} if the
+     * "implementation does not support this operation" but does not specify under what circumstances that can
+     * happen, and I have not been able to find this information using Google, Bing, or DuckDuckGo. This method
+     * logs a warning along with the exception, so if this occurs check your logs for the possible reason.
+     */
+    public static OptionalLong processIdOrEmpty(Process process) {
+        checkArgumentNotNull(process);
+        try {
+            return OptionalLong.of(process.pid());
+        } catch (UnsupportedOperationException e) {
+            LOG.warn("The JDK cannot get the PID of the given Process. Check stack trace for a possible reason", e);
+            return OptionalLong.empty();
+        }
     }
 
     /**
