@@ -42,6 +42,13 @@ import java.util.concurrent.TimeUnit;
 public class Processes {
 
     /**
+     * Exit code that indicates a {@link Process} terminated normally.
+     *
+     * @see Process#exitValue()
+     */
+    public static final int SUCCESS_EXIT_CODE = 0;
+
+    /**
      * Default number of seconds to wait for termination of a process.
      *
      * @see #kill(long, KillSignal, KillTimeoutAction)
@@ -204,6 +211,31 @@ public class Processes {
     public static long processId(Process process) {
         checkArgumentNotNull(process);
         return process.pid();
+    }
+
+    /**
+     * Check if the given {@link Process} has an exit code representing successful termination.
+     *
+     * @param process the Process, assumed to have exited
+     * @return true if the process terminated successfully
+     * @see #isSuccessfulExitCode(int)
+     * @see #SUCCESS_EXIT_CODE
+     * @see Process#exitValue()
+     */
+    public static boolean hasSuccessfulExitCode(Process process) {
+        return isSuccessfulExitCode(process.exitValue());
+    }
+
+    /**
+     * Check if the given exit code represents successful termination.
+     *
+     * @param exitCode the exit code to check
+     * @return true if the exit code represents success
+     * @see #SUCCESS_EXIT_CODE
+     * @see Process#exitValue()
+     */
+    public static boolean isSuccessfulExitCode(int exitCode) {
+        return exitCode == SUCCESS_EXIT_CODE;
     }
 
     /**
