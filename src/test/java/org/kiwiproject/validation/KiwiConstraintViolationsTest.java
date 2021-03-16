@@ -4,6 +4,7 @@ import static java.util.stream.Collectors.toList;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
 import static org.assertj.core.api.Assertions.entry;
+import static org.kiwiproject.base.KiwiStrings.f;
 import static org.kiwiproject.collect.KiwiLists.first;
 import static org.kiwiproject.collect.KiwiLists.second;
 import static org.mockito.Mockito.mock;
@@ -93,17 +94,53 @@ class KiwiConstraintViolationsTest {
 
         @Test
         void shouldSortPropertiesInErrorMessages() {
-            var bob = new Person("B", 151, null, null);
-            var nameViolation = firstViolation(bob, "fullName");
-            var ageViolation = firstViolation(bob, "age");
-            var birthDateViolation = firstViolation(bob, "birthDate");
-
-            var violations = validator.validate(bob);
-            assertThat(KiwiConstraintViolations.simpleCombinedErrorMessage(violations))
-                    .isEqualTo("age " + ageViolation.getMessage()
-                            + ", birthDate " + birthDateViolation.getMessage()
-                            + ", fullName " + nameViolation.getMessage());
+            assertSimpleCombinedErrorMessage(KiwiConstraintViolations::simpleCombinedErrorMessage);
         }
+    }
+
+    @Nested
+    class SimpleCombinedErrorMessageOrNull {
+
+        @ParameterizedTest
+        @NullAndEmptySource
+        void shouldReturnNull_ForNullOrEmptyArgument(Set<ConstraintViolation<Object>> set) {
+            assertThat(KiwiConstraintViolations.simpleCombinedErrorMessageOrNull(set)).isNull();
+        }
+
+        @Test
+        void shouldSortPropertiesInErrorMessages() {
+            assertSimpleCombinedErrorMessage(KiwiConstraintViolations::simpleCombinedErrorMessageOrNull);
+        }
+    }
+
+    @Nested
+    class SimpleCombinedErrorMessageOrEmpty {
+
+        @ParameterizedTest
+        @NullAndEmptySource
+        void shouldReturnEmptyOptional_ForNullOrEmptyArgument(Set<ConstraintViolation<Object>> set) {
+            assertThat(KiwiConstraintViolations.simpleCombinedErrorMessageOrEmpty(set)).isEmpty();
+        }
+
+        @Test
+        void shouldSortPropertiesInErrorMessages() {
+            assertSimpleCombinedErrorMessage(violations ->
+                    KiwiConstraintViolations.simpleCombinedErrorMessageOrEmpty(violations).orElseThrow());
+        }
+    }
+
+    private void assertSimpleCombinedErrorMessage(Function<Set<ConstraintViolation<Person>>, String> fn) {
+        var bob = new Person("B", 151, null, null);
+        var nameViolation = firstViolation(bob, "fullName");
+        var ageViolation = firstViolation(bob, "age");
+        var birthDateViolation = firstViolation(bob, "birthDate");
+
+        var violations = validator.validate(bob);
+
+        var result = fn.apply(violations);
+        assertThat(result).isEqualTo("age " + ageViolation.getMessage()
+                + ", birthDate " + birthDateViolation.getMessage()
+                + ", fullName " + nameViolation.getMessage());
     }
 
     @Nested
@@ -118,17 +155,53 @@ class KiwiConstraintViolationsTest {
 
         @Test
         void shouldSortPropertiesInErrorMessage() {
-            var bob = new Person("B", 151, null, null);
-            var nameViolation = firstViolation(bob, "fullName");
-            var ageViolation = firstViolation(bob, "age");
-            var birthDateViolation = firstViolation(bob, "birthDate");
-
-            var violations = validator.validate(bob);
-            assertThat(KiwiConstraintViolations.prettyCombinedErrorMessage(violations))
-                    .isEqualTo("Age " + ageViolation.getMessage()
-                            + ", Birth Date " + birthDateViolation.getMessage()
-                            + ", Full Name " + nameViolation.getMessage());
+            assertPrettyCombinedErrorMessage(KiwiConstraintViolations::prettyCombinedErrorMessage);
         }
+    }
+
+    @Nested
+    class PrettyCombinedErrorMessageOrNull {
+
+        @ParameterizedTest
+        @NullAndEmptySource
+        void shouldReturnNull_ForNullOrEmptyArgument(Set<ConstraintViolation<Object>> set) {
+            assertThat(KiwiConstraintViolations.prettyCombinedErrorMessageOrNull(set)).isNull();
+        }
+
+        @Test
+        void shouldSortPropertiesInErrorMessage() {
+            assertPrettyCombinedErrorMessage(KiwiConstraintViolations::prettyCombinedErrorMessageOrNull);
+        }
+    }
+
+    @Nested
+    class PrettyCombinedErrorMessageOrEmpty {
+
+        @ParameterizedTest
+        @NullAndEmptySource
+        void shouldReturnEmptyOptional_ForNullOrEmptyArgument(Set<ConstraintViolation<Object>> set) {
+            assertThat(KiwiConstraintViolations.prettyCombinedErrorMessageOrEmpty(set)).isEmpty();
+        }
+
+        @Test
+        void shouldSortPropertiesInErrorMessage() {
+            assertPrettyCombinedErrorMessage(violations ->
+                    KiwiConstraintViolations.prettyCombinedErrorMessageOrEmpty(violations).orElseThrow());
+        }
+    }
+
+    private void assertPrettyCombinedErrorMessage(Function<Set<ConstraintViolation<Person>>, String> fn) {
+        var bob = new Person("B", 151, null, null);
+        var nameViolation = firstViolation(bob, "fullName");
+        var ageViolation = firstViolation(bob, "age");
+        var birthDateViolation = firstViolation(bob, "birthDate");
+
+        var violations = validator.validate(bob);
+
+        var result = fn.apply(violations);
+        assertThat(result).isEqualTo("Age " + ageViolation.getMessage()
+                + ", Birth Date " + birthDateViolation.getMessage()
+                + ", Full Name " + nameViolation.getMessage());
     }
 
     @Nested
@@ -179,6 +252,54 @@ class KiwiConstraintViolationsTest {
 
             assertThat(KiwiConstraintViolations.combinedErrorMessage(violations, KiwiConstraintViolations::humanize))
                     .isEqualTo("Contact Info / Email / Address " + emailViolation.getMessage());
+        }
+    }
+
+    @Nested
+    class CombinedErrorMessageOrNull {
+
+        @ParameterizedTest
+        @NullAndEmptySource
+        void shouldReturnNull_WhenNoViolationsExist(Set<ConstraintViolation<Person>> violations) {
+            var combined = KiwiConstraintViolations.combinedErrorMessageOrNull(violations, Object::toString);
+            assertThat(combined).isNull();
+        }
+
+        @Test
+        void shouldReturnCombinedMessage_WhenViolationsExist() {
+            var bob = new Person("B", -1, LocalDate.of(1973, 9, 8), null);
+            var violations = validator.validate(bob);
+
+            var ageViolation = firstViolation(bob, "age");
+            var nameViolation = firstViolation(bob, "fullName");
+            assertThat(KiwiConstraintViolations.combinedErrorMessageOrNull(violations, Object::toString))
+                    .isEqualTo("age %s, fullName %s", ageViolation.getMessage(), nameViolation.getMessage());
+        }
+    }
+
+    @Nested
+    class CombinedErrorMessageOrEmpty {
+
+        @ParameterizedTest
+        @NullAndEmptySource
+        void shouldReturnNull_WhenNoViolationsExist(Set<ConstraintViolation<Person>> violations) {
+            var combined = KiwiConstraintViolations.combinedErrorMessageOrEmpty(violations, Object::toString);
+            assertThat(combined).isEmpty();
+        }
+
+        @Test
+        void shouldReturnCombinedMessage_WhenViolationsExist() {
+            var alice = new Person("A", -1, null, null);
+            var violations = validator.validate(alice);
+
+            var ageViolation = firstViolation(alice, "age");
+            var birthDateViolation = firstViolation(alice, "birthDate");
+            var nameViolation = firstViolation(alice, "fullName");
+            var message = KiwiConstraintViolations.combinedErrorMessageOrEmpty(violations, Object::toString);
+
+            var expectedMessage = f("age {}, birthDate {}, fullName {}",
+                    ageViolation.getMessage(), birthDateViolation.getMessage(), nameViolation.getMessage());
+            assertThat(message).contains(expectedMessage);
         }
     }
 
