@@ -16,6 +16,7 @@ import java.time.ZoneId;
 import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 import java.util.Date;
+import java.util.Optional;
 
 /**
  * JDBC utilities.
@@ -237,6 +238,41 @@ public class KiwiJdbc {
     public static Double doubleValueOrNull(ResultSet rs, String columnName) throws SQLException {
         var value = rs.getDouble(columnName);
         return rs.wasNull() ? null : value;
+    }
+
+    /**
+     * Returns an enum constant of the given type from the specified column in the result set.
+     *
+     * @param rs         the ResultSet
+     * @param columnName the column name
+     * @param enumType   the enum class
+     * @param <T>        the enum type parameter
+     * @return an enum constant of type {@code enumType} or {@code null} if the database value was NULL
+     * @throws SQLException             if there is a database problem
+     * @throws IllegalArgumentException if the value from the ResultSet is an invalid enum constant
+     * @see Enum#valueOf(Class, String)
+     */
+    public static <T extends Enum<T>> T enumValueOrNull(ResultSet rs, String columnName, Class<T> enumType)
+            throws SQLException {
+        return enumValueOrEmpty(rs, columnName, enumType).orElse(null);
+    }
+
+    /**
+     * Returns an enum constant of the given type from the specified column in the result set.
+     *
+     * @param rs         the ResultSet
+     * @param columnName the column name
+     * @param enumType   the enum class
+     * @param <T>        the enum type parameter
+     * @return an enum constant of type {@code enumType} or an empty {@link Optional} if the database value was NULL
+     * @throws SQLException             if there is a database problem
+     * @throws IllegalArgumentException if the value from the ResultSet is an invalid enum constant
+     * @see Enum#valueOf(Class, String)
+     */
+    public static <T extends Enum<T>> Optional<T> enumValueOrEmpty(ResultSet rs, String columnName, Class<T> enumType)
+            throws SQLException {
+        var enumName = rs.getString(columnName);
+        return isNull(enumName) ? Optional.empty() : Optional.of(Enum.valueOf(enumType, enumName));
     }
 
     /**
