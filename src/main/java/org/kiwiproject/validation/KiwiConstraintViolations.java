@@ -179,48 +179,51 @@ public class KiwiConstraintViolations {
     }
 
     /**
-     * Given a <em>non-empty</em> set of violations, produce a list of strings containing all violation messages.
+     * Given a non-empty set of violations, produce a list of strings containing all violation messages.
      * Each message will contain the property followed by the error message, e.g. "firstName must not be blank".
+     * If the given set is empty (or null), then return an empty list.
      *
      * @param violations set of non-empty violations
      * @param <T>        type of object being validated
      * @return a list of the error messages
-     * @throws IllegalArgumentException if violations is null or empty
      */
     public static <T> List<String> simpleCombinedErrorMessages(Set<ConstraintViolation<T>> violations) {
         return combinedErrorMessages(violations, Objects::toString);
     }
 
     /**
-     * Given a <em>non-empty</em> set of violations, produce a list of strings containing all violation messages.
+     * Given a non-empty set of violations, produce a list of strings containing all violation messages.
      * Each message will contain the "prettified" property name followed by the error message, e.g. for
      * a violation on the {@code firstName} property, the message would look like "First Name must not be blank".
+     * If the given set is empty (or null), then return an empty list.
      *
      * @param violations set of non-empty violations
      * @param <T>        type of object being validated
      * @return a list of the error messages
-     * @throws IllegalArgumentException if violations is null or empty
      */
     public static <T> List<String> prettyCombinedErrorMessages(Set<ConstraintViolation<T>> violations) {
         return combinedErrorMessages(violations, KiwiConstraintViolations::humanize);
     }
 
     /**
-     * Given a <em>non-empty</em> set of violations, produce a list of strings containing all violation messages.
+     * Given a non-empty set of violations, produce a list of strings containing all violation messages.
      * Each message will contain the transformed property name followed by the error message, e.g.
      * "firstName must not be blank". Each property name is transformed using the specified {@code pathTransformer}
-     * function.
+     * function. If the given set is empty (or null), then return an empty list.
      *
      * @param violations      set of non-empty violations
      * @param pathTransformer function to convert a Path into a String
      * @param <T>             type of object being validated
      * @return a list of the error messages
-     * @throws IllegalArgumentException if violations is null or empty
      */
     public static <T> List<String> combinedErrorMessages(Set<ConstraintViolation<T>> violations,
                                                          Function<Path, String> pathTransformer) {
-        checkNotNullOrEmpty(violations);
         checkArgumentNotNull(pathTransformer);
+
+        if (isNullOrEmpty(violations)) {
+            return List.of();
+        }
+
         return violations.stream()
                 .map(violation -> KiwiConstraintViolations.propertyAndErrorMessage(violation, pathTransformer))
                 .sorted()
@@ -228,46 +231,49 @@ public class KiwiConstraintViolations {
     }
 
     /**
-     * Given a <em>non-empty</em> set of violations, produce map whose keys are the properties and the corresponding
-     * values are strings containing all violation messages.
+     * Given a non-empty set of violations, produce map whose keys are the properties and the corresponding
+     * values are strings containing all violation messages. If the given set is empty (or null), then return an empty
+     * map.
      *
      * @param violations set of non-empty violations
      * @param <T>        type of object being validated
      * @return a map of error messages
-     * @throws IllegalArgumentException if violations is null or empty
      */
     public static <T> Map<String, String> simpleCombineErrorMessagesIntoMap(Set<ConstraintViolation<T>> violations) {
         return combineErrorMessagesIntoMap(violations, Objects::toString);
     }
 
     /**
-     * Given a <em>non-empty</em> set of violations, produce map whose keys are the "prettified" properties and the
-     * corresponding values are strings containing all violation messages.
+     * Given a non-empty set of violations, produce map whose keys are the "prettified" properties and the
+     * corresponding values are strings containing all violation messages. If the given set is empty (or null), then
+     * return an empty map.
      *
      * @param violations set of non-empty violations
      * @param <T>        type of object being validated
      * @return a map of error messages
-     * @throws IllegalArgumentException if violations is null or empty
      */
     public static <T> Map<String, String> prettyCombineErrorMessagesIntoMap(Set<ConstraintViolation<T>> violations) {
         return combineErrorMessagesIntoMap(violations, KiwiConstraintViolations::humanize);
     }
 
     /**
-     * Given a <em>non-empty</em> set of violations, produce map whose keys are the transformed properties and the
+     * Given a non-empty set of violations, produce map whose keys are the transformed properties and the
      * corresponding values are strings containing all violation messages. Each property name is transformed using
-     * the specified {@code pathTransformer} function.
+     * the specified {@code pathTransformer} function. If the given set is empty (or null), then return an empty map.
      *
      * @param violations      set of non-empty violations
      * @param pathTransformer function to convert a Path into a String
      * @param <T>             type of object being validated
      * @return a map of error messages
-     * @throws IllegalArgumentException if violations is null or empty
      */
     public static <T> Map<String, String> combineErrorMessagesIntoMap(Set<ConstraintViolation<T>> violations,
                                                                       Function<Path, String> pathTransformer) {
-        checkNotNullOrEmpty(violations);
         checkArgumentNotNull(pathTransformer);
+
+        if (isNullOrEmpty(violations)) {
+            return Map.of();
+        }
+
         return violations.stream()
                 .collect(toMap(
                         violation -> pathTransformer.apply(violation.getPropertyPath()),
