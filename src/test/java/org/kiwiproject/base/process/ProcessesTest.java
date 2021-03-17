@@ -15,6 +15,8 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.RepeatedTest;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 
 import java.util.List;
 import java.util.concurrent.TimeUnit;
@@ -184,5 +186,41 @@ class ProcessesTest {
                 .hasMessageContaining("Process 2970 was not killed before 1 second timeout expired");
 
         verify(process, never()).exitValue();
+    }
+
+    @Nested
+    class HasSuccessfulExitCode {
+
+        @Test
+        void shouldReturnTrueForZero() {
+            var process = mock(Process.class);
+            when(process.exitValue()).thenReturn(0);
+
+            assertThat(Processes.hasSuccessfulExitCode(process)).isTrue();
+        }
+
+        @ParameterizedTest
+        @ValueSource(ints = {-1, 1, 2, 3, 127, 255})
+        void shouldReturnFalseForNonZero(int code) {
+            var process = mock(Process.class);
+            when(process.exitValue()).thenReturn(code);
+
+            assertThat(Processes.hasSuccessfulExitCode(process)).isFalse();
+        }
+    }
+
+    @Nested
+    class IsSuccessfulExitCode {
+
+        @Test
+        void shouldReturnTrueForZero() {
+            assertThat(Processes.isSuccessfulExitCode(0)).isTrue();
+        }
+
+        @ParameterizedTest
+        @ValueSource(ints = {-1, 1, 2, 3, 127, 255})
+        void shouldReturnFalseForNonZero(int code) {
+            assertThat(Processes.isSuccessfulExitCode(code)).isFalse();
+        }
     }
 }

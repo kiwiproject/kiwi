@@ -308,9 +308,8 @@ class KiwiConstraintViolationsTest {
 
         @ParameterizedTest
         @NullAndEmptySource
-        void shouldNotAllowNullOrEmptyArgument(Set<ConstraintViolation<Object>> set) {
-            assertThatIllegalArgumentException()
-                    .isThrownBy(() -> KiwiConstraintViolations.simpleCombinedErrorMessages(set));
+        void shouldAllowNullOrEmptyArgument(Set<ConstraintViolation<Object>> set) {
+            assertThat(KiwiConstraintViolations.simpleCombinedErrorMessages(set)).isEmpty();
         }
 
         @Test
@@ -333,9 +332,8 @@ class KiwiConstraintViolationsTest {
 
         @ParameterizedTest
         @NullAndEmptySource
-        void shouldNotAllowNullOrEmptyArgument(Set<ConstraintViolation<Object>> set) {
-            assertThatIllegalArgumentException()
-                    .isThrownBy(() -> KiwiConstraintViolations.prettyCombinedErrorMessages(set));
+        void shouldAllowNullOrEmptyArgument(Set<ConstraintViolation<Object>> set) {
+            assertThat(KiwiConstraintViolations.prettyCombinedErrorMessages(set)).isEmpty();
         }
 
         @Test
@@ -361,10 +359,8 @@ class KiwiConstraintViolationsTest {
 
         @ParameterizedTest
         @NullAndEmptySource
-        void shouldNotAllowNullOrEmptyArgument(Set<ConstraintViolation<Object>> set) {
-            assertThatIllegalArgumentException()
-                    .isThrownBy(() -> KiwiConstraintViolations.combinedErrorMessages(set, Object::toString))
-                    .withMessage("There are no violations to combine");
+        void shouldAllowNullOrEmptyArgument(Set<ConstraintViolation<Object>> set) {
+            assertThat(KiwiConstraintViolations.combinedErrorMessages(set, Object::toString)).isEmpty();
         }
 
         @Test
@@ -414,9 +410,8 @@ class KiwiConstraintViolationsTest {
 
         @ParameterizedTest
         @NullAndEmptySource
-        void shouldNotAllowNullOrEmptyArgument(Set<ConstraintViolation<Object>> set) {
-            assertThatIllegalArgumentException()
-                    .isThrownBy(() -> KiwiConstraintViolations.simpleCombineErrorMessagesIntoMap(set));
+        void shouldAllowNullOrEmptyArgument(Set<ConstraintViolation<Object>> set) {
+            assertThat(KiwiConstraintViolations.simpleCombineErrorMessagesIntoMap(set)).isEmpty();
         }
 
         @Test
@@ -442,9 +437,8 @@ class KiwiConstraintViolationsTest {
 
         @ParameterizedTest
         @NullAndEmptySource
-        void shouldNotAllowNullOrEmptyArgument(Set<ConstraintViolation<Object>> set) {
-            assertThatIllegalArgumentException()
-                    .isThrownBy(() -> KiwiConstraintViolations.prettyCombineErrorMessagesIntoMap(set));
+        void shouldAllowNullOrEmptyArgument(Set<ConstraintViolation<Object>> set) {
+            assertThat(KiwiConstraintViolations.prettyCombineErrorMessagesIntoMap(set)).isEmpty();
         }
 
         @Test
@@ -470,10 +464,8 @@ class KiwiConstraintViolationsTest {
 
         @ParameterizedTest
         @NullAndEmptySource
-        void shouldNotAllowNullOrEmptyArgument(Set<ConstraintViolation<Object>> set) {
-            assertThatIllegalArgumentException()
-                    .isThrownBy(() -> KiwiConstraintViolations.combineErrorMessagesIntoMap(set, Objects::toString))
-                    .withMessage("There are no violations to combine");
+        void shouldAllowNullOrEmptyArgument(Set<ConstraintViolation<Object>> set) {
+            assertThat(KiwiConstraintViolations.combineErrorMessagesIntoMap(set, Objects::toString)).isEmpty();
         }
 
         @Test
