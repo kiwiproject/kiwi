@@ -1,5 +1,6 @@
 package org.kiwiproject.reflect;
 
+import static java.util.function.Predicate.not;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatCode;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -8,9 +9,11 @@ import static org.kiwiproject.base.KiwiPreconditions.checkArgumentNotNull;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
+import lombok.Data;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import lombok.Singular;
 import lombok.ToString;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
@@ -33,6 +36,8 @@ import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
+import java.util.function.Predicate;
 
 @DisplayName("KiwiReflection")
 @ExtendWith(SoftAssertionsExtension.class)
@@ -406,6 +411,205 @@ class KiwiReflectionTest {
             softly.assertThat(sub.getBar()).isNull();
             softly.assertThat(sub.getBaz()).isNull();
             softly.assertThat(sub.getQuux()).isNull();
+        }
+
+        @Test
+        void shouldIgnoreReadOnlyProperties(SoftAssertions softly) {
+            var bob = new Person("Bob", "Sackamano", 42);
+
+            KiwiReflection.invokeMutatorMethodsWithNull(bob);
+
+            softly.assertThat(bob.getFirstName()).isEqualTo("Bob");
+            softly.assertThat(bob.getLastName()).isEqualTo("Sackamano");
+            softly.assertThat(bob.getAge()).isEqualTo(42);
+        }
+    }
+
+    @Nested
+    class InvokeMutatorMethodsWithNullIgnoringProperties {
+
+        private MutablePerson alice;
+
+        @BeforeEach
+        void setUp() {
+            alice = MutablePerson.builder()
+                    .firstName("Alice")
+                    .lastName("Jones")
+                    .age(42)
+                    .nickname("Ali")
+                    .annualSalary(100_000.0)
+                    .netWorth(750_000.0)
+                    .state("VA")
+                    .zipCode("20194")
+                    .alias("Wonderalice")
+                    .alias("Handygirl")
+                    .build();
+        }
+
+        @Test
+        void shouldIgnoreSpecifiedProperties(SoftAssertions softly) {
+            KiwiReflection.invokeMutatorMethodsWithNullIgnoringProperties(alice,
+                    "age", "annualSalary", "netWorth", "zipCode");
+
+            softly.assertThat(alice.getFirstName()).isNull();
+            softly.assertThat(alice.getLastName()).isNull();
+            softly.assertThat(alice.getNickname()).isNull();
+            softly.assertThat(alice.getState()).isNull();
+            softly.assertThat(alice.getAliases()).isNull();
+
+            softly.assertThat(alice.getAge()).isEqualTo(42);
+            softly.assertThat(alice.getAnnualSalary()).isEqualTo(100_000.0);
+            softly.assertThat(alice.getNetWorth()).isEqualTo(750_000.0);
+            softly.assertThat(alice.getZipCode()).isEqualTo("20194");
+        }
+
+        @Test
+        void shouldNullifyAll_WhenNoPropertiesSpecified() {
+            KiwiReflection.invokeMutatorMethodsWithNullIgnoringProperties(alice);
+
+            assertThat(alice).isEqualTo(MutablePerson.nullMutablePerson());
+        }
+
+        @Test
+        void shouldIgnoreBlankPropertyNames() {
+            KiwiReflection.invokeMutatorMethodsWithNullIgnoringProperties(alice, "", null, " ");
+
+            assertThat(alice).isEqualTo(MutablePerson.nullMutablePerson());
+        }
+
+        @Test
+        void shouldIgnoreReadOnlyProperties(SoftAssertions softly) {
+            var bob = new Person("Bob", "Sackamano", 42);
+
+            KiwiReflection.invokeMutatorMethodsWithNullIgnoringProperties(bob, "age");
+
+            softly.assertThat(bob.getFirstName()).isEqualTo("Bob");
+            softly.assertThat(bob.getLastName()).isEqualTo("Sackamano");
+            softly.assertThat(bob.getAge()).isEqualTo(42);
+        }
+    }
+
+    @Nested
+    class InvokeMutatorMethodsWithNullIncludingOnlyProperties {
+
+        private MutablePerson j;
+
+        @BeforeEach
+        void setUp() {
+            j = MutablePerson.builder()
+                    .firstName("James")
+                    .lastName("Edwards")
+                    .age(32)
+                    .nickname("Jay")
+                    .annualSalary(50_000.0)
+                    .netWorth(75_000.0)
+                    .state("NY")
+                    .zipCode("10004")
+                    .alias("J")
+                    .alias("Agent J")
+                    .build();
+        }
+
+        @Test
+        void shouldIncludeOnlySpecifiedProperties(SoftAssertions softly) {
+            KiwiReflection.invokeMutatorMethodsWithNullIncludingOnlyProperties(j,
+                    "firstName", "lastName", "age", "nickname", "annualSalary", "netWorth", "zipCode");
+
+            softly.assertThat(j.getFirstName()).isNull();
+            softly.assertThat(j.getLastName()).isNull();
+            softly.assertThat(j.getAge()).isNull();
+            softly.assertThat(j.getNickname()).isNull();
+            softly.assertThat(j.getAnnualSalary()).isNull();
+            softly.assertThat(j.getNetWorth()).isNull();
+            softly.assertThat(j.getZipCode()).isNull();
+
+            softly.assertThat(j.getState()).isEqualTo("NY");
+            softly.assertThat(j.getAliases()).containsExactlyInAnyOrder("J", "Agent J");
+        }
+
+        @Test
+        void shouldNullifyNone_WhenNoPropertiesSpecified() {
+            var jCopy = j.toBuilder().build();
+
+            KiwiReflection.invokeMutatorMethodsWithNullIncludingOnlyProperties(j);
+
+            assertThat(j).isEqualTo(jCopy);
+        }
+
+        @Test
+        void shouldIgnoreBlankPropertyNames() {
+            var jCopy = j.toBuilder().build();
+
+            KiwiReflection.invokeMutatorMethodsWithNullIncludingOnlyProperties(j, "", null, " ");
+
+            assertThat(j).isEqualTo(jCopy);
+        }
+
+        @Test
+        void shouldIgnoreReadOnlyProperties(SoftAssertions softly) {
+            var bob = new Person("Bob", "Sackamano", 42);
+
+            KiwiReflection.invokeMutatorMethodsWithNullIncludingOnlyProperties(bob,
+                    "firstName", "lastName", "age");
+
+            softly.assertThat(bob.getFirstName()).isEqualTo("Bob");
+            softly.assertThat(bob.getLastName()).isEqualTo("Sackamano");
+            softly.assertThat(bob.getAge()).isEqualTo(42);
+        }
+    }
+
+    @Nested
+    class InvokeMutatorMethodsWithNullSatisfying {
+
+        @Test
+        void shouldNullify_MethodsThatSatisfyThePredicate(SoftAssertions softly) {
+            var k = MutablePerson.builder()
+                    .firstName("Kevin")
+                    .lastName("Brown")
+                    .nickname("Mr. K")
+                    .age(54)
+                    .alias("K")
+                    .alias("Agent K")
+                    .build();
+
+            Predicate<Method> notIntegerParam = not(method -> parameterTypeIsAssignableFrom(method, Integer.class));
+            Predicate<Method> notIterableParam = not(method -> parameterTypeIsAssignableFrom(method, Iterable.class));
+            Predicate<Method> notIntegerOrIterableParam = notIntegerParam.and(notIterableParam);
+
+            KiwiReflection.invokeMutatorMethodsWithNullSatisfying(k, notIntegerOrIterableParam);
+
+            softly.assertThat(k).usingRecursiveComparison()
+                    .ignoringFields("age", "aliases")
+                    .isEqualTo(MutablePerson.nullMutablePerson());
+            softly.assertThat(k.getAge()).isEqualTo(54);
+            softly.assertThat(k.getAliases()).containsExactlyInAnyOrder("K", "Agent K");
+        }
+
+        private boolean parameterTypeIsAssignableFrom(Method method, Class<?> type) {
+            Class<?> parameterType = method.getParameterTypes()[0];
+            return type.isAssignableFrom(parameterType);
+        }
+    }
+
+    @Data
+    @Builder(toBuilder = true)
+    static class MutablePerson {
+        private String firstName;
+        private String lastName;
+        private Integer age;
+        private String nickname;
+        private Double annualSalary;
+        private Double netWorth;
+        private String state;
+        private String zipCode;
+
+        @Singular
+        private Set<String> aliases;
+
+        static MutablePerson nullMutablePerson() {
+            var person = MutablePerson.builder().build();
+            person.setAliases(null);
+            return person;
         }
     }
 
