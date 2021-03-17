@@ -86,6 +86,27 @@ class ProcessesTest {
         assertThat(Processes.processId(process)).isEqualTo(process.pid());
     }
 
+    @Nested
+    class ProcessIdOrEmpty {
+
+        @Test
+        void shouldReturnOptionalContainingPid_WhenPidIsAvailable() {
+            var pid = 12345L;
+            var process = mock(Process.class);
+            when(process.pid()).thenReturn(pid);
+
+            assertThat(Processes.processIdOrEmpty(process)).hasValue(pid);
+        }
+
+        @Test
+        void shouldReturnEmptyOptionalContainingPid_WhenProcess_ThrowsUnsupportedOperationException() {
+            var process = mock(Process.class);
+            when(process.pid()).thenThrow(new UnsupportedOperationException("No pid for you!"));
+
+            assertThat(Processes.processIdOrEmpty(process)).isEmpty();
+        }
+    }
+
     @Test
     void testKillInternal_WhenProcessIsKilledCleanlyBeforeTimeout() throws InterruptedException {
         var pid = 2970L;
