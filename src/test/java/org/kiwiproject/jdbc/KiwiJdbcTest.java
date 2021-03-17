@@ -4,11 +4,14 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.EnumSource;
 
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -401,6 +404,80 @@ class KiwiJdbcTest {
 
             verify(resultSet).getDouble("some_number");
         }
+    }
+
+    @Nested
+    class EnumValueOrNull {
+
+        @ParameterizedTest
+        @EnumSource(Season.class)
+        void shouldReturnEnumConstant(Season season) throws SQLException {
+            var resultSet = newMockResultSet();
+            when(resultSet.getString("season")).thenReturn(season.name());
+
+            assertThat(KiwiJdbc.enumValueOrNull(resultSet, "season", Season.class)).isEqualTo(season);
+        }
+
+        @Test
+        void shouldReturnNull_WhenWasNullSQLValue() throws SQLException {
+            var resultSet = newMockResultSet();
+            when(resultSet.getString("season")).thenReturn(null);
+
+            assertThat(KiwiJdbc.enumValueOrNull(resultSet, "season", Season.class)).isNull();
+
+            verify(resultSet).getString("season");
+            verifyNoMoreInteractions(resultSet);
+        }
+
+        @Test
+        void shouldThrowIllegalArgument_WhenResultSetValue_IsInvalidEnumConstantName() throws SQLException {
+            var resultSet = newMockResultSet();
+            var invalidName = "winter";
+            when(resultSet.getString("season")).thenReturn(invalidName);
+
+            assertThatIllegalArgumentException()
+                    .isThrownBy(() -> KiwiJdbc.enumValueOrNull(resultSet, "season", Season.class))
+                    .withMessageContaining(invalidName);
+        }
+    }
+
+    @Nested
+    class EnumValueOrEmpty {
+
+        @ParameterizedTest
+        @EnumSource(Season.class)
+        void shouldReturnOptionalContainingEnumConstant(Season season) throws SQLException {
+            var resultSet = newMockResultSet();
+            when(resultSet.getString("season")).thenReturn(season.name());
+
+            assertThat(KiwiJdbc.enumValueOrEmpty(resultSet, "season", Season.class)).contains(season);
+        }
+
+        @Test
+        void shouldReturnEmptyOptional_WhenWasNullSQLValue() throws SQLException {
+            var resultSet = newMockResultSet();
+            when(resultSet.getString("season")).thenReturn(null);
+
+            assertThat(KiwiJdbc.enumValueOrEmpty(resultSet, "season", Season.class)).isEmpty();
+
+            verify(resultSet).getString("season");
+            verifyNoMoreInteractions(resultSet);
+        }
+
+        @Test
+        void shouldThrowIllegalArgument_WhenResultSetValue_IsInvalidEnumConstantName() throws SQLException {
+            var resultSet = newMockResultSet();
+            var invalidName = "winter";
+            when(resultSet.getString("season")).thenReturn(invalidName);
+
+            assertThatIllegalArgumentException()
+                    .isThrownBy(() -> KiwiJdbc.enumValueOrEmpty(resultSet, "season", Season.class))
+                    .withMessageContaining(invalidName);
+        }
+    }
+
+    enum Season {
+        WINTER, SPRING, SUMMER, FALL
     }
 
     @Nested
