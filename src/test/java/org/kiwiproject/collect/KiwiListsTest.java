@@ -630,29 +630,29 @@ class KiwiListsTest {
     }
 
     @Nested
-    class MutableShuffledArrayListOf {
+    class ShuffledArrayListOf {
 
         @Test
         void shouldCreateArrayList() {
-            assertThat(KiwiLists.mutableShuffledArrayListOf(1, 2, 3))
+            assertThat(KiwiLists.shuffledArrayListOf(1, 2, 3))
                     .isExactlyInstanceOf(ArrayList.class);
         }
 
         @Test
         void shouldCreateEmptyList() {
-            assertThat(KiwiLists.mutableShuffledArrayListOf()).isEmpty();
+            assertThat(KiwiLists.shuffledArrayListOf()).isEmpty();
         }
 
         @Test
         void shouldCreateSingleItemList() {
-            assertThat(KiwiLists.mutableShuffledArrayListOf("foo")).containsExactly("foo");
+            assertThat(KiwiLists.shuffledArrayListOf("foo")).containsExactly("foo");
         }
 
         @RepeatedTest(5)
         void shouldShuffleItems() {
             var letters = alphabet();
 
-            var shuffledLetters = KiwiLists.mutableShuffledArrayListOf(letters);
+            var shuffledLetters = KiwiLists.shuffledArrayListOf(letters);
 
             assertThat(shuffledLetters)
                     .describedAs("Should contain all the letters but not be in the original order")
@@ -662,7 +662,7 @@ class KiwiListsTest {
 
         @Test
         void shouldCreateModifiableList() {
-            var letters = KiwiLists.mutableShuffledArrayListOf("a", "b", "c", "d");
+            var letters = KiwiLists.shuffledArrayListOf("a", "b", "c", "d");
 
             assertThatCode(() -> letters.add("e")).doesNotThrowAnyException();
             assertThat(letters).contains("e");

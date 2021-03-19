@@ -435,18 +435,18 @@ public class KiwiLists {
      */
     @SafeVarargs
     public static <T> List<T> shuffledListOf(T... items) {
-        return List.copyOf(mutableShuffledArrayListOf(items));
+        return List.copyOf(shuffledArrayListOf(items));
     }
 
     /**
-     * Create a new mutable {@link ArrayList} with the given items shuffled using {@link Collections#shuffle(List)}.
+     * Create a new {@link ArrayList} with the given items shuffled using {@link Collections#shuffle(List)}.
      *
      * @param items the items to include in the new list
      * @param <T>   the type of the items in the list
-     * @return a mutable ArrayList with the given items in pseudorandom order
+     * @return an ArrayList with the given items in pseudorandom order
      */
     @SafeVarargs
-    public static <T> List<T> mutableShuffledArrayListOf(T... items) {
+    public static <T> List<T> shuffledArrayListOf(T... items) {
         var list = new ArrayList<T>(items.length);
         Collections.addAll(list, items);
         Collections.shuffle(list);
