@@ -4,6 +4,7 @@ import static com.google.common.base.Preconditions.checkArgument;
 import static java.util.Objects.nonNull;
 import static java.util.function.Predicate.not;
 import static java.util.stream.Collectors.toList;
+import static java.util.stream.Collectors.toUnmodifiableSet;
 import static org.kiwiproject.base.KiwiPreconditions.checkArgumentNotBlank;
 import static org.kiwiproject.base.KiwiPreconditions.checkArgumentNotNull;
 import static org.kiwiproject.base.KiwiPreconditions.requireNotNull;
@@ -23,6 +24,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 import java.util.function.Predicate;
 
 /**
@@ -379,9 +381,77 @@ public class KiwiReflection {
      * @see #findPublicMutatorMethods(Object)
      */
     public static void invokeMutatorMethodsWithNull(Object target) {
+        invokeMutatorMethodsWithNullSatisfying(target, method -> true);
+    }
+
+    /**
+     * Finds public mutator methods for the given object, then for reference types invokes the mutator supplying
+     * {@code null} as the argument <em>except</em> for property names contained in {@code properties}.
+     * <p>
+     * The {@code properties} vararg specifies the names of the <em>properties</em> to <em>ignore</em>. These names
+     * will be translated into the corresponding "setter" method name. For example, if "dateOfBirth" is the property
+     * name to ignore, then the "setDateOfBirth" method is the corresponding setter method and it will be
+     * ignored (not called).
+     * <p>
+     * The effect is thus to nullify the values of (mutable) properties in {@code target} having a
+     * reference (non-primitive) type, excluding the ones specified in {@code properties}.
+     *
+     * @param target     the object containing mutable properties exposed via public mutator methods
+     * @param properties the property names to ignore, e.g. "firstName", "age", "zipCode"
+     * @see #findPublicMutatorMethods(Object)
+     */
+    public static void invokeMutatorMethodsWithNullIgnoringProperties(Object target, String... properties) {
+        var namesToIgnore = propertyNamesToSetterMethodNames(properties);
+        invokeMutatorMethodsWithNullSatisfying(target, not(method -> namesToIgnore.contains(method.getName())));
+    }
+
+    /**
+     * Finds public mutator methods for the given object, then for reference types invokes the mutator supplying
+     * {@code null} as the argument <em>including only</em> the property names contained in {@code properties}.
+     * <p>
+     * The {@code properties} vararg specifies the names of the <em>properties</em> to <em>include</em>. These names
+     * will be translated into the corresponding "setter" method name. For example, if "dateOfBirth" is the property
+     * name to include, then the "setDateOfBirth" method is the corresponding setter method and it will be called
+     * with a null argument.
+     * <p>
+     * The effect is thus to nullify the values of (mutable) properties in {@code target} having a
+     * reference (non-primitive) type, including only the ones specified in {@code properties}.
+     *
+     * @param target     the object containing mutable properties exposed via public mutator methods
+     * @param properties the property names to include, e.g. "firstName", "age", "zipCode"
+     * @see #findPublicMutatorMethods(Object)
+     */
+    public static void invokeMutatorMethodsWithNullIncludingOnlyProperties(Object target, String... properties) {
+        var namesToInclude = propertyNamesToSetterMethodNames(properties);
+        invokeMutatorMethodsWithNullSatisfying(target, method -> namesToInclude.contains(method.getName()));
+    }
+
+    private static Set<String> propertyNamesToSetterMethodNames(String[] names) {
+        return Arrays.stream(names)
+                .filter(not(StringUtils::isBlank))
+                .map(name -> "set" + name.substring(0, 1).toUpperCase() + name.substring(1))
+                .collect(toUnmodifiableSet());
+    }
+
+    /**
+     * Finds public mutator methods for the given object, then for reference types invokes the mutator supplying
+     * {@code null} as the argument <em>including only</em> methods that satisfy the given {@link Predicate}.
+     * <p>
+     * When {@code methodPredicate} returns {@code true}, the mutator method is called with a null argument. When
+     * it returns {@code false} then the method is not called.
+     * <p>
+     * The effect is thus to nullify the values of (mutable) properties in {@code target} having a
+     * reference (non-primitive) type, including only the ones for which {@code methodPredicate} returns {@code true}.
+     *
+     * @param target          the object containing mutable properties exposed via public mutator methods
+     * @param methodPredicate a Predicate that tests whether to include a mutator method
+     */
+    public static void invokeMutatorMethodsWithNullSatisfying(Object target,
+                                                              Predicate<Method> methodPredicate) {
         findPublicMutatorMethods(target)
                 .stream()
                 .filter(KiwiReflection::acceptsOneReferenceType)
+                .filter(methodPredicate)
                 .forEach(mutator -> invokeVoidReturn(mutator, target, ONE_NULL_ARG_OBJECT_ARRAY));
     }
 
