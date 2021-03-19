@@ -7,7 +7,9 @@ import static java.util.stream.Collectors.toList;
 
 import lombok.experimental.UtilityClass;
 
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
@@ -422,5 +424,32 @@ public class KiwiLists {
      */
     public static <T> void checkNonNullInputList(List<T> items) {
         checkNotNull(items, "items cannot be null");
+    }
+
+    /**
+     * Create a new unmodifiable {@link List} with the given items shuffled using {@link Collections#shuffle(List)}.
+     *
+     * @param items the items to include in the new list
+     * @param <T>   the type of the items in the list
+     * @return an unmodifiable List with the given items in pseudorandom order
+     */
+    @SafeVarargs
+    public static <T> List<T> shuffledListOf(T... items) {
+        return List.copyOf(mutableShuffledArrayListOf(items));
+    }
+
+    /**
+     * Create a new mutable {@link ArrayList} with the given items shuffled using {@link Collections#shuffle(List)}.
+     *
+     * @param items the items to include in the new list
+     * @param <T>   the type of the items in the list
+     * @return a mutable ArrayList with the given items in pseudorandom order
+     */
+    @SafeVarargs
+    public static <T> List<T> mutableShuffledArrayListOf(T... items) {
+        var list = new ArrayList<T>(items.length);
+        Collections.addAll(list, items);
+        Collections.shuffle(list);
+        return list;
     }
 }

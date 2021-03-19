@@ -2,6 +2,7 @@ package org.kiwiproject.collect;
 
 import static java.util.stream.Collectors.toList;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatCode;
 import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
 import static org.assertj.core.api.Assertions.assertThatNullPointerException;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -12,6 +13,7 @@ import org.assertj.core.api.junit.jupiter.SoftAssertionsExtension;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
+import org.junit.jupiter.api.RepeatedTest;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -23,6 +25,7 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import java.util.stream.IntStream;
+import java.util.stream.Stream;
 
 @DisplayName("KiwiLists")
 @ExtendWith(SoftAssertionsExtension.class)
@@ -590,4 +593,87 @@ class KiwiListsTest {
             softly.assertThat(KiwiLists.lastN(aToE, 5)).isEqualTo(List.of("a", "b", "c", "d", "e"));
         }
     }
+
+    @Nested
+    class ShuffledListOf {
+
+        @Test
+        void shouldCreateEmptyList() {
+            assertThat(KiwiLists.shuffledListOf()).isEmpty();
+        }
+
+        @Test
+        void shouldCreateSingleItemList() {
+            assertThat(KiwiLists.shuffledListOf("foo")).containsExactly("foo");
+        }
+
+        @RepeatedTest(5)
+        void shouldShuffleItems() {
+            var letters = alphabet();
+
+            var shuffledLetters = KiwiLists.shuffledListOf(letters);
+
+            assertThat(shuffledLetters)
+                    .describedAs("Should contain all the letters but not be in the original order")
+                    .containsExactlyInAnyOrder(letters)
+                    .isNotEqualTo(List.of(letters));
+        }
+
+        @Test
+        void shouldCreateUnmodifiableList() {
+            var letters = KiwiLists.shuffledListOf("a", "b", "c", "d");
+
+            //noinspection ConstantConditions
+            assertThatThrownBy(() -> letters.add("e"))
+                    .isExactlyInstanceOf(UnsupportedOperationException.class);
+        }
+    }
+
+    @Nested
+    class MutableShuffledArrayListOf {
+
+        @Test
+        void shouldCreateArrayList() {
+            assertThat(KiwiLists.mutableShuffledArrayListOf(1, 2, 3))
+                    .isExactlyInstanceOf(ArrayList.class);
+        }
+
+        @Test
+        void shouldCreateEmptyList() {
+            assertThat(KiwiLists.mutableShuffledArrayListOf()).isEmpty();
+        }
+
+        @Test
+        void shouldCreateSingleItemList() {
+            assertThat(KiwiLists.mutableShuffledArrayListOf("foo")).containsExactly("foo");
+        }
+
+        @RepeatedTest(5)
+        void shouldShuffleItems() {
+            var letters = alphabet();
+
+            var shuffledLetters = KiwiLists.mutableShuffledArrayListOf(letters);
+
+            assertThat(shuffledLetters)
+                    .describedAs("Should contain all the letters but not be in the original order")
+                    .containsExactlyInAnyOrder(letters)
+                    .isNotEqualTo(List.of(letters));
+        }
+
+        @Test
+        void shouldCreateModifiableList() {
+            var letters = KiwiLists.mutableShuffledArrayListOf("a", "b", "c", "d");
+
+            assertThatCode(() -> letters.add("e")).doesNotThrowAnyException();
+            assertThat(letters).contains("e");
+        }
+    }
+
+    private String[] alphabet() {
+        return Stream.iterate('a', character -> (char) (character + 1))
+                .map(String::valueOf)
+                .limit(26)
+                .toArray(String[]::new);
+    }
+
 }
