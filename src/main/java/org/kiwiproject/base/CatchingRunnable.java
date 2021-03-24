@@ -12,20 +12,19 @@ import org.slf4j.LoggerFactory;
 public interface CatchingRunnable extends Runnable {
 
     /**
-     * Wraps {@link #runSafely()} in a try/catch. Logs exceptions and will call {@link #handleExceptionSafely(Throwable)}
+     * Wraps {@link #runSafely()} in a try/catch. Logs exceptions and will call {@link #handleExceptionSafely(Exception)}
      * to permit handling of any thrown exceptions.
      */
     @Override
-    @SuppressWarnings("java:S1181")
     default void run() {
         try {
             runSafely();
-        } catch (Throwable e) {
+        } catch (Exception e) {
             getLogger().error("Error occurred calling runSafely", e);
 
             try {
                 handleExceptionSafely(e);
-            } catch (Throwable ex) {
+            } catch (Exception ex) {
                 getLogger().error("Error occurred calling handleExceptionSafely", ex);
             }
         }
@@ -38,9 +37,9 @@ public interface CatchingRunnable extends Runnable {
     /**
      * Handle an exception thrown by {@link #runSafely()}.
      *
-     * @param throwable the {@link Throwable} to handle
+     * @param exception the {@link Exception} to handle
      */
-    default void handleExceptionSafely(Throwable throwable) {
+    default void handleExceptionSafely(Exception exception) {
         // no-op by default; override if desired
     }
 
