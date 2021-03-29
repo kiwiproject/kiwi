@@ -207,8 +207,11 @@ public class Async {
             LOG.trace("asyncMode = DISABLED; wait for the future!");
             try {
                 future.get();
-            } catch (Exception e) {
-                LOG.error("Encountered error waiting for future: ", e);
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+                LOG.error("Interrupted while waiting for future: ", e);
+            } catch (ExecutionException e) {
+                LOG.error("The future completed exceptionally: ", e);
             }
         }
 
@@ -255,9 +258,9 @@ public class Async {
             CompletableFuture.allOf(futures.toArray(CompletableFuture[]::new)).get(timeout, unit);
         } catch (InterruptedException ex) {
             Thread.currentThread().interrupt();
-            logAndThrowAsyncException(timeout, unit, ex, null);
+            throw newAsyncException(timeout, unit, ex, null);
         } catch (ExecutionException | TimeoutException ex) {
-            logAndThrowAsyncException(timeout, unit, ex, null);
+            throw newAsyncException(timeout, unit, ex, null);
         }
     }
 
@@ -279,22 +282,10 @@ public class Async {
             CompletableFuture.allOf(futures.toArray(CompletableFuture[]::new)).get(timeout, unit);
         } catch (InterruptedException ex) {
             Thread.currentThread().interrupt();
-            logAndThrowAsyncException(timeout, unit, ex, null);
+            throw newAsyncException(timeout, unit, ex, null);
         } catch (ExecutionException | TimeoutException ex) {
-            logAndThrowAsyncException(timeout, unit, ex, null);
+            throw newAsyncException(timeout, unit, ex, null);
         }
-    }
-
-    // Suppressed the IntelliJ and Sonar warnings about raw types
-    @SuppressWarnings({"rawtypes", "java:S3740"})
-    private static void logAndThrowAsyncException(long timeout,
-                                                  TimeUnit unit,
-                                                  Exception ex,
-                                                  CompletableFuture future) {
-
-        var msg = f("Timeout occurred: maximum wait specified as {} {}", timeout, unit);
-        LOG.error(msg, ex);
-        throw new AsyncException(msg, ex, future);
     }
 
     /**
@@ -339,14 +330,30 @@ public class Async {
         Supplier<T> supplier = () -> {
             try {
                 return future.get(timeout, unit);
-            } catch (Exception ex) {
+            } catch (InterruptedException ex) {
+                Thread.currentThread().interrupt();
                 future.cancel(true);
-                logAndThrowAsyncException(timeout, unit, ex, future);
-
-                return null;  // should not reach here but compiler insists (it can't infer the exception thrown)
+                throw newAsyncException(timeout, unit, ex, future);
+            } catch (ExecutionException | TimeoutException ex) {
+                future.cancel(true);
+                throw newAsyncException(timeout, unit, ex, future);
             }
         };
 
         return CompletableFuture.supplyAsync(supplier, executor);
+    }
+
+    /**
+     * @implNote This method is not pure, since it has the side effect of logging the exception.
+     * Since the side effect is benign, putting it here seems preferable to duplicating the same logic
+     * everywhere this method is called.
+     */
+    private static AsyncException newAsyncException(long timeout, TimeUnit unit,
+                                                    Exception ex,
+                                                    CompletableFuture<?> future) {
+        var msg = f("{} occurred (maximum wait was specified as {} {})",
+                ex.getClass().getSimpleName(), timeout, unit);
+        LOG.error(msg, ex);
+        return new AsyncException(msg, ex, future);
     }
 }

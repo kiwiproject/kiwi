@@ -26,6 +26,7 @@ class AsyncExceptionTest {
 
         assertThat(ex.getMessage()).isEqualTo("boom!");
         assertThat(ex.getCause()).isSameAs(cause);
+        assertThat(ex.hasFuture()).isTrue();
         assertThat(ex.getFuture()).isSameAs(future);
     }
 
@@ -33,6 +34,7 @@ class AsyncExceptionTest {
     void shouldPermitNullFuture() {
         var ex = new AsyncException("kabloom!", null);
         assertThat(ex.getFuture()).isNull();
+        assertThat(ex.hasFuture()).isFalse();
     }
 
     @Test
