@@ -227,7 +227,7 @@ class AsyncTest {
 
             assertThatThrownBy(() -> Async.waitFor(future, 5, TimeUnit.MILLISECONDS))
                     .isExactlyInstanceOf(AsyncException.class)
-                    .hasMessage("Timeout occurred: maximum wait specified as 5 MILLISECONDS")
+                    .hasMessage("TimeoutException occurred (maximum wait was specified as 5 MILLISECONDS)")
                     .hasCauseInstanceOf(TimeoutException.class);
 
             assertThat(task.getCurrentCount()).isZero();
@@ -274,7 +274,7 @@ class AsyncTest {
             var futures = List.of(future1, future2, future3);
             assertThatThrownBy(() -> Async.waitForAll(futures, 5, TimeUnit.MILLISECONDS))
                     .isExactlyInstanceOf(AsyncException.class)
-                    .hasMessage("Timeout occurred: maximum wait specified as 5 MILLISECONDS")
+                    .hasMessage("TimeoutException occurred (maximum wait was specified as 5 MILLISECONDS)")
                     .hasCauseInstanceOf(TimeoutException.class);
 
             assertThat(task1.getCurrentCount()).isZero();
@@ -325,7 +325,7 @@ class AsyncTest {
             var futures = List.of(future1, future2, future3);
             assertThatThrownBy(() -> Async.waitForAllIgnoringType(futures, 5, TimeUnit.MILLISECONDS))
                     .isExactlyInstanceOf(AsyncException.class)
-                    .hasMessage("Timeout occurred: maximum wait specified as 5 MILLISECONDS")
+                    .hasMessage("TimeoutException occurred (maximum wait was specified as 5 MILLISECONDS)")
                     .hasCauseInstanceOf(TimeoutException.class);
 
             assertThat(task1.getCurrentCount()).isZero();
@@ -351,7 +351,7 @@ class AsyncTest {
             assertThat(futureWithTimeout)
                     .hasFailedWithThrowableThat()
                     .isExactlyInstanceOf(AsyncException.class)
-                    .hasMessage("Timeout occurred: maximum wait specified as 5 MILLISECONDS")
+                    .hasMessage("TimeoutException occurred (maximum wait was specified as 5 MILLISECONDS)")
                     .hasCauseInstanceOf(TimeoutException.class);
 
             var thrown = catchThrowable(futureWithTimeout::get);
@@ -360,7 +360,7 @@ class AsyncTest {
                     .hasCauseExactlyInstanceOf(AsyncException.class);
 
             var cause = thrown.getCause();
-            assertThat(cause).hasMessage("Timeout occurred: maximum wait specified as 5 MILLISECONDS");
+            assertThat(cause).hasMessage("TimeoutException occurred (maximum wait was specified as 5 MILLISECONDS)");
         }
     }
 
