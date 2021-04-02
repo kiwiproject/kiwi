@@ -7,16 +7,6 @@ import static org.kiwiproject.retry.KiwiRetryerPredicates.NO_ROUTE_TO_HOST;
 import static org.kiwiproject.retry.KiwiRetryerPredicates.SOCKET_TIMEOUT;
 import static org.kiwiproject.retry.KiwiRetryerPredicates.UNKNOWN_HOST;
 
-import com.github.rholder.retry.Attempt;
-import com.github.rholder.retry.RetryException;
-import com.github.rholder.retry.RetryListener;
-import com.github.rholder.retry.Retryer;
-import com.github.rholder.retry.RetryerBuilder;
-import com.github.rholder.retry.StopStrategies;
-import com.github.rholder.retry.StopStrategy;
-import com.github.rholder.retry.WaitStrategies;
-import com.github.rholder.retry.WaitStrategy;
-import com.google.common.base.Predicate;
 import lombok.Builder;
 import lombok.Singular;
 import lombok.extern.slf4j.Slf4j;
@@ -28,13 +18,16 @@ import org.slf4j.event.Level;
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.Callable;
-import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
+import java.util.function.Predicate;
 
 /**
  * This is a wrapper class for {@link Retryer}; it wraps methods so that the {@link RetryException} and
- * {@link ExecutionException} that are generated from the {@link Retryer#call(Callable)} method are converted to
- * {@link KiwiRetryerException}.
+ * {@link InterruptedException} that are generated from the {@link Retryer#call(Callable)} method are converted to
+ * {@link KiwiRetryerException}. The <em>Background Information</em> section at the bottom gives some history on
+ * why this is even here in the first place. You might consider using {@link Retryer} directly now that it is
+ * within <a href="https://github.com/kiwiproject">org.kiwiproject</a> as the standalone
+ * <a href="https://github.com/kiwiproject/retrying-again">retrying-again</a> library.
  * <p>
  * It also provides some kiwi-flavored default values, an identifier that can be used to distinguish between
  * retryer instances in logs, logging of retry attempts, and some factories for creating retryer instances
@@ -123,10 +116,8 @@ import java.util.concurrent.TimeUnit;
  *          <td>exceptionPredicates</td>
  *          <td>empty list</td>
  *          <td>
- *              Defines the {@link Throwable}s that should cause KiwiRetryer to retry its specified {@link Callable} if
- *              encountered during processing. Note these are <em>Guava</em> {@link Predicate} objects <em>not</em>
- *              JDK {@link java.util.function.Predicate} objects; the reason is that the underlying guava-retrying
- *              library uses Guava's predicate class.
+ *              Defines the {@link Exception}s that should cause KiwiRetryer to retry its specified {@link Callable} if
+ *              encountered during processing.
  *          </td>
  *     </tr>
  *     <tr>
@@ -134,9 +125,7 @@ import java.util.concurrent.TimeUnit;
  *          <td>empty list</td>
  *          <td>
  *              Defines the {@code T} objects that should cause KiwiRetryer to retry its specified {@link Callable} if
- *              returned by the {@link Callable} during processing. Note these are <em>Guava</em> {@link Predicate}
- *              objects <em>not</em> JDK {@link java.util.function.Predicate} objects; the reason is that the underlying
- *              guava-retrying library uses Guava's predicate class.
+ *              returned by the {@link Callable} during processing.
  *          </td>
  *     </tr>
  *     <tr>
@@ -151,11 +140,21 @@ import java.util.concurrent.TimeUnit;
  *     </tr>
  * </table>
  * <p>
- * NOTE: The guava-retrying library must be available at runtime.
+ * <strong>Background Information:</strong>
+ * <p>
+ * Originally this class was created to wrap the (now defunct) <a href="https://github.com/rholder/guava-retrying">guava-retrying</a>
+ * library and add various defaults and conveniences, as well as an easier way to handle RetryException and its causes.
+ * The guava-retrying library stopped being maintained circa 2016, and was forked into
+ * <a href="https://github.com/rhuffman/re-retrying">re-retrying</a>, which then stopped active development circa 2018.
+ * So, in late 2020 we forked re-retrying as retrying-again in order to keep it up to date at a minimum, and hopefully
+ * add some additional value where it makes sense. It is possible we might simply move some of this functionality
+ * into retrying-again and then deprecate and remove this functionality from kiwi. That would also allow us to use
+ * kiwi from retrying-again, which we currently cannot do without introducing a circular dependency.
+ * <p>
+ * NOTE: The org.kiwiproject:retrying-again library must be available at runtime.
  */
 @Slf4j
 @Builder
-@SuppressWarnings("java:S1170")
 public class KiwiRetryer<T> {
 
     private static final long DEFAULT_INITIAL_SLEEP_TIME_MILLISECONDS = 100;
@@ -191,7 +190,7 @@ public class KiwiRetryer<T> {
     private final boolean retryOnAllRuntimeExceptions;
 
     @Singular
-    private final List<Predicate<Throwable>> exceptionPredicates;
+    private final List<Predicate<Exception>> exceptionPredicates;
 
     @Singular
     private final List<Predicate<T>> resultPredicates;
@@ -285,8 +284,8 @@ public class KiwiRetryer<T> {
      * @param callable  the code that attempts to produce a result
      * @return the result of the {@link Callable}
      * @throws KiwiRetryerException if there was an unhandled exception during processing, or if the maximum
-     *                              number of attempts was reached without success. For further information about the cause, you can
-     *                              unwrap the exception.
+     *                              number of attempts was reached without success. For further information about
+     *                              the cause, you can unwrap the exception.
      * @see KiwiRetryerException#unwrapKiwiRetryerException(KiwiRetryerException)
      * @see KiwiRetryerException#unwrapKiwiRetryerExceptionFully(KiwiRetryerException)
      */
@@ -299,21 +298,20 @@ public class KiwiRetryer<T> {
             var message = f("KiwiRetryer {} failed all {} attempts. Error: {}",
                     retryerId, e.getNumberOfFailedAttempts(), e.getMessage());
             throw new KiwiRetryerException(message, e);
-        } catch (ExecutionException e) {
-            var message = f("KiwiRetryer {} failed making call. Wrapped exception: {}",
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            var message = f("KiwiRetryer {} interrupted making call. Wrapped exception: {}",
                     retryerId, e.getCause());
             throw new KiwiRetryerException(message, e);
         }
     }
 
-    private Retryer<T> buildRetryer(String retryerId) {
+    private Retryer buildRetryer(String retryerId) {
         var theWaitStrategy = determineWaitStrategy();
         var theStopStrategy = determineStopStrategy();
         var theLogListener = new LoggingRetryListener(retryerId, processingLogLevel, exceptionLogLevel);
 
-        // suppress unstable API warning because RetryListener is marked with @Beta and we're ignoring that fact
-        @SuppressWarnings("UnstableApiUsage")
-        var retryerBuilder = RetryerBuilder.<T>newBuilder()
+        var retryerBuilder = RetryerBuilder.newBuilder()
                 .withWaitStrategy(theWaitStrategy)
                 .withStopStrategy(theStopStrategy)
                 .withRetryListener(theLogListener);
@@ -366,7 +364,6 @@ public class KiwiRetryer<T> {
                 .orElseGet(() -> StopStrategies.stopAfterAttempt(maxAttempts));
     }
 
-    @SuppressWarnings("UnstableApiUsage")  // because RetryListener is marked with @Beta and we're ignoring that fact
     static class LoggingRetryListener implements RetryListener {
 
         private static final String RETRY_ATTEMPT_MSG = "Retryer [{}], attempt #{} [delay since first attempt: {} ms]";
@@ -388,7 +385,7 @@ public class KiwiRetryer<T> {
          * and explicitly checking both of those cases instead of making any assumptions.
          */
         @Override
-        public <V> void onRetry(Attempt<V> attempt) {
+        public void onRetry(Attempt<?> attempt) {
             var attemptNumber = attempt.getAttemptNumber();
 
             RetryLogger.logAttempt(LOG, processingLogLevel, attemptNumber,
@@ -410,8 +407,8 @@ public class KiwiRetryer<T> {
          *
          * @implNote the throwable in attempt should never be null, but we guard against just in case
          */
-        <V> void logExceptionAttempt(Attempt<V> attempt) {
-            var throwable = attempt.getExceptionCause();
+        void logExceptionAttempt(Attempt<?> attempt) {
+            var throwable = attempt.getException();
 
             var type = KiwiThrowables.typeOfNullable(throwable).orElse(null);
             var message = KiwiThrowables.messageOfNullable(throwable).orElse(null);

@@ -56,7 +56,7 @@
         <metrics-jdbi3.version>4.1.18</metrics-jdbi3.version>
         <metrics-jetty9.version>4.1.18</metrics-jetty9.version>
         <postgresql.version>42.2.19</postgresql.version>
-        <re-retrying.version>3.0.0</re-retrying.version>
+        <retrying-again.version>0.5.0</retrying-again.version>
         <spring.version>5.3.4</spring.version>
         <spring-data-mongodb.version>2.2.11.RELEASE</spring-data-mongodb.version>
         <stax2-api.version>4.2.1</stax2-api.version>
@@ -533,16 +533,10 @@
         </dependency>
 
         <dependency>
-            <groupId>tech.huffman.re-retrying</groupId>
-            <artifactId>re-retrying</artifactId>
-            <version>${re-retrying.version}</version>
+            <groupId>org.kiwiproject</groupId>
+            <artifactId>retrying-again</artifactId>
+            <version>${retrying-again.version}</version>
             <scope>provided</scope>
-            <exclusions>
-                <exclusion>
-                    <groupId>com.google.guava</groupId>
-                    <artifactId>guava</artifactId>
-                </exclusion>
-            </exclusions>
         </dependency>
 
         <dependency>
