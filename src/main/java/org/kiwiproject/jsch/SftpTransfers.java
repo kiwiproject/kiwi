@@ -192,6 +192,24 @@ public class SftpTransfers {
     }
 
     /**
+     * Gets a file off of a remote server with the given path and given filename and returns an {@link InputStream}. This
+     * is useful if the remote file is binary and not a text based file.
+     * <p>
+     * Note: The caller of this method is responsible for closing the stream.
+     *
+     * @param remotePath        path on the remote server where the file is located
+     * @param remoteFilename    name of the file to pull from the remote server
+     * @return an {@link InputStream} to read the file
+     */
+    public InputStream getFileContentAsInputStream(Path remotePath, String remoteFilename) {
+        return connector.runCommandWithResponse(channel -> {
+            changeToRemoteDirectory(channel, remotePath);
+
+            return channel.get(remoteFilename);
+        });
+    }
+
+    /**
      * Returns a list of files that exist in the given path on the remote server.
      *
      * @param remotePath path on the remote server to list files
