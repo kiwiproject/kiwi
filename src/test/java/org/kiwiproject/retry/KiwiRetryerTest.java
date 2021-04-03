@@ -6,10 +6,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatCode;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.assertj.core.api.Assertions.catchThrowable;
+import static org.assertj.core.api.Assertions.catchThrowableOfType;
 
-import com.github.rholder.retry.RetryException;
-import com.github.rholder.retry.StopStrategies;
-import com.github.rholder.retry.WaitStrategies;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -228,13 +226,12 @@ class KiwiRetryerTest {
 
             var retryer = KiwiRetryer.<Response>newRetryerWithDefaultExceptions("thisFails");
 
-            var thrown = catchThrowable(() -> retryer.call(callable));
+            var kiwiRetryerException = catchThrowableOfType(() -> retryer.call(callable), KiwiRetryerException.class);
 
-            assertThat(thrown)
-                    .isExactlyInstanceOf(KiwiRetryerException.class)
-                    .hasMessageStartingWith("KiwiRetryer thisFails failed making call. Wrapped exception:");
+            assertThat(kiwiRetryerException)
+                    .hasMessage("KiwiRetryer thisFails failed all 1 attempts. Error: Retrying failed to complete successfully after 1 attempts.");
 
-            var unwrappedException = ((KiwiRetryerException) thrown).unwrap().orElseThrow();
+            var unwrappedException = kiwiRetryerException.unwrapFully().orElseThrow();
             assertThat(unwrappedException)
                     .isExactlyInstanceOf(RuntimeException.class)
                     .hasMessage("this failed");
@@ -386,14 +383,13 @@ class KiwiRetryerTest {
                         .exceptionPredicate(KiwiRetryerPredicates.UNKNOWN_HOST)
                         .build();
 
-                var thrown = catchThrowable(() -> retryer.call(callable));
+                var kiwiRetryerException = catchThrowableOfType(() -> retryer.call(callable), KiwiRetryerException.class);
 
-                assertThat(thrown)
-                        .isExactlyInstanceOf(KiwiRetryerException.class)
-                        .hasMessageStartingWith(
-                                "KiwiRetryer retryOnAllRuntimeExceptionsShouldTakePrecedence failed making call. Wrapped exception:");
+                assertThat(kiwiRetryerException)
+                        .hasMessage("KiwiRetryer retryOnAllRuntimeExceptionsShouldTakePrecedence failed all 1 attempts." +
+                                " Error: Retrying failed to complete successfully after 1 attempts.");
 
-                var unwrappedException = ((KiwiRetryerException) thrown).unwrap().orElseThrow();
+                var unwrappedException = kiwiRetryerException.unwrapFully().orElseThrow();
                 assertThat(unwrappedException)
                         .isExactlyInstanceOf(ConnectException.class)
                         .hasMessage("connect error");
@@ -516,7 +512,7 @@ class KiwiRetryerTest {
             var unwrappedException3 = kiwiRetryerException3.unwrap().orElseThrow();
             assertThat(unwrappedException3).isExactlyInstanceOf(RetryException.class);
             var retryException3 = (RetryException) unwrappedException3;
-            var exception3 = retryException3.getLastFailedAttempt().getExceptionCause();
+            var exception3 = retryException3.getLastFailedAttempt().getException();
             assertThat(exception3)
                     .isExactlyInstanceOf(SocketTimeoutException.class)
                     .hasMessage("timeout!");

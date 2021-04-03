@@ -32,12 +32,12 @@ import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
 /**
- * @implNote The nested classes ending in "_Predicate" and extending {@link AbstractThrowablePredicateTest}
+ * @implNote The nested classes ending in "_Predicate" and extending {@link AbstractExceptionPredicateTest}
  * automatically execute all the tests defined in that base class for a given predicate. The steps for adding
  * a new predicate are:
  * <ol>
  *     <li>Create a {@link Nested} class named as "[PREDICATE_NAME]_Predicate"</li>
- *     <li>Make the class extend {@link AbstractThrowablePredicateTest}</li>
+ *     <li>Make the class extend {@link AbstractExceptionPredicateTest}</li>
  *     <li>Implement the required getter methods (easiest to use Lombok to generate the getter methods)</li>
  * </ol>
  */
@@ -46,68 +46,68 @@ class KiwiRetryerPredicatesTest {
 
     @Nested
     @Getter
-    class UNKNOWN_HOST_Predicate extends AbstractThrowablePredicateTest {
-        private final Throwable throwable = new UnknownHostException("This host is not known to me!");
-        private final Predicate<Throwable> predicate = KiwiRetryerPredicates.UNKNOWN_HOST;
+    class UNKNOWN_HOST_Predicate extends AbstractExceptionPredicateTest {
+        private final Exception exception = new UnknownHostException("This host is not known to me!");
+        private final Predicate<Exception> predicate = KiwiRetryerPredicates.UNKNOWN_HOST;
     }
 
     @Nested
     @Getter
-    class CONNECTION_ERROR_Predicate extends AbstractThrowablePredicateTest {
-        private final Throwable throwable = new ConnectException("I'm having trouble connecting...");
-        private final Predicate<Throwable> predicate = KiwiRetryerPredicates.CONNECTION_ERROR;
+    class CONNECTION_ERROR_Predicate extends AbstractExceptionPredicateTest {
+        private final Exception exception = new ConnectException("I'm having trouble connecting...");
+        private final Predicate<Exception> predicate = KiwiRetryerPredicates.CONNECTION_ERROR;
     }
 
     @Nested
     @Getter
-    class SOCKET_TIMEOUT_Predicate extends AbstractThrowablePredicateTest {
-        private final Throwable throwable = new SocketTimeoutException("Did it actually finish? No idea...");
-        private final Predicate<Throwable> predicate = KiwiRetryerPredicates.SOCKET_TIMEOUT;
+    class SOCKET_TIMEOUT_Predicate extends AbstractExceptionPredicateTest {
+        private final Exception exception = new SocketTimeoutException("Did it actually finish? No idea...");
+        private final Predicate<Exception> predicate = KiwiRetryerPredicates.SOCKET_TIMEOUT;
     }
 
     @Nested
     @Getter
-    class SSL_HANDSHAKE_ERROR_Predicate extends AbstractThrowablePredicateTest {
-        private final Throwable throwable = new SSLHandshakeException("Remote host closed connection during handshake");
-        private final Predicate<Throwable> predicate = KiwiRetryerPredicates.SSL_HANDSHAKE_ERROR;
+    class SSL_HANDSHAKE_ERROR_Predicate extends AbstractExceptionPredicateTest {
+        private final Exception exception = new SSLHandshakeException("Remote host closed connection during handshake");
+        private final Predicate<Exception> predicate = KiwiRetryerPredicates.SSL_HANDSHAKE_ERROR;
     }
 
     @Nested
     @Getter
-    class NO_ROUTE_TO_HOST_Predicate extends AbstractThrowablePredicateTest {
-        private final Throwable throwable = new NoRouteToHostException("Where did it go?");
-        private final Predicate<Throwable> predicate = KiwiRetryerPredicates.NO_ROUTE_TO_HOST;
+    class NO_ROUTE_TO_HOST_Predicate extends AbstractExceptionPredicateTest {
+        private final Exception exception = new NoRouteToHostException("Where did it go?");
+        private final Predicate<Exception> predicate = KiwiRetryerPredicates.NO_ROUTE_TO_HOST;
     }
 
     /**
      * Base class providing test generation for the Throwable predicates in KiwiRetryerPredicates.
      */
     @DisplayNameGeneration(PredicateDisplayNameGenerator.class)
-    static abstract class AbstractThrowablePredicateTest {
+    static abstract class AbstractExceptionPredicateTest {
 
         /**
          * The predicate to test.
          */
-        abstract Predicate<Throwable> getPredicate();
+        abstract Predicate<Exception> getPredicate();
 
         /**
          * An exception instance of the same type that the above predicate tests.
          */
-        abstract Throwable getThrowable();
+        abstract Exception getException();
 
         @Test
         void whenTheExpectedExceptionIsTheDirectException_shouldBeTrue() {
-            assertThat(getPredicate().test(getThrowable())).isTrue();
+            assertThat(getPredicate().test(getException())).isTrue();
         }
 
         @Test
         void whenTheExpectedExceptionIsTheExceptionCause_shouldBeTrue() {
-            assertThat(getPredicate().test(makeThrowableTheExceptionCause(getThrowable()))).isTrue();
+            assertThat(getPredicate().test(makeThrowableTheExceptionCause(getException()))).isTrue();
         }
 
         @Test
         void whenTheExpectedExceptionIsTheRootCause_shouldBeTrue() {
-            assertThat(getPredicate().test(makeThrowableTheRootCause(getThrowable()))).isTrue();
+            assertThat(getPredicate().test(makeThrowableTheRootCause(getException()))).isTrue();
         }
 
         @ParameterizedTest
@@ -118,9 +118,9 @@ class KiwiRetryerPredicatesTest {
                 FileNotFoundException.class
         })
         void whenIsAnExceptionOfType_shouldBeFalse(Class<?> clazz) throws Exception {
-            var throwable = (Throwable) clazz.getDeclaredConstructor(String.class).newInstance("oopsy daisy");
+            var exception = (Exception) clazz.getDeclaredConstructor(String.class).newInstance("oopsy daisy");
 
-            assertThat(getPredicate().test(throwable)).isFalse();
+            assertThat(getPredicate().test(exception)).isFalse();
         }
 
         private IOException makeThrowableTheExceptionCause(Throwable t) {
@@ -133,7 +133,7 @@ class KiwiRetryerPredicatesTest {
     }
 
     /**
-     * Name generator for test classes that extend {@link AbstractThrowablePredicateTest}.
+     * Name generator for test classes that extend {@link AbstractExceptionPredicateTest}.
      */
     private static class PredicateDisplayNameGenerator implements DisplayNameGenerator {
 
@@ -177,21 +177,21 @@ class KiwiRetryerPredicatesTest {
         @MethodSource("org.kiwiproject.retry.KiwiRetryerPredicatesTest#httpNonErrorResponseProvider")
         @DisplayName("should return false when given a status code between 100-399")
         void IS_HTTP_400s_shouldReturnFalse_whenNonErrorResponses(Response response) {
-            assertThat(KiwiRetryerPredicates.IS_HTTP_400s.apply(response)).isFalse();
+            assertThat(KiwiRetryerPredicates.IS_HTTP_400s.test(response)).isFalse();
         }
 
         @ParameterizedTest
         @MethodSource("org.kiwiproject.retry.KiwiRetryerPredicatesTest#httpClientErrorResponseProvider")
         @DisplayName("should return true when given a status code between 400-499")
         void IS_HTTP_400s_shouldReturnTrue_whenClientErrorResponses(Response response) {
-            assertThat(KiwiRetryerPredicates.IS_HTTP_400s.apply(response)).isTrue();
+            assertThat(KiwiRetryerPredicates.IS_HTTP_400s.test(response)).isTrue();
         }
 
         @ParameterizedTest
         @MethodSource("org.kiwiproject.retry.KiwiRetryerPredicatesTest#httpServerErrorResponseProvider")
         @DisplayName("should return false when given a status code between 500-599")
         void IS_HTTP_400s_shouldReturnFalse_whenServerErrorResponses(Response response) {
-            assertThat(KiwiRetryerPredicates.IS_HTTP_400s.apply(response)).isFalse();
+            assertThat(KiwiRetryerPredicates.IS_HTTP_400s.test(response)).isFalse();
         }
     }
 
@@ -202,21 +202,21 @@ class KiwiRetryerPredicatesTest {
         @MethodSource("org.kiwiproject.retry.KiwiRetryerPredicatesTest#httpNonErrorResponseProvider")
         @DisplayName("should return false when given a status code between 100-399")
         void shouldReturnFalse_whenNonErrorResponses(Response response) {
-            assertThat(KiwiRetryerPredicates.IS_HTTP_500s.apply(response)).isFalse();
+            assertThat(KiwiRetryerPredicates.IS_HTTP_500s.test(response)).isFalse();
         }
 
         @ParameterizedTest
         @MethodSource("org.kiwiproject.retry.KiwiRetryerPredicatesTest#httpClientErrorResponseProvider")
         @DisplayName("should return false when given a status code between 400-499")
         void shouldReturnFalse_whenClientErrorResponses(Response response) {
-            assertThat(KiwiRetryerPredicates.IS_HTTP_500s.apply(response)).isFalse();
+            assertThat(KiwiRetryerPredicates.IS_HTTP_500s.test(response)).isFalse();
         }
 
         @ParameterizedTest
         @MethodSource("org.kiwiproject.retry.KiwiRetryerPredicatesTest#httpServerErrorResponseProvider")
         @DisplayName("should return true when given a status code between 500-599")
         void shouldReturnTrue_whenServerErrorResponses(Response response) {
-            assertThat(KiwiRetryerPredicates.IS_HTTP_500s.apply(response)).isTrue();
+            assertThat(KiwiRetryerPredicates.IS_HTTP_500s.test(response)).isTrue();
         }
     }
 
