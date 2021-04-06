@@ -23,14 +23,13 @@ import com.jcraft.jsch.JSchException;
 import com.jcraft.jsch.Session;
 import com.jcraft.jsch.SftpATTRS;
 import com.jcraft.jsch.SftpException;
-import org.apache.commons.io.IOUtils;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
+import org.kiwiproject.io.KiwiIO;
 
-import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
@@ -324,13 +323,13 @@ class SftpTransfersTest {
     class GetFileContentAsInputStream {
 
         @Test
-        void shouldReturnFileContentOfPulledFile() throws SftpException, IOException {
+        void shouldReturnFileContentOfPulledFile() throws SftpException {
             var input = fixture("SftpTransfersTest/file-to-pull.txt");
             when(channelSftp.get("test-file-to-pull.txt")).thenReturn(toInputStream(input, StandardCharsets.UTF_8));
             var remoteBasePath = Path.of(config.getRemoteBasePath());
 
             var fileStream = sftp.getFileContentAsInputStream(remoteBasePath, "test-file-to-pull.txt");
-            var fileContent = IOUtils.toString(fileStream, StandardCharsets.UTF_8);
+            var fileContent = KiwiIO.readInputStreamAsString(fileStream);
 
             assertThat(fileContent).isEqualTo(input);
 
