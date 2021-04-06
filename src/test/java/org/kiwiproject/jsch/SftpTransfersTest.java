@@ -28,6 +28,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
+import org.kiwiproject.io.KiwiIO;
 
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
@@ -310,6 +311,39 @@ class SftpTransfersTest {
 
             assertThatThrownBy(() ->
                     sftp.getFileContent(remotePath, "test-file-to-pull.txt"))
+                    .isExactlyInstanceOf(SftpTransfersException.class)
+                    .hasMessage("1: Test exception");
+
+            verify(channelSftp).cd("/tmp");
+            verify(channelSftp).get("test-file-to-pull.txt");
+        }
+    }
+
+    @Nested
+    class GetFileContentAsInputStream {
+
+        @Test
+        void shouldReturnFileContentOfPulledFile() throws SftpException {
+            var input = fixture("SftpTransfersTest/file-to-pull.txt");
+            when(channelSftp.get("test-file-to-pull.txt")).thenReturn(toInputStream(input, StandardCharsets.UTF_8));
+            var remoteBasePath = Path.of(config.getRemoteBasePath());
+
+            var fileStream = sftp.getFileContentAsInputStream(remoteBasePath, "test-file-to-pull.txt");
+            var fileContent = KiwiIO.readInputStreamAsString(fileStream);
+
+            assertThat(fileContent).isEqualTo(input);
+
+            verify(channelSftp).cd("/tmp");
+            verify(channelSftp).get("test-file-to-pull.txt");
+        }
+
+        @Test
+        void shouldThrowSftpTransfersExceptionWhenGetFileContentFails() throws SftpException {
+            doThrow(new SftpException(1, "Test exception")).when(channelSftp).get("test-file-to-pull.txt");
+            var remotePath = Path.of(config.getRemoteBasePath());
+
+            assertThatThrownBy(() ->
+                    sftp.getFileContentAsInputStream(remotePath, "test-file-to-pull.txt"))
                     .isExactlyInstanceOf(SftpTransfersException.class)
                     .hasMessage("1: Test exception");
 
