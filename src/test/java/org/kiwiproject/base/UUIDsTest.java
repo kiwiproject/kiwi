@@ -5,6 +5,9 @@ import static org.assertj.core.api.Assertions.assertThat;
 import org.assertj.core.api.SoftAssertions;
 import org.assertj.core.api.junit.jupiter.SoftAssertionsExtension;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Nested;
+import org.junit.jupiter.api.RepeatedTest;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -17,6 +20,7 @@ import java.util.function.Supplier;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
+@DisplayName("UUIDs")
 @ExtendWith(SoftAssertionsExtension.class)
 class UUIDsTest {
 
@@ -27,36 +31,51 @@ class UUIDsTest {
         random = new Random();
     }
 
-    @Test
-    void testRandomUUIDString() {
-        assertThat(UUIDs.randomUUIDString()).isNotNull();
+    @RepeatedTest(25)
+    void shouldCreateRandomUUIDStrings() {
+        assertThat(UUIDs.randomUUIDString()).isNotBlank();
         assertThat(UUIDs.isValidUUID(UUIDs.randomUUIDString())).isTrue();
     }
 
-    @Test
-    void testIsValidUUID_ForValidType4UUIDs(SoftAssertions softly) {
-        assertValidUUIDs(softly, UUID::randomUUID);
-    }
+    @Nested
+    class IsValidUUID {
 
-    @Test
-    void testIsValidUUID_ForValidType3UUIDs(SoftAssertions softly) {
-        assertValidUUIDs(softly, () -> UUID.nameUUIDFromBytes(randomByteArray()));
-    }
+        @Test
+        void shouldBeTrue_ForValidType4UUIDs(SoftAssertions softly) {
+            assertValidUUIDs(softly, UUID::randomUUID);
+        }
 
-    @Test
-    void testIsValidUUID_ForValidType4UUIDs_UsingUUIDConstructor(SoftAssertions softly) {
-        assertValidUUIDs(softly, () -> {
-            var validUUID = UUID.randomUUID();
-            return new UUID(validUUID.getMostSignificantBits(), validUUID.getLeastSignificantBits());
-        });
-    }
+        @Test
+        void shouldBeTrue_ForValidType3UUIDs(SoftAssertions softly) {
+            assertValidUUIDs(softly, () -> UUID.nameUUIDFromBytes(randomByteArray()));
+        }
 
-    @Test
-    void testIsValidUUID_ForValidType3UUIDs_UsingUUIDConstructor(SoftAssertions softly) {
-        assertValidUUIDs(softly, () -> {
-            var validUUID = UUID.nameUUIDFromBytes(randomByteArray());
-            return new UUID(validUUID.getMostSignificantBits(), validUUID.getLeastSignificantBits());
-        });
+        @Test
+        void shouldBeTrue_ForValidType4UUIDs_UsingUUIDConstructor(SoftAssertions softly) {
+            assertValidUUIDs(softly, () -> {
+                var validUUID = UUID.randomUUID();
+                return new UUID(validUUID.getMostSignificantBits(), validUUID.getLeastSignificantBits());
+            });
+        }
+
+        @Test
+        void shouldBeTrue_ForValidType3UUIDs_UsingUUIDConstructor(SoftAssertions softly) {
+            assertValidUUIDs(softly, () -> {
+                var validUUID = UUID.nameUUIDFromBytes(randomByteArray());
+                return new UUID(validUUID.getMostSignificantBits(), validUUID.getLeastSignificantBits());
+            });
+        }
+
+        @ParameterizedTest
+        @MethodSource("org.kiwiproject.base.UUIDsTest#invalidUUIDs")
+        void shouldBeFalse_ForInvalidUUIDs(String value) {
+            assertThat(UUIDs.isValidUUID(value)).isFalse();
+        }
+
+        @RepeatedTest(5)
+        void shouldBeFalse_ForTheNilUUID() {
+            assertThat(UUIDs.isValidUUID("00000000-0000-0000-0000-000000000000")).isFalse();
+        }
     }
 
     private void assertValidUUIDs(SoftAssertions softly, Supplier<UUID> supplier) {
@@ -67,12 +86,6 @@ class UUIDsTest {
                                 .describedAs("candidate %s should be valid", candidate)
                                 .isTrue()
                 );
-    }
-
-    @ParameterizedTest
-    @MethodSource("invalidUUIDs")
-    void testIsValidUUID_ForInvalidUUIDs(String value) {
-        assertThat(UUIDs.isValidUUID(value)).isFalse();
     }
 
     static Stream<String> invalidUUIDs() {
