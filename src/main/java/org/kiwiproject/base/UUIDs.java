@@ -28,6 +28,9 @@ public class UUIDs {
      * Checks if the {@code value} is a valid UUID confirming to RFC 4122. The general form is 8-4-4-4-12 where all the
      * digits are hexadecimal. Example: {@code e94c302e-e684-4d72-9060-a66461f858d6}
      * <p>
+     * Note specifically that this method <em>does not support</em> the <a href="https://tools.ietf.org/html/rfc4122#section-4.1.7">Nil UUID</a>
+     * and will always return false if given a Nil UUID.
+     * <p>
      * This method has been tested with UUIDs generated using {@link UUID#randomUUID()} and
      * {@link UUID#nameUUIDFromBytes(byte[])}. It has also been tested with UUIDs created using the constructor
      * {@link UUID#UUID(long, long)} <em>with the caveat that the most and least significant bits came from valid
