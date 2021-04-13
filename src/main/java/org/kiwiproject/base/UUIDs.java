@@ -27,7 +27,7 @@ public class UUIDs {
     }
 
     /**
-     * Checks if the {@code value} is a valid UUID confirming to RFC 4122. The general form is 8-4-4-4-12 where all the
+     * Checks if the {@code value} is a valid UUID conforming to RFC 4122. The general form is 8-4-4-4-12 where all the
      * digits are hexadecimal. Example: {@code e94c302e-e684-4d72-9060-a66461f858d6}
      * <p>
      * Note specifically that this method <em>does not support</em> the <a href="https://tools.ietf.org/html/rfc4122#section-4.1.7">Nil UUID</a>
@@ -47,8 +47,9 @@ public class UUIDs {
     }
 
     /**
-     * Checks if the {@code value} is a valid UUID confirming to RFC 4122 or the NIL UUID. The general form is 8-4-4-4-12 where all the
-     * digits are hexadecimal. Example: {@code e94c302e-e684-4d72-9060-a66461f858d6}
+     * Checks if the {@code value} is a valid UUID conforming to RFC 4122 (including the Nil UUID). The general form is
+     * 8-4-4-4-12 where all the digits are hexadecimal. Example: {@code e94c302e-e684-4d72-9060-a66461f858d6}, or the
+     * nil UUID {@code 00000000-0000-0000-0000-000000000000}.
      * <p>
      * This method has been tested with UUIDs generated using {@link UUID#randomUUID()} and
      * {@link UUID#nameUUIDFromBytes(byte[])}. It has also been tested with UUIDs created using the constructor
