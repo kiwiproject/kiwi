@@ -1,5 +1,6 @@
 package org.kiwiproject.jdbi2.sqlobject;
 
+import org.kiwiproject.base.KiwiDeprecated;
 import org.kiwiproject.jdbc.postgres.KiwiPostgres;
 import org.skife.jdbi.v2.sqlobject.Binder;
 import org.skife.jdbi.v2.sqlobject.BinderFactory;
@@ -20,10 +21,14 @@ import java.lang.annotation.Target;
  * </pre>
  * <p>
  * Note that both jdbi (version 2) and postgres dependencies must be available at runtime.
+ *
+ * @deprecated Removing support for JDBI 2.  JDBI 3 has this built in.
  */
 @BindingAnnotation(BindJSONB.JsonBinderFactory.class)
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.PARAMETER)
+@Deprecated(since = "0.23.0", forRemoval = true)
+@KiwiDeprecated(since = "0.23.0", removeAt = "0.24.0")
 public @interface BindJSONB {
 
     String value();
