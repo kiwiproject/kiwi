@@ -8,6 +8,7 @@ import io.dropwizard.jdbi.DBIFactory;
 import io.dropwizard.setup.Environment;
 import lombok.experimental.UtilityClass;
 import lombok.extern.slf4j.Slf4j;
+import org.kiwiproject.base.KiwiDeprecated;
 import org.skife.jdbi.v2.DBI;
 
 /**
@@ -15,9 +16,13 @@ import org.skife.jdbi.v2.DBI;
  * <p>
  * NOTE: This class is for JDBI version 2, if you would like to upgrade to JDBI version
  * 3, there is an equivalent to this class in {@code org.kiwiproject.dropwizard.jdbi3}.
+ *
+ * @deprecated Removing support for JDBI 2, use the JDBI 3 version of this builder
  */
 @UtilityClass
 @Slf4j
+@Deprecated(since = "0.23.0", forRemoval = true)
+@KiwiDeprecated(since = "0.23.0", removeAt = "0.24.0", replacedBy = "Jdbi3Builders")
 public class Jdbi2Builders {
 
     public static final String DEFAULT_HEALTH_CHECK_NAME = "database";
