@@ -118,7 +118,6 @@ class Jdbi3BuildersTest {
         verify(environment, times(2)).metrics();
         verify(environment).lifecycle();
         verify(environment).healthChecks();
-        //noinspection ResultOfMethodCallIgnored
         verify(environment).getHealthCheckExecutorService();
 
         var managedClasses = lifecycleEnvironment.getManagedObjects()
@@ -238,7 +237,6 @@ class Jdbi3BuildersTest {
         verify(environment).metrics();
         verify(environment).lifecycle();
         verify(environment).healthChecks();
-        //noinspection ResultOfMethodCallIgnored
         verify(environment).getHealthCheckExecutorService();
 
         var managedObjects = lifecycleEnvironment.getManagedObjects()
