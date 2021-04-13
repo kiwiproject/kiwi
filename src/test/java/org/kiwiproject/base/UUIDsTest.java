@@ -16,6 +16,7 @@ import org.junit.jupiter.params.provider.MethodSource;
 import java.util.Locale;
 import java.util.Random;
 import java.util.UUID;
+import java.util.function.Predicate;
 import java.util.function.Supplier;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
@@ -78,13 +79,7 @@ class UUIDsTest {
         }
 
         private void assertValidUUIDs(SoftAssertions softly, Supplier<UUID> supplier) {
-            IntStream.range(0, 1000)
-                    .mapToObj(value -> supplier.get())
-                    .forEach(candidate ->
-                            softly.assertThat(UUIDs.isValidUUID(candidate.toString()))
-                                    .describedAs("candidate %s should be valid", candidate)
-                                    .isTrue()
-                    );
+            assertUUIDCheckerValidatesSuppliedUUIDs(softly, UUIDs::isValidUUID, supplier);
         }
     }
 
@@ -129,14 +124,21 @@ class UUIDsTest {
         }
 
         private void assertValidUUIDs(SoftAssertions softly, Supplier<UUID> supplier) {
-            IntStream.range(0, 1000)
-                    .mapToObj(value -> supplier.get())
-                    .forEach(candidate ->
-                            softly.assertThat(UUIDs.isValidUUIDAllowingNil(candidate.toString()))
-                                    .describedAs("candidate %s should be valid", candidate)
-                                    .isTrue()
-                    );
+            assertUUIDCheckerValidatesSuppliedUUIDs(softly, UUIDs::isValidUUIDAllowingNil, supplier);
         }
+    }
+
+    private void assertUUIDCheckerValidatesSuppliedUUIDs(SoftAssertions softly,
+                                                         Predicate<String> uuidChecker,
+                                                         Supplier<UUID> supplier) {
+        IntStream.range(0, 1000)
+                .mapToObj(value -> supplier.get())
+                .map(UUID::toString)
+                .forEach(candidate ->
+                        softly.assertThat(uuidChecker.test(candidate))
+                                .describedAs("candidate %s should be valid", candidate)
+                                .isTrue()
+                );
     }
 
     static Stream<String> invalidUUIDs() {
