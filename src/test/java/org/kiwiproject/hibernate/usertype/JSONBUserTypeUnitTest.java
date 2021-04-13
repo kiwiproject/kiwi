@@ -50,7 +50,6 @@ class JSONBUserTypeUnitTest {
 
         @Test
         void shouldThrowIllegalArgumentException_GivenNullObject() {
-            //noinspection ResultOfMethodCallIgnored
             assertThatIllegalArgumentException()
                     .isThrownBy(() -> jsonbUserType.hashCode(null));
         }
