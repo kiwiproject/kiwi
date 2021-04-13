@@ -11,6 +11,8 @@ import java.util.regex.Pattern;
 @UtilityClass
 public class UUIDs {
 
+    private static final String NIL_UUID = "00000000-0000-0000-0000-000000000000";
+
     private static final Pattern RFC4122_PATTERN =
             Pattern.compile("^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}");
 
@@ -44,4 +46,20 @@ public class UUIDs {
         return RFC4122_PATTERN.matcher(value).matches();
     }
 
+    /**
+     * Checks if the {@code value} is a valid UUID confirming to RFC 4122 or the NIL UUID. The general form is 8-4-4-4-12 where all the
+     * digits are hexadecimal. Example: {@code e94c302e-e684-4d72-9060-a66461f858d6}
+     * <p>
+     * This method has been tested with UUIDs generated using {@link UUID#randomUUID()} and
+     * {@link UUID#nameUUIDFromBytes(byte[])}. It has also been tested with UUIDs created using the constructor
+     * {@link UUID#UUID(long, long)} <em>with the caveat that the most and least significant bits came from valid
+     * type 3 and 4 UUIDs.</em>
+     *
+     * @param value the string to check
+     * @return {@code true} if a valid UUID, {@code false} otherwise
+     * @see UUID
+     */
+    public static boolean isValidUUIDAllowingNil(String value) {
+        return NIL_UUID.equals(value) || isValidUUID(value);
+    }
 }
