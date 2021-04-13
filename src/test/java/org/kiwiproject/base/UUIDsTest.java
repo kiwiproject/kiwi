@@ -16,6 +16,7 @@ import org.junit.jupiter.params.provider.MethodSource;
 import java.util.Locale;
 import java.util.Random;
 import java.util.UUID;
+import java.util.function.Predicate;
 import java.util.function.Supplier;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
@@ -76,13 +77,65 @@ class UUIDsTest {
         void shouldBeFalse_ForTheNilUUID() {
             assertThat(UUIDs.isValidUUID("00000000-0000-0000-0000-000000000000")).isFalse();
         }
+
+        private void assertValidUUIDs(SoftAssertions softly, Supplier<UUID> supplier) {
+            assertUUIDCheckerValidatesSuppliedUUIDs(softly, UUIDs::isValidUUID, supplier);
+        }
     }
 
-    private void assertValidUUIDs(SoftAssertions softly, Supplier<UUID> supplier) {
+    @Nested
+    class IsValidUUIDAllowingNil {
+
+        @Test
+        void shouldBeTrue_ForValidType4UUIDs(SoftAssertions softly) {
+            assertValidUUIDs(softly, UUID::randomUUID);
+        }
+
+        @Test
+        void shouldBeTrue_ForValidType3UUIDs(SoftAssertions softly) {
+            assertValidUUIDs(softly, () -> UUID.nameUUIDFromBytes(randomByteArray()));
+        }
+
+        @Test
+        void shouldBeTrue_ForValidType4UUIDs_UsingUUIDConstructor(SoftAssertions softly) {
+            assertValidUUIDs(softly, () -> {
+                var validUUID = UUID.randomUUID();
+                return new UUID(validUUID.getMostSignificantBits(), validUUID.getLeastSignificantBits());
+            });
+        }
+
+        @Test
+        void shouldBeTrue_ForValidType3UUIDs_UsingUUIDConstructor(SoftAssertions softly) {
+            assertValidUUIDs(softly, () -> {
+                var validUUID = UUID.nameUUIDFromBytes(randomByteArray());
+                return new UUID(validUUID.getMostSignificantBits(), validUUID.getLeastSignificantBits());
+            });
+        }
+
+        @ParameterizedTest
+        @MethodSource("org.kiwiproject.base.UUIDsTest#invalidUUIDs")
+        void shouldBeFalse_ForInvalidUUIDs(String value) {
+            assertThat(UUIDs.isValidUUID(value)).isFalse();
+        }
+
+        @RepeatedTest(5)
+        void shouldBeTrue_ForTheNilUUID() {
+            assertThat(UUIDs.isValidUUIDAllowingNil("00000000-0000-0000-0000-000000000000")).isTrue();
+        }
+
+        private void assertValidUUIDs(SoftAssertions softly, Supplier<UUID> supplier) {
+            assertUUIDCheckerValidatesSuppliedUUIDs(softly, UUIDs::isValidUUIDAllowingNil, supplier);
+        }
+    }
+
+    private void assertUUIDCheckerValidatesSuppliedUUIDs(SoftAssertions softly,
+                                                         Predicate<String> uuidChecker,
+                                                         Supplier<UUID> supplier) {
         IntStream.range(0, 1000)
                 .mapToObj(value -> supplier.get())
+                .map(UUID::toString)
                 .forEach(candidate ->
-                        softly.assertThat(UUIDs.isValidUUID(candidate.toString()))
+                        softly.assertThat(uuidChecker.test(candidate))
                                 .describedAs("candidate %s should be valid", candidate)
                                 .isTrue()
                 );
