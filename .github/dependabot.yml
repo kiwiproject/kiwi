@@ -17,3 +17,13 @@ updates:
       - dependency-name: "org.assertj:assertj-core"
       - dependency-name: "org.junit.jupiter:*"
       - dependency-name: "org.mockito:mockito-core"
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "daily"
+    assignees:
+      - "sleberknight"
+      - "chrisrohr"
+    reviewers:
+      - "sleberknight"
+      - "chrisrohr"
