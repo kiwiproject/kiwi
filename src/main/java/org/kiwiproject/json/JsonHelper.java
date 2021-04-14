@@ -724,9 +724,9 @@ public class JsonHelper {
             var lastPart = parts[parts.length - 1];
             var matcher = ARRAY_INDEX_PATTERN.matcher(lastPart);
             if (matcher.matches() && parentNode instanceof ArrayNode) {
-                ((ArrayNode) parentNode).remove(Integer.parseInt(matcher.group(1)));
+                asArrayNode(parentNode).remove(Integer.parseInt(matcher.group(1)));
             } else if (parentNode instanceof ObjectNode) {
-                ((ObjectNode) parentNode).remove(lastPart);
+                asObjectNode(parentNode).remove(lastPart);
             } else {
                 throw new IllegalArgumentException(f("Unable to remove element: {} from node: {}", lastPart, root));
             }
@@ -761,9 +761,9 @@ public class JsonHelper {
             var lastPart = parts[parts.length - 1];
             var matcher = ARRAY_INDEX_PATTERN.matcher(lastPart);
             if (matcher.matches() && parentNode instanceof ArrayNode) {
-                ((ArrayNode) parentNode).insert(Integer.parseInt(matcher.group(1)), value);
+                asArrayNode(parentNode).insert(Integer.parseInt(matcher.group(1)), value);
             } else if (parentNode instanceof ObjectNode) {
-                ((ObjectNode) parentNode).replace(lastPart, value);
+                asObjectNode(parentNode).replace(lastPart, value);
             } else {
                 throw new IllegalArgumentException(f("Unable to set element: {} into parent root: {}", lastPart, root));
             }
@@ -981,37 +981,75 @@ public class JsonHelper {
 
     private JsonNode mergeNodes(JsonNode destinationNode, JsonNode updateNode, boolean mergeArrays, boolean ignoreNulls) {
         updateNode.fieldNames().forEachRemaining(fieldName -> {
-            var otherNode = updateNode.get(fieldName);
+            var updateFieldNode = updateNode.get(fieldName);
 
-            if (nonNull(otherNode) && otherNode.isNull()) {
+            if (isNullNode(updateFieldNode)) {
                 if (ignoreNulls) {
-                    return;  // continues with lambda
-                } else if (destinationNode instanceof ObjectNode) {
-                    // if current property doesn't exist or isn't an object, replace it
-                    ((ObjectNode) destinationNode).putNull(fieldName);
+                    return;  // continues lambda with next fieldName
+                } else if (isObjectNode(destinationNode)) {
+                    asObjectNode(destinationNode).putNull(fieldName);
                 }
             }
 
-            var node = destinationNode.get(fieldName);
-            if (nonNull(node) && node.isContainerNode()) {
-                if (node.isObject()) {
-                    mergeNodes(node, otherNode, mergeArrays, ignoreNulls);  // recurse on contents
-                } else if (node.isArray()) {
-                    if (mergeArrays && otherNode.isArray()) {  // merge array contents
-                        otherNode.forEach(((ArrayNode) node)::add);
-                    } else {  // just replace array
-                        ((ObjectNode) destinationNode).replace(fieldName, otherNode);
-                    }
-                }
-            } else if (destinationNode instanceof ObjectNode) {
-                // if current property doesn't exist or isn't an object, replace it
-                ((ObjectNode) destinationNode).replace(fieldName, otherNode);
+            var destFieldNode = destinationNode.get(fieldName);
+            if (isContainerNode(destFieldNode)) {
+                mergeContainerNode(fieldName, destinationNode, destFieldNode, updateFieldNode, mergeArrays, ignoreNulls);
+            } else if (isObjectNode(destinationNode)) {
+                asObjectNode(destinationNode).replace(fieldName, updateFieldNode);
             } else {
-                LOG.warn("Unhandled node {}: {}", fieldName, node);
+                LOG.warn("Unhandled node {}: {}", fieldName, destFieldNode);
             }
         });
 
         return destinationNode;
+    }
+
+    private static boolean isNullNode(JsonNode node) {
+        return nonNull(node) && node.isNull();
+    }
+
+    private static boolean isObjectNode(JsonNode node) {
+        return nonNull(node) && node.isObject();
+    }
+
+    private static boolean isContainerNode(JsonNode node) {
+        return nonNull(node) && node.isContainerNode();
+    }
+
+    private static ArrayNode asArrayNode(JsonNode node) {
+        return (ArrayNode) node;
+    }
+
+    private static ObjectNode asObjectNode(JsonNode node) {
+        return (ObjectNode) node;
+    }
+
+    private void mergeContainerNode(String fieldName,
+                                    JsonNode destinationNode,
+                                    JsonNode destFieldNode,
+                                    JsonNode updateFieldNode,
+                                    boolean mergeArrays,
+                                    boolean ignoreNulls) {
+
+        if (destFieldNode.isObject()) {
+            mergeNodes(destFieldNode, updateFieldNode, mergeArrays, ignoreNulls);  // recurse on contents
+
+        } else if (destFieldNode.isArray()) {
+            mergeOrReplaceArray(fieldName, destinationNode, (ArrayNode) destFieldNode, updateFieldNode, mergeArrays);
+        }
+    }
+
+    private static void mergeOrReplaceArray(String fieldName,
+                                            JsonNode destinationNode,
+                                            ArrayNode destFieldNode,
+                                            JsonNode updateFieldNode,
+                                            boolean mergeArrays) {
+
+        if (mergeArrays && updateFieldNode.isArray()) {  // merge array contents
+            updateFieldNode.forEach(destFieldNode::add);
+        } else {  // just replace array
+            asObjectNode(destinationNode).replace(fieldName, updateFieldNode);
+        }
     }
 
     /**
