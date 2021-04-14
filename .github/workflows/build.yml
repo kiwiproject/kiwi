@@ -56,7 +56,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # Needed to get PR information, if any
         run: mvn -B -V compile
 
-      # Run tests
+      # Run tests when Java version > 11 (Sonar runs tests and analysis on JDK 11)
       - name: Run tests
         if: ${{ env.SONAR_TOKEN == null || env.SONAR_TOKEN == '' || matrix.java_version != '11' }}
         env:
