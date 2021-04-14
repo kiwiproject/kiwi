@@ -8,6 +8,7 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonView;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.JsonNode;
 import io.dropwizard.testing.FixtureHelpers;
 import lombok.Value;
 import org.assertj.core.api.SoftAssertions;
@@ -210,7 +211,10 @@ class JsonHelperAdvancedFeaturesTest {
             var copy = jsonHelper.copyIgnoringPaths(original, SampleObject.class,
                     "stringVar", "doubleVar", "objectList");
 
-            softly.assertThat(copy).isEqualToIgnoringGivenFields(original, "stringVar", "doubleVar", "objectList");
+            softly.assertThat(copy)
+                    .usingRecursiveComparison()
+                    .ignoringFields("stringVar", "doubleVar", "objectList")
+                    .isEqualTo(original);
             softly.assertThat(copy.getStringVar()).isNull();
             softly.assertThat(copy.getDoubleVar()).isNull();
             softly.assertThat(copy.getObjectList()).isNull();
@@ -230,25 +234,27 @@ class JsonHelperAdvancedFeaturesTest {
         }
 
         @Test
-        void shouldConvert_GivenTargetClass() {
+        void shouldConvert_GivenTargetClass(SoftAssertions softly) {
             var sampleObject = newSampleObject();
 
             var limitedObject = jsonHelper.convert(sampleObject, LimitedSampleObject.class);
 
-            assertThat(limitedObject)
-                    .isEqualToComparingOnlyGivenFields(sampleObject, "doubleVar", "objectVar", "stringList");
+            softly.assertThat(limitedObject.getDoubleVar()).isEqualTo(sampleObject.getDoubleVar());
+            softly.assertThat(limitedObject.getObjectVar()).isEqualTo(sampleObject.getObjectVar());
+            softly.assertThat(limitedObject.getStringList()).isEqualTo(sampleObject.getStringList());
         }
 
         @Test
-        void shouldConvert_GivenTypeReference() {
+        void shouldConvert_GivenTypeReference(SoftAssertions softly) {
             var sampleObject = newSampleObject();
 
             TypeReference<LimitedSampleObject> targetType = new TypeReference<>() {
             };
             var limitedObject = jsonHelper.convert(sampleObject, targetType);
 
-            assertThat(limitedObject)
-                    .isEqualToComparingOnlyGivenFields(sampleObject, "doubleVar", "objectVar", "stringList");
+            softly.assertThat(limitedObject.getDoubleVar()).isEqualTo(sampleObject.getDoubleVar());
+            softly.assertThat(limitedObject.getObjectVar()).isEqualTo(sampleObject.getObjectVar());
+            softly.assertThat(limitedObject.getStringList()).isEqualTo(sampleObject.getStringList());
         }
 
         @Test
@@ -563,6 +569,7 @@ class JsonHelperAdvancedFeaturesTest {
             assertThat(diffs).isEmpty();
         }
 
+        @SuppressWarnings("ConstantConditions")
         @Test
         void shouldCompare_WhenInputObjectIsNull(SoftAssertions softly) {
             var map1 = Map.of("a", "aaa", "b", "bbb", "c", "ccc");
@@ -863,7 +870,7 @@ class JsonHelperAdvancedFeaturesTest {
         }
 
         @Test
-        void shouldMergeTwoJsonNodeObjects(SoftAssertions softly) throws JsonProcessingException {
+        void shouldMergeTwoJsonNodeObjects(SoftAssertions softly) {
             var sampleJson = jsonHelper.toJson(newSampleObject());
             var updateJson = jsonHelper.toJsonFromKeyValuePairs(
                     "stringVar", "modifiedString",
@@ -871,22 +878,180 @@ class JsonHelperAdvancedFeaturesTest {
                     "objectMap", Map.of("key4", "val4")
             );
 
-            var sampleNode = jsonHelper.getObjectMapper().readTree(sampleJson);
-            var updateNode = jsonHelper.getObjectMapper().readTree(updateJson);
+            var sampleNode = readJsonAsTree(sampleJson);
+            var updateNode = readJsonAsTree(updateJson);
 
             var mergedNode = jsonHelper.mergeNodes(sampleNode, updateNode);
-            softly.assertThat(mergedNode)
-                    .describedAs("sampleNode should have been mutated in place and returned")
-                    .isSameAs(sampleNode);
+            assertMergedNodeIsSameInstance(softly, mergedNode, sampleNode);
 
-            var mergedNodeJson = mergedNode.toString();
-            var mergedObject = jsonHelper.toObject(mergedNodeJson, SampleObject.class);
+            var mergedObject = reconstructSampleObjectFromMergedNode(mergedNode);
 
             softly.assertThat(mergedObject.getStringVar()).isEqualTo("modifiedString");
             softly.assertThat(mergedObject.getIntVar()).isEqualTo(999);
             softly.assertThat(mergedObject.getObjectMap())
                     .containsOnlyKeys("key1", "key2", "key3", "key4")
+                    .containsEntry("key1", "val1")
+                    .containsEntry("key2", "val2")
+                    .containsEntry("key3", "val3")
                     .containsEntry("key4", "val4");
+        }
+
+        @Test
+        void shouldMergeTwoJsonNodeObjects_AndAllowMergingArrays(SoftAssertions softly) {
+            var sampleJson = jsonHelper.toJson(newSampleObject());
+            var updateJson = jsonHelper.toJsonFromKeyValuePairs(
+                    "stringList", List.of("a", "c", "s", "t"),
+                    "objectMap", Map.of("key4", List.of(4.3, 4.4))
+            );
+
+            var sampleNode = readJsonAsTree(sampleJson);
+            var updateNode = readJsonAsTree(updateJson);
+
+            var mergedNode = jsonHelper.mergeNodes(sampleNode, updateNode, MergeOption.MERGE_ARRAYS);
+            assertMergedNodeIsSameInstance(softly, mergedNode, sampleNode);
+
+            var mergedObject = reconstructSampleObjectFromMergedNode(mergedNode);
+
+            softly.assertThat(mergedObject.getStringList())
+                    .describedAs("should concatenate lists/arrays including duplicate elements")
+                    .containsExactly("a", "b", "c", "a", "c", "s", "t");
+            softly.assertThat(mergedObject.getObjectMap())
+                    .containsOnlyKeys("key1", "key2", "key3", "key4")
+                    .containsEntry("key4", List.of(4.1, 4.2, 4.3, 4.4));
+        }
+
+        @Test
+        void shouldMergeTwoJsonNodeObjects_AndAllowIgnoringNulls(SoftAssertions softly) {
+            var sampleObject = newSampleObject();
+            var sampleJson = jsonHelper.toJson(sampleObject);
+            var updateJson = jsonHelper.toJsonFromKeyValuePairs(
+                    "stringVar", null,
+                    "intVar", null,
+                    "stringList", null,
+                    "objectList", null,
+                    "objectMap", null
+            );
+
+            var sampleNode = readJsonAsTree(sampleJson);
+            var updateNode = readJsonAsTree(updateJson);
+
+            var mergedNode = jsonHelper.mergeNodes(sampleNode, updateNode, MergeOption.IGNORE_NULLS);
+            assertMergedNodeIsSameInstance(softly, mergedNode, sampleNode);
+
+            var mergedObject = reconstructSampleObjectFromMergedNode(mergedNode);
+
+            softly.assertThat(mergedObject.getStringVar()).isEqualTo(sampleObject.getStringVar());
+            softly.assertThat(mergedObject.getIntVar()).isEqualTo(sampleObject.getIntVar());
+            softly.assertThat(mergedObject.getStringList()).isEqualTo(sampleObject.getStringList());
+            softly.assertThat(mergedObject.getObjectList()).isEqualTo(sampleObject.getObjectList());
+            softly.assertThat(mergedObject.getObjectMap()).isEqualTo(sampleObject.getObjectMap());
+        }
+
+        @Test
+        void shouldMergeTwoJsonNodeObjects_WithComplexUpdateJson_WhenMergingArrays(SoftAssertions softly) {
+            var sampleObject = newSampleObject();
+            var sampleJson = jsonHelper.toJson(sampleObject);
+            var updateJson = jsonHelper.toJsonFromKeyValuePairs(
+                    "stringVar", null,
+                    "intVar", 42,
+                    "objectVar", "new-string-object",
+                    "stringList", List.of("x", "y", "z"),
+                    "objectList", List.of(
+                            Map.of("foo3", "bar3")
+                    ),
+                    "objectMap", KiwiMaps.newHashMap(
+                            "key4", null,
+                            "key5", "val5",
+                            "key6", List.of("ab", "bc", "cd")
+                    )
+            );
+
+            var sampleNode = readJsonAsTree(sampleJson);
+            var updateNode = readJsonAsTree(updateJson);
+
+            var mergedNode = jsonHelper.mergeNodes(sampleNode, updateNode, MergeOption.MERGE_ARRAYS);
+            assertMergedNodeIsSameInstance(softly, mergedNode, sampleNode);
+
+            var mergedObject = reconstructSampleObjectFromMergedNode(mergedNode);
+
+            softly.assertThat(mergedObject.getStringVar()).isNull();
+            softly.assertThat(mergedObject.getIntVar()).isEqualTo(42);
+            softly.assertThat(mergedObject.getDoubleVar()).isEqualTo(4.567);
+            softly.assertThat(mergedObject.getStringList()).containsExactly("a", "b", "c", "x", "y", "z");
+            softly.assertThat(mergedObject.getObjectList()).containsExactly(
+                    Map.of("foo1", "bar1"),
+                    Map.of("foo2", "bar2"),
+                    Map.of("foo3", "bar3")
+            );
+            softly.assertThat(mergedObject.getObjectMap())
+                    .containsOnlyKeys("key1", "key2", "key3", "key4", "key5", "key6")
+                    .containsEntry("key4", null)
+                    .containsEntry("key5", "val5")
+                    .containsEntry("key6", List.of("ab", "bc", "cd"));
+        }
+
+        @Test
+        void shouldMergeTwoJsonNodeObjects_WithComplexUpdateJson_WhenMergingArraysAndIgnoringNulls(SoftAssertions softly) {
+            var sampleObject = newSampleObject();
+            var sampleJson = jsonHelper.toJson(sampleObject);
+            var updateJson = jsonHelper.toJsonFromKeyValuePairs(
+                    "stringVar", null,
+                    "intVar", 42,
+                    "objectVar", "new-string-object",
+                    "stringList", List.of("t", "u", "v"),
+                    "objectList", List.of(
+                            Map.of("foo42", "bar42"),
+                            Map.of("foo84", "bar84")
+                    ),
+                    "objectMap", KiwiMaps.newHashMap(
+                            "key4", null,
+                            "key5", "val5",
+                            "key6", List.of("ab", "bc", "cd")
+                    )
+            );
+
+            var sampleNode = readJsonAsTree(sampleJson);
+            var updateNode = readJsonAsTree(updateJson);
+
+            var mergeOptions = new MergeOption[]{MergeOption.MERGE_ARRAYS, MergeOption.IGNORE_NULLS};
+            var mergedNode = jsonHelper.mergeNodes(sampleNode, updateNode, mergeOptions);
+            assertMergedNodeIsSameInstance(softly, mergedNode, sampleNode);
+
+            var mergedObject = reconstructSampleObjectFromMergedNode(mergedNode);
+
+            softly.assertThat(mergedObject.getStringList()).containsExactly("a", "b", "c", "t", "u", "v");
+            softly.assertThat(mergedObject.getObjectList()).containsExactly(
+                    Map.of("foo1", "bar1"),
+                    Map.of("foo2", "bar2"),
+                    Map.of("foo42", "bar42"),
+                    Map.of("foo84", "bar84")
+            );
+            softly.assertThat(mergedObject.getObjectMap())
+                    .containsOnlyKeys("key1", "key2", "key3", "key4", "key5", "key6")
+                    .containsEntry("key4", List.of(4.1, 4.2))
+                    .containsEntry("key5", "val5")
+                    .containsEntry("key6", List.of("ab", "bc", "cd"));
+        }
+
+        private void assertMergedNodeIsSameInstance(SoftAssertions softly,
+                                                    JsonNode mergedNode,
+                                                    JsonNode sampleNode) {
+            softly.assertThat(mergedNode)
+                    .describedAs("sampleNode should have been mutated in place and returned")
+                    .isSameAs(sampleNode);
+        }
+
+        private SampleObject reconstructSampleObjectFromMergedNode(JsonNode mergedNode) {
+            var mergedNodeJson = mergedNode.toString();
+            return jsonHelper.toObject(mergedNodeJson, SampleObject.class);
+        }
+
+        private JsonNode readJsonAsTree(String updateJson) {
+            try {
+                return jsonHelper.getObjectMapper().readTree(updateJson);
+            } catch (JsonProcessingException e) {
+                throw new RuntimeJsonException(e);
+            }
         }
     }
 
@@ -980,7 +1145,7 @@ class JsonHelperAdvancedFeaturesTest {
 
     @Value
     @JsonIgnoreProperties(ignoreUnknown = true)
-    static class LimitedSampleObject {
+    private static class LimitedSampleObject {
 
         Double doubleVar;
         Object objectVar;
