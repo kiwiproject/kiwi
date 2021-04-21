@@ -26,11 +26,10 @@ import org.assertj.core.api.SoftAssertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.condition.EnabledOnOs;
-import org.junit.jupiter.api.condition.OS;
 import org.junit.jupiter.api.io.TempDir;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
+import org.kiwiproject.base.DefaultEnvironment;
 import org.kiwiproject.dropwizard.metrics.health.TimeBasedDirectoryCleanerHealthCheck;
 import org.kiwiproject.io.TimeBasedDirectoryCleaner;
 import org.kiwiproject.io.TimeBasedDirectoryCleanerTestHelper;
@@ -136,7 +135,6 @@ class TimeBasedDirectoryCleanerConfigTest {
      */
     @ParameterizedTest
     @ValueSource(ints = { 500, 2000 })
-    @EnabledOnOs(OS.LINUX)
     void testScheduleCleanup_WithScheduledExecutor_UsingMultipleConcurrentCleaners_IntegrationTest(int totalFileCount) throws InterruptedException {
         assertThat(TimeBasedDirectoryCleaner.capacityOfRecentDeleteErrors())
                 .describedAs("Assumption of cleaner error queue capacity of 500 is invalid; @ValueSource values need to be adjusted")
@@ -155,6 +153,7 @@ class TimeBasedDirectoryCleanerConfigTest {
             testHelper.createDirectoriesWithFiles(1, 100);
 
             var cleaner1 = cleanerConfig.scheduleCleanupUsing(executorService1);
+            new DefaultEnvironment().sleepQuietly(400);
             var cleaner2 = cleanerConfig.scheduleCleanupUsing(executorService2);
 
             testHelper.createDirectoriesWithFiles(101, 200);
