@@ -1,6 +1,7 @@
 package org.kiwiproject.dropwizard.config;
 
 import static com.google.common.base.Preconditions.checkState;
+import static org.apache.commons.lang3.SystemUtils.IS_OS_MAC;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.SoftAssertions.assertSoftly;
 import static org.awaitility.Awaitility.await;
@@ -153,7 +154,7 @@ class TimeBasedDirectoryCleanerConfigTest {
             testHelper.createDirectoriesWithFiles(1, 100);
 
             var cleaner1 = cleanerConfig.scheduleCleanupUsing(executorService1);
-            new DefaultEnvironment().sleepQuietly(400);
+            addDelayOnMacOS();
             var cleaner2 = cleanerConfig.scheduleCleanupUsing(executorService2);
 
             testHelper.createDirectoriesWithFiles(101, 200);
@@ -181,6 +182,13 @@ class TimeBasedDirectoryCleanerConfigTest {
         } finally {
             shutdownAndAwaitTermination(executorService1);
             shutdownAndAwaitTermination(executorService2);
+        }
+    }
+
+    private static void addDelayOnMacOS() {
+        // Add a slight delay on macOS to avoid the issues seen in #143
+        if (IS_OS_MAC) {
+            new DefaultEnvironment().sleepQuietly(400);
         }
     }
 
