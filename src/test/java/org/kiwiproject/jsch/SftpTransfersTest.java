@@ -366,6 +366,18 @@ class SftpTransfersTest {
         }
 
         @Test
+        void shouldReturnAListOfFilesInThePath_FilteredByPredicate() throws SftpException {
+            var entries = buildEntries();
+            when(channelSftp.ls(config.getRemoteBasePath())).thenReturn(entries);
+
+            var files = sftp.listFiles(Path.of(config.getRemoteBasePath()), file -> file.contains("file-2"));
+            assertThat(files).hasSize(1).containsOnly("test-file-2.txt");
+
+            files = sftp.listFiles(Path.of(config.getRemoteBasePath()), file -> file.contains("file-1"));
+            assertThat(files).hasSize(1).containsOnly("test-file-1.txt");
+        }
+
+        @Test
         void shouldReturnAListOfDirectoriesInThePath() throws SftpException {
             var entries = buildEntries();
             when(channelSftp.ls(config.getRemoteBasePath())).thenReturn(entries);
@@ -373,6 +385,18 @@ class SftpTransfersTest {
             List<String> files = sftp.listDirectories(Path.of(config.getRemoteBasePath()));
 
             assertThat(files).hasSize(1).contains("test-dir");
+        }
+
+        @Test
+        void shouldReturnAListOfDirectoriesInThePath_FilteredByPredicate() throws SftpException {
+            var entries = buildEntries();
+            when(channelSftp.ls(config.getRemoteBasePath())).thenReturn(entries);
+
+            var files = sftp.listDirectories(Path.of(config.getRemoteBasePath()), dir -> dir.equals("test-dir"));
+            assertThat(files).hasSize(1).contains("test-dir");
+
+            files = sftp.listDirectories(Path.of(config.getRemoteBasePath()), dir -> dir.equals("foo-dir"));
+            assertThat(files).isEmpty();
         }
 
         @Test

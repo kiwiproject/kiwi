@@ -220,6 +220,19 @@ public class SftpTransfers {
     }
 
     /**
+     * Returns a list of files that exist in the given path and matching the given file filter on the remote server.
+     *
+     * @param remotePath path on the remote server to list files
+     * @param fileFilter predicate to filter file names being returned
+     * @return a list of filenames that exist in the given path matching the given file filter
+     */
+    public List<String> listFiles(Path remotePath, Predicate<String> fileFilter) {
+        return listFiles(remotePath).stream()
+                .filter(fileFilter)
+                .collect(toList());
+    }
+
+    /**
      * Returns a list of directories that exist in the given path on the remote server.
      *
      * @param remotePath path on the remote server to list directories
@@ -227,6 +240,20 @@ public class SftpTransfers {
      */
     public List<String> listDirectories(Path remotePath) {
         return listRemoteItems(remotePath, file -> file.getAttrs().isDir());
+    }
+
+    /**
+     * Returns a list of directories that exist in the given path and matching the given directory filter on the
+     * remote server.
+     *
+     * @param remotePath path on the remote server to list files
+     * @param dirFilter predicate to filter directory names being returned
+     * @return a list of directories that exist in the given path matching the given directory filter
+     */
+    public List<String> listDirectories(Path remotePath, Predicate<String> dirFilter) {
+        return listDirectories(remotePath).stream()
+                .filter(dirFilter)
+                .collect(toList());
     }
 
     private List<String> listRemoteItems(Path remotePath, Predicate<ChannelSftp.LsEntry> filterFunction) {
