@@ -8,7 +8,6 @@ import org.hibernate.engine.spi.SharedSessionContractImplementor;
 import org.hibernate.usertype.UserType;
 
 import java.io.Serializable;
-import java.sql.Array;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -74,7 +73,7 @@ public abstract class AbstractArrayUserType implements UserType {
             statement.setNull(index, SQL_TYPES[0]);
         } else {
             var castObject = (Object[]) value;
-            Array sqlArray = session.connection().createArrayOf(databaseTypeName(), castObject);
+            var sqlArray = session.connection().createArrayOf(databaseTypeName(), castObject);
             statement.setArray(index, sqlArray);
         }
     }

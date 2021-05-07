@@ -143,7 +143,7 @@ public class Versions {
     }
 
     private static int indexOfFirstUnequalOrLastCommonSegment(String[] leftParts, String[] rightParts) {
-        int pos = 0;
+        var pos = 0;
         while (pos < leftParts.length && pos < rightParts.length && leftParts[pos].equals(rightParts[pos])) {
             pos++;
         }

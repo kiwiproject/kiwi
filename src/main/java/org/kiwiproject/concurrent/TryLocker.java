@@ -164,7 +164,7 @@ public class TryLocker {
     private <T> T getWithLockOrNull(Supplier<T> withLockSupplier) {
         checkArgumentNotNull(withLockSupplier);
 
-        boolean gotLock = false;
+        var gotLock = false;
         T result = null;
         try {
             gotLock = lock.tryLock(lockWaitTime, lockWaitTimeUnit);

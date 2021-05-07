@@ -7,7 +7,6 @@ import static org.kiwiproject.base.KiwiPreconditions.requireNotNull;
 
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.primitives.Ints;
-import com.jcraft.jsch.Channel;
 import com.jcraft.jsch.ChannelSftp;
 import com.jcraft.jsch.JSch;
 import com.jcraft.jsch.JSchException;
@@ -122,7 +121,7 @@ public class SftpConnector {
             session.connect();
 
             LOG.debug("Session connected: {}", session.isConnected());
-            Channel channel = session.openChannel("sftp");
+            var channel = session.openChannel("sftp");
 
             LOG.debug("Attempt openChannel using timeout: {} millis", config.getTimeout().toMilliseconds());
             channel.connect(Ints.checkedCast(config.getTimeout().toMilliseconds()));

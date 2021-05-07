@@ -278,7 +278,7 @@ public class ProcessHelper {
      */
     @VisibleForTesting
     Optional<Long> findChildProcessIdInternal(long parentProcessId, ProcessHelper processHelper) {
-        Process process = launchPgrepWithParentPidFlag(parentProcessId, processHelper);
+        var process = launchPgrepWithParentPidFlag(parentProcessId, processHelper);
         List<String> lines = readLinesFromInputStreamOf(process);
 
         if (lines.isEmpty()) {
@@ -309,7 +309,7 @@ public class ProcessHelper {
      */
     @VisibleForTesting
     Collection<Long> findChildProcessIdsInternal(long parentProcessId, ProcessHelper processHelper) {
-        Process process = launchPgrepWithParentPidFlag(parentProcessId, processHelper);
+        var process = launchPgrepWithParentPidFlag(parentProcessId, processHelper);
         Stream<String> stream = streamLinesFromInputStreamOf(process);
 
         return stream.map(Long::valueOf).collect(toList());
