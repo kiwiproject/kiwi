@@ -88,7 +88,7 @@ public class KiwiProperties {
      */
     public static Properties newProperties(Map<String, String> map) {
         requireNonNull(map);
-        Properties properties = new Properties();
+        var properties = new Properties();
         properties.putAll(map);
         return properties;
     }

@@ -152,7 +152,7 @@ public class SimpleRetries {
         return currentAttempt -> {
             RetryLogger.logAttempt(LOG, level, currentAttempt, ATTEMPT_MSG_TEMPLATE, currentAttempt, maxAttempts, type);
 
-            T object = safeGetOrNull(currentAttempt, maxAttempts, type, level, supplier);
+            var object = safeGetOrNull(currentAttempt, maxAttempts, type, level, supplier);
 
             if (isNull(object) && currentAttempt < maxAttempts) {
                 environment.sleepQuietly(retryDelay, retryDelayUnit);
@@ -330,7 +330,7 @@ public class SimpleRetries {
 
         List<Pair<T, Exception>> results = new ArrayList<>();
 
-        for (int currentAttempt = 1; currentAttempt <= maxAttempts; currentAttempt++) {
+        for (var currentAttempt = 1; currentAttempt <= maxAttempts; currentAttempt++) {
             Pair<T, Exception> resultOrError =
                     resultOrErrorPair(currentAttempt, maxAttempts, retryDelay, retryDelayUnit, environment, type, level, supplier);
 

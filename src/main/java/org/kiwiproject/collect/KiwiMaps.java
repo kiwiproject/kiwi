@@ -118,8 +118,8 @@ public class KiwiMaps {
     @SuppressWarnings("unchecked")
     private static <K, V> void populate(Map<K, V> map, Object... items) {
         for (var i = 0; i < items.length; i += 2) {
-            K key = (K) items[i];
-            V value = (V) items[i + 1];
+            var key = (K) items[i];
+            var value = (V) items[i + 1];
             map.put(key, value);
         }
     }

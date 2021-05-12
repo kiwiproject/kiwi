@@ -153,10 +153,10 @@ public class SftpTransfers {
         connector.runCommand(channel -> {
             changeToRemoteDirectory(channel, remotePath);
 
-            Path localPath = localPathSupplier.apply(remotePath, remoteFilename);
+            var localPath = localPathSupplier.apply(remotePath, remoteFilename);
             ensureLocalDirectoryExists(localPath);
 
-            try (InputStream inputStream = channel.get(remoteFilename)) {
+            try (var inputStream = channel.get(remoteFilename)) {
                 var resolvedLocalPath = localPath.resolve(localFilenameSupplier.apply(remotePath, remoteFilename));
                 Files.copy(inputStream, resolvedLocalPath, StandardCopyOption.REPLACE_EXISTING);
             }
@@ -182,7 +182,7 @@ public class SftpTransfers {
         return connector.runCommandWithResponse(channel -> {
             changeToRemoteDirectory(channel, remotePath);
 
-            try (InputStream inputStream = channel.get(remoteFilename)) {
+            try (var inputStream = channel.get(remoteFilename)) {
                 var streamReader = new InputStreamReader(inputStream, StandardCharsets.UTF_8);
                 var stringWriter = new StringWriter();
                 streamReader.transferTo(stringWriter);

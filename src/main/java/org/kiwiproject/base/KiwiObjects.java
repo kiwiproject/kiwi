@@ -81,12 +81,12 @@ public class KiwiObjects {
      */
     @SafeVarargs
     public static <T> Optional<T> firstSuppliedNonNull(Supplier<T> first, Supplier<T> second, Supplier<T>... rest) {
-        T firstT = first.get();
+        var firstT = first.get();
         if (nonNull(firstT)) {
             return Optional.of(firstT);
         }
 
-        T secondT = second.get();
+        var secondT = second.get();
         if (nonNull(secondT)) {
             return Optional.of(secondT);
         }

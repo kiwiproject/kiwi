@@ -307,7 +307,7 @@ public class Processes {
      */
     public static Process launch(List<String> command) {
         try {
-            return launchInternal(command);
+            return launchProcessInternal(command);
         } catch (IOException e) {
             throw new UncheckedIOException("Error launching command: " + command, e);
         }
@@ -349,7 +349,7 @@ public class Processes {
     public static List<Long> pgrep(String user, String commandLine) {
         try {
             List<String> command = buildPgrepCommand(user, commandLine);
-            Process process = launchInternal(command);
+            var process = launchProcessInternal(command);
 
             return streamLinesFromInputStreamOf(process)
                     .map(Long::valueOf)
@@ -418,7 +418,7 @@ public class Processes {
     public static List<String> pgrepList(String user, String commandLine) {
         try {
             List<String> command = buildPgrepListCommand(user, commandLine);
-            Process process = launchInternal(command);
+            var process = launchProcessInternal(command);
 
             return readLinesFromInputStreamOf(process);
         } catch (IOException e) {
@@ -543,7 +543,7 @@ public class Processes {
      */
     public static int kill(long processId, String signal, long timeout, TimeUnit unit, KillTimeoutAction action) {
         try {
-            Process killProcess = launchInternal("kill", KillSignal.withLeadingDash(signal), String.valueOf(processId));
+            var killProcess = launchProcessInternal("kill", KillSignal.withLeadingDash(signal), String.valueOf(processId));
 
             return killInternal(processId, killProcess, timeout, unit, action);
         } catch (IOException e) {
@@ -551,11 +551,11 @@ public class Processes {
         }
     }
 
-    private static Process launchInternal(String... commandLine) throws IOException {
-        return launchInternal(Lists.newArrayList(commandLine));
+    private static Process launchProcessInternal(String... commandLine) throws IOException {
+        return launchProcessInternal(Lists.newArrayList(commandLine));
     }
 
-    private static Process launchInternal(List<String> command) throws IOException {
+    private static Process launchProcessInternal(List<String> command) throws IOException {
         return new ProcessBuilder(command).start();
     }
 
