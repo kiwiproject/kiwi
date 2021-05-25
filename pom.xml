@@ -46,16 +46,16 @@
         <jakarta-el.version>3.0.3</jakarta-el.version>
         <jakarta.ws.rs.rs-api.version>2.1.6</jakarta.ws.rs.rs-api.version>
         <jakarta.xml.bind-api.version>2.3.3</jakarta.xml.bind-api.version>
-        <javassist.version>3.27.0-GA</javassist.version>
+        <javassist.version>3.28.0-GA</javassist.version>
         <jaxws-rt.version>2.3.3</jaxws-rt.version>
         <jboss-logging.version>3.4.1.Final</jboss-logging.version>
         <joda-time.version>2.10.10</joda-time.version>
         <jsch.version>0.1.55</jsch.version>
-        <metrics-jdbi3.version>4.1.19</metrics-jdbi3.version>
-        <metrics-jetty9.version>4.1.19</metrics-jetty9.version>
-        <postgresql.version>42.2.19</postgresql.version>
+        <metrics-jdbi3.version>4.1.22</metrics-jdbi3.version>
+        <metrics-jetty9.version>4.1.22</metrics-jetty9.version>
+        <postgresql.version>42.2.20</postgresql.version>
         <retrying-again.version>0.5.1</retrying-again.version>
-        <spring.version>5.3.5</spring.version>
+        <spring.version>5.3.7</spring.version>
         <spring-data-mongodb.version>2.2.11.RELEASE</spring-data-mongodb.version>
         <stax2-api.version>4.2.1</stax2-api.version>
         <stax-ex.version>1.8.3</stax-ex.version>
@@ -72,7 +72,7 @@
         <woodstox-core.version>5.1.0</woodstox-core.version>
 
         <!-- Versions for optional dependencies -->
-        <error_prone_annotations.version>2.6.0</error_prone_annotations.version>
+        <error_prone_annotations.version>2.7.1</error_prone_annotations.version>
         <jsr305.version>3.0.2</jsr305.version>
 
         <!-- Versions for test dependencies -->
@@ -80,7 +80,7 @@
         <embedded-postgres.version>1.2.10</embedded-postgres.version>
         <embed.mongo.version>3.0.0</embed.mongo.version>
         <h2.version>1.4.200</h2.version>
-        <jdbi3.version>3.18.1</jdbi3.version>
+        <jdbi3.version>3.20.0</jdbi3.version>
         <jersey-test-framework-core.version>2.33</jersey-test-framework-core.version>
         <liquibase.version>3.10.3</liquibase.version>
         <mongo-java-server.version>1.38.0</mongo-java-server.version>
@@ -456,6 +456,12 @@
             <artifactId>metrics-jdbi3</artifactId>
             <version>${metrics-jdbi3.version}</version>
             <scope>provided</scope>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.jdbi</groupId>
+                    <artifactId>jdbi3-core</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
 
         <dependency>
