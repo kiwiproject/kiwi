@@ -313,165 +313,237 @@ class WebTargetHelperTest {
     }
 
     @Nested
-    class QueryParams {
+    class QueryParamsFromMap {
 
-        @Nested
-        class WhenJavaUtilMap {
+        @ParameterizedTest
+        @NullAndEmptySource
+        void shouldReturnSameInstance_WhenNullOrEmpty(Map<String, Object> parameters) {
+            var newWebTarget = withWebTarget(originalWebTarget)
+                    .queryParamsFromMap(parameters);
 
-            @ParameterizedTest
-            @NullAndEmptySource
-            void shouldReturnSameInstance_WhenNullOrEmpty(Map<String, Object> parameters) {
-                var newWebTarget = withWebTarget(originalWebTarget)
-                        .queryParams(parameters);
+            assertIsOriginalWebTargetAndHasNoQuery(newWebTarget);
+        }
 
-                assertIsOriginalWebTargetAndHasNoQuery(newWebTarget);
-            }
+        @Test
+        void shouldReturnSameInstance_WhenAllValuesAreNull() {
+            var newWebTarget = withWebTarget(originalWebTarget)
+                    .queryParamsFromMap(KiwiMaps.newHashMap(
+                            "foo", null,
+                            "bar", null,
+                            "baz", null));
 
-            @Test
-            void shouldReturnSameInstance_WhenAllValuesAreNull() {
-                var newWebTarget = withWebTarget(originalWebTarget)
-                        .queryParams(KiwiMaps.newHashMap(
-                                "foo", null,
-                                "bar", null,
-                                "baz", null));
+            assertIsOriginalWebTargetAndHasNoQuery(newWebTarget);
+        }
 
-                assertIsOriginalWebTargetAndHasNoQuery(newWebTarget);
-            }
+        @Test
+        void shouldIncludeOnlyNonNullValues() {
+            var newWebTarget = withWebTarget(originalWebTarget)
+                    .queryParamsFromMap(KiwiMaps.newHashMap(
+                            "foo", null,
+                            "q", "pangram",
+                            "bar", null,
+                            "baz", null,
+                            "limit", 50,
+                            "page", 1));
 
-            @Test
-            void shouldIncludeOnlyNonNullValues() {
-                var newWebTarget = withWebTarget(originalWebTarget)
-                        .queryParams(KiwiMaps.newHashMap(
-                                "foo", null,
-                                "q", "pangram",
-                                "bar", null,
-                                "baz", null,
-                                "limit", 50,
-                                "page", 1));
+            // Cannot assume anything about map iteration order
+            assertThat(splitQueryParams(newWebTarget))
+                    .contains("q=pangram")
+                    .contains("limit=50")
+                    .contains("page=1")
+                    .doesNotContain("foo=", "bar=", "baz=");
+        }
 
-                // Cannot assume anything about map iteration order
-                assertThat(splitQueryParams(newWebTarget))
-                        .contains("q=pangram")
-                        .contains("limit=50")
-                        .contains("page=1")
-                        .doesNotContain("foo=", "bar=", "baz=");
-            }
+        /**
+         * Why is this test here? We do not want to make any assumptions about whether a caller
+         * intends to exclude parameters whose values are blank strings, since query parameters
+         * can be blank. For example, in the query string "{@code q=pangram&sort=&dir=&limit=10}" the
+         * "sort" and "dir" parameters have no value, which might be perfectly valid. If a client
+         * wants to exclude blank values, it should filter them before calling queryParamsFromMap.
+         */
+        @Test
+        void shouldIncludeBlankStrings() {
+            var newWebTarget = withWebTarget(originalWebTarget)
+                    .queryParamsFromMap(KiwiMaps.newHashMap(
+                            "foo", "",
+                            "q", "pangram",
+                            "bar", "",
+                            "baz", " ",
+                            "limit", 50,
+                            "page", 1));
 
-            /**
-             * Why is this test here? We do not want to make any assumptions about whether a caller
-             * intends to exclude parameters whose values are blank strings, since query parameters
-             * can be blank. For example, in the query string "{@code q=pangram&sort=&dir=&limit=10}" the
-             * "sort" and "dir" parameters have no value, which might be perfectly valid. If a client
-             * wants to exclude blank values, it should filter them before calling queryParams.
-             */
-            @Test
-            void shouldIncludeBlankStrings() {
-                var newWebTarget = withWebTarget(originalWebTarget)
-                        .queryParams(KiwiMaps.newHashMap(
-                                "foo", "",
-                                "q", "pangram",
-                                "bar", "",
-                                "baz", " ",
-                                "limit", 50,
-                                "page", 1));
-
-                assertThat(splitQueryParams(newWebTarget))
-                        .contains("foo=")
-                        .contains("q=pangram")
-                        .contains("bar=")
-                        .contains("baz=+")
-                        .contains("limit=50")
-                        .contains("page=1");
-            }
+            assertThat(splitQueryParams(newWebTarget))
+                    .contains("foo=")
+                    .contains("q=pangram")
+                    .contains("bar=")
+                    .contains("baz=+")
+                    .contains("limit=50")
+                    .contains("page=1");
         }
 
         @Nested
-        class WhenJaxrsMultivaluedMap {
-
-            @ParameterizedTest
-            @NullSource
-            void shouldReturnSameInstance_WhenNull(MultivaluedMap<String, Object> parameters) {
-                var newWebTarget = withWebTarget(originalWebTarget)
-                        .queryParams(parameters);
-
-                assertIsOriginalWebTargetAndHasNoQuery(newWebTarget);
-            }
+        class ShouldWorkWithTypedMaps {
 
             @Test
-            void shouldReturnSameInstance_WhenEmpty() {
-                var newWebTarget = withWebTarget(originalWebTarget)
-                        .queryParams(new MultivaluedHashMap<>());
+            void whenStringValues() {
+                Map<String, String> params = Map.of(
+                        "q", "pangram",
+                        "limit", "50",
+                        "page", "1");
 
-                assertIsOriginalWebTargetAndHasNoQuery(newWebTarget);
-            }
-
-            @Test
-            void shouldReturnSameInstance_WhenAllValuesAreNull() {
-                var multivaluedMap = new MultivaluedHashMap<String, Object>();
-                multivaluedMap.put("ham", null);
-                multivaluedMap.put("eggs", null);
-                multivaluedMap.put("spam", null);
-
-                var newWebTarget = withWebTarget(originalWebTarget).queryParams(multivaluedMap);
-
-                assertIsOriginalWebTargetAndHasNoQuery(newWebTarget);
-            }
-
-            @Test
-            void shouldReturnSameInstance_WhenAllValuesAreEmptyLists() {
-                var multivaluedMap = new MultivaluedHashMap<String, Object>();
-                multivaluedMap.put("ham", List.of());
-                multivaluedMap.put("eggs", List.of());
-                multivaluedMap.put("spam", List.of());
-
-                var newWebTarget = withWebTarget(originalWebTarget).queryParams(multivaluedMap);
-
-                assertIsOriginalWebTargetAndHasNoQuery(newWebTarget);
-            }
-
-            @Test
-            void shouldIncludeOnlyNonNullValues() {
-                var multivaluedMap = new MultivaluedHashMap<String, Object>();
-                multivaluedMap.put("ln", List.of(42, 84));
-                multivaluedMap.put("fruits", List.of("apple", "orange", "banana"));
-                multivaluedMap.put("foo", List.of());
-                multivaluedMap.put("bar", null);
-                multivaluedMap.put("baz", newArrayList(null, null));
-                multivaluedMap.put("l", List.of("EN"));
-                multivaluedMap.put("cc", List.of("US", "UK"));
-
-                var newWebTarget = withWebTarget(originalWebTarget).queryParams(multivaluedMap);
-
-                // Cannot assume anything about map iteration order
-                assertThat(splitQueryParams(newWebTarget))
-                        .contains("ln=42")
-                        .contains("ln=84")
-                        .contains("fruits=apple")
-                        .contains("fruits=orange")
-                        .contains("fruits=banana")
-                        .contains("l=EN")
-                        .contains("cc=US")
-                        .contains("cc=UK")
-                        .doesNotContain("foo=", "bar=", "baz=");
-            }
-
-            /**
-             * Why is this test here? See explanation above in {@link QueryParams}
-             */
-            @Test
-            void shouldIncludeBlankStrings() {
-                var multivaluedMap = new MultivaluedHashMap<String, Object>();
-                multivaluedMap.put("ln", List.of(42, 84));
-                multivaluedMap.put("misc", List.of("", " ", "  "));
-
-                var newWebTarget = withWebTarget(originalWebTarget).queryParams(multivaluedMap);
+                var newWebTarget = withWebTarget(originalWebTarget).queryParamsFromMap(params);
 
                 assertThat(splitQueryParams(newWebTarget))
-                        .contains("ln=42")
-                        .contains("ln=84")
-                        .contains("misc=")
-                        .contains("misc=+")
-                        .contains("misc=++");
+                        .contains("q=pangram")
+                        .contains("limit=50")
+                        .contains("page=1");
+            }
+
+            @Test
+            void whenIntegerValues() {
+                Map<String, Integer> params = Map.of(
+                        "a", 42,
+                        "b", 16,
+                        "c", 8
+                );
+
+                var newWebTarget = withWebTarget(originalWebTarget).queryParamsFromMap(params);
+
+                assertThat(splitQueryParams(newWebTarget))
+                        .contains("a=42")
+                        .contains("b=16")
+                        .contains("c=8");
+            }
+        }
+    }
+
+    @Nested
+    class QueryParamsFromMultivaluedMap {
+
+        @ParameterizedTest
+        @NullSource
+        void shouldReturnSameInstance_WhenNull(MultivaluedMap<String, Object> parameters) {
+            var newWebTarget = withWebTarget(originalWebTarget)
+                    .queryParamsFromMultivaluedMap(parameters);
+
+            assertIsOriginalWebTargetAndHasNoQuery(newWebTarget);
+        }
+
+        @Test
+        void shouldReturnSameInstance_WhenEmpty() {
+            var newWebTarget = withWebTarget(originalWebTarget)
+                    .queryParamsFromMultivaluedMap(new MultivaluedHashMap<>());
+
+            assertIsOriginalWebTargetAndHasNoQuery(newWebTarget);
+        }
+
+        @Test
+        void shouldReturnSameInstance_WhenAllValuesAreNull() {
+            var multivaluedMap = new MultivaluedHashMap<String, Object>();
+            multivaluedMap.put("ham", null);
+            multivaluedMap.put("eggs", null);
+            multivaluedMap.put("spam", null);
+
+            var newWebTarget = withWebTarget(originalWebTarget).queryParamsFromMultivaluedMap(multivaluedMap);
+
+            assertIsOriginalWebTargetAndHasNoQuery(newWebTarget);
+        }
+
+        @Test
+        void shouldReturnSameInstance_WhenAllValuesAreEmptyLists() {
+            var multivaluedMap = new MultivaluedHashMap<String, Object>();
+            multivaluedMap.put("ham", List.of());
+            multivaluedMap.put("eggs", List.of());
+            multivaluedMap.put("spam", List.of());
+
+            var newWebTarget = withWebTarget(originalWebTarget).queryParamsFromMultivaluedMap(multivaluedMap);
+
+            assertIsOriginalWebTargetAndHasNoQuery(newWebTarget);
+        }
+
+        @Test
+        void shouldIncludeOnlyNonNullValues() {
+            var multivaluedMap = new MultivaluedHashMap<String, Object>();
+            multivaluedMap.put("ln", List.of(42, 84));
+            multivaluedMap.put("fruits", List.of("apple", "orange", "banana"));
+            multivaluedMap.put("foo", List.of());
+            multivaluedMap.put("bar", null);
+            multivaluedMap.put("baz", newArrayList(null, null));
+            multivaluedMap.put("l", List.of("EN"));
+            multivaluedMap.put("cc", List.of("US", "UK"));
+
+            var newWebTarget = withWebTarget(originalWebTarget).queryParamsFromMultivaluedMap(multivaluedMap);
+
+            // Cannot assume anything about map iteration order
+            assertThat(splitQueryParams(newWebTarget))
+                    .contains("ln=42")
+                    .contains("ln=84")
+                    .contains("fruits=apple")
+                    .contains("fruits=orange")
+                    .contains("fruits=banana")
+                    .contains("l=EN")
+                    .contains("cc=US")
+                    .contains("cc=UK")
+                    .doesNotContain("foo=", "bar=", "baz=");
+        }
+
+        /**
+         * Why is this test here? See explanation above in {@link QueryParamsFromMap}
+         */
+        @Test
+        void shouldIncludeBlankStrings() {
+            var multivaluedMap = new MultivaluedHashMap<String, Object>();
+            multivaluedMap.put("ln", List.of(42, 84));
+            multivaluedMap.put("misc", List.of("", " ", "  "));
+
+            var newWebTarget = withWebTarget(originalWebTarget).queryParamsFromMultivaluedMap(multivaluedMap);
+
+            assertThat(splitQueryParams(newWebTarget))
+                    .contains("ln=42")
+                    .contains("ln=84")
+                    .contains("misc=")
+                    .contains("misc=+")
+                    .contains("misc=++");
+        }
+
+        @Nested
+        class ShouldWorkWithTypedMaps {
+
+            @Test
+            void whenStringValues() {
+                var multivaluedMap = new MultivaluedHashMap<String, String>();
+                multivaluedMap.put("l", List.of("a", "b", "c"));
+                multivaluedMap.putSingle("m", "foo");
+                multivaluedMap.put("n", List.of("32", "42", "52"));
+
+                var newWebTarget = withWebTarget(originalWebTarget).queryParamsFromMultivaluedMap(multivaluedMap);
+
+                assertThat(splitQueryParams(newWebTarget))
+                        .contains("l=a")
+                        .contains("l=b")
+                        .contains("l=c")
+                        .contains("m=foo")
+                        .contains("n=32")
+                        .contains("n=42")
+                        .contains("n=52");
+            }
+
+            @Test
+            void whenLongValues() {
+                var multivaluedMap = new MultivaluedHashMap<String, Long>();
+                multivaluedMap.put("x", List.of(12L, 34L));
+                multivaluedMap.put("y", List.of(700L, 800L, 900L));
+                multivaluedMap.putSingle("z", 5000L);
+
+                var newWebTarget = withWebTarget(originalWebTarget).queryParamsFromMultivaluedMap(multivaluedMap);
+
+                assertThat(splitQueryParams(newWebTarget))
+                        .contains("x=12")
+                        .contains("x=34")
+                        .contains("y=700")
+                        .contains("y=800")
+                        .contains("y=900")
+                        .contains("z=5000");
             }
         }
     }
