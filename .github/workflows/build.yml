@@ -29,7 +29,7 @@ jobs:
 
       # Cache all the things
       - name: Cache SonarCloud packages
-        uses: actions/cache@v2.1.5
+        uses: actions/cache@v2.1.6
         if: ${{ env.SONAR_TOKEN != null && env.SONAR_TOKEN != '' && matrix.java_version == '11' }}
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
@@ -39,14 +39,14 @@ jobs:
           restore-keys: ${{ runner.os }}-sonar
 
       - name: Cache Maven packages
-        uses: actions/cache@v2.1.5
+        uses: actions/cache@v2.1.6
         with:
           path: ~/.m2
           key: ${{ runner.os }}-m2-${{ hashFiles('**/pom.xml') }}
           restore-keys: ${{ runner.os }}-m2
 
       - name: Cache Embedded Mongo files
-        uses: actions/cache@v2.1.5
+        uses: actions/cache@v2.1.6
         with:
           path: ~/.embedmongo
           key: ${{ runner.os }}-embedmongo
