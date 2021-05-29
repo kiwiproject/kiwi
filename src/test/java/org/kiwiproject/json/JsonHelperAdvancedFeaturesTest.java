@@ -1019,6 +1019,7 @@ class JsonHelperAdvancedFeaturesTest {
 
             var mergedObject = reconstructSampleObjectFromMergedNode(mergedNode);
 
+            softly.assertThat(mergedObject.getStringVar()).isEqualTo("string");
             softly.assertThat(mergedObject.getStringList()).containsExactly("a", "b", "c", "t", "u", "v");
             softly.assertThat(mergedObject.getObjectList()).containsExactly(
                     Map.of("foo1", "bar1"),
