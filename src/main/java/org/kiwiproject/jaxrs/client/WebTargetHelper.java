@@ -278,8 +278,15 @@ public class WebTargetHelper {
      *
      * @param parameters a map representing the query parameters
      * @return this instance
+     * @implNote This method is distinct from {@link #queryParamsFromMultivaluedMap(MultivaluedMap)} because the
+     * {@link MultivaluedMap} interface extends the regular Java {@link Map} and under certain circumstances this
+     * method will be called even when the argument is actually a {@link MultivaluedMap}. By having separate and
+     * distinctly named methods, it unambiguously avoids this potential problem, at the expense of callers needing
+     * to make a concrete decision on which method to call. However, in most situations that we have seen (in our own
+     * code) this is not an issue. For example, {@link javax.ws.rs.core.UriInfo#getQueryParameters()} returns a
+     * MultivaluedMap, which makes it easy to select the appropriate method to call.
      */
-    public WebTargetHelper queryParams(Map<String, Object> parameters) {
+    public <V> WebTargetHelper queryParamsFromMap(Map<String, V> parameters) {
         if (isNullOrEmpty(parameters)) {
             return this;
         }
@@ -307,16 +314,27 @@ public class WebTargetHelper {
      *
      * @param parameters a multivalued representing the query parameters
      * @return this instance
+     * @implNote See implementation note on {@link #queryParamsFromMap(Map)} for an explanation why this method is
+     * named separately and distinctly.
      */
-    public WebTargetHelper queryParams(MultivaluedMap<String, Object> parameters) {
+    @SuppressWarnings({"unchecked"})
+    public <V> WebTargetHelper queryParamsFromMultivaluedMap(MultivaluedMap<String, V> parameters) {
         if (isNull(parameters) || parameters.isEmpty()) {
             return this;
         }
 
-        // NOTE: This is effectively a foldLeft, which Java Streams does not have. See explanation in method above.
+        // NOTES:
+        // 1. This is effectively a foldLeft, which Java Streams does not have. See explanation in method above.
+        // 2. To properly support the generic V type parameter, we unfortunately have to cast the entry value to
+        //    List<Object> in order to get the compiler to call queryParamFilterNotNull(String, List<Object>). If
+        //    the cast is not done, the compiler instead "thinks" the value is an Object and selects the
+        //    queryParamFilterNotNull(String, Object...) method, which does not work as expected because the value
+        //    of the MultivaluedMap is supposed to be a List<V>. The real reason this happens is because the type
+        //    erasure of List<V> is simply List. The compiler then (incorrectly from what we'd like to happen) selects
+        //    the vararg method as the one to call, since the raw List type is an Object, not a List<Object>.
         var targetHelper = this;
         for (var entry : parameters.entrySet()) {
-            targetHelper = targetHelper.queryParamFilterNotNull(entry.getKey(), entry.getValue());
+            targetHelper = targetHelper.queryParamFilterNotNull(entry.getKey(), (List<Object>) entry.getValue());
         }
 
         return targetHelper;
