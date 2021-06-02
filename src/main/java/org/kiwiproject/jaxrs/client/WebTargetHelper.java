@@ -96,7 +96,7 @@ public class WebTargetHelper {
      * @param webTarget the WebTarget to wrap
      */
     WebTargetHelper(WebTarget webTarget) {
-        this.webTarget = requireNotNull(webTarget);
+        this.webTarget = requireNotNull(webTarget, "webTarget must not be null");
     }
 
     /**
@@ -123,9 +123,10 @@ public class WebTargetHelper {
      * @param name  the parameter name
      * @param value the parameter value
      * @return this instance
-     * @throws IllegalArgumentException if value is null
+     * @throws IllegalArgumentException if name is blank or value is null
      */
     public WebTargetHelper queryParamRequireNotNull(String name, Object value) {
+        checkArgumentNotBlank(name, "name cannot be blank");
         checkArgumentNotNull(value, "value cannot be null for parameter %s", name);
 
         var newWebTarget = webTarget.queryParam(name, value);
@@ -133,27 +134,30 @@ public class WebTargetHelper {
     }
 
     /**
-     * Add the given query parameter only if it is not null.
+     * Add the given query parameter only if name is not blank and value is not null.
      *
      * @param name  the parameter name
      * @param value the parameter value
      * @return this instance
      */
     public WebTargetHelper queryParamIfNotNull(String name, Object value) {
-        var newWebTarget = this.webTarget.queryParam(name, value);
+        if (isBlank(name) || isNull(value)) {
+            return this;
+        }
 
-        return isNull(value) ? this : new WebTargetHelper(newWebTarget);
+        var newWebTarget = this.webTarget.queryParam(name, value);
+        return new WebTargetHelper(newWebTarget);
     }
 
     /**
-     * Adds any non-null values to the the given query parameter.
+     * Adds any non-null values to the the given query parameter. If name is blank, this is a no-op.
      *
      * @param name   the parameter name
      * @param values one or more parameter values
      * @return this instance
      */
     public WebTargetHelper queryParamFilterNotNull(String name, Object... values) {
-        if (isNullOrEmpty(values)) {
+        if (isBlank(name) || isNullOrEmpty(values)) {
             return this;
         }
 
@@ -161,14 +165,14 @@ public class WebTargetHelper {
     }
 
     /**
-     * Adds any non-null values to the the given query parameter.
+     * Adds any non-null values to the the given query parameter. If name is blank, this is a no-op.
      *
      * @param name   the parameter name
      * @param values one or more parameter values
      * @return this instance
      */
     public WebTargetHelper queryParamFilterNotNull(String name, List<Object> values) {
-        if (isNullOrEmpty(values)) {
+        if (isBlank(name) || isNullOrEmpty(values)) {
             return this;
         }
 
@@ -176,14 +180,14 @@ public class WebTargetHelper {
     }
 
     /**
-     * Adds any non-null values to the the given query parameter.
+     * Adds any non-null values to the the given query parameter. If name is blank, this is a no-op.
      *
      * @param name   the parameter name
      * @param stream containing one or more parameter values
      * @return this instance
      */
     public WebTargetHelper queryParamFilterNotNull(String name, Stream<Object> stream) {
-        if (isNull(stream)) {
+        if (isBlank(name) || isNull(stream)) {
             return this;
         }
 
@@ -201,9 +205,10 @@ public class WebTargetHelper {
      * @param name  the parameter name
      * @param value the parameter value
      * @return this instance
-     * @throws IllegalArgumentException if value is blank
+     * @throws IllegalArgumentException if name or value is blank
      */
     public WebTargetHelper queryParamRequireNotBlank(String name, String value) {
+        checkArgumentNotBlank(name, "name cannot be blank");
         checkArgumentNotBlank(value, "value cannot be blank for parameter %s", name);
 
         var newWebTarget = webTarget.queryParam(name, value);
@@ -211,27 +216,30 @@ public class WebTargetHelper {
     }
 
     /**
-     * Add the given query parameter only if it is not blank.
+     * Add the given query parameter only if both name and value are not blank.
      *
      * @param name  the parameter name
      * @param value the parameter value
      * @return this instance
      */
     public WebTargetHelper queryParamIfNotBlank(String name, String value) {
-        var newWebTarget = this.webTarget.queryParam(name, value);
+        if (isBlank(name) || isBlank(value)) {
+            return this;
+        }
 
-        return isBlank(value) ? this : new WebTargetHelper(newWebTarget);
+        var newWebTarget = this.webTarget.queryParam(name, value);
+        return new WebTargetHelper(newWebTarget);
     }
 
     /**
-     * Adds any non-blank values to the the given query parameter.
+     * Adds any non-blank values to the the given query parameter. If name is blank, this is a no-op.
      *
      * @param name   the parameter name
      * @param values one or more parameter values
      * @return this instance
      */
     public WebTargetHelper queryParamFilterNotBlank(String name, String... values) {
-        if (isNullOrEmpty(values)) {
+        if (isBlank(name) || isNullOrEmpty(values)) {
             return this;
         }
 
@@ -239,14 +247,14 @@ public class WebTargetHelper {
     }
 
     /**
-     * Adds any non-blank values to the the given query parameter.
+     * Adds any non-blank values to the the given query parameter. If name is blank, this is a no-op.
      *
      * @param name   the parameter name
      * @param values one or more parameter values
      * @return this instance
      */
     public WebTargetHelper queryParamFilterNotBlank(String name, List<String> values) {
-        if (isNullOrEmpty(values)) {
+        if (isBlank(name) || isNullOrEmpty(values)) {
             return this;
         }
 
@@ -254,14 +262,14 @@ public class WebTargetHelper {
     }
 
     /**
-     * Adds any non-blank values to the the given query parameter.
+     * Adds any non-blank values to the the given query parameter. If name is blank, this is a no-op.
      *
      * @param name   the parameter name
      * @param stream containing one or more parameter values
      * @return this instance
      */
     public WebTargetHelper queryParamFilterNotBlank(String name, Stream<String> stream) {
-        if (isNull(stream)) {
+        if (isBlank(name) || isNull(stream)) {
             return this;
         }
 
