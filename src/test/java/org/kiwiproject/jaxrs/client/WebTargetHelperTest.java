@@ -48,7 +48,26 @@ class WebTargetHelperTest {
     }
 
     @Nested
+    class WithWebTarget {
+
+        @Test
+        void shouldThrow_WhenGivenNullWebTarget() {
+            assertThatIllegalArgumentException()
+                    .isThrownBy(() -> withWebTarget(null))
+                    .withMessage("webTarget must not be null");
+        }
+    }
+
+    @Nested
     class QueryParamRequireNotNull {
+
+        @ParameterizedTest
+        @NullAndEmptySource
+        void shouldThrow_WhenGivenNullOrEmptyName(String name) {
+            assertThatIllegalArgumentException()
+                    .isThrownBy(() -> withWebTarget(originalWebTarget).queryParamRequireNotNull(name, "a value"))
+                    .withMessage("name cannot be blank");
+        }
 
         @Test
         void shouldThrow_WhenGivenNullValue() {
@@ -80,6 +99,16 @@ class WebTargetHelperTest {
     class QueryParamIfNotNull {
 
         @Test
+        void shouldReturnSameInstanceWithNoQuery_WhenGivenNullOrEmptyName() {
+            var newWebTarget = withWebTarget(originalWebTarget)
+                    .queryParamIfNotNull("", "value 1")
+                    .queryParamIfNotNull(" ", "value 2")
+                    .queryParamIfNotNull(null, "value 3");
+
+            assertIsOriginalWebTargetAndHasNoQuery(newWebTarget);
+        }
+
+        @Test
         void shouldReturnSameInstanceWithNoQuery_WhenGivenOnlyNullValues() {
             var newWebTarget = withWebTarget(originalWebTarget)
                     .queryParamIfNotNull("foo", null)
@@ -96,7 +125,8 @@ class WebTargetHelperTest {
                     .queryParamIfNotNull("page", 42)
                     .queryParamIfNotNull("limit", 25)
                     .queryParamIfNotNull("sort", null)
-                    .queryParamIfNotNull("sortDir", null);
+                    .queryParamIfNotNull("sortDir", null)
+                    .queryParamIfNotNull("", "en/US");
 
             assertThat(newWebTarget.getUri()).hasQuery("q=pangram&page=42&limit=25");
         }
@@ -107,6 +137,15 @@ class WebTargetHelperTest {
 
         @Nested
         class WhenArray {
+
+            @ParameterizedTest
+            @NullAndEmptySource
+            void shouldReturnSameInstanceWithNoQuery_WhenNameIsBlank(String name) {
+                var newWebTarget = withWebTarget(originalWebTarget)
+                        .queryParamFilterNotNull(name, 1, 2, 3);
+
+                assertIsOriginalWebTargetAndHasNoQuery(newWebTarget);
+            }
 
             @ParameterizedTest
             @NullAndEmptySource
@@ -131,6 +170,15 @@ class WebTargetHelperTest {
 
             @ParameterizedTest
             @NullAndEmptySource
+            void shouldReturnSameInstanceWithNoQuery_WhenNameIsBlank(String name) {
+                var newWebTarget = withWebTarget(originalWebTarget)
+                        .queryParamFilterNotNull(name, List.of(1, 2, 3));
+
+                assertIsOriginalWebTargetAndHasNoQuery(newWebTarget);
+            }
+
+            @ParameterizedTest
+            @NullAndEmptySource
             void shouldReturnSameInstanceWithNoQuery_WhenNullOrEmpty(List<Object> values) {
                 var newWebTarget = withWebTarget(originalWebTarget)
                         .queryParamFilterNotNull("foo", values);
@@ -149,6 +197,15 @@ class WebTargetHelperTest {
 
         @Nested
         class WhenStream {
+
+            @ParameterizedTest
+            @NullAndEmptySource
+            void shouldReturnSameInstanceWithNoQuery_WhenNameIsBlank(String name) {
+                var newWebTarget = withWebTarget(originalWebTarget)
+                        .queryParamFilterNotNull(name, Stream.of(1, 2, 3));
+
+                assertIsOriginalWebTargetAndHasNoQuery(newWebTarget);
+            }
 
             @ParameterizedTest
             @NullSource
@@ -180,6 +237,14 @@ class WebTargetHelperTest {
     @Nested
     class QueryParamRequireNotBlank {
 
+        @ParameterizedTest
+        @NullAndEmptySource
+        void shouldThrow_WhenGivenNullOrEmptyName(String name) {
+            assertThatIllegalArgumentException()
+                    .isThrownBy(() -> withWebTarget(originalWebTarget).queryParamRequireNotBlank(name, "a value"))
+                    .withMessage("name cannot be blank");
+        }
+
         @Test
         void shouldThrow_WhenGivenNullValue() {
             assertThatIllegalArgumentException()
@@ -210,11 +275,23 @@ class WebTargetHelperTest {
     class QueryParamIfNotBlank {
 
         @Test
+        void shouldReturnSameInstanceWithNoQuery_WhenGivenNullOrEmptyName() {
+            var newWebTarget = withWebTarget(originalWebTarget)
+                    .queryParamIfNotBlank("", "value 1")
+                    .queryParamIfNotBlank(" ", "value 2")
+                    .queryParamIfNotBlank(null, "value 3");
+
+            assertIsOriginalWebTargetAndHasNoQuery(newWebTarget);
+        }
+
+        @Test
         void shouldReturnSameInstance_WhenGivenBlank() {
             var newWebTarget = withWebTarget(originalWebTarget)
                     .queryParamIfNotBlank("foo", "")
                     .queryParamIfNotBlank("bar", " ")
                     .queryParamIfNotBlank("misc", null)
+                    .queryParamIfNotBlank("", "a value")
+                    .queryParamIfNotBlank(null, "another value")
                     .queryParamIfNotBlank("baz", "\t  \n");
 
             assertIsOriginalWebTargetAndHasNoQuery(newWebTarget);
@@ -242,6 +319,15 @@ class WebTargetHelperTest {
 
             @ParameterizedTest
             @NullAndEmptySource
+            void shouldReturnSameInstanceWithNoQuery_WhenNameIsBlank(String name) {
+                var newWebTarget = withWebTarget(originalWebTarget)
+                        .queryParamFilterNotBlank(name, "a", "b", "c");
+
+                assertIsOriginalWebTargetAndHasNoQuery(newWebTarget);
+            }
+
+            @ParameterizedTest
+            @NullAndEmptySource
             void shouldReturnSameInstance_WhenNullOrEmpty(String[] values) {
                 var newWebTarget = withWebTarget(originalWebTarget)
                         .queryParamFilterNotBlank("foo", values);
@@ -264,6 +350,15 @@ class WebTargetHelperTest {
 
             @ParameterizedTest
             @NullAndEmptySource
+            void shouldReturnSameInstanceWithNoQuery_WhenNameIsBlank(String name) {
+                var newWebTarget = withWebTarget(originalWebTarget)
+                        .queryParamFilterNotBlank(name, List.of("a", "b", "c"));
+
+                assertIsOriginalWebTargetAndHasNoQuery(newWebTarget);
+            }
+
+            @ParameterizedTest
+            @NullAndEmptySource
             void shouldReturnSameInstance_WhenNullOrEmpty(List<String> values) {
                 var newWebTarget = withWebTarget(originalWebTarget)
                         .queryParamFilterNotBlank("foo", values);
@@ -283,6 +378,15 @@ class WebTargetHelperTest {
 
         @Nested
         class WhenStream {
+
+            @ParameterizedTest
+            @NullAndEmptySource
+            void shouldReturnSameInstanceWithNoQuery_WhenNameIsBlank(String name) {
+                var newWebTarget = withWebTarget(originalWebTarget)
+                        .queryParamFilterNotBlank(name, Stream.of("a", "b", "c"));
+
+                assertIsOriginalWebTargetAndHasNoQuery(newWebTarget);
+            }
 
             @ParameterizedTest
             @NullSource
