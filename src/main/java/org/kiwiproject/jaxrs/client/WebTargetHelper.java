@@ -25,6 +25,15 @@ import java.util.stream.Stream;
 
 /**
  * Use with JAX-RS {@link WebTarget} instances to provide convenient functionality when adding query parameters.
+ * Most of this functionality is intended for cases when you only want to add parameters when they are not null (or not
+ * blank in the case of Strings). If you want a query parameter to be added regardless of whether a value is present
+ * or not, use the regular {@link WebTarget#queryParam(String, Object...) queryParam} method in {@code WebTarget}.
+ * <p>
+ * The methods provided by this helper class allow you to either require query parameters or include them only when
+ * they have a value. When you <em>require</em> a query parameter, an {@link IllegalArgumentException} is thrown when
+ * a caller does not supply a name or value. Other methods allow you to <em>optionally</em> include one or more query
+ * parameters, as well as add them from a {@link Map} or a {@link MultivaluedMap}, such that only non-null/non-blank
+ * values are added.
  * <p>
  * Usage example (assuming {@link WebTargetClientHelper#withClient(Client) withClient} is statically imported):
  * <pre>
