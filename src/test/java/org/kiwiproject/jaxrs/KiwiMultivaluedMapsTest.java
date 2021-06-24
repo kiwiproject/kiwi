@@ -30,6 +30,13 @@ class KiwiMultivaluedMapsTest {
             assertThat(mvMap).isEmpty();
         }
 
+        /**
+         * @implNote As of AssertJ 3.20.0, the implementation of containsOnly was changed significantly in PR
+         * https://github.com/assertj/assertj-core/pull/2167/ and as a result broke this test when it used containsOnly
+         * to verify the map entries. Long story short, it is caused by the new AssertJ implementation cloning the
+         * MultivaluedMap in a way that it flattens it to a single-valued Map, and the values (which are List) are
+         * wrapped inside another List, so the comparison completely fails.
+         */
         @Test
         void shouldCreateMultivaluedMap() {
             var mvMap = KiwiMultivaluedMaps.newMultivaluedMap(
@@ -38,11 +45,10 @@ class KiwiMultivaluedMapsTest {
                     "car", "tesla",
                     "food", "steak");
 
-            assertThat(mvMap).containsOnly(
-                    entry("color", List.of("red")),
-                    entry("food", List.of("pizza", "steak")),
-                    entry("car", List.of("tesla"))
-            );
+            assertThat(mvMap).hasSize(3)
+                    .contains(entry("color", List.of("red")))
+                    .contains(entry("food", List.of("pizza", "steak")))
+                    .contains(entry("car", List.of("tesla")));
         }
     }
 
@@ -61,6 +67,13 @@ class KiwiMultivaluedMapsTest {
             assertThat(mvMap).isEmpty();
         }
 
+        /**
+         * @implNote As of AssertJ 3.20.0, the implementation of containsOnly was changed significantly in PR
+         * https://github.com/assertj/assertj-core/pull/2167/ and as a result broke this test when it used containsOnly
+         * to verify the map entries. Long story short, it is caused by the new AssertJ implementation cloning the
+         * MultivaluedMap in a way that it flattens it to a single-valued Map, and the values (which are List) are
+         * wrapped inside another List, so the comparison completely fails.
+         */
         @Test
         void shouldCreateMultivaluedMap_WithOnlyOneValuePerKey() {
             var mvMap = KiwiMultivaluedMaps.newSingleValuedParameterMap(
@@ -71,11 +84,10 @@ class KiwiMultivaluedMapsTest {
                     "food", "hamburgers",
                     "car", "ferrari");
 
-            assertThat(mvMap).containsOnly(
-                    entry("color", List.of("yellow")),
-                    entry("food", List.of("hamburgers")),
-                    entry("car", List.of("ferrari"))
-            );
+            assertThat(mvMap).hasSize(3)
+                    .contains(entry("color", List.of("yellow")))
+                    .contains(entry("food", List.of("hamburgers")))
+                    .contains(entry("car", List.of("ferrari")));
         }
     }
 
