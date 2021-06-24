@@ -5,7 +5,7 @@
     <parent>
         <groupId>org.kiwiproject</groupId>
         <artifactId>kiwi-parent</artifactId>
-        <version>0.12.0</version>
+        <version>0.14.0</version>
     </parent>
 
     <artifactId>kiwi</artifactId>
@@ -34,11 +34,11 @@
         <guava.version>30.1.1-jre</guava.version>
 
         <!-- Versions for provided dependencies -->
-        <commons-io.version>2.8.0</commons-io.version>
+        <commons-io.version>2.10.0</commons-io.version>
         <commons-text.version>1.9</commons-text.version>
         <dropwizard.version>2.0.23</dropwizard.version>
         <FastInfoset.version>1.2.18</FastInfoset.version>
-        <hibernate.version>5.4.30.Final</hibernate.version>
+        <hibernate.version>5.5.0.Final</hibernate.version>
         <hibernate-validator.version>6.1.7.Final</hibernate-validator.version>
         <httpclient.version>4.5.13</httpclient.version>
         <jackson.version>[2.10.5,2.10.6)</jackson.version>
@@ -48,15 +48,15 @@
         <jakarta.xml.bind-api.version>2.3.3</jakarta.xml.bind-api.version>
         <javassist.version>3.28.0-GA</javassist.version>
         <jaxws-rt.version>2.3.3</jaxws-rt.version>
-        <jboss-logging.version>3.4.1.Final</jboss-logging.version>
+        <jboss-logging.version>3.4.2.Final</jboss-logging.version>
         <joda-time.version>2.10.10</joda-time.version>
         <jsch.version>0.1.55</jsch.version>
-        <metrics-jdbi3.version>4.1.22</metrics-jdbi3.version>
-        <metrics-jetty9.version>4.1.22</metrics-jetty9.version>
-        <postgresql.version>42.2.20</postgresql.version>
-        <retrying-again.version>0.5.1</retrying-again.version>
-        <spring.version>5.3.7</spring.version>
-        <spring-data-mongodb.version>2.2.11.RELEASE</spring-data-mongodb.version>
+        <metrics-jdbi3.version>4.1.23</metrics-jdbi3.version>
+        <metrics-jetty9.version>4.1.23</metrics-jetty9.version>
+        <postgresql.version>42.2.22</postgresql.version>
+        <retrying-again.version>0.6.0</retrying-again.version>
+        <spring.version>5.3.8</spring.version>
+        <spring-data-mongodb.version>2.2.13.RELEASE</spring-data-mongodb.version>
         <stax2-api.version>4.2.1</stax2-api.version>
         <stax-ex.version>1.8.3</stax-ex.version>
         <!--
@@ -77,10 +77,10 @@
 
         <!-- Versions for test dependencies -->
         <commons-compress.version>1.20</commons-compress.version>
-        <embedded-postgres.version>1.2.10</embedded-postgres.version>
+        <embedded-postgres.version>1.3.0</embedded-postgres.version>
         <embed.mongo.version>3.0.0</embed.mongo.version>
         <h2.version>1.4.200</h2.version>
-        <jdbi3.version>3.20.0</jdbi3.version>
+        <jdbi3.version>3.20.1</jdbi3.version>
         <jersey-test-framework-core.version>2.33</jersey-test-framework-core.version>
         <liquibase.version>3.10.3</liquibase.version>
         <mongo-java-server.version>1.38.0</mongo-java-server.version>
@@ -170,6 +170,10 @@
                 </exclusion>
                 <exclusion>
                     <groupId>com.fasterxml.jackson.core</groupId>
+                    <artifactId>jackson-core</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>com.fasterxml.jackson.core</groupId>
                     <artifactId>jackson-databind</artifactId>
                 </exclusion>
                 <exclusion>
@@ -195,6 +199,10 @@
                 <exclusion>
                     <groupId>joda-time</groupId>
                     <artifactId>joda-time</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>org.slf4j</groupId>
+                    <artifactId>slf4j-api</artifactId>
                 </exclusion>
             </exclusions>
         </dependency>
@@ -603,6 +611,10 @@
                     <groupId>org.apache.commons</groupId>
                     <artifactId>commons-lang3</artifactId>
                 </exclusion>
+                <exclusion>
+                    <groupId>org.slf4j</groupId>
+                    <artifactId>slf4j-api</artifactId>
+                </exclusion>
             </exclusions>
         </dependency>
 
@@ -623,6 +635,10 @@
                 <exclusion>
                     <groupId>com.fasterxml.jackson.module</groupId>
                     <artifactId>jackson-module-jaxb-annotations</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>org.slf4j</groupId>
+                    <artifactId>slf4j-api</artifactId>
                 </exclusion>
             </exclusions>
         </dependency>
@@ -705,6 +721,12 @@
             <artifactId>mongo-java-server</artifactId>
             <version>${mongo-java-server.version}</version>
             <scope>test</scope>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.slf4j</groupId>
+                    <artifactId>slf4j-api</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
 
     </dependencies>
