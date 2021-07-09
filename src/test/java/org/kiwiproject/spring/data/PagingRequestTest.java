@@ -39,11 +39,11 @@ class PagingRequestTest {
             .build();
 
     @Test
-    void shouldCreateInstanceWithoutDefaults(SoftAssertions softly) {
+    void shouldCreateInstanceWithExpectedDefaults(SoftAssertions softly) {
         var pagingRequest = new PagingRequest();
 
-        softly.assertThat(pagingRequest.getPage()).isNull();
-        softly.assertThat(pagingRequest.getLimit()).isNull();
+        softly.assertThat(pagingRequest.getPage()).isZero();
+        softly.assertThat(pagingRequest.getLimit()).isEqualTo(100);
         softly.assertThat(pagingRequest.getPrimarySort()).isNull();
         softly.assertThat(pagingRequest.getPrimaryDirection()).isNull();
         softly.assertThat(pagingRequest.getSecondarySort()).isNull();

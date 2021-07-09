@@ -45,14 +45,14 @@ public class PagingRequest implements PagingParams {
      */
     @QueryParam("page")
     @DefaultValue("0")
-    private Integer page;
+    private Integer page = 0;
 
     /**
      * The page size limit. Default is 100.
      */
     @QueryParam("limit")
     @DefaultValue("" + DEFAULT_MAX_LIMIT)
-    private Integer limit;
+    private Integer limit = DEFAULT_MAX_LIMIT;
 
     /**
      * The primary sort property. Default is null.
