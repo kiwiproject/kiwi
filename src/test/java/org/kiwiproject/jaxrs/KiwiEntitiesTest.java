@@ -10,6 +10,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 
+import javax.ws.rs.ProcessingException;
 import javax.ws.rs.core.GenericType;
 import javax.ws.rs.core.Response;
 import java.util.Map;
@@ -40,6 +41,50 @@ class KiwiEntitiesTest {
 
             Optional<String> entity = KiwiEntities.safeReadEntity(response);
             assertThat(entity).isEmpty();
+        }
+    }
+
+    @Nested
+    class SafeReadEntityAsStringWithDefaultMessage {
+
+        @Test
+        void shouldGetEntity_WhenReadSucceeds() {
+            var response = mock(Response.class);
+            when(response.readEntity(String.class)).thenReturn("the entity");
+
+            var entity = KiwiEntities.safeReadEntity(response, "default message");
+            assertThat(entity).isEqualTo("the entity");
+        }
+
+        @Test
+        void shouldReturnDefaultMessage_WhenReadFails() {
+            var response = mock(Response.class);
+            when(response.readEntity(String.class)).thenThrow(new ProcessingException("oops"));
+
+            var entity = KiwiEntities.safeReadEntity(response, "default message");
+            assertThat(entity).isEqualTo("default message");
+        }
+    }
+
+    @Nested
+    class SafeReadEntityAsStringWithDefaultMessageSupplier {
+
+        @Test
+        void shouldGetEntity_WhenReadSucceeds() {
+            var response = mock(Response.class);
+            when(response.readEntity(String.class)).thenReturn("the entity");
+
+            var entity = KiwiEntities.safeReadEntity(response, () -> "default message");
+            assertThat(entity).isEqualTo("the entity");
+        }
+
+        @Test
+        void shouldReturnDefaultMessage_WhenReadFails() {
+            var response = mock(Response.class);
+            when(response.readEntity(String.class)).thenThrow(new ProcessingException("oops"));
+
+            var entity = KiwiEntities.safeReadEntity(response, () -> "default message");
+            assertThat(entity).isEqualTo("default message");
         }
     }
 

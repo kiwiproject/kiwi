@@ -1,11 +1,15 @@
 package org.kiwiproject.jaxrs;
 
+import static org.kiwiproject.base.KiwiPreconditions.checkArgumentNotNull;
+
 import lombok.experimental.UtilityClass;
 import lombok.extern.slf4j.Slf4j;
 
+import javax.annotation.Nullable;
 import javax.ws.rs.core.GenericType;
 import javax.ws.rs.core.Response;
 import java.util.Optional;
+import java.util.function.Supplier;
 
 /**
  * Static utilities related to reading entities from a {@link Response}.
@@ -22,6 +26,31 @@ public class KiwiEntities {
      */
     public static Optional<String> safeReadEntity(Response response) {
         return safeReadEntity(response, String.class);
+    }
+
+    /**
+     * Read an entity as a String from the given response. If it cannot be read, return a default message.
+     *
+     * @param response       the response object
+     * @param defaultMessage a default message to return if the response entity cannot be read (can be null)
+     * @return the response entity as a String or the given default message
+     */
+    public static String safeReadEntity(Response response, @Nullable String defaultMessage) {
+        return safeReadEntity(response).orElse(defaultMessage);
+    }
+
+    /**
+     * Read an entity as a String from the given response. If it cannot be read, call the given {@link Supplier} to
+     * get the default message.
+     *
+     * @param response               the response object
+     * @param defaultMessageSupplier supplies a default message if the response entity cannot be read
+     *                               (the Supplier can return null, but the Supplier itself must not be null)
+     * @return the response entity as a String or the message supplied by the given Supplier
+     */
+    public static String safeReadEntity(Response response, Supplier<String> defaultMessageSupplier) {
+        checkArgumentNotNull(defaultMessageSupplier, "defaultMessageSupplier must not be null");
+        return safeReadEntity(response).orElseGet(defaultMessageSupplier);
     }
 
     /**
