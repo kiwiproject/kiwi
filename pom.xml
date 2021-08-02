@@ -51,8 +51,8 @@
         <jboss-logging.version>3.4.2.Final</jboss-logging.version>
         <joda-time.version>2.10.10</joda-time.version>
         <jsch.version>0.1.55</jsch.version>
-        <metrics-jdbi3.version>4.1.23</metrics-jdbi3.version>
-        <metrics-jetty9.version>4.1.23</metrics-jetty9.version>
+        <metrics-jdbi3.version>4.1.25</metrics-jdbi3.version>
+        <metrics-jetty9.version>4.1.25</metrics-jetty9.version>
         <postgresql.version>42.2.22</postgresql.version>
         <retrying-again.version>0.6.0</retrying-again.version>
         <spring.version>5.3.8</spring.version>
@@ -80,7 +80,7 @@
         <embedded-postgres.version>1.3.0</embedded-postgres.version>
         <embed.mongo.version>3.0.0</embed.mongo.version>
         <h2.version>1.4.200</h2.version>
-        <jdbi3.version>3.20.1</jdbi3.version>
+        <jdbi3.version>3.21.0</jdbi3.version>
         <jersey-test-framework-core.version>2.33</jersey-test-framework-core.version>
         <liquibase.version>3.10.3</liquibase.version>
         <mongo-java-server.version>1.38.0</mongo-java-server.version>
