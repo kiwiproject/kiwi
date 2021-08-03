@@ -84,13 +84,13 @@ import java.util.stream.Stream;
  *         .get();
  * </pre>
  * This usage allows for full functionality of {@link WebTarget} while still getting the enhanced query parameter
- * features of this class. It isn't perfect but it works and, in our opinion anyway, doesn't intrude too much on
+ * features of this class. It isn't perfect, but it works and, in our opinion anyway, doesn't intrude too much on
  * building JAX-RS requests. In other words, we think it is a decent trade off.
  *
  * @implNote Internally this uses Lombok's {@link Delegate}, which is why this class doesn't implement {@link WebTarget}
  * directly. While this lets us easily delegate method calls to a {@link WebTarget}, it also restricts what we can do
  * here, and is the primary reason why there are usage restrictions. However, in our general usage this implementation
- * has been enough for our needs. Nevertheless this is currently marked with the Guava {@link Beta} annotation in case
+ * has been enough for our needs. Nevertheless, this is currently marked with the Guava {@link Beta} annotation in case
  * we change our minds on the implementation.
  */
 @Beta
@@ -159,7 +159,7 @@ public class WebTargetHelper {
     }
 
     /**
-     * Adds any non-null values to the the given query parameter. If name is blank, this is a no-op.
+     * Adds any non-null values to the given query parameter. If name is blank, this is a no-op.
      *
      * @param name   the parameter name
      * @param values one or more parameter values
@@ -174,7 +174,7 @@ public class WebTargetHelper {
     }
 
     /**
-     * Adds any non-null values to the the given query parameter. If name is blank, this is a no-op.
+     * Adds any non-null values to the given query parameter. If name is blank, this is a no-op.
      *
      * @param name   the parameter name
      * @param values one or more parameter values
@@ -189,7 +189,7 @@ public class WebTargetHelper {
     }
 
     /**
-     * Adds any non-null values to the the given query parameter. If name is blank, this is a no-op.
+     * Adds any non-null values to the given query parameter. If name is blank, this is a no-op.
      *
      * @param name   the parameter name
      * @param stream containing one or more parameter values
@@ -241,7 +241,7 @@ public class WebTargetHelper {
     }
 
     /**
-     * Adds any non-blank values to the the given query parameter. If name is blank, this is a no-op.
+     * Adds any non-blank values to the given query parameter. If name is blank, this is a no-op.
      *
      * @param name   the parameter name
      * @param values one or more parameter values
@@ -256,7 +256,7 @@ public class WebTargetHelper {
     }
 
     /**
-     * Adds any non-blank values to the the given query parameter. If name is blank, this is a no-op.
+     * Adds any non-blank values to the given query parameter. If name is blank, this is a no-op.
      *
      * @param name   the parameter name
      * @param values one or more parameter values
@@ -271,7 +271,7 @@ public class WebTargetHelper {
     }
 
     /**
-     * Adds any non-blank values to the the given query parameter. If name is blank, this is a no-op.
+     * Adds any non-blank values to the given query parameter. If name is blank, this is a no-op.
      *
      * @param name   the parameter name
      * @param stream containing one or more parameter values
@@ -294,6 +294,7 @@ public class WebTargetHelper {
      * Adds non-null query parameters from the given map. All map keys <strong>must</strong> be non-null.
      *
      * @param parameters a map representing the query parameters
+     * @param <V>        the type of keys in the map
      * @return this instance
      * @implNote This method is distinct from {@link #queryParamsFromMultivaluedMap(MultivaluedMap)} because the
      * {@link MultivaluedMap} interface extends the regular Java {@link Map} and under certain circumstances this
@@ -330,6 +331,7 @@ public class WebTargetHelper {
      * Adds non-null query parameters from the given multivalued map. All map keys <strong>must</strong> be non-null.
      *
      * @param parameters a multivalued representing the query parameters
+     * @param <V>        the type of keys in the map
      * @return this instance
      * @implNote See implementation note on {@link #queryParamsFromMap(Map)} for an explanation why this method is
      * named separately and distinctly.
