@@ -1,7 +1,9 @@
 package org.kiwiproject.jaxrs;
 
+import static com.google.common.base.Verify.verify;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatCode;
+import static org.assertj.core.api.Assertions.assertThatIllegalStateException;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.kiwiproject.jaxrs.JaxrsTestHelper.assertCreatedResponseWithLocation;
 import static org.kiwiproject.jaxrs.JaxrsTestHelper.assertCustomHeaderFirstValue;
@@ -10,27 +12,45 @@ import static org.kiwiproject.jaxrs.JaxrsTestHelper.assertResponseEntity;
 import static org.kiwiproject.jaxrs.JaxrsTestHelper.assertResponseType;
 import static org.kiwiproject.jaxrs.JaxrsTestHelper.assertStatusAndResponseEntity;
 
+import io.dropwizard.testing.junit5.DropwizardExtensionsSupport;
+import io.dropwizard.testing.junit5.ResourceExtension;
 import lombok.Value;
+import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.io.IOUtils;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.kiwiproject.jaxrs.exception.ErrorMessage;
 import org.kiwiproject.jaxrs.exception.JaxrsBadRequestException;
 import org.kiwiproject.jaxrs.exception.JaxrsNotFoundException;
+import org.kiwiproject.json.JsonHelper;
 
+import javax.ws.rs.Consumes;
+import javax.ws.rs.GET;
+import javax.ws.rs.Path;
+import javax.ws.rs.Produces;
+import javax.ws.rs.client.Client;
+import javax.ws.rs.client.ClientBuilder;
 import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedHashMap;
 import javax.ws.rs.core.Response;
+import java.io.IOException;
+import java.io.InputStream;
 import java.net.URI;
+import java.nio.charset.StandardCharsets;
 import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Stream;
 
 @SuppressWarnings("OptionalUsedAsFieldOrParameterType")
 @DisplayName("KiwiResources")
+@ExtendWith(DropwizardExtensionsSupport.class)
 class KiwiResourcesTest {
 
     private static final int ID = 42;
@@ -39,6 +59,13 @@ class KiwiResourcesTest {
     private static final Optional<MyEntity> ENTITY_OPTIONAL = Optional.of(ENTITY);
     private static final Optional<MyEntity> EMPTY_ENTITY_OPTIONAL = Optional.empty();
     private static final String ENTITY_NOT_FOUND_MESSAGE = "MyEntity not found";
+
+    private static final JsonHelper JSON_HELPER = JsonHelper.newDropwizardJsonHelper();
+
+    private static final ResourceExtension RESOURCES = ResourceExtension.builder()
+            .bootstrapLogging(false)
+            .addResource(new FromResponseTestResource())
+            .build();
 
     @Nested
     class VerifyExistence {
@@ -270,6 +297,151 @@ class KiwiResourcesTest {
             assertOkResponse(response);
             assertResponseType(response, MediaType.APPLICATION_XML_TYPE);
             assertResponseEntity(response, ENTITY);
+        }
+    }
+
+    /**
+     * A test resource class for {@link FromResponseBufferingEntity}
+     */
+    @Path("/from-response")
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON)
+    @Slf4j
+    public static class FromResponseTestResource {
+
+        static Map<String, Object> ENTITY = Map.of("name", "Alice", "age", 42);
+
+        @GET
+        @Path("/with-entity")
+        public Response withEntity() {
+            LOG.info("Returning 200 with an entity");
+
+            return Response.ok(ENTITY)
+                    .header("Header-1", "Value 1")
+                    .header("Header-2", "Value 2")
+                    .build();
+        }
+
+        @GET
+        @Path("/no-entity")
+        public Response noEntity() {
+            LOG.info("Returning 200 with no entity");
+
+            return Response.ok()
+                    .header("Header-A", "Value A")
+                    .header("Header-B", "Value B")
+                    .build();
+        }
+    }
+
+    @Nested
+    class FromResponseBufferingEntity {
+
+        private Client client;
+
+        @BeforeEach
+        void setUp() {
+            client = ClientBuilder.newClient();
+        }
+
+        @AfterEach
+        void tearDown() {
+            client.close();
+        }
+
+        @Test
+        void shouldCopyHeaders() {
+            var originalResponse = RESOURCES.client().target("/from-response/with-entity").request().get();
+
+            var response = KiwiResources.fromResponseBufferingEntity(originalResponse);
+            assertOkResponse(response);
+
+            assertCustomHeaderFirstValue(response, "Header-1", "Value 1");
+            assertCustomHeaderFirstValue(response, "Header-2", "Value 2");
+        }
+
+        @Test
+        void shouldBufferEntity() throws IOException {
+            var originalResponse = RESOURCES.client().target("/from-response/with-entity").request().get();
+
+            var response = KiwiResources.fromResponseBufferingEntity(originalResponse);
+            assertOkResponse(response);
+
+            assertEntity(response);
+        }
+
+        @Test
+        void shouldBufferEntity_IfEntityAlreadyBuffered() throws IOException {
+            var originalResponse = RESOURCES.client().target("/from-response/with-entity").request().get();
+
+            var wasBuffered = originalResponse.bufferEntity();
+            verify(wasBuffered);
+
+            var response = KiwiResources.fromResponseBufferingEntity(originalResponse);
+            assertOkResponse(response);
+
+            assertEntity(response);
+        }
+
+        private void assertEntity(Response response) throws IOException {
+            assertThat(response.hasEntity()).isTrue();
+
+            // NOTE:
+            // We have to use getEntity instead of readEntity because after buffering, the response is an
+            // OutboundJaxrsResponse instead of an InboundJaxrsResponse, and OutboundJaxrsResponse throws an
+            // IllegalStateException on calls to readEntity.
+
+            var inputStream = assertResponseEntityIsInputStream(response);
+            var json = IOUtils.toString(inputStream, StandardCharsets.UTF_8);
+            var mapEntity = JSON_HELPER.toMap(json);
+            assertThat(mapEntity).isEqualTo(FromResponseTestResource.ENTITY);
+        }
+
+        @Test
+        void shouldThrowIllegalStateException_WhenEntityAlreadyConsumed() {
+            var originalResponse = RESOURCES.client().target("/from-response/with-entity").request().get();
+
+            var entity = originalResponse.readEntity(KiwiGenericTypes.MAP_OF_STRING_TO_OBJECT_GENERIC_TYPE);
+            assertThat(entity).isEqualTo(FromResponseTestResource.ENTITY);
+
+            assertThatIllegalStateException()
+                    .describedAs("Should not be able to buffer when entity was already consumed")
+                    .isThrownBy(() -> KiwiResources.fromResponseBufferingEntity(originalResponse));
+        }
+
+        @Test
+        void shouldWorkWhen_OriginalResponse_HasNoEntity() {
+            var originalResponse = RESOURCES.client().target("/from-response/no-entity").request().get();
+
+            var response = KiwiResources.fromResponseBufferingEntity(originalResponse);
+            assertOkResponse(response);
+
+            assertCustomHeaderFirstValue(response, "Header-A", "Value A");
+            assertCustomHeaderFirstValue(response, "Header-B", "Value B");
+
+            assertThat(response.hasEntity())
+                    .describedAs("Should be true though the buffered InputStream will be empty")
+                    .isTrue();
+
+            var inputStream = assertResponseEntityIsInputStream(response);
+            assertThat(inputStream).isEmpty();
+        }
+
+        private InputStream assertResponseEntityIsInputStream(Response response) {
+            var entity = response.getEntity();
+            assertThat(entity)
+                    .describedAs("Expected entity to be buffered as an InputStream")
+                    .isInstanceOf(InputStream.class);
+
+            return (InputStream) entity;
+        }
+
+        @Test
+        void shouldIgnore_WhenBufferingOutboundResponse_ContainingNoEntity() {
+            var originalOutboundResponse = Response.ok().build();
+            var bufferedOutboundResponse = KiwiResources.fromResponseBufferingEntity(originalOutboundResponse);
+
+            assertThat(bufferedOutboundResponse.hasEntity()).isFalse();
         }
     }
 

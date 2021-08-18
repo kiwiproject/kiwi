@@ -7,6 +7,7 @@ import static org.kiwiproject.jaxrs.KiwiJaxrsValidations.assertNotNull;
 import com.google.common.primitives.Ints;
 import com.google.common.primitives.Longs;
 import lombok.experimental.UtilityClass;
+import lombok.extern.slf4j.Slf4j;
 import org.kiwiproject.jaxrs.exception.JaxrsBadRequestException;
 import org.kiwiproject.jaxrs.exception.JaxrsNotFoundException;
 
@@ -32,6 +33,7 @@ import java.util.Optional;
  */
 @SuppressWarnings("OptionalUsedAsFieldOrParameterType")
 @UtilityClass
+@Slf4j
 public class KiwiResources {
 
     private static final Map<String, Object> EMPTY_HEADERS = Map.of();
@@ -281,6 +283,54 @@ public class KiwiResources {
      */
     public static Response.ResponseBuilder okResponseBuilder(Object entity) {
         return Response.ok(entity);
+    }
+
+    /**
+     * Convenience wrapper around {@link Response#fromResponse(Response)} that also buffers the response entity by
+     * calling {@link Response#bufferEntity()} on the original response. This returns a {@link Response} instead of a
+     * response builder.
+     * <p>
+     * NOTE: The reason this method exists is due to the note in the Javadoc of {@link Response#fromResponse(Response)}
+     * which states: <em>"Note that if the entity is backed by an un-consumed input stream, the reference to the stream
+     * is copied. In such case make sure to buffer the entity stream of the original response instance before passing
+     * it to this method."</em> So, rather than having the same boilerplate code in various locations (or as we've
+     * seen many times, people forgetting to buffer the response entity), this provides a single method to perform
+     * the same logic <em>and</em> ensure the entity is buffered.
+     *
+     * @param originalResponse a Response from which the status code, entity and response headers will be copied.
+     * @return a new response
+     * @see Response#fromResponse(Response)
+     * @see Response#bufferEntity()
+     */
+    public static Response fromResponseBufferingEntity(Response originalResponse) {
+        return fromResponseBufferingEntityBuilder(originalResponse).build();
+    }
+
+    /**
+     * Convenience wrapper around {@link Response#fromResponse(Response)} that also buffers the response entity by
+     * calling {@link Response#bufferEntity()} on the original response.
+     * <p>
+     * NOTE: The reason this method exists is due to the note in the Javadoc of {@link Response#fromResponse(Response)}
+     * which states: <em>"Note that if the entity is backed by an un-consumed input stream, the reference to the stream
+     * is copied. In such case make sure to buffer the entity stream of the original response instance before passing
+     * it to this method."</em> So, rather than having the same boilerplate code in various locations (or as we've
+     * seen many times, people forgetting to buffer the response entity), this provides a single method to perform
+     * the same logic <em>and</em> ensure the entity is buffered.
+     *
+     * @param originalResponse a Response from which the status code, entity and response headers will be copied.
+     * @return a new response builder
+     * @see Response#fromResponse(Response)
+     * @see Response#bufferEntity()
+     */
+    public static Response.ResponseBuilder fromResponseBufferingEntityBuilder(Response originalResponse) {
+        var wasBuffered = originalResponse.bufferEntity();
+
+        if (!wasBuffered) {
+            LOG.warn("Attempt to buffer entity in original response returned false; possible causes:" +
+                    " it was not backed by an unconsumed input stream; the input stream was already consumed; or, it did not have an entity");
+        }
+
+        return Response.fromResponse(originalResponse);
     }
 
     /**
