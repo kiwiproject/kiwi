@@ -17,15 +17,18 @@ import java.util.Map;
 import java.util.Optional;
 
 /**
- * Static utilities for use in JAX-RS resource classes.
+ * Static utilities for use in JAX-RS resource classes. Contains utilities for verifying entities (e.g. obtained from
+ * a service or data access class), factories for creating new responses, and for validating query parameters.
  *
  * @apiNote Some methods in this class accept {@link Optional} arguments, which we know is considered a code smell
  * by various people and analysis tools such as IntelliJ's inspections, Sonar, etc. However, we also like to return
  * {@link Optional} from data access code (e.g. a DAO "findById" method where the object might not exist if it was
  * recently deleted). In such cases, we can simply take the Optional returned by those finder methods and pass them
  * directly to the utilities provided here without needing to call additional methods, for example without needing to
- * call {@code orElse(null)}. So, we acknowledge that it is generally not good to accept {@link Optional} arguments
+ * call {@code orElse(null)}. So, we acknowledge that it is generally not good to accept {@link Optional} arguments,
  * but we're trading off convenience in this class against "generally accepted" practice.
+ * @see KiwiResponses
+ * @see KiwiStandardResponses
  */
 @SuppressWarnings("OptionalUsedAsFieldOrParameterType")
 @UtilityClass

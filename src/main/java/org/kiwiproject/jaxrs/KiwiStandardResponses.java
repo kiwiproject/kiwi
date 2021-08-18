@@ -19,6 +19,8 @@ import java.util.Optional;
  * what should be in responses for common HTTP methods in a REST-based interface using JSON as the primary
  * data format.
  * <p>
+ * These utilities are intended for use within JAX-RS resource classes.
+ * <p>
  * One specific thing to note is that the content type is always set to {@link MediaType#APPLICATION_JSON}, since
  * the primary use case of this class assumes JSON-based REST interfaces. You can change the content type by
  * using the methods that return a response builder and call one of the {@code type()} methods with a
@@ -30,8 +32,10 @@ import java.util.Optional;
  * {@link Optional} from data access code (e.g. a DAO "findById" method where the object might not exist if it was
  * recently deleted). In such cases, we can simply take the Optional returned by those finder methods and pass them
  * directly to the utilities provided here without needing to call additional methods, for example without needing to
- * call {@code orElse(null)}. So, we acknowledge that it is generally not good to accept {@link Optional} arguments
+ * call {@code orElse(null)}. So, we acknowledge that it is generally not good to accept {@link Optional} arguments,
  * but we're trading off convenience in this class against "generally accepted" practice.
+ * @see KiwiResources
+ * @see KiwiResponses
  */
 @SuppressWarnings("OptionalUsedAsFieldOrParameterType")
 @UtilityClass
