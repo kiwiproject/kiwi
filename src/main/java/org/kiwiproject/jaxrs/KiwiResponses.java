@@ -14,7 +14,15 @@ import java.util.function.Consumer;
 import java.util.function.Function;
 
 /**
- * Static utilities related to JAX-RS responses.
+ * Static utilities related to evaluating and acting upon JAX-RS responses. For example, this class contains utilities
+ * to determine whether responses are successful or not, whether they are a specific type of response, and to perform
+ * actions (or throw exceptions) based on success or failure.
+ * <p>
+ * These utilities are intended mainly to be used in classes that make HTTP requests and need to evaluate and/or take
+ * action with the HTTP responses.
+ *
+ * @see KiwiResources
+ * @see KiwiStandardResponses
  */
 @UtilityClass
 @Slf4j
@@ -24,7 +32,7 @@ public class KiwiResponses {
 
     /**
      * Return a media type suitable for use as the value of a corresponding HTTP header. This will consist
-     * of the primary type and and subtype, e.g. {@code application/json}.
+     * of the primary type and subtype, e.g. {@code application/json}.
      *
      * @param response the response object
      * @return Optional that may or may not contain a media type
