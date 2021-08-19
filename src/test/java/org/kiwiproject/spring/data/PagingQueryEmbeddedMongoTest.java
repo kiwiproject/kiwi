@@ -49,7 +49,7 @@ import java.util.function.Predicate;
 @Slf4j
 class PagingQueryEmbeddedMongoTest {
 
-    // Currently only testing against Mongo 4.0
+    // Currently, only testing against Mongo 4.0
     private static final Version.Main MONGODB_VERSION = Version.Main.V4_0;
 
     private static MongodExecutable mongodExecutable;

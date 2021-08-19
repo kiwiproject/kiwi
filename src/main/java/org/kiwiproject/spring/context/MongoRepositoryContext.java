@@ -10,7 +10,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.ApplicationListener;
 import org.springframework.context.support.GenericApplicationContext;
 import org.springframework.data.mongodb.core.MongoTemplate;
-import org.springframework.data.mongodb.core.SimpleMongoClientDbFactory;
+import org.springframework.data.mongodb.core.SimpleMongoClientDatabaseFactory;
 import org.springframework.data.mongodb.repository.MongoRepository;
 import org.springframework.data.mongodb.repository.support.MongoRepositoryFactory;
 
@@ -123,7 +123,7 @@ public class MongoRepositoryContext {
      * @return a new MongoTemplate instance
      */
     public static MongoTemplate initializeMongoTemplate(String mongoUri) {
-        var mongoDbFactory = new SimpleMongoClientDbFactory(mongoUri);
+        var mongoDbFactory = new SimpleMongoClientDatabaseFactory(mongoUri);
 
         var mongoTemplate = new MongoTemplate(mongoDbFactory);
         mongoTemplate.setWriteConcern(WriteConcern.ACKNOWLEDGED);

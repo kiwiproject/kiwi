@@ -32,7 +32,7 @@ import org.kiwiproject.spring.data.KiwiSpringMongoQueries.PartialMatchType;
 import org.kiwiproject.time.KiwiInstants;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.mongodb.core.MongoTemplate;
-import org.springframework.data.mongodb.core.SimpleMongoClientDbFactory;
+import org.springframework.data.mongodb.core.SimpleMongoClientDatabaseFactory;
 import org.springframework.data.mongodb.core.query.Criteria;
 
 import java.time.Instant;
@@ -56,7 +56,7 @@ class KiwiSpringMongoQueriesTest {
     @BeforeAll
     static void beforeAll() {
         var connectionString = MONGO_SERVER_EXTENSION.getConnectionString();
-        var mongoClientDbFactory = new SimpleMongoClientDbFactory(connectionString);
+        var mongoClientDbFactory = new SimpleMongoClientDatabaseFactory(connectionString);
         mongoTemplate = new MongoTemplate(mongoClientDbFactory);
     }
 
