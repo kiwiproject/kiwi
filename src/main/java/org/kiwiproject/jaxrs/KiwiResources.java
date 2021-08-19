@@ -287,7 +287,7 @@ public class KiwiResources {
 
     /**
      * Convenience wrapper around {@link Response#fromResponse(Response)} that also buffers the response entity by
-     * calling {@link Response#bufferEntity()} on the original response. This returns a {@link Response} instead of a
+     * calling {@link Response#bufferEntity()} on the given response. This returns a {@link Response} instead of a
      * response builder.
      * <p>
      * NOTE: The reason this method exists is due to the note in the Javadoc of {@link Response#fromResponse(Response)}
@@ -302,13 +302,13 @@ public class KiwiResources {
      * @see Response#fromResponse(Response)
      * @see Response#bufferEntity()
      */
-    public static Response fromResponseBufferingEntity(Response originalResponse) {
-        return fromResponseBufferingEntityBuilder(originalResponse).build();
+    public static Response newResponseBufferingEntityFrom(Response originalResponse) {
+        return newResponseBuilderBufferingEntityFrom(originalResponse).build();
     }
 
     /**
      * Convenience wrapper around {@link Response#fromResponse(Response)} that also buffers the response entity by
-     * calling {@link Response#bufferEntity()} on the original response.
+     * calling {@link Response#bufferEntity()} on the given response.
      * <p>
      * NOTE: The reason this method exists is due to the note in the Javadoc of {@link Response#fromResponse(Response)}
      * which states: <em>"Note that if the entity is backed by an un-consumed input stream, the reference to the stream
@@ -322,7 +322,7 @@ public class KiwiResources {
      * @see Response#fromResponse(Response)
      * @see Response#bufferEntity()
      */
-    public static Response.ResponseBuilder fromResponseBufferingEntityBuilder(Response originalResponse) {
+    public static Response.ResponseBuilder newResponseBuilderBufferingEntityFrom(Response originalResponse) {
         var wasBuffered = originalResponse.bufferEntity();
 
         if (!wasBuffered) {
