@@ -301,7 +301,7 @@ class KiwiResourcesTest {
     }
 
     /**
-     * A test resource class for {@link FromResponseBufferingEntity}
+     * A test resource class for {@link NewResponseBufferingEntityFrom}
      */
     @Path("/from-response")
     @Consumes(MediaType.APPLICATION_JSON)
@@ -335,7 +335,7 @@ class KiwiResourcesTest {
     }
 
     @Nested
-    class FromResponseBufferingEntity {
+    class NewResponseBufferingEntityFrom {
 
         private Client client;
 
@@ -353,7 +353,7 @@ class KiwiResourcesTest {
         void shouldCopyHeaders() {
             var originalResponse = RESOURCES.client().target("/from-response/with-entity").request().get();
 
-            var response = KiwiResources.fromResponseBufferingEntity(originalResponse);
+            var response = KiwiResources.newResponseBufferingEntityFrom(originalResponse);
             assertOkResponse(response);
 
             assertCustomHeaderFirstValue(response, "Header-1", "Value 1");
@@ -364,7 +364,7 @@ class KiwiResourcesTest {
         void shouldBufferEntity() throws IOException {
             var originalResponse = RESOURCES.client().target("/from-response/with-entity").request().get();
 
-            var response = KiwiResources.fromResponseBufferingEntity(originalResponse);
+            var response = KiwiResources.newResponseBufferingEntityFrom(originalResponse);
             assertOkResponse(response);
 
             assertEntity(response);
@@ -377,7 +377,7 @@ class KiwiResourcesTest {
             var wasBuffered = originalResponse.bufferEntity();
             verify(wasBuffered);
 
-            var response = KiwiResources.fromResponseBufferingEntity(originalResponse);
+            var response = KiwiResources.newResponseBufferingEntityFrom(originalResponse);
             assertOkResponse(response);
 
             assertEntity(response);
@@ -406,14 +406,14 @@ class KiwiResourcesTest {
 
             assertThatIllegalStateException()
                     .describedAs("Should not be able to buffer when entity was already consumed")
-                    .isThrownBy(() -> KiwiResources.fromResponseBufferingEntity(originalResponse));
+                    .isThrownBy(() -> KiwiResources.newResponseBufferingEntityFrom(originalResponse));
         }
 
         @Test
         void shouldWorkWhen_OriginalResponse_HasNoEntity() {
             var originalResponse = RESOURCES.client().target("/from-response/no-entity").request().get();
 
-            var response = KiwiResources.fromResponseBufferingEntity(originalResponse);
+            var response = KiwiResources.newResponseBufferingEntityFrom(originalResponse);
             assertOkResponse(response);
 
             assertCustomHeaderFirstValue(response, "Header-A", "Value A");
@@ -439,7 +439,7 @@ class KiwiResourcesTest {
         @Test
         void shouldIgnore_WhenBufferingOutboundResponse_ContainingNoEntity() {
             var originalOutboundResponse = Response.ok().build();
-            var bufferedOutboundResponse = KiwiResources.fromResponseBufferingEntity(originalOutboundResponse);
+            var bufferedOutboundResponse = KiwiResources.newResponseBufferingEntityFrom(originalOutboundResponse);
 
             assertThat(bufferedOutboundResponse.hasEntity()).isFalse();
         }
