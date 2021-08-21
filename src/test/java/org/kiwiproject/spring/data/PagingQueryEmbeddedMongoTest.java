@@ -25,6 +25,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.kiwiproject.net.LocalPortChecker;
 import org.kiwiproject.search.KiwiSearching;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.mongodb.core.MongoTemplate;
@@ -61,7 +62,10 @@ class PagingQueryEmbeddedMongoTest {
     @BeforeAll
     static void beforeAll() throws Exception {
         var ip = "localhost";
-        var port = 27017;
+
+        // Attempt to get the default Mongo port (27017), or get first available port above it
+        var port = new LocalPortChecker().findFirstOpenPortAbove(27016).orElseThrow();
+        LOG.info("Using port {}", port);
 
         var mongoConfig = MongodConfig.builder()
                 .version(MONGODB_VERSION)
