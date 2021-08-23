@@ -2,10 +2,12 @@ package org.kiwiproject.net;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
+import static org.kiwiproject.net.LocalPortChecker.MAX_PORT;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.Nested;
+import org.junit.jupiter.api.RepeatedTest;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 
@@ -23,42 +25,82 @@ class LocalPortCheckerTest {
         localPortChecker = new LocalPortChecker();
     }
 
-    @Test
-    void testIsPortAvailable_WherePortIsNotAvailable() throws IOException {
-        try (var serverSocket = new ServerSocket(0)) {
-            var inUsePort = serverSocket.getLocalPort();
+    @Nested
+    class IsPortAvailable {
 
-            assertThat(localPortChecker.isPortAvailable(inUsePort))
-                    .describedAs("Port %d should be in use by the ServerSocket", inUsePort)
-                    .isFalse();
+        @RepeatedTest(5)
+        void shouldBeFalse_WhenPortIsNotAvailable() throws IOException {
+            try (var serverSocket = newServerSocketOnRandomPort()) {
+                var inUsePort = serverSocket.getLocalPort();
+
+                assertThat(localPortChecker.isPortAvailable(inUsePort))
+                        .describedAs("Port %d should be in use by the ServerSocket", inUsePort)
+                        .isFalse();
+            }
+        }
+
+        private ServerSocket newServerSocketOnRandomPort() throws IOException {
+            return new ServerSocket(0);
+        }
+
+        @ParameterizedTest
+        @ValueSource(ints = {15_679, 27_346, 65_035, MAX_PORT})
+        void shouldBeTrue_ForPortsThatShouldNotBeInUse(int port) {
+            assertThat(localPortChecker.isPortAvailable(port))
+                    .describedAs("Port %d was in use, but was not expected to be", port)
+                    .isTrue();
+        }
+
+        @ParameterizedTest
+        @ValueSource(ints = {-1024, -1, (MAX_PORT + 1), 500_000})
+        void shouldThrowIllegalArgumentException_ForInvalidPorts(int port) {
+            assertThatIllegalArgumentException()
+                    .isThrownBy(() -> localPortChecker.isPortAvailable(port));
         }
     }
 
-    @ParameterizedTest
-    @ValueSource(ints = {15_679, 27_346, 65_035})
-    void testIsPortAvailable_ForPortsThatShouldNotBeInUse(int port) {
-        assertThat(localPortChecker.isPortAvailable(port))
-                .describedAs("Port %d was in use, but was not expected to be", port)
-                .isTrue();
+    @Nested
+    class FindFirstOpenPortAbove {
+
+        @ParameterizedTest
+        @ValueSource(ints = {27_346, (MAX_PORT - 1)})
+        void shouldBeTrue_ForPortThatShouldBeOpen(int port) {
+            assertThat(localPortChecker.isPortAvailable(port))
+                    .describedAs("Halting test since port %d is not open (pre-condition failed: we assumed it is open)", port)
+                    .isTrue();
+
+            assertThat(localPortChecker.findFirstOpenPortAbove(port - 1)).isEqualTo(OptionalInt.of(port));
+        }
+
+        @ParameterizedTest
+        @ValueSource(ints = {-1, MAX_PORT})
+        void shouldThrowIllegalArgumentException_ForInvalidPorts(int port) {
+            assertThatIllegalArgumentException()
+                    .isThrownBy(() -> localPortChecker.findFirstOpenPortAbove(port))
+                    .withMessage("Invalid start port: " + port);
+        }
     }
 
-    @Test
-    void testFindFirstOpenPortAbove_ForPortThatShouldBeOpen() {
-        var portToCheck = 27_346;
-        assertThat(localPortChecker.isPortAvailable(portToCheck))
-                .describedAs("Halting test since port %d is not open (pre-condition failed: we assumed it is open)", portToCheck)
-                .isTrue();
+    @Nested
+    class FindFirstOpenPortFrom {
 
-        assertThat(localPortChecker.findFirstOpenPortAbove(portToCheck - 1)).isEqualTo(OptionalInt.of(portToCheck));
-    }
+        @ParameterizedTest
+        @ValueSource(ints = {27_346, MAX_PORT})
+        void shouldBeTrue_ForPortThatShouldBeOpen(int port) {
+            assertThat(localPortChecker.isPortAvailable(port))
+                    .describedAs("Halting test since port %d is not open (pre-condition failed: we assumed it is open)", port)
+                    .isTrue();
 
-    @ParameterizedTest
-    @ValueSource(ints = {-1, LocalPortChecker.MAX_PORT})
-    void testFindFirstOpenPortAbove_ForInvalidPorts(int port) {
-        assertThatIllegalArgumentException()
-                .isThrownBy(() -> localPortChecker.findFirstOpenPortAbove(port))
-                .withMessage("Invalid start port: " + port);
+            assertThat(localPortChecker.findFirstOpenPortFrom(port)).isEqualTo(OptionalInt.of(port));
+        }
 
+        @ParameterizedTest
+        @ValueSource(ints = {-1, 0, (MAX_PORT + 1)})
+        void shouldThrowIllegalArgumentException_ForInvalidPorts(int port) {
+            assertThatIllegalArgumentException()
+                    .isThrownBy(() -> localPortChecker.findFirstOpenPortFrom(port))
+                    .withMessage("Invalid start port: " + port);
+        }
     }
 
 }
