@@ -23,6 +23,7 @@ public class LocalPortChecker {
      *
      * @param port the port to check on the local machine
      * @return {@code true} if the port is available; {@code false} otherwise
+     * @throws IllegalArgumentException if port is not valid
      */
     public boolean isPortAvailable(int port) {
         try (var serverSocket = new ServerSocket(port); var dataSocket = new DatagramSocket(port)) {
@@ -36,11 +37,29 @@ public class LocalPortChecker {
     }
 
     /**
+     * Find the first open port starting at the given port inclusive, i.e. if {@code port} is 1024 then it is the first
+     * port checked. If no available port is found, return an empty {@link OptionalInt}.
+     *
+     * @param port the port to start from
+     * @return an optional containing the first open port, or an empty optional
+     * @throws IllegalArgumentException if port is not between 1 and {@link #MAX_PORT}
+     * @implNote Since this method looks for availability of a specific port, zero is invalid because it is a reserved
+     * port used to indicate a random port and is never bound directly to.
+     */
+    public OptionalInt findFirstOpenPortFrom(int port) {
+        checkArgument(port > 0 && port <= MAX_PORT, "Invalid start port: %s", port);
+
+        var startPort = port - 1;
+        return findFirstOpenPortAbove(startPort);
+    }
+
+    /**
      * Find the first open port above the given port (i.e. if port is 1024 then the first port to be
-     * checked will be 1025). If none are found return an empty {@link OptionalInt}
+     * checked will be 1025). If no available port is found, return an empty {@link OptionalInt}.
      *
      * @param port the port to check above
      * @return an optional containing the first open port, or an empty optional
+     * @throws IllegalArgumentException if port is not between 0 and ({@link #MAX_PORT} - 1)
      */
     public OptionalInt findFirstOpenPortAbove(int port) {
         checkArgument(port >= 0 && port < MAX_PORT, "Invalid start port: %s", port);
