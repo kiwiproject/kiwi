@@ -52,10 +52,11 @@ class LocalPortCheckerTest {
         }
 
         @ParameterizedTest
-        @ValueSource(ints = {-1024, -1, (MAX_PORT + 1), 500_000})
+        @ValueSource(ints = {-1024, -1, 0, (MAX_PORT + 1), 500_000})
         void shouldThrowIllegalArgumentException_ForInvalidPorts(int port) {
             assertThatIllegalArgumentException()
-                    .isThrownBy(() -> localPortChecker.isPortAvailable(port));
+                    .isThrownBy(() -> localPortChecker.isPortAvailable(port))
+                    .withMessage("Invalid port: %d", port);
         }
     }
 

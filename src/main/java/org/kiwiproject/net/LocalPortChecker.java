@@ -19,13 +19,16 @@ public class LocalPortChecker {
     public static final int MAX_PORT = 65_535;
 
     /**
-     * Check port availability.
+     * Check port availability. Note specifically that zero is not a valid port for the reasons described
+     * <a href="https://www.grc.com/port_0.htm">here</a> and <a href="https://www.lifewire.com/port-0-in-tcp-and-udp-818145">here</a>.
      *
      * @param port the port to check on the local machine
      * @return {@code true} if the port is available; {@code false} otherwise
      * @throws IllegalArgumentException if port is not valid
      */
     public boolean isPortAvailable(int port) {
+        checkArgument(port > 0 && port <= MAX_PORT, "Invalid port: %s", port);
+
         try (var serverSocket = new ServerSocket(port); var dataSocket = new DatagramSocket(port)) {
             serverSocket.setReuseAddress(true);
             dataSocket.setReuseAddress(true);
