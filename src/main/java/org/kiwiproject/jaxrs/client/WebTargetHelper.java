@@ -117,6 +117,15 @@ public class WebTargetHelper {
     }
 
     /**
+     * Convert the current state contained in this helper to a new {@link WebTarget} instance.
+     *
+     * @return a new WebTarget instance
+     */
+    public WebTarget toWebTarget() {
+        return webTarget.path("");
+    }
+
+    /**
      * Create a new instance with the given {@link WebTarget}.
      *
      * @param webTarget the WebTarget to use
