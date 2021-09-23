@@ -59,6 +59,46 @@ class WebTargetHelperTest {
     }
 
     @Nested
+    class ToWebTarget {
+
+        @Test
+        void shouldReturnNewWebTargetInstance() {
+            var webTargetHelper = withWebTarget(originalWebTarget);
+            var newWebTarget = webTargetHelper.toWebTarget();
+
+            assertThat(newWebTarget).isNotSameAs(webTargetHelper.wrapped());
+        }
+
+        @Test
+        void shouldReturnEqualWebTargetInstance() {
+            var webTargetHelper = withWebTarget(originalWebTarget);
+            var newWebTarget = webTargetHelper.toWebTarget();
+
+            assertThat(newWebTarget.getUri()).isEqualTo(webTargetHelper.wrapped().getUri());
+        }
+
+        @Test
+        void shouldIncludeCurrentStateOfHelper() {
+            var webTargetHelper = withWebTarget(originalWebTarget)
+                    .queryParamIfNotBlank("name", "Robert")
+                    .queryParamIfNotBlank("ssn", "")
+                    .queryParamFilterNotBlank("nicknames", "Bob", "Bobby", "Roberto", null, "", " ");
+
+            var newWebTarget = webTargetHelper.toWebTarget();
+
+            var uri = newWebTarget.getUri();
+            assertThat(uri)
+                    .isEqualTo(webTargetHelper.wrapped().getUri())
+                    .hasPath("/path")
+                    .hasNoParameter("ssn")
+                    .hasParameter("name", "Robert")
+                    .hasParameter("nicknames", "Bob")
+                    .hasParameter("nicknames", "Bobby")
+                    .hasParameter("nicknames", "Roberto");
+        }
+    }
+
+    @Nested
     class QueryParamRequireNotNull {
 
         @ParameterizedTest
