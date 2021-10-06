@@ -1,0 +1,5 @@
+{
+  "registryConfig": {
+    "registryUrls": "https://eureka-1.acme.com:8761,https://eureka-2.acme.com:8761"
+  }
+}
