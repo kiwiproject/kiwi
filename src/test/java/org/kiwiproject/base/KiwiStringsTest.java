@@ -263,7 +263,7 @@ class KiwiStringsTest {
             void shouldFormat_withMoreArgs_ThanPlaceholders() {
                 var o = new Object();
                 var result = format("This is a %s template with %s placeholders but more arguments", "great", 2, 3.14, o);
-                assertThat(result).isEqualTo("This is a great template with 2 placeholders but more arguments [3.14, " + o.toString() + "]");
+                assertThat(result).isEqualTo("This is a great template with 2 placeholders but more arguments [3.14, " + o + "]");
             }
         }
 
@@ -296,7 +296,7 @@ class KiwiStringsTest {
             void shouldFormat_withMoreArgs_ThanPlaceholders() {
                 var o = new Object();
                 var result = format("This is a {} template with {} placeholders but more arguments", "great", 2, 3.14, o);
-                assertThat(result).isEqualTo("This is a great template with 2 placeholders but more arguments [3.14, " + o.toString() + "]");
+                assertThat(result).isEqualTo("This is a great template with 2 placeholders but more arguments [3.14, " + o + "]");
             }
         }
 
