@@ -181,7 +181,7 @@ public class KiwiUrls {
         try {
             return uri.toURL();
         } catch (MalformedURLException e) {
-            var message = "Error creating URL from: " + uri.toString();
+            var message = "Error creating URL from: " + uri;
             throw new UncheckedMalformedURLException(message, e);
         }
     }
