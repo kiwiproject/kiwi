@@ -579,7 +579,7 @@ public class KiwiUrls {
      *
      * @param queryString the query string to create the map from
      * @return a map of the query params
-     * @see #toQueryString(Map) for inverse
+     * @see #toQueryString(Map) toQueryString(Map) for the inverse operation
      */
     public static Map<String, String> queryStringToMap(String queryString) {
         if (isBlank(queryString)) {
@@ -597,7 +597,7 @@ public class KiwiUrls {
      *
      * @param parameters the map of the parameters to create the query string from
      * @return a concatenated query string
-     * @see #queryStringToMap(String) for inverse
+     * @see #queryStringToMap(String) queryStringToMap(String) for the inverse operation
      */
     public static String toQueryString(Map<String, String> parameters) {
         if (isNullOrEmpty(parameters)) {
