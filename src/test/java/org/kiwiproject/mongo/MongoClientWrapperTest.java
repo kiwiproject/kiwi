@@ -11,6 +11,7 @@ import org.junit.jupiter.api.extension.RegisterExtension;
 import org.kiwiproject.junit.jupiter.MongoServerExtension;
 import org.kiwiproject.spring.util.MongoTestHelpers;
 
+@SuppressWarnings("removal")
 @DisplayName("MongoClientWrapper")
 class MongoClientWrapperTest {
 
@@ -47,13 +48,6 @@ class MongoClientWrapperTest {
         var mongoDatabase = clientWrapper.getMongoDatabase();
         assertThat(mongoDatabase).isNotNull();
         assertThat(mongoDatabase.getName()).isEqualTo(databaseName);
-    }
-
-    @Test
-    void shouldHaveDB() {
-        var db = clientWrapper.getDB();
-        assertThat(db).isNotNull();
-        assertThat(db.getName()).isEqualTo(databaseName);
     }
 
     @Test

@@ -22,7 +22,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.kiwiproject.search.KiwiSearching;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.mongodb.core.MongoTemplate;
-import org.springframework.data.mongodb.core.SimpleMongoClientDbFactory;
+import org.springframework.data.mongodb.core.SimpleMongoClientDatabaseFactory;
 import org.springframework.data.mongodb.core.aggregation.Aggregation;
 import org.springframework.data.mongodb.core.aggregation.AggregationOperation;
 import org.springframework.data.mongodb.core.query.Criteria;
@@ -86,7 +86,7 @@ class PagingQueryRealMongoTest {
                 mongoUri, databaseName);
         LOG.info("Mongo connection string: {}", connectionString);
 
-        var dbFactory = new SimpleMongoClientDbFactory(connectionString);
+        var dbFactory = new SimpleMongoClientDatabaseFactory(connectionString);
         mongoTemplate = new MongoTemplate(dbFactory);
     }
 
