@@ -592,8 +592,11 @@ public class KiwiUrls {
     }
 
     /**
-     * Converts a Map of String of Strings into one (potentially long) string of key/value parameters (each key/value
-     * parameter is separated by an '=' character), with each parameter pair separated by an '&amp;' character.
+     * Converts a Map containing String keys and values into one (potentially long) string of key/value parameters
+     * (each key/value parameter is separated by an '=' character), with each parameter pair separated by an '&amp;'
+     * character.
+     * <p>
+     * Note specifically that this method does <strong>not</strong> URL encode the parameters.
      *
      * @param parameters the map of the parameters to create the query string from
      * @return a concatenated query string
