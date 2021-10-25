@@ -8,6 +8,7 @@ import static org.assertj.core.api.Assertions.catchThrowable;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
+import org.junit.jupiter.api.RepeatedTest;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
@@ -412,6 +413,13 @@ class KiwiUrlsTest {
                         entry("moveFailed", ".error"),
                         entry("readLock", "changed")
                 );
+    }
+
+    @RepeatedTest(10)
+    void testQueryStringToMap_OnlyReturnsOneValue_ForParametersWithMultipleValues() {
+        var parameters = KiwiUrls.queryStringToMap("topping=pepperoni&topping=banana+pepper&topping=sausage");
+
+        assertThat(parameters).containsExactly(entry("topping", "pepperoni"));
     }
 
     @Test

@@ -574,8 +574,16 @@ public class KiwiUrls {
     }
 
     /**
-     * Converts a query string (comprised of key/value pairs separated by '&amp;' characters) into a Map of String of
-     * Strings
+     * Converts a query string (comprised of key/value pairs separated by '&amp;' characters) into a Map whose keys
+     * are the parameter names and values are the parameter values.
+     * <p>
+     * Note specifically that this method does <strong>not</strong> decode the query string parameters. It splits on
+     * literal &amp; characters to obtain the key/value pairs and then on the literal {@code =} to get the name and
+     * value of each pair.
+     * <p>
+     * Also note that if a parameter has multiple values, only the <em>first</em> one is returned, e.g. the value of
+     * "topping" in the query string {@code topping=pepperoni&topping=banana+pepper&topping=sausage} will always be
+     * "pepperoni".
      *
      * @param queryString the query string to create the map from
      * @return a map of the query params
@@ -588,7 +596,7 @@ public class KiwiUrls {
 
         return Arrays.stream(queryString.split("&"))
                 .map(keyValue -> keyValue.split("="))
-                .collect(toMap(splat -> splat[0], splat -> splat[1]));
+                .collect(toMap(splat -> splat[0], splat -> splat[1], (value1, value2) -> value1));
     }
 
     /**
