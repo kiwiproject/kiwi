@@ -294,9 +294,9 @@ public class KiwiUrls {
     }
 
     /**
-     * Extract all of the relevant sections from the given {@code uri}.
+     * Extract all the relevant sections from the given {@code uri}.
      * <p>
-     * As an example, if given https://news.bbc.co.uk:8080/a-news-article" this would return the following:
+     * As an example, if given "https://news.bbc.co.uk:8080/a-news-article" this would return the following:
      * <ul>
      * <li>scheme = "https"</li>
      * <li>subDomainName = "news"</li>
@@ -496,7 +496,7 @@ public class KiwiUrls {
 
     /**
      * Searches the {@code commaDelimitedUrls} for its domains, and if found, replaces all entries with
-     * {@code replacmentDomain}. The {@code commaDelimitedUrls} can be a standalone URL.
+     * {@code replacementDomain}. The {@code commaDelimitedUrls} can be a standalone URL.
      *
      * @param commaDelimitedUrls the comma delimited URLs to search
      * @param replacementDomain  the domain to replace if found
@@ -534,7 +534,7 @@ public class KiwiUrls {
 
     /**
      * Replace {@code expectedDomain} in {@code url} with {@code replacementDomain} if and only if {@code url}'s domain
-     * is equal to {@code expectedDomain}. If the given {@code url} has no domain, or is not the expected domain, b
+     * is equal to {@code expectedDomain}. If the given {@code url} has no domain, or is not the expected domain, be
      * lenient and just return the original URL.
      */
     private static String replaceDomain(URL url, String expectedDomain, String replacementDomain) {
