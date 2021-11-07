@@ -13,6 +13,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
 import org.junit.jupiter.params.provider.ValueSource;
+import org.kiwiproject.collect.KiwiMaps;
 
 import java.net.MalformedURLException;
 import java.util.HashMap;
@@ -165,7 +166,7 @@ class KiwiUrlsTest {
     }
 
     @ParameterizedTest
-    @CsvSource(value={
+    @CsvSource(value = {
             "https://news.bbc.co.uk:8080/a-news-article/about-stuff, news.bbc.co.uk",
             "https://news.bbc.co.uk:8080/a-news-article, news.bbc.co.uk",
             "https://news.bbc.co.uk/a-news-article, news.bbc.co.uk",
@@ -325,7 +326,7 @@ class KiwiUrlsTest {
             "http://localhost",
     })
     void testReplaceDomainIn_WithoutDomain_ReturnTheOriginalUrl(String url) {
-        assertThat(KiwiUrls.replaceDomainsIn(url,"new.domain.net")).isEqualTo(url);
+        assertThat(KiwiUrls.replaceDomainsIn(url, "new.domain.net")).isEqualTo(url);
     }
 
     @Test
@@ -422,25 +423,45 @@ class KiwiUrlsTest {
         assertThat(parameters).containsExactly(entry("topping", "pepperoni"));
     }
 
-    @Test
-    void testToQueryString_WhenNullProperties() {
-        assertThat(KiwiUrls.toQueryString(null)).isEmpty();
+    @Nested
+    class ToQueryString {
+
+        @Test
+        void shouldReturnEmptyString_WhenNullParameters() {
+            assertThat(KiwiUrls.toQueryString(null)).isEmpty();
+        }
+
+        @Test
+        void shouldReturnEmptyString_WhenEmptyParameters() {
+            assertThat(KiwiUrls.toQueryString(new HashMap<>())).isEmpty();
+        }
+
+        @Test
+        void shouldConvertSingleEntryMap() {
+            assertThat(KiwiUrls.toQueryString(Map.of("noop", "true"))).isEqualTo("noop=true");
+        }
+
+        @Test
+        void shouldConvertMapWithMultipleEntries() {
+            assertThat(KiwiUrls.toQueryString(Map.of("noop", "true", "readLock", "changed")).split("&"))
+                    .hasSize(2)
+                    .containsOnly("noop=true", "readLock=changed");
+        }
+
+        @Test
+        void shouldConvertNullValuesToStringLiteralNull() {
+            var queryString = KiwiUrls.toQueryString(KiwiMaps.newHashMap("key1", null, "key2", null, "key3", "value3"));
+            assertThat(queryString.split("&"))
+                    .containsOnlyOnce("key1=null", "key2=null", "key3=value3");
+        }
+
+        @Test
+        void shouldConvertValuesToStrings() {
+            var params = Map.of("key1", "value1", "key2", 42, "key3", 84.0, "key4", true, "key5", 'g');
+            var queryString = KiwiUrls.toQueryString(params);
+            assertThat(queryString.split("&"))
+                    .containsOnlyOnce("key1=value1", "key2=42", "key3=84.0", "key4=true", "key5=g");
+        }
     }
 
-    @Test
-    void testToQueryString_WhenEmptyProperties() {
-        assertThat(KiwiUrls.toQueryString(new HashMap<>())).isEmpty();
-    }
-
-    @Test
-    void testToQueryString_WhenOneProperty() {
-        assertThat(KiwiUrls.toQueryString(Map.of("noop", "true"))).isEqualTo("noop=true");
-    }
-
-    @Test
-    void testToQueryString_WhenMultipleProperties() {
-        assertThat(KiwiUrls.toQueryString(Map.of("noop", "true", "readLock", "changed")).split("&"))
-                .hasSize(2)
-                .containsOnly("noop=true", "readLock=changed");
-    }
 }
