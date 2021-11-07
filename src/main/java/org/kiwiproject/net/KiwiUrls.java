@@ -605,7 +605,7 @@ public class KiwiUrls {
     }
 
     /**
-     * Converts a Map containing String keys and values into one (potentially long) string of key/value parameters
+     * Converts a Map containing String keys and V values into one (potentially long) string of key/value parameters
      * (each key/value parameter is separated by an '=' character), with each parameter pair separated by an '&amp;'
      * character.
      * <p>
@@ -615,7 +615,7 @@ public class KiwiUrls {
      * @return a concatenated query string
      * @see #queryStringToMap(String) queryStringToMap(String) for the inverse operation
      */
-    public static String toQueryString(Map<String, String> parameters) {
+    public static <V> String toQueryString(Map<String, V> parameters) {
         if (isNullOrEmpty(parameters)) {
             return "";
         }
