@@ -1,26 +1,39 @@
 package org.kiwiproject.net;
 
 import static java.lang.String.format;
+import static java.nio.charset.StandardCharsets.UTF_8;
 import static java.util.Map.entry;
+import static java.util.stream.Collectors.toUnmodifiableSet;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.assertj.core.api.Assertions.catchThrowable;
 
+import lombok.extern.slf4j.Slf4j;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.RepeatedTest;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
+import org.junit.jupiter.params.provider.NullAndEmptySource;
 import org.junit.jupiter.params.provider.ValueSource;
+import org.kiwiproject.base.KiwiStrings;
 import org.kiwiproject.collect.KiwiMaps;
 
 import java.net.MalformedURLException;
+import java.net.URLEncoder;
+import java.nio.charset.Charset;
+import java.nio.charset.IllegalCharsetNameException;
+import java.nio.charset.UnsupportedCharsetException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 @DisplayName("KiwiUrls")
+@Slf4j
 class KiwiUrlsTest {
 
     private static final String BAD_URL = "this is not a URL";
@@ -461,6 +474,99 @@ class KiwiUrlsTest {
             var queryString = KiwiUrls.toQueryString(params);
             assertThat(queryString.split("&"))
                     .containsOnlyOnce("key1=value1", "key2=42", "key3=84.0", "key4=true", "key5=g");
+        }
+    }
+
+    @Nested
+    class ToEncodedQueryString {
+
+        private Map<String, Object> params;
+
+        @BeforeEach
+        void setUp() {
+            params = sampleParameters();
+        }
+
+        @Test
+        void shouldEncodeQueryParameters() {
+            var queryString = KiwiUrls.toEncodedQueryString(params);
+            assertEncodedQueryParameters(queryString, params);
+        }
+
+        @ParameterizedTest
+        @NullAndEmptySource
+        void shouldReturnEmptyString_WhenGivenNullOrEmptyParameters(Map<String, String> parameters) {
+            assertThat(KiwiUrls.toEncodedQueryString(parameters)).isEmpty();
+        }
+
+        @Test
+        void shouldEncodeQueryParameters_UsingGivenCharsetName() {
+            var queryString = KiwiUrls.toEncodedQueryString(params, UTF_8.name());
+            assertEncodedQueryParameters(queryString, params);
+        }
+
+        @ParameterizedTest
+        @NullAndEmptySource
+        void shouldNotAllowBlankCharsetName(String charsetName) {
+            assertThatIllegalArgumentException()
+                    .isThrownBy(() -> KiwiUrls.toEncodedQueryString(params, charsetName))
+                    .withMessage("charsetName must not be blank");
+        }
+
+        @Test
+        void shouldRequireLegalCharsetName() {
+            assertThatThrownBy(() -> KiwiUrls.toEncodedQueryString(params, "ILLEGAL CHARSET NAME"))
+                    .isExactlyInstanceOf(IllegalCharsetNameException.class);
+        }
+
+        @Test
+        void shouldRequireSupportedCharsetName() {
+            assertThatThrownBy(() -> KiwiUrls.toEncodedQueryString(params, "INVALID_CHARSET"))
+                    .isExactlyInstanceOf(UnsupportedCharsetException.class);
+        }
+
+        @Test
+        void shouldEncodeQueryParameters_UsingGivenCharset() {
+            var queryString = KiwiUrls.toEncodedQueryString(params, UTF_8);
+            assertEncodedQueryParameters(queryString, params);
+        }
+
+        @Test
+        void shouldNotAllowNullCharset() {
+            assertThatIllegalArgumentException()
+                    .isThrownBy(() -> KiwiUrls.toEncodedQueryString(params, (Charset) null))
+                    .withMessage("charset must not be null");
+        }
+
+        private Map<String, Object> sampleParameters() {
+            return Map.of(
+                    "key1", "value 1",
+                    "key 2", "value$2",
+                    "key3", "value%3",
+                    "key4", "value+4",
+                    "key5", "value_5",
+                    "key 6", "value!6",
+                    "key7", 42,
+                    "key8", 24.0,
+                    "key9", false,
+                    "key10", 'x'
+            );
+        }
+
+        private void assertEncodedQueryParameters(String encodedQueryString, Map<String, Object> params) {
+            var nameValuePairs = Set.copyOf(KiwiStrings.splitToList(encodedQueryString, '&'));
+
+            var expectedNameValuePairs = params.entrySet()
+                    .stream()
+                    .map(entry -> urlEncodeParameter(entry.getKey(), entry.getValue()))
+                    .peek(parameter -> LOG.debug("expect: {}", parameter))
+                    .collect(toUnmodifiableSet());
+
+            assertThat(nameValuePairs).isEqualTo(expectedNameValuePairs);
+        }
+
+        private String urlEncodeParameter(String name, Object value) {
+            return URLEncoder.encode(name, UTF_8) + "=" + URLEncoder.encode(String.valueOf(value), UTF_8);
         }
     }
 
