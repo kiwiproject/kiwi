@@ -6,6 +6,8 @@ import static java.util.stream.Collectors.joining;
 import static java.util.stream.Collectors.toList;
 import static java.util.stream.Collectors.toMap;
 import static org.apache.commons.lang3.StringUtils.isBlank;
+import static org.kiwiproject.base.KiwiPreconditions.checkArgumentNotBlank;
+import static org.kiwiproject.base.KiwiPreconditions.checkArgumentNotNull;
 import static org.kiwiproject.base.KiwiStrings.f;
 import static org.kiwiproject.collect.KiwiLists.first;
 import static org.kiwiproject.collect.KiwiMaps.isNullOrEmpty;
@@ -19,6 +21,9 @@ import org.apache.commons.lang3.StringUtils;
 import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URL;
+import java.net.URLEncoder;
+import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Paths;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -617,6 +622,60 @@ public class KiwiUrls {
 
         return parameters.entrySet().stream()
                 .map(entry -> entry.getKey() + "=" + entry.getValue())
+                .collect(joining("&"));
+    }
+
+    /**
+     * Converts a Map containing String keys and {@code V} values into a URL-encoded query string. Encodes the query
+     * string using {@link StandardCharsets#UTF_8} as the character set.
+     *
+     * @param parameters the map of the parameters to create the query string from
+     * @return a URL-encoded query string
+     * @see URLEncoder#encode(String, Charset)
+     */
+    public static <V> String toEncodedQueryString(Map<String, V> parameters) {
+        return toEncodedQueryString(parameters, StandardCharsets.UTF_8);
+    }
+
+    /**
+     * Converts a Map containing String keys and {@code V} values into a URL-encoded query string. Encodes the query
+     * string using the given charsetName, which must be a valid charsetName name. The {@link Charset#forName(String)} method is
+     * used to convert the given charsetName name to a {@link Charset}; see that class for the exceptions it throws when
+     * given illegal arguments.
+     *
+     * @param parameters  the map of the parameters to create the query string from
+     * @param charsetName the name of the {@link Charset} (must be valid via {@link Charset#forName(String)})
+     * @return a URL-encoded query string
+     * @see Charset#forName(String)
+     * @see URLEncoder#encode(String, Charset)
+     */
+    public static <V> String toEncodedQueryString(Map<String, V> parameters, String charsetName) {
+        checkArgumentNotBlank(charsetName, "charsetName must not be blank");
+        return toEncodedQueryString(parameters, Charset.forName(charsetName));
+    }
+
+    /**
+     * Converts a Map containing String keys and {@code V} values into a URL-encoded query string. Encodes the query
+     * string using the given {@link Charset}.
+     *
+     * @param parameters the map of the parameters to create the query string from
+     * @param charset    the {@link Charset} to use when encoding the parameters
+     * @return a URL-encoded query string
+     * @see URLEncoder#encode(String, Charset)
+     */
+    public static <V> String toEncodedQueryString(Map<String, V> parameters, Charset charset) {
+        checkArgumentNotNull(charset, "charset must not be null");
+
+        if (isNullOrEmpty(parameters)) {
+            return "";
+        }
+
+        return parameters.entrySet().stream()
+                .map(entry -> {
+                    var key = URLEncoder.encode(entry.getKey(), charset);
+                    var value = URLEncoder.encode(String.valueOf(entry.getValue()), charset);
+                    return key + "=" + value;
+                })
                 .collect(joining("&"));
     }
 
