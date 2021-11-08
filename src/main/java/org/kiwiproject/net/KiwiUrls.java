@@ -584,7 +584,9 @@ public class KiwiUrls {
      * <p>
      * Note specifically that this method does <strong>not</strong> decode the query string parameters. It splits on
      * literal &amp; characters to obtain the key/value pairs and then on the literal {@code =} to get the name and
-     * value of each pair.
+     * value of each pair. If a parameter doesn't contain any value, its values is set to an empty string. For example,
+     * in the query string {@code ?sorted&sortProp=}, both {@code sorted} and {@code sortProp} will have an empty
+     * string as their value in the returned map.
      * <p>
      * Also note that if a parameter has multiple values, only the <em>first</em> one is returned, e.g. the value of
      * "topping" in the query string {@code topping=pepperoni&topping=banana+pepper&topping=sausage} will always be
@@ -600,8 +602,25 @@ public class KiwiUrls {
         }
 
         return Arrays.stream(queryString.split("&"))
-                .map(keyValue -> keyValue.split("="))
+                .map(KiwiUrls::splitQueryParamNameValuePair)
                 .collect(toMap(splat -> splat[0], splat -> splat[1], (value1, value2) -> value1));
+    }
+
+    private static String[] splitQueryParamNameValuePair(String keyValue) {
+        var splat = keyValue.split("=");
+        var length = splat.length;
+
+        switch (length) {
+            case 1:
+                return new String[]{splat[0], ""};
+            case 2:
+                return splat;
+            default:
+                var value = Arrays.stream(splat)
+                        .skip(1)
+                        .collect(joining("="));
+                return new String[]{splat[0], value};
+        }
     }
 
     /**

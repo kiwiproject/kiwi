@@ -403,37 +403,69 @@ class KiwiUrlsTest {
         assertThat(KiwiUrls.stripTrailingSlash(originalUrl)).isEqualTo(strippedUrl);
     }
 
-    @Test
-    void testQueryStringToMap_WhenNullString() {
-        assertThat(KiwiUrls.queryStringToMap(null)).isEmpty();
-    }
+    @Nested
+    class QueryStringToMap {
 
-    @Test
-    void testQueryStringToMap_WhenEmptyString() {
-        assertThat(KiwiUrls.queryStringToMap("")).isEmpty();
-    }
+        @ParameterizedTest
+        @NullAndEmptySource
+        void shouldReturnEmptyMap_WhenNullOrEmptyString(String queryString) {
+            assertThat(KiwiUrls.queryStringToMap(queryString)).isEmpty();
+        }
 
-    @Test
-    void testQueryStringToMap_WhenOneUrlParameter() {
-        assertThat(KiwiUrls.queryStringToMap("noop=true")).containsExactly(entry("noop", "true"));
-    }
+        @Test
+        void shouldConvertToMap_WhenOnlyOneUrlParameter() {
+            assertThat(KiwiUrls.queryStringToMap("noop=true")).containsExactly(entry("noop", "true"));
+        }
 
-    @Test
-    void testQueryStringToMap_WhenMultipleUrlParameter() {
-        assertThat(KiwiUrls.queryStringToMap("autoCreate=false&move=.processed&moveFailed=.error&readLock=changed"))
-                .containsOnly(
-                        entry("autoCreate", "false"),
-                        entry("move", ".processed"),
-                        entry("moveFailed", ".error"),
-                        entry("readLock", "changed")
-                );
-    }
+        @Test
+        void shouldConvertToMap_WhenMultipleUrlParameter() {
+            assertThat(KiwiUrls.queryStringToMap("autoCreate=false&move=.processed&moveFailed=.error&readLock=changed"))
+                    .containsOnly(
+                            entry("autoCreate", "false"),
+                            entry("move", ".processed"),
+                            entry("moveFailed", ".error"),
+                            entry("readLock", "changed")
+                    );
+        }
 
-    @RepeatedTest(10)
-    void testQueryStringToMap_OnlyReturnsOneValue_ForParametersWithMultipleValues() {
-        var parameters = KiwiUrls.queryStringToMap("topping=pepperoni&topping=banana+pepper&topping=sausage");
+        @RepeatedTest(10)
+        void shouldOnlyReturnOneValue_ForParametersWithMultipleValues() {
+            var parameters = KiwiUrls.queryStringToMap("topping=pepperoni&topping=banana+pepper&topping=sausage");
 
-        assertThat(parameters).containsExactly(entry("topping", "pepperoni"));
+            assertThat(parameters).containsExactly(entry("topping", "pepperoni"));
+        }
+
+        @ParameterizedTest
+        @ValueSource(strings = {
+                "page=0&limit=25&primarySort=&secondarySort=&format",
+                "format&page=0&limit=25&primarySort=&secondarySort=",
+                "primarySort=&secondarySort=&page=0&limit=25&format",
+        })
+        void shouldHandleParametersWithNoValue_AsEmptyString(String queryString) {
+            var parameters = KiwiUrls.queryStringToMap(queryString);
+
+            assertThat(parameters).contains(
+                    entry("page", "0"),
+                    entry("limit", "25"),
+                    entry("primarySort", ""),
+                    entry("secondarySort", ""),
+                    entry("format", "")
+            );
+        }
+
+        @ParameterizedTest
+        @ValueSource(strings = {
+                "answer=42=question&equation=x+y=42",
+                "equation=x+y=42&answer=42=question",
+        })
+        void shouldHandleHavingEqualsAsPartOfParameterValue(String queryString) {
+            var parameters = KiwiUrls.queryStringToMap(queryString);
+
+            assertThat(parameters).contains(
+                    entry("answer", "42=question"),
+                    entry("equation", "x+y=42")
+            );
+        }
     }
 
     @Nested
