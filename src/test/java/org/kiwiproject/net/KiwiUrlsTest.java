@@ -2,12 +2,13 @@ package org.kiwiproject.net;
 
 import static java.lang.String.format;
 import static java.nio.charset.StandardCharsets.UTF_8;
-import static java.util.Map.entry;
 import static java.util.stream.Collectors.toUnmodifiableSet;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.assertj.core.api.Assertions.catchThrowable;
+import static org.assertj.guava.api.Assertions.assertThat;
+import static org.assertj.guava.api.Assertions.entry;
 
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.BeforeEach;
@@ -464,6 +465,90 @@ class KiwiUrlsTest {
             assertThat(parameters).contains(
                     entry("answer", "42=question"),
                     entry("equation", "x+y=42")
+            );
+        }
+    }
+
+    @Nested
+    class QueryStringToMultimap {
+
+        @ParameterizedTest
+        @NullAndEmptySource
+        void shouldReturnEmptyMultimap_WhenGivenNullOrEmptyString(String queryString) {
+            var parameters = KiwiUrls.queryStringToMultimap(queryString);
+            assertThat(parameters).isEmpty();
+        }
+
+        @Test
+        void shouldGroupParametersHavingSameNameTogether() {
+            var queryString = "size=14&crust=thin&topping=pepperoni&topping=banana+pepper&topping=sausage";
+            var parameters = KiwiUrls.queryStringToMultimap(queryString);
+
+            assertThat(parameters)
+                    .hasSize(5)
+                    .contains(
+                            entry("size", "14"),
+                            entry("crust", "thin"),
+                            entry("topping", "pepperoni"),
+                            entry("topping", "banana+pepper"),
+                            entry("topping", "sausage")
+                    );
+        }
+
+        @Test
+        void shouldHandleParametersWithNoValue() {
+            var queryString = "size=14&crust=deep&topping1=&topping2=&topping3=&delivery";
+
+            var parameters = KiwiUrls.queryStringToMultimap(queryString);
+
+            assertThat(parameters)
+                    .hasSize(6)
+                    .contains(
+                            entry("size", "14"),
+                            entry("crust", "deep"),
+                            entry("topping1", ""),
+                            entry("topping2", ""),
+                            entry("topping3", ""),
+                            entry("delivery", "")
+                    );
+        }
+    }
+
+    @Nested
+    class QueryStringToMultivaluedMap {
+
+        @ParameterizedTest
+        @NullAndEmptySource
+        void shouldReturnEmptyMap_WhenGivenNullOrEmptyString(String queryString) {
+            var parameters = KiwiUrls.queryStringToMultivaluedMap(queryString);
+            assertThat(parameters).isEmpty();
+        }
+
+        @Test
+        void shouldGroupParametersHavingSameNameTogether() {
+            var queryString = "size=10&crust=cheesy&topping=pepperoni&topping=onion&topping=green+pepper";
+            var parameters = KiwiUrls.queryStringToMultivaluedMap(queryString);
+
+            assertThat(parameters).containsOnly(
+                    entry("size", List.of("10")),
+                    entry("crust", List.of("cheesy")),
+                    entry("topping", List.of("pepperoni", "onion", "green+pepper"))
+            );
+        }
+
+        @Test
+        void shouldHandleParametersWithNoValue() {
+            var queryString = "size=14&crust=stuffed&topping1=&topping2=&topping3=&pickup";
+
+            var parameters = KiwiUrls.queryStringToMultivaluedMap(queryString);
+
+            assertThat(parameters).containsOnly(
+                    entry("size", List.of("14")),
+                    entry("crust", List.of("stuffed")),
+                    entry("topping1", List.of("")),
+                    entry("topping2", List.of("")),
+                    entry("topping3", List.of("")),
+                    entry("pickup", List.of(""))
             );
         }
     }

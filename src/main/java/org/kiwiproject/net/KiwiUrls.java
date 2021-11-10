@@ -13,6 +13,9 @@ import static org.kiwiproject.collect.KiwiLists.first;
 import static org.kiwiproject.collect.KiwiMaps.isNullOrEmpty;
 
 import com.google.common.base.Splitter;
+import com.google.common.collect.ListMultimap;
+import com.google.common.collect.Multimap;
+import com.google.common.collect.MultimapBuilder;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.experimental.UtilityClass;
@@ -25,13 +28,16 @@ import java.net.URLEncoder;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Paths;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.OptionalInt;
+import java.util.function.Supplier;
 import java.util.regex.Pattern;
+import java.util.stream.Collector;
 
 /**
  * Static utilities for creating URLs
@@ -604,6 +610,104 @@ public class KiwiUrls {
         return Arrays.stream(queryString.split("&"))
                 .map(KiwiUrls::splitQueryParamNameValuePair)
                 .collect(toMap(splat -> splat[0], splat -> splat[1], (value1, value2) -> value1));
+    }
+
+    /**
+     * Converts a query string into a Guava {@link Multimap} whose keys are the parameter names and values are lists
+     * containing one or more values. Use this method (or {@link #queryStringToMultivaluedMap(String)}) when
+     * parameters can have multiple values.
+     * <p>
+     * Like {@link #queryStringToMap(String)} this method does <strong>not</strong> decode the query parameters, and
+     * it properly handles parameters with no value.
+     * <p>
+     * If a parameter has multiple values, they are grouped under the parameter name in the Multimap. For example, given
+     * the query string {@code topping=pepperoni&topping=banana+pepper&topping=sausage}, calling
+     * {@code multimap.get("topping")} will return a {@link java.util.Collection Collection} of strings containing
+     * "pepperoni", "banana+pepper", and "sausage".
+     *
+     * @param queryString the query string to create the Multimap from
+     * @return a Multimap of the query parameters
+     * @see #queryStringToMultivaluedMap(String)
+     */
+    public static Multimap<String, String> queryStringToMultimap(String queryString) {
+        if (isBlank(queryString)) {
+            return newMultimap();
+        }
+
+        return Arrays.stream(queryString.split("&"))
+                .map(KiwiUrls::splitQueryParamNameValuePair)
+                .collect(toMultimap(KiwiUrls::newMultimap));
+    }
+
+    private static ListMultimap<String, String> newMultimap() {
+        return MultimapBuilder.hashKeys().arrayListValues().build();
+    }
+
+    /**
+     * Create a {@link Collector} that collects from a stream of {@code String[]} to a {@link Multimap}.
+     *
+     * @param supplier supplier that will create a new Multimap
+     * @param <A>      the type of Multimap
+     * @return new Collector instance
+     */
+    private static <A extends Multimap<String, String>> Collector<String[], A, A> toMultimap(Supplier<A> supplier) {
+        return Collector.of(
+                supplier,
+                (accumulator, array) -> accumulator.put(array[0], array[1]),
+                (map1, map2) -> {
+                    map1.putAll(map2);
+                    return map1;
+                });
+    }
+
+    /**
+     * Converts a query string into a {@link Map} whose keys are the parameter names and values are {@link List}
+     * containing one or more values. Use this (or {@link #queryStringToMultimap(String)} when parameters can have
+     * multiple values.
+     * <p>
+     * Like {@link #queryStringToMap(String)} this method does <strong>not</strong> decode the query parameters, and
+     * it properly handles parameters with no value.
+     * <p>
+     * If a parameter has multiple values, they are grouped under the parameter name. For example, given the query
+     * string {@code topping=onion&topping=mushroom&topping=extra+cheese&topping=fresh+basil}, calling
+     * {@code map.get("topping")} will return a {@link List} of strings containing "onion", "mushroom", "extra+cheese",
+     * and "fresh+basil".
+     *
+     * @param queryString the query string to create the Multimap from
+     * @return a Map of the query parameters
+     * @see #queryStringToMultimap(String)
+     */
+    public static Map<String, List<String>> queryStringToMultivaluedMap(String queryString) {
+        if (isBlank(queryString)) {
+            return new HashMap<>();
+        }
+
+        return Arrays.stream(queryString.split("&"))
+                .map(KiwiUrls::splitQueryParamNameValuePair)
+                .collect(toMultivaluedMap(HashMap::new));
+    }
+
+    /**
+     * Create a {@link Collector} that collects from a stream of {@code String[]} to a {@link Map} of String to
+     * {@link List} of String.
+     *
+     * @param supplier supplier that will create a new Map
+     * @param <A>      the type of Map
+     * @return new Collector instance
+     */
+    private static <A extends Map<String, List<String>>> Collector<String[], A, A> toMultivaluedMap(Supplier<A> supplier) {
+        return Collector.of(
+                supplier,
+                (accumulator, array) -> {
+                    var key = array[0];
+                    var newValue = array[1];
+                    accumulator.computeIfAbsent(key, k -> new ArrayList<>()).add(newValue);
+                },
+                (map1, map2) -> {
+                    map1.putAll(map2);
+                    return map1;
+                }
+        );
     }
 
     private static String[] splitQueryParamNameValuePair(String keyValue) {
