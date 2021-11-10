@@ -612,6 +612,12 @@
             <artifactId>assertj-guava</artifactId>
             <version>${assertj-guava.version}</version>
             <scope>test</scope>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.assertj</groupId>
+                    <artifactId>assertj-core</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
 
         <dependency>
