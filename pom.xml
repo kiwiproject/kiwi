@@ -55,7 +55,7 @@
         <metrics-jetty9.version>4.1.25</metrics-jetty9.version>
         <postgresql.version>42.2.23</postgresql.version>
         <retrying-again.version>1.0.1</retrying-again.version>
-        <spring.version>5.3.9</spring.version>
+        <spring.version>5.3.13</spring.version>
         <spring-data-mongodb.version>2.2.13.RELEASE</spring-data-mongodb.version>
         <stax2-api.version>4.2.1</stax2-api.version>
         <stax-ex.version>1.8.3</stax-ex.version>
