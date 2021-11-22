@@ -49,7 +49,7 @@ class InternalKiwiValidators {
      * @param value        the value being validated, and which defines the conversion type
      * @return a {@link Comparable} of the same type as {@code value}, or {@code null} if {@code compareValue} is
      * blank or {@code value} is {@code null}
-     * @implNote This is non-ideal with the massive if/else if/else, but since we have to check each type we
+     * @implNote This is non-ideal with the massive if/else, but since we have to check each type we
      * support, I cannot think of a "better" or "cleaner" way to do this without it becoming so abstract that
      * it becomes unreadable. Interestingly, neither IntelliJ not Sonar is complaining...maybe we don't have the
      * appropriate rules enabled. Suggestions for improvement welcome!
