@@ -735,6 +735,7 @@ public class KiwiUrls {
      * Note specifically that this method does <strong>not</strong> URL encode the parameters.
      *
      * @param parameters the map of the parameters to create the query string from
+     * @param <V>        the type of values in the parameters map
      * @return a concatenated query string
      * @see #queryStringToMap(String) queryStringToMap(String) for the inverse operation
      */
@@ -753,6 +754,7 @@ public class KiwiUrls {
      * string using {@link StandardCharsets#UTF_8} as the character set.
      *
      * @param parameters the map of the parameters to create the query string from
+     * @param <V>        the type of values in the parameters map
      * @return a URL-encoded query string
      * @see URLEncoder#encode(String, Charset)
      */
@@ -768,6 +770,7 @@ public class KiwiUrls {
      *
      * @param parameters  the map of the parameters to create the query string from
      * @param charsetName the name of the {@link Charset} (must be valid via {@link Charset#forName(String)})
+     * @param <V>         the type of values in the parameters map
      * @return a URL-encoded query string
      * @see Charset#forName(String)
      * @see URLEncoder#encode(String, Charset)
@@ -783,6 +786,7 @@ public class KiwiUrls {
      *
      * @param parameters the map of the parameters to create the query string from
      * @param charset    the {@link Charset} to use when encoding the parameters
+     * @param <V>        the type of values in the parameters map
      * @return a URL-encoded query string
      * @see URLEncoder#encode(String, Charset)
      */
