@@ -84,7 +84,7 @@
         <jdbi3.version>3.21.0</jdbi3.version>
         <jersey-test-framework-core.version>2.33</jersey-test-framework-core.version>
         <liquibase.version>3.10.3</liquibase.version>
-        <mongo-java-server.version>1.38.0</mongo-java-server.version>
+        <mongo-java-server.version>1.39.0</mongo-java-server.version>
 
         <!-- Sonar properties -->
         <sonar.projectKey>kiwiproject_kiwi</sonar.projectKey>
