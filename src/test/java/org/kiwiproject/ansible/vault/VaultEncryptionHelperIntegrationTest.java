@@ -6,7 +6,9 @@ import static org.junit.jupiter.api.Assumptions.assumeTrue;
 import static org.junit.jupiter.api.condition.OS.LINUX;
 import static org.junit.jupiter.api.condition.OS.MAC;
 import static org.kiwiproject.collect.KiwiLists.first;
+import static org.kiwiproject.collect.KiwiLists.firstIfPresent;
 
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.SystemUtils;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
@@ -17,7 +19,9 @@ import org.junit.jupiter.api.condition.EnabledOnOs;
 import org.junit.jupiter.api.io.TempDir;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
+import org.kiwiproject.base.process.Processes;
 import org.kiwiproject.internal.Fixtures;
+import org.kiwiproject.io.KiwiIO;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
@@ -27,17 +31,23 @@ import java.util.Optional;
 
 /**
  * This test only runs on Linux or macOS, and only then if ansible-vault is actually installed
- * in one of the expected locations.
+ * in one of the expected locations or was found on the path.
  */
 @DisplayName("VaultEncryptionHelper (Integration Test)")
 @EnabledOnOs({LINUX, MAC})
+@Slf4j
 class VaultEncryptionHelperIntegrationTest {
 
+    private static final String ANSIBLE_VAULT_COMMAND = "ansible-vault";
+
     // Location expected on macOS; assuming installed via Homebrew
-    private static final String MACOS_HOMEBREW_ANSIBLE_PATH = "/usr/local/bin/ansible-vault";
+    private static final String MACOS_HOMEBREW_ANSIBLE_PATH = "/usr/local/bin/" + ANSIBLE_VAULT_COMMAND;
 
     // Location expected on Linux; expected installed via yum, apt-get, etc.
-    private static final String LINUX_ANSIBLE_PATH = "/usr/bin/ansible-vault";
+    private static final String LINUX_ANSIBLE_PATH = "/usr/bin/" + ANSIBLE_VAULT_COMMAND;
+
+    // Dummy path; will cause JUnit assumption to be false
+    private static final String DUMMY_ANSIBLE_PATH = "/dummy/" + ANSIBLE_VAULT_COMMAND;
 
     private static final String PASSWORD = "password100";
 
@@ -55,17 +65,34 @@ class VaultEncryptionHelperIntegrationTest {
 
     @BeforeAll
     static void beforeAll() {
-        ansibleVaultFile = pathOfAnsibleVault().orElse("/dummy/ansible-vault");
-        assumeTrue(Files.exists(Path.of(ansibleVaultFile)), "ansible-vault not found");
+        ansibleVaultFile = pathOfAnsibleVault().orElse(DUMMY_ANSIBLE_PATH);
+        assumeTrue(Files.exists(Path.of(ansibleVaultFile)), () -> ANSIBLE_VAULT_COMMAND + " not found");
     }
 
     private static Optional<String> pathOfAnsibleVault() {
+        var vaultPath = findAnsibleVaultCommand();
+
+        if (vaultPath.isPresent()) {
+            return vaultPath;
+        }
+
         if (SystemUtils.IS_OS_MAC) {
             return Optional.of(MACOS_HOMEBREW_ANSIBLE_PATH);
         } else if (SystemUtils.IS_OS_LINUX) {
             return Optional.of(LINUX_ANSIBLE_PATH);
         }
         return Optional.empty();
+    }
+
+    private static Optional<String> findAnsibleVaultCommand() {
+        try {
+            var proc = Processes.launch("which", ANSIBLE_VAULT_COMMAND);
+            var stdOutLines = KiwiIO.readLinesFromInputStreamOf(proc);
+            return firstIfPresent(stdOutLines);
+        } catch (Exception e) {
+            LOG.warn("There was an error executing the 'which {}' command", ANSIBLE_VAULT_COMMAND, e);
+            return Optional.empty();
+        }
     }
 
     @BeforeEach
