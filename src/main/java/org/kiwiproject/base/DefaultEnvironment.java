@@ -124,6 +124,21 @@ public class DefaultEnvironment implements KiwiEnvironment {
         return System.nanoTime();
     }
 
+    @Override
+    public long currentPid() {
+        return ProcessHandle.current().pid();
+    }
+
+    @Override
+    public Optional<Long> tryGetCurrentPid() {
+        try {
+            return Optional.of(currentPid());
+        } catch (Exception e) {
+            LOG.trace("Unable to get current process ID", e);
+            return Optional.empty();
+        }
+    }
+
     /**
      * {@inheritDoc}
      * <p>

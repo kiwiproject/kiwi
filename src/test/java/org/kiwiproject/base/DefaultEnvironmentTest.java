@@ -1,6 +1,8 @@
 package org.kiwiproject.base;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatCode;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.anyLong;
@@ -10,6 +12,7 @@ import static org.mockito.Mockito.verify;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.kiwiproject.collect.KiwiMaps;
 
@@ -193,6 +196,49 @@ class DefaultEnvironmentTest {
                 .as("Difference should be less than %d but was %d", delta, diff)
                 .isNotNegative()
                 .isLessThan(delta);
+    }
+
+    @Nested
+    class CurrentPid {
+
+        @Test
+        void shouldGetCurrentPid() {
+            assertThatCode(() -> env.currentPid()).doesNotThrowAnyException();
+        }
+
+        @Test
+        void shouldAllowUnsupportedExceptionsToEscape() {
+            var envSpy = spy(env);
+            var errorMessage = "this fake JVM doesn't support getting the current pid for some reason";
+            doThrow(new UnsupportedOperationException(errorMessage))
+                    .when(envSpy)
+                    .currentPid();
+
+            assertThatThrownBy(envSpy::currentPid)
+                    .isExactlyInstanceOf(UnsupportedOperationException.class)
+                    .hasMessage(errorMessage);
+        }
+    }
+
+    @Nested
+    class TryGetCurrentPid {
+
+        @Test
+        void shouldReturnOptionalContainingPid() {
+            var optionalPid = env.tryGetCurrentPid();
+            assertThat(optionalPid).isPresent();
+        }
+
+        @Test
+        void shouldReturnEmptyOptional_WhenCurrentPidCannotBeObtained() {
+            var envSpy = spy(env);
+            doThrow(new UnsupportedOperationException("this fake JVM doesn't support getting the current pid for some reason"))
+                    .when(envSpy)
+                    .currentPid();
+
+            var optionalPid = envSpy.tryGetCurrentPid();
+            assertThat(optionalPid).isEmpty();
+        }
     }
 
     @Test
