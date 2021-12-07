@@ -241,6 +241,7 @@ class DefaultEnvironmentTest {
         }
     }
 
+    @SuppressWarnings("removal")
     @Test
     void testCurrentProcessId() {
         String pid = env.currentProcessId();
@@ -253,6 +254,7 @@ class DefaultEnvironmentTest {
         Integer.parseInt(pid);
     }
 
+    @SuppressWarnings("removal")
     @Test
     void testTryGetCurrentProcessId() {
         Optional<Integer> optionalPid = env.tryGetCurrentProcessId();
@@ -261,6 +263,7 @@ class DefaultEnvironmentTest {
                 .hasValueSatisfying(value -> assertThat(value).isNotNegative());
     }
 
+    @SuppressWarnings("removal")
     @Test
     void testTryGetCurrentProcessId_WhenExceptionThrown() {
         var envSpy = spy(env);
