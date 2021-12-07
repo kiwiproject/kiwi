@@ -149,7 +149,8 @@ public class DefaultEnvironment implements KiwiEnvironment {
      */
     @Override
     @Deprecated(since = "1.1.0", forRemoval = true)
-    @KiwiDeprecated(since = "1.1.0", removeAt = "2.0.0", replacedBy = "currentPid()", reference = "https://github.com/kiwiproject/kiwi/issues/642")
+    @KiwiDeprecated(since = "1.1.0", removeAt = "2.0.0", replacedBy = "currentPid()",
+            reference = "https://github.com/kiwiproject/kiwi/issues/642")
     public String currentProcessId() {
         return ManagementFactory.getRuntimeMXBean().getName().split("@")[0];
     }
@@ -161,7 +162,8 @@ public class DefaultEnvironment implements KiwiEnvironment {
      */
     @Override
     @Deprecated(since = "1.1.0", forRemoval = true)
-    @KiwiDeprecated(since = "1.1.0", removeAt = "2.0.0", replacedBy = "tryGetCurrentPid()", reference = "https://github.com/kiwiproject/kiwi/issues/642")
+    @KiwiDeprecated(since = "1.1.0", removeAt = "2.0.0", replacedBy = "tryGetCurrentPid()",
+            reference = "https://github.com/kiwiproject/kiwi/issues/642")
     public Optional<Integer> tryGetCurrentProcessId() {
         try {
             String value = currentProcessId();

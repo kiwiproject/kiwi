@@ -193,7 +193,8 @@ public interface KiwiEnvironment {
      * @deprecated replaced by {@link #currentPid()}
      */
     @Deprecated(since = "1.1.0", forRemoval = true)
-    @KiwiDeprecated(since = "1.1.0", removeAt = "2.0.0", replacedBy = "currentPid()", reference = "https://github.com/kiwiproject/kiwi/issues/642")
+    @KiwiDeprecated(since = "1.1.0", removeAt = "2.0.0", replacedBy = "currentPid()",
+            reference = "https://github.com/kiwiproject/kiwi/issues/642")
     String currentProcessId();
 
     /**
@@ -204,7 +205,8 @@ public interface KiwiEnvironment {
      * @deprecated replaced by {@link #tryGetCurrentPid()}
      */
     @Deprecated(since = "1.1.0", forRemoval = true)
-    @KiwiDeprecated(since = "1.1.0", removeAt = "2.0.0", replacedBy = "tryGetCurrentPid()", reference = "https://github.com/kiwiproject/kiwi/issues/642")
+    @KiwiDeprecated(since = "1.1.0", removeAt = "2.0.0", replacedBy = "tryGetCurrentPid()",
+            reference = "https://github.com/kiwiproject/kiwi/issues/642")
     Optional<Integer> tryGetCurrentProcessId();
 
     /**
