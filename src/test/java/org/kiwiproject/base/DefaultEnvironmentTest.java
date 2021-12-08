@@ -267,7 +267,7 @@ class DefaultEnvironmentTest {
     @Test
     void testTryGetCurrentProcessId_WhenExceptionThrown() {
         var envSpy = spy(env);
-        doThrow(new IllegalArgumentException())
+        doThrow(new UnsupportedOperationException("no pid for you!"))
                 .when(envSpy)
                 .currentProcessId();
 

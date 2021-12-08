@@ -2,7 +2,6 @@ package org.kiwiproject.base;
 
 import lombok.extern.slf4j.Slf4j;
 
-import java.lang.management.ManagementFactory;
 import java.sql.Time;
 import java.sql.Timestamp;
 import java.time.Clock;
@@ -142,9 +141,6 @@ public class DefaultEnvironment implements KiwiEnvironment {
 
     /**
      * {@inheritDoc}
-     * <p>
-     * This default implementation uses the JMX {@link ManagementFactory#getRuntimeMXBean()} to get the process
-     * information in the form {@code pid@hostname}. It then simply splits the string and returns the {@code pid}.
      *
      * @deprecated replaced by {@link #currentPid()}
      */
@@ -153,7 +149,7 @@ public class DefaultEnvironment implements KiwiEnvironment {
     @KiwiDeprecated(since = "1.1.0", removeAt = "2.0.0", replacedBy = "currentPid()",
             reference = "https://github.com/kiwiproject/kiwi/issues/642")
     public String currentProcessId() {
-        return ManagementFactory.getRuntimeMXBean().getName().split("@")[0];
+        return String.valueOf(currentPid());
     }
 
     /**
