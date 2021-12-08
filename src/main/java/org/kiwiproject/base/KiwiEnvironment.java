@@ -190,7 +190,11 @@ public interface KiwiEnvironment {
      * @return process ID
      * @apiNote Originally defined to return a string due to the implementation using {@link ManagementFactory#getRuntimeMXBean()}
      * to get the process information in the form {@code pid@hostname}
+     * @deprecated replaced by {@link #currentPid()}
      */
+    @Deprecated(since = "1.1.0", forRemoval = true)
+    @KiwiDeprecated(since = "1.1.0", removeAt = "2.0.0", replacedBy = "currentPid()",
+            reference = "https://github.com/kiwiproject/kiwi/issues/642")
     String currentProcessId();
 
     /**
@@ -198,7 +202,11 @@ public interface KiwiEnvironment {
      * empty optional is returned.
      *
      * @return am optional containing the process ID, or empty if <em>any</em> problem occurred
+     * @deprecated replaced by {@link #tryGetCurrentPid()}
      */
+    @Deprecated(since = "1.1.0", forRemoval = true)
+    @KiwiDeprecated(since = "1.1.0", removeAt = "2.0.0", replacedBy = "tryGetCurrentPid()",
+            reference = "https://github.com/kiwiproject/kiwi/issues/642")
     Optional<Integer> tryGetCurrentProcessId();
 
     /**
