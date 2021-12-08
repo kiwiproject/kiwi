@@ -13,6 +13,7 @@ import java.time.ZonedDateTime;
 import java.util.Date;
 import java.util.Map;
 import java.util.Optional;
+import java.util.OptionalLong;
 import java.util.Properties;
 import java.util.concurrent.TimeUnit;
 
@@ -180,7 +181,7 @@ public interface KiwiEnvironment {
      * @see ProcessHandle#current()
      * @see ProcessHandle#pid()
      */
-    Optional<Long> tryGetCurrentPid();
+    OptionalLong tryGetCurrentPid();
 
     /**
      * Returns the process ID of the currently executing JVM. This method does not perform any error checking. Use
