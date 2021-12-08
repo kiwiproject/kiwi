@@ -16,6 +16,7 @@ import java.time.ZonedDateTime;
 import java.util.Date;
 import java.util.Map;
 import java.util.Optional;
+import java.util.OptionalLong;
 import java.util.Properties;
 import java.util.concurrent.TimeUnit;
 
@@ -130,12 +131,12 @@ public class DefaultEnvironment implements KiwiEnvironment {
     }
 
     @Override
-    public Optional<Long> tryGetCurrentPid() {
+    public OptionalLong tryGetCurrentPid() {
         try {
-            return Optional.of(currentPid());
+            return OptionalLong.of(currentPid());
         } catch (Exception e) {
             LOG.trace("Unable to get current process ID", e);
-            return Optional.empty();
+            return OptionalLong.empty();
         }
     }
 
