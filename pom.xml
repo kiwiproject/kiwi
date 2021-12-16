@@ -36,7 +36,7 @@
         <!-- Versions for provided dependencies -->
         <commons-io.version>2.11.0</commons-io.version>
         <commons-text.version>1.9</commons-text.version>
-        <dropwizard.version>2.0.25</dropwizard.version>
+        <dropwizard.version>2.0.27</dropwizard.version>
         <FastInfoset.version>1.2.18</FastInfoset.version>
         <hibernate.version>5.5.7.Final</hibernate.version>
         <hibernate-validator.version>6.1.7.Final</hibernate-validator.version>
