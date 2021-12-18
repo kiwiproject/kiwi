@@ -28,9 +28,11 @@
     </scm>
 
     <properties>
+        <!-- Versions for required dependencies -->
+        <kiwi-bom.version>0.1.0</kiwi-bom.version>
 
         <!-- Versions for provided dependencies -->
-        <retrying-again.version>1.0.2-SNAPSHOT</retrying-again.version>
+        <retrying-again.version>1.0.2</retrying-again.version>
 
         <!-- Sonar properties -->
         <sonar.projectKey>kiwiproject_kiwi</sonar.projectKey>
@@ -43,7 +45,7 @@
             <dependency>
                 <groupId>org.kiwiproject</groupId>
                 <artifactId>kiwi-bom</artifactId>
-                <version>0.1.0-SNAPSHOT</version>
+                <version>${kiwi-bom.version}</version>
                 <type>pom</type>
                 <scope>import</scope>
             </dependency>
