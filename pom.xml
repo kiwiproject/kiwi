@@ -58,7 +58,7 @@
         NOTES:
         1. All non-test dependencies have 'provided' scope such that we won't always
            bring in every single transitive dependency.
-        3. Because most third party dependencies are provided, you will need to add them to your
+        2. Because most third party dependencies are provided, you will need to add them to your
            own project depending on which parts of Kiwi you're using.
         -->
 
