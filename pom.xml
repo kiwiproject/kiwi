@@ -29,10 +29,10 @@
 
     <properties>
         <!-- Versions for required dependencies -->
-        <kiwi-bom.version>0.4.0-SNAPSHOT</kiwi-bom.version>
+        <kiwi-bom.version>0.4.0</kiwi-bom.version>
 
         <!-- Versions for provided dependencies -->
-        <retrying-again.version>1.0.4-SNAPSHOT</retrying-again.version>
+        <retrying-again.version>1.0.4</retrying-again.version>
 
         <!-- Sonar properties -->
         <sonar.projectKey>kiwiproject_kiwi</sonar.projectKey>
