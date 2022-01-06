@@ -29,7 +29,7 @@
 
     <properties>
         <!-- Versions for required dependencies -->
-        <kiwi-bom.version>0.4.0</kiwi-bom.version>
+        <kiwi-bom.version>0.5.0</kiwi-bom.version>
 
         <!-- Versions for provided dependencies -->
         <retrying-again.version>1.0.4</retrying-again.version>
@@ -86,10 +86,24 @@
             <scope>provided</scope>
         </dependency>
 
+        <!-- TODO: Remove exclusion when next version of BOM includes jdbi3-core -->
         <dependency>
             <groupId>io.dropwizard</groupId>
             <artifactId>dropwizard-jdbi3</artifactId>
             <scope>provided</scope>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.jdbi</groupId>
+                    <artifactId>jdbi3-core</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+
+        <!-- TODO: Temporarily adding explicit jdbi3-core dependency until next version of BOM -->
+        <dependency>
+            <groupId>org.jdbi</groupId>
+            <artifactId>jdbi3-core</artifactId>
+            <version>3.26.1</version>
         </dependency>
 
         <dependency>
