@@ -8,14 +8,20 @@ import com.mongodb.MongoClient;
 import com.mongodb.MongoClientURI;
 import com.mongodb.client.MongoDatabase;
 import lombok.Getter;
+import org.kiwiproject.base.KiwiDeprecated;
 
 import java.io.Closeable;
 
 /**
  * A wrapper around a {@link MongoClient} that also provides {@link MongoDatabase} and {@link DB} instances
  * for a specific database, which is specified in the constructor.
+ *
+ * @deprecated with no replacement since we no longer support the older Mongo 3.x driver versions and our code must
+ * therefore use only the new Mongo APIs (i.e. {@code com.mongodb.DB} doesn't exist in the Mongo 4.x drivers).
  */
 @Beta
+@Deprecated(forRemoval = true, since = "1.2.1")
+@KiwiDeprecated(since = "1.2.1", removeAt = "2.0.0", reference = "https://github.com/kiwiproject/kiwi/issues/658")
 public class MongoClientWrapper implements Closeable {
 
     /**
@@ -40,7 +46,6 @@ public class MongoClientWrapper implements Closeable {
      * @param mongoUri     the Mongo connection URI
      * @param databaseName the database associated with this instance
      */
-    @SuppressWarnings("deprecation")
     public MongoClientWrapper(String mongoUri, String databaseName) {
         checkArgumentNotBlank(mongoUri, "mongoUri cannot be blank");
         checkArgumentNotBlank(databaseName, "databaseName cannot be blank");
