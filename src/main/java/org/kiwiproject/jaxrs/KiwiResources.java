@@ -375,10 +375,11 @@ public class KiwiResources {
      *
      * @param parameters    the parameters to check
      * @param parameterName name of the parameter which should be present
+     * @param <V>           the type of values in the map
      * @return the int value of the validated parameter
      * @throws JaxrsBadRequestException if the specified parameter is not present, or is not an integer
      */
-    public static int validateIntParameter(Map<String, Object> parameters, String parameterName) {
+    public static <V> int validateIntParameter(Map<String, V> parameters, String parameterName) {
         assertNotNull(parameterName, parameters);
 
         var value = parameters.get(parameterName);
@@ -397,10 +398,11 @@ public class KiwiResources {
      *
      * @param parameters    the parameters to check
      * @param parameterName name of the parameter which should be present
+     * @param <V>           the type of values in the map
      * @return the long value of the validated parameter
      * @throws JaxrsBadRequestException if the specified parameter is not present, or is not long
      */
-    public static long validateLongParameter(Map<String, Object> parameters, String parameterName) {
+    public static <V> long validateLongParameter(Map<String, V> parameters, String parameterName) {
         assertNotNull(parameterName, parameters);
 
         var value = parameters.get(parameterName);
