@@ -61,7 +61,7 @@ public class JaxrsNotFoundException extends JaxrsException {
     /**
      * Build a generic "not found" message using the given type and key.
      * <p>
-     * Format: [type] [key] wsa not found.
+     * Format: [type] [key] was not found.
      * <p>
      * Example: User 42 was not found.
      *

@@ -8,6 +8,7 @@ import com.google.common.primitives.Ints;
 import com.google.common.primitives.Longs;
 import lombok.experimental.UtilityClass;
 import lombok.extern.slf4j.Slf4j;
+import org.kiwiproject.base.KiwiStrings;
 import org.kiwiproject.jaxrs.exception.JaxrsBadRequestException;
 import org.kiwiproject.jaxrs.exception.JaxrsNotFoundException;
 
@@ -109,6 +110,24 @@ public class KiwiResources {
     }
 
     /**
+     * Verifies that {@code resourceEntity} is not null, otherwise throws {@link JaxrsNotFoundException}.
+     *
+     * @param resourceEntity          the resource entity to verify
+     * @param notFoundMessageTemplate template for the error message to include in the response entity; uses
+     *                                {@link KiwiStrings#format(String, Object...) KiwiStrings.format}
+     *                                to construct the message
+     * @param args                    the arguments to be substituted into the message template
+     * @param <T>                     the object type
+     * @throws JaxrsNotFoundException if the entity is null
+     */
+    public static <T> void verifyExistence(T resourceEntity, String notFoundMessageTemplate, Object... args) {
+        if (isNull(resourceEntity)) {
+            var message = f(notFoundMessageTemplate, args);
+            throw new JaxrsNotFoundException(message);
+        }
+    }
+
+    /**
      * Verifies that {@code resourceEntity} contains a value, otherwise throws {@link JaxrsNotFoundException}.
      *
      * @param resourceEntity  the resource entity to verify
@@ -119,6 +138,23 @@ public class KiwiResources {
      */
     public static <T> T verifyExistence(Optional<T> resourceEntity, String notFoundMessage) {
         verifyExistence(resourceEntity.orElse(null), notFoundMessage);
+
+        return resourceEntity.orElseThrow();
+    }
+
+    /**
+     * Verifies that {@code resourceEntity} contains a value, otherwise throws {@link JaxrsNotFoundException}.
+     *
+     * @param resourceEntity          the resource entity to verify
+     * @param notFoundMessageTemplate template for the error message to include in the response entity; uses
+     *                                {@link KiwiStrings#format(String, Object...) KiwiStrings.format}
+     *                                to construct the message
+     * @param args                    the arguments to be substituted into the message template
+     * @param <T>                     the object type
+     * @throws JaxrsNotFoundException if the entity is empty
+     */
+    public static <T> T verifyExistence(Optional<T> resourceEntity, String notFoundMessageTemplate, Object... args) {
+        verifyExistence(resourceEntity.orElse(null), notFoundMessageTemplate, args);
 
         return resourceEntity.orElseThrow();
     }
