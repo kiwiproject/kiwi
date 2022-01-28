@@ -5,6 +5,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatCode;
 import static org.assertj.core.api.Assertions.assertThatIllegalStateException;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.kiwiproject.base.KiwiStrings.f;
 import static org.kiwiproject.jaxrs.JaxrsTestHelper.assertCreatedResponseWithLocation;
 import static org.kiwiproject.jaxrs.JaxrsTestHelper.assertCustomHeaderFirstValue;
 import static org.kiwiproject.jaxrs.JaxrsTestHelper.assertOkResponse;
@@ -25,6 +26,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.kiwiproject.jaxrs.exception.ErrorMessage;
 import org.kiwiproject.jaxrs.exception.JaxrsBadRequestException;
 import org.kiwiproject.jaxrs.exception.JaxrsNotFoundException;
@@ -59,6 +61,8 @@ class KiwiResourcesTest {
     private static final Optional<MyEntity> ENTITY_OPTIONAL = Optional.of(ENTITY);
     private static final Optional<MyEntity> EMPTY_ENTITY_OPTIONAL = Optional.empty();
     private static final String ENTITY_NOT_FOUND_MESSAGE = "MyEntity not found";
+    private static final String ENTITY_NOT_FOUND_MESSAGE_TEMPLATE_1 = "MyEntity {} not found";
+    private static final String ENTITY_NOT_FOUND_MESSAGE_TEMPLATE_2 = "MyEntity %s not found";
 
     private static final JsonHelper JSON_HELPER = JsonHelper.newDropwizardJsonHelper();
 
@@ -161,6 +165,46 @@ class KiwiResourcesTest {
                 assertThatThrownBy(() -> KiwiResources.verifyExistence(EMPTY_ENTITY_OPTIONAL, ENTITY_NOT_FOUND_MESSAGE))
                         .isExactlyInstanceOf(JaxrsNotFoundException.class)
                         .hasMessage(ENTITY_NOT_FOUND_MESSAGE);
+            }
+        }
+
+        @Nested
+        class EntityAndNotFoundMessageTemplateWithArgs {
+
+            @Test
+            void shouldNotThrow_WhenEntityNotNull() {
+                assertThatCode(() -> KiwiResources.verifyExistence(ENTITY, ENTITY_NOT_FOUND_MESSAGE_TEMPLATE_1, 42))
+                        .doesNotThrowAnyException();
+            }
+
+            @ParameterizedTest
+            @ValueSource(strings = {
+                    ENTITY_NOT_FOUND_MESSAGE_TEMPLATE_1,
+                    ENTITY_NOT_FOUND_MESSAGE_TEMPLATE_2
+            })
+            void shouldThrow_WhenEntityIsNull(String template) {
+                var arg = 84;
+                assertThatThrownBy(() -> KiwiResources.verifyExistence(NULL_ENTITY, template, arg))
+                        .isExactlyInstanceOf(JaxrsNotFoundException.class)
+                        .hasMessage(f(template, arg));
+            }
+
+            @Test
+            void shouldNotThrow_WhenOptionalContainsValue() {
+                var verifiedEntity = KiwiResources.verifyExistence(ENTITY_OPTIONAL, ENTITY_NOT_FOUND_MESSAGE_TEMPLATE_1, 24);
+                assertThat(verifiedEntity).isSameAs(ENTITY);
+            }
+
+            @ParameterizedTest
+            @ValueSource(strings = {
+                    ENTITY_NOT_FOUND_MESSAGE_TEMPLATE_1,
+                    ENTITY_NOT_FOUND_MESSAGE_TEMPLATE_2
+            })
+            void shouldThrow_WhenOptionalIsEmpty(String template) {
+                var arg = 126;
+                assertThatThrownBy(() -> KiwiResources.verifyExistence(EMPTY_ENTITY_OPTIONAL, template, arg))
+                        .isExactlyInstanceOf(JaxrsNotFoundException.class)
+                        .hasMessage(f(template, arg));
             }
         }
     }
