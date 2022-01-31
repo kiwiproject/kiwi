@@ -44,6 +44,7 @@ import javax.ws.rs.core.MultivaluedHashMap;
 import javax.ws.rs.core.Response;
 import java.io.IOException;
 import java.io.InputStream;
+import java.math.BigInteger;
 import java.net.URI;
 import java.nio.charset.StandardCharsets;
 import java.util.Map;
@@ -494,28 +495,29 @@ class KiwiResourcesTest {
 
         @ParameterizedTest
         @MethodSource("org.kiwiproject.jaxrs.KiwiResourcesTest#validIntParameterMaps")
-        void shouldReturnTheValue_WhenIsOrCanBecomeAnInt(Map<String, Object> parameters) {
+        <V> void shouldReturnTheValue_WhenIsOrCanBecomeAnInt(Map<String, V> parameters) {
             assertThat(KiwiResources.validateIntParameter(parameters, "id"))
                     .isEqualTo(42);
         }
 
         @ParameterizedTest
         @MethodSource("org.kiwiproject.jaxrs.KiwiResourcesTest#invalidIntParameterMaps")
-        void shouldReturnTheValue_WhenCannotBecomeAnInt(Map<String, Object> parameters) {
+        <V> void shouldThrow_WhenCannotBecomeAnInt(Map<String, V> parameters) {
             assertThatThrownBy(() -> KiwiResources.validateIntParameter(parameters, "id"))
                     .isExactlyInstanceOf(JaxrsBadRequestException.class);
         }
     }
 
-    private static Stream<Map<String, Object>> validIntParameterMaps() {
+    private static Stream<Map<String, ?>> validIntParameterMaps() {
         return Stream.of(
                 Map.of("id", 42),
                 Map.of("id", 42L),
-                Map.of("id", "42")
+                Map.of("id", "42"),
+                Map.of("id", BigInteger.valueOf(42))
         );
     }
 
-    private static Stream<Map<String, Object>> invalidIntParameterMaps() {
+    private static Stream<Map<String, ?>> invalidIntParameterMaps() {
         return Stream.of(
                 null,
                 Map.of(),
@@ -534,28 +536,29 @@ class KiwiResourcesTest {
 
         @ParameterizedTest
         @MethodSource("org.kiwiproject.jaxrs.KiwiResourcesTest#validLongParameterMaps")
-        void shouldReturnTheValue_WhenIsOrCanBecomeAnInt(Map<String, Object> parameters) {
+        <V> void shouldReturnTheValue_WhenIsOrCanBecomeLong(Map<String, V> parameters) {
             assertThat(KiwiResources.validateLongParameter(parameters, "id"))
-                    .isEqualTo(42);
+                    .isEqualTo(42L);
         }
 
         @ParameterizedTest
         @MethodSource("org.kiwiproject.jaxrs.KiwiResourcesTest#invalidLongParameterMaps")
-        void shouldReturnTheValue_WhenCannotBecomeAnInt(Map<String, Object> parameters) {
+        <V> void shouldThrow_WhenCannotBecomeLong(Map<String, V> parameters) {
             assertThatThrownBy(() -> KiwiResources.validateLongParameter(parameters, "id"))
                     .isExactlyInstanceOf(JaxrsBadRequestException.class);
         }
     }
 
-    private static Stream<Map<String, Object>> validLongParameterMaps() {
+    private static Stream<Map<String, ?>> validLongParameterMaps() {
         return Stream.of(
                 Map.of("id", 42),
                 Map.of("id", 42L),
-                Map.of("id", "42")
+                Map.of("id", "42"),
+                Map.of("id", BigInteger.valueOf(42))
         );
     }
 
-    private static Stream<Map<String, Object>> invalidLongParameterMaps() {
+    private static Stream<Map<String, ?>> invalidLongParameterMaps() {
         return Stream.of(
                 null,
                 Map.of(),
