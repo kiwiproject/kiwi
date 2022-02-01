@@ -1,9 +1,16 @@
 package org.kiwiproject.jaxrs;
 
 import static java.util.Objects.isNull;
+import static java.util.Objects.nonNull;
+import static java.util.stream.Collectors.toUnmodifiableList;
+import static org.kiwiproject.base.KiwiPreconditions.checkArgumentNotBlank;
+import static org.kiwiproject.base.KiwiPreconditions.checkArgumentNotNull;
 import static org.kiwiproject.base.KiwiStrings.f;
+import static org.kiwiproject.collect.KiwiLists.first;
+import static org.kiwiproject.collect.KiwiLists.isNullOrEmpty;
 import static org.kiwiproject.jaxrs.KiwiJaxrsValidations.assertNotNull;
 
+import com.google.common.annotations.VisibleForTesting;
 import com.google.common.primitives.Ints;
 import com.google.common.primitives.Longs;
 import lombok.experimental.UtilityClass;
@@ -15,6 +22,7 @@ import org.kiwiproject.jaxrs.exception.JaxrsNotFoundException;
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.Response;
 import java.net.URI;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
@@ -38,6 +46,8 @@ import java.util.Optional;
 public class KiwiResources {
 
     private static final Map<String, Object> EMPTY_HEADERS = Map.of();
+    private static final String PARAMETERS_MUST_NOT_BE_NULL = "parameters must not be null";
+    private static final String PARAMETER_NAME_MUST_NOT_BE_BLANK = "parameterName must not be blank";
 
     /**
      * Verifies that {@code resourceEntity} is not null, otherwise throws a {@link JaxrsNotFoundException}.
@@ -380,16 +390,93 @@ public class KiwiResources {
      * @throws JaxrsBadRequestException if the specified parameter is not present, or is not an integer
      */
     public static <V> int validateIntParameter(Map<String, V> parameters, String parameterName) {
-        assertNotNull(parameterName, parameters);
+        checkArgumentNotNull(parameters, PARAMETERS_MUST_NOT_BE_NULL);
+        checkArgumentNotBlank(parameterName, PARAMETER_NAME_MUST_NOT_BE_BLANK);
 
         var value = parameters.get(parameterName);
         assertNotNull(parameterName, value);
 
-        //noinspection UnstableApiUsage
-        var result = Optional.ofNullable(Ints.tryParse(value.toString()));
+        return parseIntOrThrowBadRequest(value, parameterName);
+    }
 
-        return result.orElseThrow(() ->
-                new JaxrsBadRequestException(f("{} must be an integer", value), parameterName));
+    /**
+     * Checks whether {@code parameters} contains a parameter named {@code parameterName} that has at least one
+     * value that can be converted into an integer. If there is more than one value, then the first one returned
+     * by {@link MultivaluedMap#getFirst(Object)} is returned.
+     *
+     * @param parameters    the multivalued parameters to check
+     * @param parameterName name of the parameter which should be present
+     * @param <V>           the type of values in the multivalued map
+     * @return the int value of the validated parameter
+     * @throws JaxrsBadRequestException if the specified parameter is not present with at least one value, or is
+     *                                  not an integer
+     */
+    public static <V> int validateOneIntParameter(MultivaluedMap<String, V> parameters,
+                                                  String parameterName) {
+        checkArgumentNotNull(parameters, PARAMETERS_MUST_NOT_BE_NULL);
+        checkArgumentNotBlank(parameterName, PARAMETER_NAME_MUST_NOT_BE_BLANK);
+
+        var value = parameters.getFirst(parameterName);
+        assertNotNull(parameterName, value);
+
+        return parseIntOrThrowBadRequest(value, parameterName);
+    }
+
+    /**
+     * Checks whether {@code parameters} contains a parameter named {@code parameterName} that has exactly one
+     * value that can be converted into an integer. If there is more than one value, this is considered a bad request
+     * and a {@link JaxrsBadRequestException} is thrown.
+     *
+     * @param parameters    the multivalued parameters to check
+     * @param parameterName name of the parameter which should be present
+     * @param <V>           the type of values in the multivalued map
+     * @return the int value of the validated parameter
+     * @throws JaxrsBadRequestException if the specified parameter is not present with only one value, or is
+     *                                  not an integer
+     */
+    public static <V> int validateExactlyOneIntParameter(MultivaluedMap<String, V> parameters,
+                                                         String parameterName) {
+        checkArgumentNotNull(parameters, PARAMETERS_MUST_NOT_BE_NULL);
+        checkArgumentNotBlank(parameterName, PARAMETER_NAME_MUST_NOT_BE_BLANK);
+
+        var values = parameters.get(parameterName);
+        assertOneElementOrThrowBadRequest(values, parameterName);
+
+        var value = first(values);
+        return parseIntOrThrowBadRequest(value, parameterName);
+    }
+
+    /**
+     * Checks whether {@code parameters} contains a parameter named {@code parameterName} that has at least one
+     * value that can be converted into an integer. All the values must be convertible to integer, and they are
+     * all converted and returned in a List.
+     *
+     * @param parameters    the multivalued parameters to check
+     * @param parameterName name of the parameter which should be present
+     * @param <V>           the type of values in the multivalued map
+     * @return an unmodifiable List containing the int values of the validated parameter
+     * @throws JaxrsBadRequestException if the specified parameter is not present with at least one value, or is
+     *                                  not an integer
+     */
+    public static <V> List<Integer> validateOneOrMoreIntParameters(MultivaluedMap<String, V> parameters,
+                                                                   String parameterName) {
+        checkArgumentNotNull(parameters, PARAMETERS_MUST_NOT_BE_NULL);
+        checkArgumentNotBlank(parameterName, PARAMETER_NAME_MUST_NOT_BE_BLANK);
+
+        var values = parameters.get(parameterName);
+        assertOneOrMoreElementsOrThrowBadRequest(values, parameterName);
+
+        return values.stream()
+                .map(value -> parseIntOrThrowBadRequest(value, parameterName))
+                .collect(toUnmodifiableList());
+    }
+
+    @VisibleForTesting
+    static int parseIntOrThrowBadRequest(Object value, String parameterName) {
+        //noinspection UnstableApiUsage
+        var result = Optional.ofNullable(value).map(Object::toString).map(Ints::tryParse);
+
+        return result.orElseThrow(() -> newJaxrsBadRequestException("'{}' is not an integer", value, parameterName));
     }
 
     /**
@@ -400,18 +487,127 @@ public class KiwiResources {
      * @param parameterName name of the parameter which should be present
      * @param <V>           the type of values in the map
      * @return the long value of the validated parameter
-     * @throws JaxrsBadRequestException if the specified parameter is not present, or is not long
+     * @throws JaxrsBadRequestException if the specified parameter is not present, or is not a long
      */
     public static <V> long validateLongParameter(Map<String, V> parameters, String parameterName) {
-        assertNotNull(parameterName, parameters);
+        checkArgumentNotNull(parameters, PARAMETERS_MUST_NOT_BE_NULL);
+        checkArgumentNotBlank(parameterName, PARAMETER_NAME_MUST_NOT_BE_BLANK);
 
         var value = parameters.get(parameterName);
         assertNotNull(parameterName, value);
 
-        //noinspection UnstableApiUsage
-        var result = Optional.ofNullable(Longs.tryParse(value.toString()));
+        return parseLongOrThrowBadRequest(value, parameterName);
+    }
 
-        return result.orElseThrow(() ->
-                new JaxrsBadRequestException(f("{} must be a long", value), parameterName));
+    /**
+     * Checks whether {@code parameters} contains a parameter named {@code parameterName} that has at least one
+     * value that can be converted into a long. If there is more than one value, then the first one returned
+     * by {@link MultivaluedMap#getFirst(Object)} is returned.
+     *
+     * @param parameters    the multivalued parameters to check
+     * @param parameterName name of the parameter which should be present
+     * @param <V>           the type of values in the multivalued map
+     * @return the long value of the validated parameter
+     * @throws JaxrsBadRequestException if the specified parameter is not present with at least one value, or is
+     *                                  not a long
+     */
+    public static <V> long validateOneLongParameter(MultivaluedMap<String, V> parameters,
+                                                    String parameterName) {
+        checkArgumentNotNull(parameters, PARAMETERS_MUST_NOT_BE_NULL);
+        checkArgumentNotBlank(parameterName, PARAMETER_NAME_MUST_NOT_BE_BLANK);
+
+        var value = parameters.getFirst(parameterName);
+        assertNotNull(parameterName, value);
+
+        return parseLongOrThrowBadRequest(value, parameterName);
+    }
+
+    /**
+     * Checks whether {@code parameters} contains a parameter named {@code parameterName} that has exactly one
+     * value that can be converted into a long. If there is more than one value, this is considered a bad request
+     * and a {@link JaxrsBadRequestException} is thrown.
+     *
+     * @param parameters    the multivalued parameters to check
+     * @param parameterName name of the parameter which should be present
+     * @param <V>           the type of values in the multivalued map
+     * @return the long value of the validated parameter
+     * @throws JaxrsBadRequestException if the specified parameter is not present with at least one value, or is
+     *                                  not a long
+     */
+    public static <V> long validateExactlyOneLongParameter(MultivaluedMap<String, V> parameters,
+                                                           String parameterName) {
+        checkArgumentNotNull(parameters, PARAMETERS_MUST_NOT_BE_NULL);
+        checkArgumentNotBlank(parameterName, PARAMETER_NAME_MUST_NOT_BE_BLANK);
+
+        var values = parameters.get(parameterName);
+        assertOneElementOrThrowBadRequest(values, parameterName);
+
+        var value = first(values);
+        return parseLongOrThrowBadRequest(value, parameterName);
+    }
+
+    /**
+     * Checks whether {@code parameters} contains a parameter named {@code parameterName} that has at least one
+     * value that can be converted into a long. All the values must be convertible to long, and they are
+     * all converted and returned in a List.
+     *
+     * @param parameters    the multivalued parameters to check
+     * @param parameterName name of the parameter which should be present
+     * @param <V>           the type of values in the multivalued map
+     * @return an unmodifiable List containing the long values of the validated parameter
+     * @throws JaxrsBadRequestException if the specified parameter is not present with only one value, or is
+     *                                  not a long
+     */
+    public static <V> List<Long> validateOneOrMoreLongParameters(MultivaluedMap<String, V> parameters,
+                                                                 String parameterName) {
+        checkArgumentNotNull(parameters, PARAMETERS_MUST_NOT_BE_NULL);
+        checkArgumentNotBlank(parameterName, PARAMETER_NAME_MUST_NOT_BE_BLANK);
+
+        var values = parameters.get(parameterName);
+        assertOneOrMoreElementsOrThrowBadRequest(values, parameterName);
+
+        return values.stream()
+                .map(value -> parseLongOrThrowBadRequest(value, parameterName))
+                .collect(toUnmodifiableList());
+    }
+
+    @VisibleForTesting
+    static long parseLongOrThrowBadRequest(Object value, String parameterName) {
+        //noinspection UnstableApiUsage
+        var result = Optional.ofNullable(value).map(Object::toString).map(Longs::tryParse);
+
+        return result.orElseThrow(() -> newJaxrsBadRequestException("'{}' is not a long", value, parameterName));
+    }
+
+    @VisibleForTesting
+    static <V> void assertOneElementOrThrowBadRequest(List<V> values, String parameterName) {
+        String message = null;
+
+        if (isNullOrEmpty(values)) {
+            message = parameterName + " has no values, but exactly one was expected";
+        } else if (values.size() > 1) {
+            message = parameterName + " has " + values.size() + " values, but only one was expected";
+        }
+
+        if (nonNull(message)) {
+            throw new JaxrsBadRequestException(message, parameterName);
+        }
+    }
+
+    @VisibleForTesting
+    static <V> void assertOneOrMoreElementsOrThrowBadRequest(List<V> values, String parameterName) {
+        if (isNullOrEmpty(values)) {
+            var message = parameterName + " has no values, but expected at least one";
+            throw new JaxrsBadRequestException(message, parameterName);
+        }
+    }
+
+    @VisibleForTesting
+    static JaxrsBadRequestException newJaxrsBadRequestException(String messageTemplate,
+                                                                Object value,
+                                                                String parameterName) {
+
+        var message = f(messageTemplate, value);
+        return new JaxrsBadRequestException(message, parameterName);
     }
 }
