@@ -3,9 +3,12 @@ package org.kiwiproject.jaxrs;
 import static com.google.common.base.Verify.verify;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatCode;
+import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
 import static org.assertj.core.api.Assertions.assertThatIllegalStateException;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.assertj.core.api.Assertions.catchThrowableOfType;
 import static org.kiwiproject.base.KiwiStrings.f;
+import static org.kiwiproject.collect.KiwiLists.first;
 import static org.kiwiproject.jaxrs.JaxrsTestHelper.assertCreatedResponseWithLocation;
 import static org.kiwiproject.jaxrs.JaxrsTestHelper.assertCustomHeaderFirstValue;
 import static org.kiwiproject.jaxrs.JaxrsTestHelper.assertOkResponse;
@@ -26,6 +29,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
+import org.junit.jupiter.params.provider.NullAndEmptySource;
 import org.junit.jupiter.params.provider.ValueSource;
 import org.kiwiproject.jaxrs.exception.ErrorMessage;
 import org.kiwiproject.jaxrs.exception.JaxrsBadRequestException;
@@ -41,12 +45,14 @@ import javax.ws.rs.client.ClientBuilder;
 import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedHashMap;
+import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.Response;
 import java.io.IOException;
 import java.io.InputStream;
 import java.math.BigInteger;
 import java.net.URI;
 import java.nio.charset.StandardCharsets;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Stream;
@@ -506,6 +512,19 @@ class KiwiResourcesTest {
             assertThatThrownBy(() -> KiwiResources.validateIntParameter(parameters, "id"))
                     .isExactlyInstanceOf(JaxrsBadRequestException.class);
         }
+
+        @ParameterizedTest
+        @NullAndEmptySource
+        void shouldThrowIllegalArgument_GivenBlankParameterName(String parameterName) {
+            assertThatIllegalArgumentException().isThrownBy(() ->
+                    KiwiResources.validateIntParameter(Map.of(), parameterName));
+        }
+
+        @Test
+        void shouldThrowIllegalArgument_GivenNullParameterMap() {
+            assertThatIllegalArgumentException().isThrownBy(() ->
+                    KiwiResources.validateIntParameter(null, "id"));
+        }
     }
 
     private static Stream<Map<String, ?>> validIntParameterMaps() {
@@ -519,7 +538,6 @@ class KiwiResourcesTest {
 
     private static Stream<Map<String, ?>> invalidIntParameterMaps() {
         return Stream.of(
-                null,
                 Map.of(),
                 Map.of("id", "asdf"),
                 Map.of("id", "forty two"),
@@ -547,6 +565,19 @@ class KiwiResourcesTest {
             assertThatThrownBy(() -> KiwiResources.validateLongParameter(parameters, "id"))
                     .isExactlyInstanceOf(JaxrsBadRequestException.class);
         }
+
+        @ParameterizedTest
+        @NullAndEmptySource
+        void shouldThrowIllegalArgument_GivenBlankParameterName(String parameterName) {
+            assertThatIllegalArgumentException().isThrownBy(() ->
+                    KiwiResources.validateLongParameter(Map.of(), parameterName));
+        }
+
+        @Test
+        void shouldThrowIllegalArgument_GivenNullParameterMap() {
+            assertThatIllegalArgumentException().isThrownBy(() ->
+                    KiwiResources.validateLongParameter(null, "id"));
+        }
     }
 
     private static Stream<Map<String, ?>> validLongParameterMaps() {
@@ -560,7 +591,6 @@ class KiwiResourcesTest {
 
     private static Stream<Map<String, ?>> invalidLongParameterMaps() {
         return Stream.of(
-                null,
                 Map.of(),
                 Map.of("id", "asdf"),
                 Map.of("id", "forty two"),
@@ -569,6 +599,483 @@ class KiwiResourcesTest {
                 Map.of("id", 42.0),
                 Map.of("id", 42.2)
         );
+    }
+
+    @Nested
+    class MultivaluedMapValidation {
+
+        private MultivaluedMap<String, Object> parameters;
+
+        @BeforeEach
+        void setUp() {
+            parameters = new MultivaluedHashMap<>();
+        }
+
+        @Nested
+        class ValidateOneIntParameter {
+
+            @ParameterizedTest
+            @NullAndEmptySource
+            void shouldThrowIllegalArgument_WhenGivenBlankParameterName(String parameterName) {
+                assertThatIllegalArgumentException()
+                        .isThrownBy(() -> KiwiResources.validateOneIntParameter(parameters, parameterName));
+            }
+
+            @Test
+            void shouldThrowIllegalArgument_WhenGivenNullParameterMap() {
+                assertThatIllegalArgumentException().isThrownBy(() ->
+                        KiwiResources.validateOneIntParameter(null, "name"));
+            }
+
+            @Test
+            void shouldThrowBadRequest_WhenParameterMap_DoesNotContainParameter() {
+                assertThatThrownBy(() -> KiwiResources.validateOneIntParameter(parameters, "name"))
+                        .isExactlyInstanceOf(JaxrsBadRequestException.class);
+            }
+
+            @ParameterizedTest
+            @MethodSource("org.kiwiproject.jaxrs.KiwiResourcesTest#validOneIntParameterMultivaluedMaps")
+            <V> void shouldReturnTheValue_WhenIsOrCanBecomeInt(MultivaluedMap<String, V> parameters) {
+                assertThat(KiwiResources.validateOneIntParameter(parameters, "id"))
+                        .isEqualTo(42);
+            }
+
+            @Test
+            void shouldReturnTheFirstValue_WhenGivenMoreThanOneValue() {
+                parameters.put("ids", List.of("24", "42", "84"));
+
+                assertThat(KiwiResources.validateOneIntParameter(parameters, "ids"))
+                        .isEqualTo(24);
+            }
+
+            @ParameterizedTest
+            @MethodSource("org.kiwiproject.jaxrs.KiwiResourcesTest#invalidOneIntParameterMultivaluedMaps")
+            <V> void shouldThrow_WhenCannotBecomeInt(MultivaluedMap<String, V> parameters) {
+                assertThatThrownBy(() -> KiwiResources.validateOneIntParameter(parameters, "id"))
+                        .isExactlyInstanceOf(JaxrsBadRequestException.class);
+            }
+        }
+
+        @Nested
+        class ValidateExactlyOneIntParameter {
+
+            @ParameterizedTest
+            @NullAndEmptySource
+            void shouldThrowIllegalArgument_WhenGivenBlankParameterName(String parameterName) {
+                assertThatIllegalArgumentException()
+                        .isThrownBy(() -> KiwiResources.validateExactlyOneIntParameter(parameters, parameterName));
+            }
+
+            @Test
+            void shouldThrowIllegalArgument_WhenGivenNullParameterMap() {
+                assertThatIllegalArgumentException().isThrownBy(() ->
+                        KiwiResources.validateExactlyOneIntParameter(null, "name"));
+            }
+
+            @Test
+            void shouldThrowBadRequest_WhenParameterMap_DoesNotContainParameter() {
+                assertThatThrownBy(() -> KiwiResources.validateExactlyOneIntParameter(parameters, "name"))
+                        .isExactlyInstanceOf(JaxrsBadRequestException.class);
+            }
+
+            @ParameterizedTest
+            @MethodSource("org.kiwiproject.jaxrs.KiwiResourcesTest#validOneIntParameterMultivaluedMaps")
+            <V> void shouldReturnTheValue_WhenIsOrCanBecomeInt(MultivaluedMap<String, V> parameters) {
+                assertThat(KiwiResources.validateExactlyOneIntParameter(parameters, "id"))
+                        .isEqualTo(42);
+            }
+
+            @Test
+            void shouldThrowBadRequest_WhenGivenMoreThanOneValue() {
+                parameters.put("ids", List.of("24", "42", "84"));
+
+                assertThatThrownBy(() -> KiwiResources.validateExactlyOneIntParameter(parameters, "ids"))
+                        .isExactlyInstanceOf(JaxrsBadRequestException.class);
+            }
+
+            @ParameterizedTest
+            @MethodSource("org.kiwiproject.jaxrs.KiwiResourcesTest#invalidOneIntParameterMultivaluedMaps")
+            <V> void shouldThrow_WhenCannotBecomeInt(MultivaluedMap<String, V> parameters) {
+                assertThatThrownBy(() -> KiwiResources.validateExactlyOneIntParameter(parameters, "id"))
+                        .isExactlyInstanceOf(JaxrsBadRequestException.class);
+            }
+        }
+
+        @Nested
+        class ValidateOneOrMoreIntParameters {
+
+            @ParameterizedTest
+            @NullAndEmptySource
+            void shouldThrowIllegalArgument_WhenGivenBlankParameterName(String parameterName) {
+                assertThatIllegalArgumentException()
+                        .isThrownBy(() -> KiwiResources.validateOneOrMoreIntParameters(parameters, parameterName));
+            }
+
+            @Test
+            void shouldThrowIllegalArgument_WhenGivenNullParameterMap() {
+                assertThatIllegalArgumentException().isThrownBy(() ->
+                        KiwiResources.validateOneOrMoreIntParameters(null, "name"));
+            }
+
+            @Test
+            void shouldThrowBadRequest_WhenParameterMap_DoesNotContainParameter() {
+                assertThatThrownBy(() -> KiwiResources.validateOneOrMoreIntParameters(parameters, "name"))
+                        .isExactlyInstanceOf(JaxrsBadRequestException.class);
+            }
+
+            @ParameterizedTest
+            @MethodSource("org.kiwiproject.jaxrs.KiwiResourcesTest#validOneIntParameterMultivaluedMaps")
+            <V> void shouldReturnTheValue_WhenIsOrCanBecomeInt(MultivaluedMap<String, V> parameters) {
+                assertThat(KiwiResources.validateOneOrMoreIntParameters(parameters, "id"))
+                        .isEqualTo(List.of(42));
+            }
+
+            @Test
+            void shouldReturnAllTheValues_WhenGivenMoreThanOneValue() {
+                parameters.put("ids", List.of("24", "42", "84"));
+
+                assertThat(KiwiResources.validateOneOrMoreIntParameters(parameters, "ids"))
+                        .isEqualTo(List.of(24, 42, 84));
+            }
+
+            @ParameterizedTest
+            @MethodSource("org.kiwiproject.jaxrs.KiwiResourcesTest#invalidOneIntParameterMultivaluedMaps")
+            <V> void shouldThrow_WhenCannotBecomeInt(MultivaluedMap<String, V> parameters) {
+                assertThatThrownBy(() -> KiwiResources.validateOneOrMoreIntParameters(parameters, "id"))
+                        .isExactlyInstanceOf(JaxrsBadRequestException.class);
+            }
+        }
+
+        @Nested
+        class ValidateOneLongParameter {
+
+            @ParameterizedTest
+            @NullAndEmptySource
+            void shouldThrowIllegalArgument_WhenGivenBlankParameterName(String parameterName) {
+                assertThatIllegalArgumentException()
+                        .isThrownBy(() -> KiwiResources.validateOneLongParameter(parameters, parameterName));
+            }
+
+            @Test
+            void shouldThrowIllegalArgument_WhenGivenNullParameterMap() {
+                assertThatIllegalArgumentException().isThrownBy(() ->
+                        KiwiResources.validateOneLongParameter(null, "name"));
+            }
+
+            @Test
+            void shouldThrowBadRequest_WhenParameterMap_DoesNotContainParameter() {
+                assertThatThrownBy(() -> KiwiResources.validateOneLongParameter(parameters, "name"))
+                        .isExactlyInstanceOf(JaxrsBadRequestException.class);
+            }
+
+            @ParameterizedTest
+            @MethodSource("org.kiwiproject.jaxrs.KiwiResourcesTest#validOneLongParameterMultivaluedMaps")
+            <V> void shouldReturnTheValue_WhenIsOrCanBecomeLong(MultivaluedMap<String, V> parameters) {
+                assertThat(KiwiResources.validateOneLongParameter(parameters, "id"))
+                        .isEqualTo(42);
+            }
+
+            @Test
+            void shouldReturnTheFirstValue_WhenGivenMoreThanOneValue() {
+                parameters.put("ids", List.of("24", "42", "84"));
+
+                assertThat(KiwiResources.validateOneLongParameter(parameters, "ids"))
+                        .isEqualTo(24);
+            }
+
+            @ParameterizedTest
+            @MethodSource("org.kiwiproject.jaxrs.KiwiResourcesTest#invalidOneLongParameterMultivaluedMaps")
+            <V> void shouldThrow_WhenCannotBecomeLong(MultivaluedMap<String, V> parameters) {
+                assertThatThrownBy(() -> KiwiResources.validateOneLongParameter(parameters, "id"))
+                        .isExactlyInstanceOf(JaxrsBadRequestException.class);
+            }
+        }
+
+        @Nested
+        class ValidateExactlyOneLongParameter {
+
+            @ParameterizedTest
+            @NullAndEmptySource
+            void shouldThrowIllegalArgument_WhenGivenBlankParameterName(String parameterName) {
+                assertThatIllegalArgumentException()
+                        .isThrownBy(() -> KiwiResources.validateExactlyOneLongParameter(parameters, parameterName));
+            }
+
+            @Test
+            void shouldThrowIllegalArgument_WhenGivenNullParameterMap() {
+                assertThatIllegalArgumentException().isThrownBy(() ->
+                        KiwiResources.validateExactlyOneLongParameter(null, "name"));
+            }
+
+            @Test
+            void shouldThrowBadRequest_WhenParameterMap_DoesNotContainParameter() {
+                assertThatThrownBy(() -> KiwiResources.validateExactlyOneLongParameter(parameters, "name"))
+                        .isExactlyInstanceOf(JaxrsBadRequestException.class);
+            }
+
+            @ParameterizedTest
+            @MethodSource("org.kiwiproject.jaxrs.KiwiResourcesTest#validOneLongParameterMultivaluedMaps")
+            <V> void shouldReturnTheValue_WhenIsOrCanBecomeLong(MultivaluedMap<String, V> parameters) {
+                assertThat(KiwiResources.validateExactlyOneLongParameter(parameters, "id"))
+                        .isEqualTo(42);
+            }
+
+            @Test
+            void shouldThrowBadRequest_WhenGivenMoreThanOneValue() {
+                parameters.put("ids", List.of("24", "42", "84"));
+
+                assertThatThrownBy(() -> KiwiResources.validateExactlyOneLongParameter(parameters, "ids"))
+                        .isExactlyInstanceOf(JaxrsBadRequestException.class);
+            }
+
+            @ParameterizedTest
+            @MethodSource("org.kiwiproject.jaxrs.KiwiResourcesTest#invalidOneLongParameterMultivaluedMaps")
+            <V> void shouldThrow_WhenCannotBecomeLong(MultivaluedMap<String, V> parameters) {
+                assertThatThrownBy(() -> KiwiResources.validateExactlyOneLongParameter(parameters, "id"))
+                        .isExactlyInstanceOf(JaxrsBadRequestException.class);
+            }
+        }
+
+        @Nested
+        class ValidateOneOrMoreLongParameters {
+
+            @ParameterizedTest
+            @NullAndEmptySource
+            void shouldThrowIllegalArgument_WhenGivenBlankParameterName(String parameterName) {
+                assertThatIllegalArgumentException()
+                        .isThrownBy(() -> KiwiResources.validateOneOrMoreLongParameters(parameters, parameterName));
+            }
+
+            @Test
+            void shouldThrowIllegalArgument_WhenGivenNullParameterMap() {
+                assertThatIllegalArgumentException().isThrownBy(() ->
+                        KiwiResources.validateOneOrMoreLongParameters(null, "name"));
+            }
+
+            @Test
+            void shouldThrowBadRequest_WhenParameterMap_DoesNotContainParameter() {
+                assertThatThrownBy(() -> KiwiResources.validateOneOrMoreLongParameters(parameters, "name"))
+                        .isExactlyInstanceOf(JaxrsBadRequestException.class);
+            }
+
+            @ParameterizedTest
+            @MethodSource("org.kiwiproject.jaxrs.KiwiResourcesTest#validOneLongParameterMultivaluedMaps")
+            <V> void shouldReturnTheValue_WhenIsOrCanBecomeLong(MultivaluedMap<String, V> parameters) {
+                assertThat(KiwiResources.validateOneOrMoreLongParameters(parameters, "id"))
+                        .isEqualTo(List.of(42L));
+            }
+
+            @Test
+            void shouldReturnAllTheValues_WhenGivenMoreThanOneValue() {
+                parameters.put("ids", List.of("24", "42", "84"));
+
+                assertThat(KiwiResources.validateOneOrMoreLongParameters(parameters, "ids"))
+                        .isEqualTo(List.of(24L, 42L, 84L));
+            }
+
+            @ParameterizedTest
+            @MethodSource("org.kiwiproject.jaxrs.KiwiResourcesTest#invalidOneLongParameterMultivaluedMaps")
+            <V> void shouldThrow_WhenCannotBecomeLong(MultivaluedMap<String, V> parameters) {
+                assertThatThrownBy(() -> KiwiResources.validateOneOrMoreLongParameters(parameters, "id"))
+                        .isExactlyInstanceOf(JaxrsBadRequestException.class);
+            }
+        }
+    }
+
+    private static Stream<MultivaluedMap<String, ?>> validOneIntParameterMultivaluedMaps() {
+        return Stream.of(
+                new MultivaluedHashMap<>(Map.of("id", 42)),
+                new MultivaluedHashMap<>(Map.of("id", 42L)),
+                new MultivaluedHashMap<>(Map.of("id", "42")),
+                new MultivaluedHashMap<>(Map.of("id", BigInteger.valueOf(42)))
+        );
+    }
+
+    private static Stream<MultivaluedMap<String, ?>> invalidOneIntParameterMultivaluedMaps() {
+        return Stream.of(
+                new MultivaluedHashMap<>(Map.of()),
+                new MultivaluedHashMap<>(Map.of("id", "asdf")),
+                new MultivaluedHashMap<>(Map.of("id", "forty two")),
+                new MultivaluedHashMap<>(Map.of("id", 42.0F)),
+                new MultivaluedHashMap<>(Map.of("id", 42.2F)),
+                new MultivaluedHashMap<>(Map.of("id", 42.0)),
+                new MultivaluedHashMap<>(Map.of("id", 42.2)),
+                new MultivaluedHashMap<>(Map.of("id", Integer.MAX_VALUE + 1L))
+        );
+    }
+
+    private static Stream<MultivaluedMap<String, ?>> validOneLongParameterMultivaluedMaps() {
+        return Stream.of(
+                new MultivaluedHashMap<>(Map.of("id", 42)),
+                new MultivaluedHashMap<>(Map.of("id", 42L)),
+                new MultivaluedHashMap<>(Map.of("id", "42")),
+                new MultivaluedHashMap<>(Map.of("id", BigInteger.valueOf(42)))
+        );
+    }
+
+    private static Stream<MultivaluedMap<String, ?>> invalidOneLongParameterMultivaluedMaps() {
+        return Stream.of(
+                new MultivaluedHashMap<>(),
+                new MultivaluedHashMap<>(Map.of("id", "asdf")),
+                new MultivaluedHashMap<>(Map.of("id", "forty two")),
+                new MultivaluedHashMap<>(Map.of("id", 42.0F)),
+                new MultivaluedHashMap<>(Map.of("id", 42.2F)),
+                new MultivaluedHashMap<>(Map.of("id", 42.0)),
+                new MultivaluedHashMap<>(Map.of("id", 42.2))
+        );
+    }
+
+    @Nested
+    class ParseIntOrThrowBadRequest {
+
+        @ParameterizedTest
+        @MethodSource("org.kiwiproject.jaxrs.KiwiResourcesTest#parseableAsInt")
+        void shouldReturnTheValue_WhenParseableAsInt(Object obj) {
+            assertThat(KiwiResources.parseIntOrThrowBadRequest(obj, "testParam"))
+                    .isEqualTo(42);
+        }
+
+        @ParameterizedTest
+        @MethodSource("org.kiwiproject.jaxrs.KiwiResourcesTest#notParseableAsInt")
+        void shouldThrowBadRequest_WhenNotParseableAsInt(Object obj) {
+            assertThatThrownBy(() -> KiwiResources.parseIntOrThrowBadRequest(obj, "testParam"))
+                    .isExactlyInstanceOf(JaxrsBadRequestException.class)
+                    .hasMessage("'%s' is not an integer", obj);
+        }
+    }
+
+    private static Stream<Object> parseableAsInt() {
+        return Stream.of(
+                42,
+                42L,
+                "42",
+                BigInteger.valueOf(42)
+        );
+    }
+
+    private static Stream<Object> notParseableAsInt() {
+        return Stream.of(
+                null,
+                "",
+                "junk",
+                new Object(),
+                42.0F,
+                42.2F,
+                42.0,
+                42.24,
+                Integer.MAX_VALUE + 1L
+        );
+    }
+
+    @Nested
+    class ParseLongOrThrowBadRequest {
+
+        @ParameterizedTest
+        @MethodSource("org.kiwiproject.jaxrs.KiwiResourcesTest#parseableAsLong")
+        void shouldReturnTheValue_WhenParseableAsInt(Object obj) {
+            assertThat(KiwiResources.parseLongOrThrowBadRequest(obj, "testParam"))
+                    .isEqualTo(42L);
+        }
+
+        @ParameterizedTest
+        @MethodSource("org.kiwiproject.jaxrs.KiwiResourcesTest#notParseableAsLong")
+        void shouldThrowBadRequest_WhenNotParseableAsInt(Object obj) {
+            assertThatThrownBy(() -> KiwiResources.parseLongOrThrowBadRequest(obj, "testParam"))
+                    .isExactlyInstanceOf(JaxrsBadRequestException.class)
+                    .hasMessage("'%s' is not a long", obj);
+        }
+    }
+
+    private static Stream<Object> parseableAsLong() {
+        return Stream.of(
+                42,
+                42L,
+                "42",
+                BigInteger.valueOf(42)
+        );
+    }
+
+    private static Stream<Object> notParseableAsLong() {
+        return Stream.of(
+                null,
+                "",
+                "junk",
+                new Object(),
+                42.0F,
+                42.2F,
+                42.0,
+                42.24
+        );
+    }
+
+    @Nested
+    class AssertOneElementOrThrowBadRequest {
+
+        @Test
+        void shouldDoNothing_WhenListContainsOneElement() {
+            var values = List.of("42");
+            assertThatCode(() -> KiwiResources.assertOneElementOrThrowBadRequest(values, "testParam"))
+                    .doesNotThrowAnyException();
+        }
+
+        @ParameterizedTest
+        @NullAndEmptySource
+        void shouldThrowBadRequest_WhenListIsNullOrEmpty(List<Object> values) {
+            var thrown = catchThrowableOfType(
+                    () -> KiwiResources.assertOneElementOrThrowBadRequest(values, "testParam"),
+                    JaxrsBadRequestException.class);
+
+            assertThat(thrown.getMessage()).isEqualTo("testParam has no values, but exactly one was expected");
+            assertThat(thrown.getErrors()).hasSize(1);
+        }
+
+        @Test
+        void shouldThrowBadRequest_WhenListHasMoreThanOneElement() {
+            var values = List.of("42", "84");
+
+            var thrown = catchThrowableOfType(
+                    () -> KiwiResources.assertOneElementOrThrowBadRequest(values, "testParam"),
+                    JaxrsBadRequestException.class);
+
+            assertThat(thrown.getMessage()).isEqualTo("testParam has 2 values, but only one was expected");
+            assertThat(thrown.getErrors()).hasSize(1);
+        }
+    }
+
+    @Nested
+    class AssertOneOrMoreElementsOrThrowBadRequest {
+
+        @Test
+        void shouldDoNothing_WhenListContainsOneElement() {
+            assertThatCode(() -> KiwiResources.assertOneOrMoreElementsOrThrowBadRequest(List.of("42"), "myParam"))
+                    .doesNotThrowAnyException();
+        }
+
+        @Test
+        void shouldDoNothing_WhenListContainsMultipleElements() {
+            assertThatCode(() -> KiwiResources.assertOneOrMoreElementsOrThrowBadRequest(List.of("24", "42"), "myParam"))
+                    .doesNotThrowAnyException();
+        }
+
+        @ParameterizedTest
+        @NullAndEmptySource
+        void shouldThrowBadRequest_WhenListIsNullOrEmpty(List<String> values) {
+            assertThatThrownBy(() -> KiwiResources.assertOneOrMoreElementsOrThrowBadRequest(values, "myParam"))
+                    .isExactlyInstanceOf(JaxrsBadRequestException.class);
+        }
+    }
+
+    @Nested
+    class NewJaxrsBadRequestExceptionFactory {
+
+        @Test
+        void shouldCreateJaxrsException_WithExpectedMessage() {
+            var ex = KiwiResources.newJaxrsBadRequestException("the value {} is not valid", 42, "testParam");
+            assertThat(ex.getMessage()).isEqualTo("the value 42 is not valid");
+            assertThat(ex.getErrors()).hasSize(1);
+            var errorMessage = first(ex.getErrors());
+            assertThat(errorMessage.getFieldName()).isEqualTo("testParam");
+        }
     }
 
     private static String defaultNotFoundMessage() {
