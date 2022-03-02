@@ -161,6 +161,7 @@ public class KiwiResources {
      *                                to construct the message
      * @param args                    the arguments to be substituted into the message template
      * @param <T>                     the object type
+     * @return the entity if the Optional contains a value
      * @throws JaxrsNotFoundException if the entity is empty
      */
     public static <T> T verifyExistence(Optional<T> resourceEntity, String notFoundMessageTemplate, Object... args) {
