@@ -10,7 +10,7 @@ updates:
     reviewers:
       - "sleberknight"
       - "chrisrohr"
-  open-pull-requests-limit: 10
+    open-pull-requests-limit: 10
   - package-ecosystem: "github-actions"
     directory: "/"
     schedule:
