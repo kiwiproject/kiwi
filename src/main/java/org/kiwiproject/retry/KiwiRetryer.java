@@ -146,10 +146,11 @@ import java.util.function.Predicate;
  * library and add various defaults and conveniences, as well as an easier way to handle RetryException and its causes.
  * The guava-retrying library stopped being maintained circa 2016, and was forked into
  * <a href="https://github.com/rhuffman/re-retrying">re-retrying</a>, which then stopped active development circa 2018.
- * So, in late 2020 we forked re-retrying as retrying-again in order to keep it up to date at a minimum, and hopefully
- * add some additional value where it makes sense. It is possible we might simply move some of this functionality
- * into retrying-again and then deprecate and remove this functionality from kiwi. That would also allow us to use
- * kiwi from retrying-again, which we currently cannot do without introducing a circular dependency.
+ * So, in late 2020 we forked re-retrying as <a href="https://github.com/kiwiproject/retrying-again">retrying-again</a> in
+ * order to keep it up to date at a minimum, and hopefully add some additional value where it makes sense. It is possible
+ * we might simply move some of this functionality into retrying-again and then deprecate and remove this functionality from
+ * kiwi. That would also allow us to use kiwi from retrying-again, which we currently cannot do without introducing a
+ * circular dependency.
  * <p>
  * NOTE: The org.kiwiproject:retrying-again library must be available at runtime.
  */
