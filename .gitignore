@@ -19,3 +19,6 @@ buildNumber.properties
 
 # Deployment log
 maven-central-deploy.log
+
+# VS Code configuration files
+.vscode
