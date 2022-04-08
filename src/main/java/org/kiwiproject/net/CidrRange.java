@@ -1,8 +1,6 @@
 package org.kiwiproject.net;
 
 import com.google.common.net.InetAddresses;
-import lombok.extern.slf4j.Slf4j;
-
 import java.math.BigInteger;
 import java.net.InetAddress;
 import java.nio.ByteBuffer;
@@ -15,7 +13,6 @@ import java.nio.ByteBuffer;
  * updated since 2019 and seems to be unmaintained.
  */
 @SuppressWarnings("UnstableApiUsage")
-@Slf4j
 public class CidrRange {
 
     private final InetAddress inetAddress;

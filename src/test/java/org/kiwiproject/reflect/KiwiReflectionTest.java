@@ -1201,6 +1201,7 @@ class KiwiReflectionTest {
         private final String title;
     }
 
+    @SuppressWarnings("unused")  // fields are not used
     @AllArgsConstructor
     @Getter
     static class NoFieldObj {

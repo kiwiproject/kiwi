@@ -555,7 +555,7 @@ class JsonHelperBasicsTest {
             });
 
             assertThat(people)
-                    .usingElementComparatorOnFields("firstName", "lastName", "age")
+                    .usingRecursiveFieldByFieldElementComparatorOnFields("firstName", "lastName", "age")
                     .containsOnlyOnce(
                             new Person("Bob", "Smith", 34),
                             new Person("Jason", "Whatever", 27)

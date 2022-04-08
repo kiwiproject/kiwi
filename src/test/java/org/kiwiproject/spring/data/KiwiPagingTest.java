@@ -9,7 +9,6 @@ import static org.kiwiproject.collect.KiwiLists.first;
 import static org.kiwiproject.collect.KiwiLists.second;
 
 import com.google.common.collect.Streams;
-import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -24,7 +23,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 @DisplayName("KiwiPaging")
-@Slf4j
 class KiwiPagingTest {
 
     @Nested

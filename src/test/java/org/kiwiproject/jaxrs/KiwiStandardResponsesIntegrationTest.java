@@ -27,6 +27,7 @@ import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.client.Entity;
+import javax.ws.rs.core.GenericType;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import java.net.URI;
@@ -203,9 +204,8 @@ class KiwiStandardResponsesIntegrationTest {
     }
 
     private static void assertResponseEntityMapHasErrorsKey(Response response) {
-        var entity = response.readEntity(Map.class);
+        var entity = response.readEntity(new GenericType<Map<String, Object>>() {});
 
-        //noinspection unchecked
         assertThat(entity).containsKey("errors");
     }
 

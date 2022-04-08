@@ -28,8 +28,6 @@ import java.util.function.Predicate;
 @Setter
 public class EndpointConfiguration {
 
-    private static final String DOMAIN_SPLIT_CHAR = ",";
-
     /**
      * Use this to uniquely identify an endpoint within a {@link SecureEndpointsConfiguration}, or to provide
      * a way to find an {@link EndpointConfiguration} in any collection of them, e.g. using a
