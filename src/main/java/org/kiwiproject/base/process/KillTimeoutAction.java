@@ -1,7 +1,5 @@
 package org.kiwiproject.base.process;
 
-import lombok.extern.slf4j.Slf4j;
-
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -9,7 +7,6 @@ import java.util.concurrent.TimeUnit;
  *
  * @see Processes#kill(long, KillSignal, long, TimeUnit, KillTimeoutAction)
  */
-@Slf4j
 public enum KillTimeoutAction {
 
     /**
