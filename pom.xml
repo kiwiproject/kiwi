@@ -29,7 +29,7 @@
 
     <properties>
         <!-- Versions for required dependencies -->
-        <kiwi-bom.version>0.7.3</kiwi-bom.version>
+        <kiwi-bom.version>0.9.0</kiwi-bom.version>
 
         <!-- Versions for provided dependencies -->
         <retrying-again.version>1.0.7</retrying-again.version>
@@ -70,6 +70,11 @@
         <dependency>
             <groupId>com.google.guava</groupId>
             <artifactId>guava</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-api</artifactId>
         </dependency>
 
         <!-- provided dependencies -->
@@ -132,16 +137,12 @@
         <dependency>
             <groupId>org.mongodb</groupId>
             <artifactId>mongodb-driver-sync</artifactId>
-            <!-- TODO: Remove version once update kiwi-bom with a mongodb-driver-sync.version property -->
-            <version>4.5.1</version>
             <scope>provided</scope>
         </dependency>
 
         <dependency>
             <groupId>org.mongodb</groupId>
             <artifactId>mongodb-driver-core</artifactId>
-             <!-- TODO: Remove version once update kiwi-bom with a mongodb-driver-core.version property -->
-            <version>4.5.1</version>
             <scope>provided</scope>
         </dependency>
 
@@ -167,16 +168,7 @@
         <dependency>
             <groupId>org.springframework.data</groupId>
             <artifactId>spring-data-mongodb</artifactId>
-            <!-- TODO: Remove version when update kiwi-bom's spring-data-mongod.version property -->
-            <version>3.3.4</version>
             <scope>provided</scope>
-            <!-- TODO: Remove exclusions when add the new mongo dependencies to the BOM -->
-            <exclusions>
-                <exclusion>
-                    <groupId>org.mongodb</groupId>
-                    <artifactId>mongodb-driver-core</artifactId>
-                </exclusion>
-            </exclusions>
         </dependency>
 
         <!-- test dependencies -->
@@ -220,6 +212,12 @@
         <dependency>
             <groupId>org.liquibase</groupId>
             <artifactId>liquibase-core</artifactId>
+            <scope>test</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>ch.qos.logback</groupId>
+            <artifactId>logback-classic</artifactId>
             <scope>test</scope>
         </dependency>
 
