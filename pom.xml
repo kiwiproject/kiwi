@@ -168,7 +168,7 @@
             <groupId>org.springframework.data</groupId>
             <artifactId>spring-data-mongodb</artifactId>
             <!-- TODO: Remove version when update kiwi-bom's spring-data-mongod.version property -->
-            <version>3.3.3</version>
+            <version>3.3.4</version>
             <scope>provided</scope>
             <!-- TODO: Remove exclusions when add the new mongo dependencies to the BOM -->
             <exclusions>
