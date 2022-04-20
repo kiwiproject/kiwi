@@ -39,7 +39,7 @@ import java.util.function.Predicate;
  * Uses Flapdoodle embedded Mongo which can be found on GitHub
  * <a href="https://github.com/flapdoodle-oss/de.flapdoodle.embed.mongo">here</a>.
  * <p>
- * This test is currently only testing against Mongo 4 using {@link Version.Main#V4_0}.
+ * This test is currently only testing against Mongo 5 using {@link Version.Main#V5_0}.
  * <p>
  * Note that we also have {@link PagingQueryRealMongoTest} which executes against a real Mongo instance. It
  * currently requires some manual setup, but allows you to execute the same tests against multiple Mongo
@@ -50,8 +50,8 @@ import java.util.function.Predicate;
 @Slf4j
 class PagingQueryEmbeddedMongoTest {
 
-    // Currently only testing against Mongo 4.0
-    private static final Version.Main MONGODB_VERSION = Version.Main.V4_0;
+    // Currently, only testing against Mongo 5.0
+    private static final Version.Main MONGODB_VERSION = Version.Main.V5_0;
 
     private static MongodExecutable mongodExecutable;
     private static MongoTemplate mongoTemplate;

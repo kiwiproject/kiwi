@@ -6,7 +6,7 @@ import de.bwaldvogel.mongo.MongoServer;
 import de.bwaldvogel.mongo.backend.memory.MemoryBackend;
 import lombok.experimental.UtilityClass;
 import org.springframework.data.mongodb.core.MongoTemplate;
-import org.springframework.data.mongodb.core.SimpleMongoClientDbFactory;
+import org.springframework.data.mongodb.core.SimpleMongoClientDatabaseFactory;
 
 @UtilityClass
 public class MongoTestHelpers {
@@ -24,7 +24,7 @@ public class MongoTestHelpers {
 
     public static MongoTemplate newMongoTemplate(MongoServer mongoServer) {
         var connectionString = MongoTestHelpers.mongoConnectionString(mongoServer);
-        var factory = new SimpleMongoClientDbFactory(connectionString);
+        var factory = new SimpleMongoClientDatabaseFactory(connectionString);
         return new MongoTemplate(factory);
     }
 }

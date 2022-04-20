@@ -29,7 +29,7 @@
 
     <properties>
         <!-- Versions for required dependencies -->
-        <kiwi-bom.version>0.7.3</kiwi-bom.version>
+        <kiwi-bom.version>0.9.0</kiwi-bom.version>
 
         <!-- Versions for provided dependencies -->
         <retrying-again.version>1.0.7</retrying-again.version>
@@ -70,6 +70,11 @@
         <dependency>
             <groupId>com.google.guava</groupId>
             <artifactId>guava</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-api</artifactId>
         </dependency>
 
         <!-- provided dependencies -->
@@ -119,6 +124,25 @@
         <dependency>
             <groupId>com.jcraft</groupId>
             <artifactId>jsch</artifactId>
+            <scope>provided</scope>
+        </dependency>
+
+        <!--
+            NOTE:
+            The mongo driver to use is optional in Spring Data's POM.
+            You have to choose either the mongodb-driver-sync
+            or the mongodb-driver-reactivestreams as the driver.
+            The mongodb-driver-core is required by both of them.
+        -->
+        <dependency>
+            <groupId>org.mongodb</groupId>
+            <artifactId>mongodb-driver-sync</artifactId>
+            <scope>provided</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.mongodb</groupId>
+            <artifactId>mongodb-driver-core</artifactId>
             <scope>provided</scope>
         </dependency>
 
@@ -188,6 +212,12 @@
         <dependency>
             <groupId>org.liquibase</groupId>
             <artifactId>liquibase-core</artifactId>
+            <scope>test</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>ch.qos.logback</groupId>
+            <artifactId>logback-classic</artifactId>
             <scope>test</scope>
         </dependency>
 
