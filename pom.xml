@@ -133,7 +133,7 @@
             <groupId>org.mongodb</groupId>
             <artifactId>mongodb-driver-sync</artifactId>
             <!-- TODO: Remove version once update kiwi-bom with a mongodb-driver-sync.version property -->
-            <version>4.5.1</version>
+            <version>4.6.0</version>
             <scope>provided</scope>
         </dependency>
 
@@ -141,7 +141,7 @@
             <groupId>org.mongodb</groupId>
             <artifactId>mongodb-driver-core</artifactId>
              <!-- TODO: Remove version once update kiwi-bom with a mongodb-driver-core.version property -->
-            <version>4.5.1</version>
+            <version>4.6.0</version>
             <scope>provided</scope>
         </dependency>
 
@@ -168,7 +168,7 @@
             <groupId>org.springframework.data</groupId>
             <artifactId>spring-data-mongodb</artifactId>
             <!-- TODO: Remove version when update kiwi-bom's spring-data-mongod.version property -->
-            <version>3.3.3</version>
+            <version>3.3.4</version>
             <scope>provided</scope>
             <!-- TODO: Remove exclusions when add the new mongo dependencies to the BOM -->
             <exclusions>
