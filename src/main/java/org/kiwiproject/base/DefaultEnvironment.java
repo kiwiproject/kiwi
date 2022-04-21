@@ -14,7 +14,6 @@ import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 import java.util.Date;
 import java.util.Map;
-import java.util.Optional;
 import java.util.OptionalLong;
 import java.util.Properties;
 import java.util.concurrent.TimeUnit;
@@ -136,38 +135,6 @@ public class DefaultEnvironment implements KiwiEnvironment {
         } catch (Exception e) {
             LOG.trace("Unable to get current process ID", e);
             return OptionalLong.empty();
-        }
-    }
-
-    /**
-     * {@inheritDoc}
-     *
-     * @deprecated replaced by {@link #currentPid()}
-     */
-    @Override
-    @Deprecated(since = "1.1.0", forRemoval = true)
-    @KiwiDeprecated(since = "1.1.0", removeAt = "2.0.0", replacedBy = "currentPid()",
-            reference = "https://github.com/kiwiproject/kiwi/issues/642")
-    public String currentProcessId() {
-        return String.valueOf(currentPid());
-    }
-
-    /**
-     * {@inheritDoc}
-     *
-     * @deprecated replaced by {@link #tryGetCurrentPid()}
-     */
-    @Override
-    @Deprecated(since = "1.1.0", forRemoval = true)
-    @KiwiDeprecated(since = "1.1.0", removeAt = "2.0.0", replacedBy = "tryGetCurrentPid()",
-            reference = "https://github.com/kiwiproject/kiwi/issues/642")
-    public Optional<Integer> tryGetCurrentProcessId() {
-        try {
-            String value = currentProcessId();
-            return Optional.of(Integer.parseInt(value));
-        } catch (Exception e) {
-            LOG.trace("Unable to get current process ID", e);
-            return Optional.empty();
         }
     }
 

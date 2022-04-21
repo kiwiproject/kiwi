@@ -1,6 +1,5 @@
 package org.kiwiproject.base;
 
-import java.lang.management.ManagementFactory;
 import java.sql.Time;
 import java.sql.Timestamp;
 import java.time.Clock;
@@ -12,7 +11,6 @@ import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.Date;
 import java.util.Map;
-import java.util.Optional;
 import java.util.OptionalLong;
 import java.util.Properties;
 import java.util.concurrent.TimeUnit;
@@ -182,33 +180,6 @@ public interface KiwiEnvironment {
      * @see ProcessHandle#pid()
      */
     OptionalLong tryGetCurrentPid();
-
-    /**
-     * Returns the process ID of the currently executing JVM. This method does not perform any error checking. Use
-     * {@link #tryGetCurrentProcessId()} for a safer version, which returns the result as an integer (wrapped in an
-     * optional).
-     *
-     * @return process ID
-     * @apiNote Originally defined to return a string due to the implementation using {@link ManagementFactory#getRuntimeMXBean()}
-     * to get the process information in the form {@code pid@hostname}
-     * @deprecated replaced by {@link #currentPid()}
-     */
-    @Deprecated(since = "1.1.0", forRemoval = true)
-    @KiwiDeprecated(since = "1.1.0", removeAt = "2.0.0", replacedBy = "currentPid()",
-            reference = "https://github.com/kiwiproject/kiwi/issues/642")
-    String currentProcessId();
-
-    /**
-     * Tries to obtain the process ID of the currently executing JVM. If any problem occurs, it is caught and an
-     * empty optional is returned.
-     *
-     * @return am optional containing the process ID, or empty if <em>any</em> problem occurred
-     * @deprecated replaced by {@link #tryGetCurrentPid()}
-     */
-    @Deprecated(since = "1.1.0", forRemoval = true)
-    @KiwiDeprecated(since = "1.1.0", removeAt = "2.0.0", replacedBy = "tryGetCurrentPid()",
-            reference = "https://github.com/kiwiproject/kiwi/issues/642")
-    Optional<Integer> tryGetCurrentProcessId();
 
     /**
      * Sleep for the given number of milliseconds.
