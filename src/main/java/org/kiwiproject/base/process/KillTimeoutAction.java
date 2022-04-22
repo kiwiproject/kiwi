@@ -22,5 +22,5 @@ public enum KillTimeoutAction {
     /**
      * An exception ({@link IllegalStateException}) will be thrown after timeout
      */
-    THROW_EXCEPTION;
+    THROW_EXCEPTION
 }

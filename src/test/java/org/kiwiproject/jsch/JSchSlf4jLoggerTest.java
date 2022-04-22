@@ -69,7 +69,7 @@ class JSchSlf4jLoggerTest {
 
             assertThat(logger.isEnabled(999)).isFalse();
 
-            var logOutput = new String(outputStream.toByteArray(), StandardCharsets.UTF_8);
+            var logOutput = outputStream.toString(StandardCharsets.UTF_8);
             assertThat(logOutput).contains("Was passed invalid level: 999");
         }
 
@@ -99,7 +99,7 @@ class JSchSlf4jLoggerTest {
 
             logger.log(-1, "test DEBUG message");
 
-            var logOutput = new String(outputStream.toByteArray(), StandardCharsets.UTF_8);
+            var logOutput = outputStream.toString(StandardCharsets.UTF_8);
             assertThat(logOutput)
                     .contains("Was passed invalid level: -1")
                     .contains(" (Message the caller wanted to log: test DEBUG message)");
@@ -111,7 +111,7 @@ class JSchSlf4jLoggerTest {
 
             logAtAllLevels();
 
-            var logOutput = new String(outputStream.toByteArray(), StandardCharsets.UTF_8);
+            var logOutput = outputStream.toString(StandardCharsets.UTF_8);
             assertThat(logOutput).contains(
                     "test DEBUG message",
                     "test INFO message",
@@ -127,7 +127,7 @@ class JSchSlf4jLoggerTest {
 
             logAtAllLevels();
 
-            var logOutput = new String(outputStream.toByteArray(), StandardCharsets.UTF_8);
+            var logOutput = outputStream.toString(StandardCharsets.UTF_8);
             assertThat(logOutput).contains(
                     "test DEBUG message",
                     "test INFO message",
@@ -144,7 +144,7 @@ class JSchSlf4jLoggerTest {
 
             logAtAllLevels();
 
-            var logOutput = new String(outputStream.toByteArray(), StandardCharsets.UTF_8);
+            var logOutput = outputStream.toString(StandardCharsets.UTF_8);
             assertThat(logOutput).contains(
                     "test WARN message",
                     "test WARN message",
@@ -161,7 +161,7 @@ class JSchSlf4jLoggerTest {
 
             logAtAllLevels();
 
-            var logOutput = new String(outputStream.toByteArray(), StandardCharsets.UTF_8);
+            var logOutput = outputStream.toString(StandardCharsets.UTF_8);
             assertThat(logOutput).contains(
                     "test WARN message",
                     "test WARN message",
@@ -177,7 +177,7 @@ class JSchSlf4jLoggerTest {
 
             logAtAllLevels();
 
-            var logOutput = new String(outputStream.toByteArray(), StandardCharsets.UTF_8);
+            var logOutput = outputStream.toString(StandardCharsets.UTF_8);
             assertThat(logOutput).contains(
                     "test ERROR message",
                     "test FATAL message")
