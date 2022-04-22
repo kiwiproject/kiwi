@@ -28,7 +28,6 @@ import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 import java.util.Date;
 import java.util.Map;
-import java.util.Optional;
 import java.util.Properties;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
@@ -239,40 +238,6 @@ class DefaultEnvironmentTest {
             var optionalPid = envSpy.tryGetCurrentPid();
             assertThat(optionalPid).isEmpty();
         }
-    }
-
-    @SuppressWarnings("removal")
-    @Test
-    void testCurrentProcessId() {
-        String pid = env.currentProcessId();
-        assertThat(pid).isNotNull();
-        assertIsNumeric(pid);
-    }
-
-    private void assertIsNumeric(String pid) throws NumberFormatException {
-        //noinspection ResultOfMethodCallIgnored
-        Integer.parseInt(pid);
-    }
-
-    @SuppressWarnings("removal")
-    @Test
-    void testTryGetCurrentProcessId() {
-        Optional<Integer> optionalPid = env.tryGetCurrentProcessId();
-        assertThat(optionalPid)
-                .isPresent()
-                .hasValueSatisfying(value -> assertThat(value).isNotNegative());
-    }
-
-    @SuppressWarnings("removal")
-    @Test
-    void testTryGetCurrentProcessId_WhenExceptionThrown() {
-        var envSpy = spy(env);
-        doThrow(new UnsupportedOperationException("no pid for you!"))
-                .when(envSpy)
-                .currentProcessId();
-
-        Optional<Integer> optionalPid = envSpy.tryGetCurrentProcessId();
-        assertThat(optionalPid).isEmpty();
     }
 
     @Test
