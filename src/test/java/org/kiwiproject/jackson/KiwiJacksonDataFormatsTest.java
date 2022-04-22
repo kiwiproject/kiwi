@@ -205,10 +205,10 @@ class KiwiJacksonDataFormatsTest {
 
         @Test
         void shouldReturnFalse_WhenNotYamlContent() {
-//            assertThat(KiwiJacksonDataFormats.isYaml(JSON_US_ASCII_CHARSET, US_ASCII)).isFalse();
-//            assertThat(KiwiJacksonDataFormats.isYaml(XML_US_ASCII_CHARSET, US_ASCII)).isFalse();
+            assertThat(KiwiJacksonDataFormats.isYaml(JSON_US_ASCII_CHARSET, US_ASCII)).isFalse();
+            assertThat(KiwiJacksonDataFormats.isYaml(XML_US_ASCII_CHARSET, US_ASCII)).isFalse();
             assertThat(KiwiJacksonDataFormats.isYaml(YAML_INFORMAL_US_ASCII_CHARSET, US_ASCII)).isFalse();
-//            assertThat(KiwiJacksonDataFormats.isYaml(RANDOM_TEXT, US_ASCII)).isFalse();
+            assertThat(KiwiJacksonDataFormats.isYaml(RANDOM_TEXT, US_ASCII)).isFalse();
         }
     }
 
