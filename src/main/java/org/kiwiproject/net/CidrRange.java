@@ -1,6 +1,7 @@
 package org.kiwiproject.net;
 
 import com.google.common.net.InetAddresses;
+
 import java.math.BigInteger;
 import java.net.InetAddress;
 import java.nio.ByteBuffer;
@@ -12,7 +13,6 @@ import java.nio.ByteBuffer;
  * <a href="https://github.com/edazdarevic/CIDRUtils">https://github.com/edazdarevic/CIDRUtils</a> which has not been
  * updated since 2019 and seems to be unmaintained.
  */
-@SuppressWarnings("UnstableApiUsage")
 public class CidrRange {
 
     private final InetAddress inetAddress;

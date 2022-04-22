@@ -486,7 +486,6 @@ class JsonHelperAdvancedFeaturesTest {
                             Map.of("foo2", "bar2")
                     );
 
-            //noinspection unchecked
             softly.assertThat(newSampleObject.getObjectMap())
                     .containsOnlyKeys("key1", "key2", "key4")
                     .contains(entry("key4", List.of(4.2)));

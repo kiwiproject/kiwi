@@ -42,7 +42,6 @@ import java.util.function.Supplier;
  * <p>
  * Last, note that {@link SimpleHostInfo} <em>only contains the host name and host address as a string</em>.
  */
-@SuppressWarnings("UnstableApiUsage")  // Because Guava's InetAddresses is marked @Beta (but has been there a long time)
 @UtilityClass
 @Slf4j
 public class KiwiInternetAddresses {

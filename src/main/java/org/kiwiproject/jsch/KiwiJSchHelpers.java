@@ -51,7 +51,6 @@ public class KiwiJSchHelpers {
         session.setConfig("server_host_key", keyExchangeType);
     }
 
-    @SuppressWarnings("UnstableApiUsage")
     private static boolean hostMatchesKnownHost(String hostOrIpToFind, HostKey hostKey) {
         var knownHost = new KnownHost(hostKey);
         if (InetAddresses.isInetAddress(hostOrIpToFind)) {
