@@ -25,7 +25,6 @@ public class SecureTestConstants {
         LOG.info("Set JKS_FILE_PATH to {}", JKS_FILE_PATH);
     }
 
-    @SuppressWarnings("UnstableApiUsage")
     private static String getJksFilePath() {
         try {
             var uri = Resources.getResource(SecureTestConstants.JKS_FILE_NAME).toURI();

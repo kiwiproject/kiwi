@@ -350,7 +350,6 @@ class KiwiJacksonDataFormatsTest {
      * "Stolen" from {@link io.dropwizard.testing.FixtureHelpers} since they made it private there for whatever
      * reason! Renamed so as not to collide with the fixture method.
      */
-    @SuppressWarnings("UnstableApiUsage")
     private static String fixtureWithCharset(String filename, Charset charset) {
         try {
             return Resources.toString(Resources.getResource(filename), charset).trim();

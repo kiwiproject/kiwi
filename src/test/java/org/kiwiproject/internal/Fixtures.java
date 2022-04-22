@@ -19,7 +19,7 @@ public class Fixtures {
 
     public static String fixture(String resourceName) {
         try {
-            @SuppressWarnings("UnstableApiUsage") var url = Resources.getResource(resourceName);
+            var url = Resources.getResource(resourceName);
             var path = Paths.get(url.toURI());
             return Files.readString(path, StandardCharsets.UTF_8);
         } catch (URISyntaxException | IOException e) {
@@ -28,7 +28,7 @@ public class Fixtures {
     }
 
     public static Path fixturePath(String resourceName) {
-        @SuppressWarnings("UnstableApiUsage") var url = Resources.getResource(resourceName);
+        var url = Resources.getResource(resourceName);
         try {
             return Paths.get(url.toURI());
         } catch (URISyntaxException e) {

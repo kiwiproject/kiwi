@@ -22,7 +22,6 @@ import java.net.UnknownHostException;
 import java.util.List;
 import java.util.function.Supplier;
 
-@SuppressWarnings("UnstableApiUsage")
 @DisplayName("KiwiInternetAddresses")
 class KiwiInternetAddressesTest {
 
