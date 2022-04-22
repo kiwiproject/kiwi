@@ -461,7 +461,7 @@ public class KiwiUrls {
     public static OptionalInt extractPortFrom(String url) {
         var optionalPort = findGroupInUrl(url, PORT_GROUP);
 
-        var port = optionalPort.map(Integer::parseInt)
+        int port = optionalPort.map(Integer::parseInt)
                 .orElseGet(() -> extractSchemeFrom(url).map(KiwiUrls::defaultPortForScheme).orElse(UNKNOWN_PORT));
 
         if (port > 0) {
