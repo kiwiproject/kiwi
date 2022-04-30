@@ -9,7 +9,9 @@ import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.assertj.core.api.SoftAssertions;
 import org.assertj.core.api.junit.jupiter.SoftAssertionsExtension;
 import org.assertj.core.util.Throwables;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
+import org.junit.jupiter.api.RepeatedTest;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 
@@ -17,6 +19,7 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.UncheckedIOException;
 
+@DisplayName("KiwiThrowables")
 @ExtendWith(SoftAssertionsExtension.class)
 class KiwiThrowablesTest {
 
@@ -145,9 +148,11 @@ class KiwiThrowablesTest {
     }
 
     @Test
-    void testEmptyThrowableInfo() {
+    void testEmptyThrowableInfoConstantField() {
+        assertThat(EMPTY_THROWABLE_INFO.isEmptyInstance()).isTrue();
         assertThat(EMPTY_THROWABLE_INFO.type).isNull();
         assertThat(EMPTY_THROWABLE_INFO.hasMessage()).isFalse();
+        assertThat(EMPTY_THROWABLE_INFO.hasCause()).isFalse();
         assertThat(EMPTY_THROWABLE_INFO.stackTrace).isNull();
         assertThat(EMPTY_THROWABLE_INFO.cause).isNull();
     }
@@ -156,15 +161,19 @@ class KiwiThrowablesTest {
     void testThrowableInfo_OfNullThrowable(SoftAssertions softly) {
         var info = KiwiThrowables.ThrowableInfo.of(null);
 
+        softly.assertThat(info.isEmptyInstance()).isTrue();
+
         softly.assertThat(info.type).isNull();
         softly.assertThat(info.getType()).isEmpty();
 
+        softly.assertThat(info.hasMessage()).isFalse();
         softly.assertThat(info.message).isNull();
         softly.assertThat(info.getMessage()).isEmpty();
 
         softly.assertThat(info.stackTrace).isNull();
         softly.assertThat(info.getStackTrace()).isEmpty();
 
+        softly.assertThat(info.hasCause()).isFalse();
         softly.assertThat(info.cause).isNull();
         softly.assertThat(info.getCause()).isEmpty();
     }
@@ -173,15 +182,19 @@ class KiwiThrowablesTest {
     void testThrowableInfo_OfNonNullThrowable_WithCause(SoftAssertions softly) {
         var info = KiwiThrowables.ThrowableInfo.of(ERROR);
 
+        softly.assertThat(info.isEmptyInstance()).isFalse();
+
         softly.assertThat(info.type).isEqualTo(ERROR.getClass().getName());
         softly.assertThat(info.getType()).isPresent().contains(ERROR.getClass().getName());
 
+        softly.assertThat(info.hasMessage()).isTrue();
         softly.assertThat(info.message).isEqualTo(WRAPPED_ERROR_MESSAGE);
         softly.assertThat(info.getMessage()).isPresent().contains(WRAPPED_ERROR_MESSAGE);
 
         softly.assertThat(info.stackTrace).isEqualTo(Throwables.getStackTrace(ERROR));
         softly.assertThat(info.getStackTrace()).isPresent().contains(Throwables.getStackTrace(ERROR));
 
+        softly.assertThat(info.hasCause()).isTrue();
         softly.assertThat(info.cause).isEqualTo(CAUSE);
         softly.assertThat(info.getCause()).isPresent().contains(CAUSE);
     }
@@ -191,15 +204,19 @@ class KiwiThrowablesTest {
         var ex = new IOException("I/O error");
         var info = KiwiThrowables.ThrowableInfo.of(ex);
 
+        softly.assertThat(info.isEmptyInstance()).isFalse();
+
         softly.assertThat(info.type).isEqualTo(ex.getClass().getName());
         softly.assertThat(info.getType()).isPresent().contains(ex.getClass().getName());
 
+        softly.assertThat(info.hasMessage()).isTrue();
         softly.assertThat(info.message).isEqualTo(ex.getMessage());
         softly.assertThat(info.getMessage()).isPresent().contains(ex.getMessage());
 
         softly.assertThat(info.stackTrace).isEqualTo(Throwables.getStackTrace(ex));
         softly.assertThat(info.getStackTrace()).isPresent().contains(Throwables.getStackTrace(ex));
 
+        softly.assertThat(info.hasCause()).isFalse();
         softly.assertThat(info.cause).isNull();
         softly.assertThat(info.getCause()).isEmpty();
     }
@@ -209,15 +226,19 @@ class KiwiThrowablesTest {
         var ex = new IOException();
         var info = KiwiThrowables.ThrowableInfo.of(ex);
 
+        softly.assertThat(info.isEmptyInstance()).isFalse();
+
         softly.assertThat(info.type).isEqualTo(ex.getClass().getName());
         softly.assertThat(info.getType()).isPresent().contains(ex.getClass().getName());
 
+        softly.assertThat(info.hasMessage()).isFalse();
         softly.assertThat(info.message).isNull();
         softly.assertThat(info.getMessage()).isEmpty();
 
         softly.assertThat(info.stackTrace).isEqualTo(Throwables.getStackTrace(ex));
         softly.assertThat(info.getStackTrace()).isPresent().contains(Throwables.getStackTrace(ex));
 
+        softly.assertThat(info.hasCause()).isFalse();
         softly.assertThat(info.cause).isNull();
         softly.assertThat(info.getCause()).isEmpty();
     }
@@ -293,4 +314,23 @@ class KiwiThrowablesTest {
         }
     }
 
+    @Nested
+    class EmptyThrowableInfo {
+
+        @Test
+        void shouldReturnEmptyInstance(SoftAssertions softly) {
+            var throwableInfo = KiwiThrowables.emptyThrowableInfo();
+
+            softly.assertThat(throwableInfo.isEmptyInstance()).isTrue();
+            softly.assertThat(throwableInfo.type).isNull();
+            softly.assertThat(throwableInfo.message).isNull();
+            softly.assertThat(throwableInfo.cause).isNull();
+            softly.assertThat(throwableInfo.stackTrace).isNull();
+        }
+
+        @RepeatedTest(5)
+        void shouldReturnSingleton() {
+            assertThat(KiwiThrowables.emptyThrowableInfo()).isSameAs(KiwiThrowables.emptyThrowableInfo());
+        }
+    }
 }

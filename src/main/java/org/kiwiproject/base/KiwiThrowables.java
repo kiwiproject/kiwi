@@ -1,5 +1,7 @@
 package org.kiwiproject.base;
 
+import static java.util.Objects.isNull;
+import static java.util.Objects.nonNull;
 import static org.apache.commons.lang3.StringUtils.isNotBlank;
 import static org.kiwiproject.base.KiwiPreconditions.checkArgumentNotNull;
 
@@ -9,6 +11,7 @@ import lombok.AllArgsConstructor;
 import lombok.experimental.UtilityClass;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 
+import javax.annotation.Nullable;
 import java.util.Optional;
 
 /**
@@ -33,41 +36,101 @@ public final class KiwiThrowables {
         public final Throwable cause;
 
         /**
-         * Factory method
-         *
-         * @param throwable original throwable
-         * @return constructed instance
+         * @return a new instance representing the "empty" ThrowableInfo
+         * @apiNote This is currently not public, but this might change in the future. For now, we assume that the
+         * singleton instance returned by {@link #emptyThrowableInfo()} is the correct method to use. This class is
+         * immutable so creating new instances instead of using the singleton instance doesn't seem to make sense.
          */
-        public static ThrowableInfo of(Throwable throwable) {
-            return new ThrowableInfo(
-                    typeOfNullable(throwable).orElse(null),
-                    messageOfNullable(throwable).orElse(null),
-                    stackTraceOfNullable(throwable).orElse(null),
-                    nextCauseOfNullable(throwable).orElse(null));
+        private static ThrowableInfo emptyInstance() {
+            return new ThrowableInfo(null, null, null, null);
         }
 
+        /**
+         * Factory method. If {@code throwable} is null, the returned instance will contain all null values, and
+         * {@link  #isEmptyInstance()} will return true.
+         *
+         * @param throwable original throwable, possibly null
+         * @return constructed instance
+         */
+        public static ThrowableInfo of(@Nullable Throwable throwable) {
+            if (isNull(throwable)) {
+                return emptyThrowableInfo();
+            }
+
+            return new ThrowableInfo(
+                    typeOf(throwable),
+                    messageOf(throwable).orElse(null),
+                    stackTraceOf(throwable),
+                    nextCauseOf(throwable).orElse(null));
+        }
+
+        /**
+         * Use this method to check whether this instance was created from a null Throwable object.
+         *
+         * @return true to indicate that this instance was created from a null Throwable; otherwise false
+         */
+        public boolean isEmptyInstance() {
+            return isNull(type);
+        }
+
+        /**
+         * @return true if the Throwable this instance came from was not null and contained a message, otherwise false
+         */
         public boolean hasMessage() {
             return isNotBlank(message);
         }
 
+        /**
+         * @return true if the Throwable this instance came from was not null and had a cause, otherwise false
+         */
+        public boolean hasCause() {
+            return nonNull(cause);
+        }
+
+        /**
+         * @return an Optional containing the type of Throwable this instance came from, or an empty Optional
+         */
         public Optional<String> getType() {
             return Optional.ofNullable(type);
         }
 
+        /**
+         * @return an Optional containing the message from the Throwable this instance came from, or an empty Optional
+         */
         public Optional<String> getMessage() {
             return Optional.ofNullable(message);
         }
 
+        /**
+         * @return an Optional containing the stack trace of the Throwable this instance came from, or an empty Optional
+         */
         public Optional<String> getStackTrace() {
             return Optional.ofNullable(stackTrace);
         }
 
+        /**
+         * @return an Optional containing the cause from the Throwable this instance came from, or an empty Optional
+         * if the original Throwable did not have a cause or this instance came from a null Throwable
+         */
         public Optional<Throwable> getCause() {
             return Optional.ofNullable(cause);
         }
     }
 
-    public static final ThrowableInfo EMPTY_THROWABLE_INFO = ThrowableInfo.of(null);
+    /**
+     * Represents an "empty" {@link ThrowableInfo}, which is when the Throwable it comes from is null.
+     */
+    public static final ThrowableInfo EMPTY_THROWABLE_INFO = ThrowableInfo.emptyInstance();
+
+    /**
+     * Get the singleton "empty" instance.
+     *
+     * @return the "empty" ThrowableInfo singleton instance
+     * @see #EMPTY_THROWABLE_INFO
+     */
+    public static ThrowableInfo emptyThrowableInfo() {
+        return EMPTY_THROWABLE_INFO;
+    }
 
     /**
      * Create a {@link ThrowableInfo} from given {@link Throwable}.
@@ -89,7 +152,7 @@ public final class KiwiThrowables {
      * @return a {@link ThrowableInfo} instance
      * @throws IllegalArgumentException if {@code throwable} is {@code null}
      */
-    public static Optional<ThrowableInfo> throwableInfoOfNullable(Throwable throwable) {
+    public static Optional<ThrowableInfo> throwableInfoOfNullable(@Nullable Throwable throwable) {
         return Optional.ofNullable(throwable).map(KiwiThrowables::throwableInfoOfNonNull);
     }
 
@@ -112,7 +175,7 @@ public final class KiwiThrowables {
      * @param throwable the {@link Throwable} to analyze
      * @return the direct cause
      */
-    public static Optional<Throwable> nextCauseOfNullable(Throwable throwable) {
+    public static Optional<Throwable> nextCauseOfNullable(@Nullable Throwable throwable) {
         return Optional.ofNullable(throwable).map(Throwable::getCause);
     }
 
@@ -136,7 +199,7 @@ public final class KiwiThrowables {
      * @return the root cause
      * @throws IllegalArgumentException if {@code throwable} if {@code null}
      */
-    public static Optional<Throwable> rootCauseOfNullable(Throwable throwable) {
+    public static Optional<Throwable> rootCauseOfNullable(@Nullable Throwable throwable) {
         return Optional.ofNullable(throwable).map(ExceptionUtils::getRootCause);
     }
 
@@ -159,7 +222,7 @@ public final class KiwiThrowables {
      * @param throwable the {@link Throwable} to analyze
      * @return the type
      */
-    public static Optional<String> typeOfNullable(Throwable throwable) {
+    public static Optional<String> typeOfNullable(@Nullable Throwable throwable) {
         return Optional.ofNullable(throwable)
                 .map(Object::getClass)
                 .map(Class::getName);
@@ -184,7 +247,7 @@ public final class KiwiThrowables {
      * @param throwable the {@link Throwable} to analyze
      * @return the message, if present or {@link Optional#empty()} if not
      */
-    public static Optional<String> messageOfNullable(Throwable throwable) {
+    public static Optional<String> messageOfNullable(@Nullable Throwable throwable) {
         return Optional.ofNullable(throwable).map(Throwable::getMessage);
     }
 
@@ -210,7 +273,7 @@ public final class KiwiThrowables {
      * @return the stack trace of the {@code throwable}, or {@code null}
      * @throws IllegalArgumentException if {@code throwable} is {@code null}
      */
-    public static Optional<String> stackTraceOfNullable(Throwable throwable) {
+    public static Optional<String> stackTraceOfNullable(@Nullable Throwable throwable) {
         return Optional.ofNullable(throwable)
                 .map(ExceptionUtils::getStackTrace);
     }
@@ -219,7 +282,7 @@ public final class KiwiThrowables {
      * If {@code throwable} is of type {@code wrapperClass}, then "unwrap" the cause and return it. Otherwise return
      * {@code throwable}
      *
-     * @param throwable the {@link Throwable} to unwrap if its class matches
+     * @param throwable    the {@link Throwable} to unwrap if its class matches
      * @param wrapperClass the typ eof class to match
      * @return the unwrapped {@link Throwable} or the original {@code throwable}
      */
