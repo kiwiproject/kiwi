@@ -26,9 +26,10 @@ import java.lang.annotation.Target;
  * are <em>inclusive</em> values, e.g. for a range with a minimum of 5 and maximum of 10, the values 5 and 10 are
  * considered as part of the range.
  * <p>
- * Use the {@link #minLabel()}  and {@link #maxLabel()} to specify custom labels to use in place of the min and max
+ * Use the {@link #minLabel()} and {@link #maxLabel()} to specify custom labels to use in place of the min and max
  * values. This is useful in cases where the min and max are large numbers or when validating date/time values where
- * the min and max are specified as milliseconds since the epoch.
+ * the min and max are specified as milliseconds since the epoch. Note specifically that when both a minimum and a
+ * maximum are supplied, and you want to use labels, then you should supply both the min and max labels.
  * <p>
  * The supported types are:
  * <ul>

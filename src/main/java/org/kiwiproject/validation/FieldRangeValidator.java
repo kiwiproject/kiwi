@@ -4,6 +4,7 @@ import static com.google.common.base.Verify.verify;
 import static java.util.Objects.isNull;
 import static java.util.Objects.nonNull;
 import static org.apache.commons.lang3.StringUtils.isBlank;
+import static org.apache.commons.lang3.StringUtils.isNotBlank;
 import static org.kiwiproject.validation.InternalKiwiValidators.TEMPLATE_REQUIRED;
 import static org.kiwiproject.validation.InternalKiwiValidators.toComparableOrNull;
 
@@ -18,17 +19,41 @@ import javax.validation.ConstraintValidatorContext;
 @Slf4j
 public class FieldRangeValidator implements ConstraintValidator<FieldRange, Object> {
 
-    private static final String TEMPLATE_BETWEEN = "{org.kiwiproject.validation.FieldRange.between.message}";
-    private static final String TEMPLATE_MIN_ONLY = "{org.kiwiproject.validation.FieldRange.minOnly.message}";
-    private static final String TEMPLATE_MAX_ONLY = "{org.kiwiproject.validation.FieldRange.maxOnly.message}";
-    private static final String TEMPLATE_AFTER_EXCLUSIVE = "{org.kiwiproject.validation.FieldRange.afterExclusive.message}";
-    private static final String TEMPLATE_AFTER_INCLUSIVE = "{org.kiwiproject.validation.FieldRange.afterInclusive.message}";
+    private static final String TEMPLATE_BETWEEN_MIN_MAX_VALUES = "{org.kiwiproject.validation.FieldRange.between.message.minMaxValues}";
+    private static final String TEMPLATE_BETWEEN_MIN_MAX_LABELS = "{org.kiwiproject.validation.FieldRange.between.message.minMaxLabels}";
+    private static final String TEMPLATE_MIN_ONLY_MIN_MAX_VALUES = "{org.kiwiproject.validation.FieldRange.minOnly.message.minMaxValues}";
+    private static final String TEMPLATE_MIN_ONLY_MIN_MAX_LABELS = "{org.kiwiproject.validation.FieldRange.minOnly.message.minMaxLabels}";
+    private static final String TEMPLATE_MAX_ONLY_MIN_MAX_VALUES = "{org.kiwiproject.validation.FieldRange.maxOnly.message.minMaxValues}";
+    private static final String TEMPLATE_MAX_ONLY_MIN_MAX_LABELS = "{org.kiwiproject.validation.FieldRange.maxOnly.message.minMaxLabels}";
+    private static final String TEMPLATE_AFTER_EXCLUSIVE_MIN_MAX_VALUES = "{org.kiwiproject.validation.FieldRange.afterExclusive.message.minMaxValues}";
+    private static final String TEMPLATE_AFTER_EXCLUSIVE_MIN_MAX_LABELS = "{org.kiwiproject.validation.FieldRange.afterExclusive.message.minMaxLabels}";
+    private static final String TEMPLATE_AFTER_INCLUSIVE_MIN_MAX_VALUES = "{org.kiwiproject.validation.FieldRange.afterInclusive.message.minMaxValues}";
+    private static final String TEMPLATE_AFTER_INCLUSIVE_MIN_MAX_LABELS = "{org.kiwiproject.validation.FieldRange.afterInclusive.message.minMaxLabels}";
 
     private FieldRange fieldRange;
+    private String templateBetween;
+    private String templateMinOnly;
+    private String templateMaxOnly;
+    private String templateAfterExclusive;
+    private String templateAfterInclusive;
 
+    /**
+     * @param constraintAnnotation annotation instance for a given constraint declaration
+     * @implNote if <em>either</em> {@link FieldRange#minLabel()} or {@link FieldRange#maxLabel()} is present, this selects
+     * the template containing labels. This design is specifically due to the change in Hibernate Validator 6.2.x which
+     * disables EL (expression language) by default for custom validators, and allows this (custom) validator to
+     * operate correctly without EL enabled.
+     */
     @Override
     public void initialize(FieldRange constraintAnnotation) {
         this.fieldRange = constraintAnnotation;
+
+        var useLabels = isNotBlank(constraintAnnotation.minLabel()) || isNotBlank(constraintAnnotation.maxLabel());
+        this.templateBetween = useLabels ? TEMPLATE_BETWEEN_MIN_MAX_LABELS : TEMPLATE_BETWEEN_MIN_MAX_VALUES;
+        this.templateMinOnly = useLabels ? TEMPLATE_MIN_ONLY_MIN_MAX_LABELS : TEMPLATE_MIN_ONLY_MIN_MAX_VALUES;
+        this.templateMaxOnly = useLabels ? TEMPLATE_MAX_ONLY_MIN_MAX_LABELS : TEMPLATE_MAX_ONLY_MIN_MAX_VALUES;
+        this.templateAfterExclusive = useLabels ? TEMPLATE_AFTER_EXCLUSIVE_MIN_MAX_LABELS : TEMPLATE_AFTER_EXCLUSIVE_MIN_MAX_VALUES;
+        this.templateAfterInclusive = useLabels ? TEMPLATE_AFTER_INCLUSIVE_MIN_MAX_LABELS : TEMPLATE_AFTER_INCLUSIVE_MIN_MAX_VALUES;
     }
 
     @Override
@@ -73,14 +98,14 @@ public class FieldRangeValidator implements ConstraintValidator<FieldRange, Obje
 
         var min = toComparableOrNull(fieldRange.min(), start);
         if (nonNull(min) && start.compareTo(min) < 0) {
-            var template = isBlank(fieldRange.max()) ? TEMPLATE_MIN_ONLY : TEMPLATE_BETWEEN;
+            var template = isBlank(fieldRange.max()) ? templateMinOnly : templateBetween;
             KiwiValidations.addError(context, template, fieldRange.startField());
             validity = Validity.INVALID;
         }
 
         var max = toComparableOrNull(fieldRange.max(), end);
         if (nonNull(max) && end.compareTo(max) > 0) {
-            var template = isBlank(fieldRange.min()) ? TEMPLATE_MAX_ONLY : TEMPLATE_BETWEEN;
+            var template = isBlank(fieldRange.min()) ? templateMaxOnly : templateBetween;
             KiwiValidations.addError(context, template, fieldRange.endField());
             validity = Validity.INVALID;
         }
@@ -124,11 +149,11 @@ public class FieldRangeValidator implements ConstraintValidator<FieldRange, Obje
 
         if (fieldRange.allowStartToEqualEnd()) {
             if (start.compareTo(end) > 0) {
-                KiwiValidations.addError(context, TEMPLATE_AFTER_INCLUSIVE, fieldRange.startField());
+                KiwiValidations.addError(context, templateAfterInclusive, fieldRange.startField());
                 validity = Validity.INVALID;
             }
         } else if (start.compareTo(end) >= 0) {
-            KiwiValidations.addError(context, TEMPLATE_AFTER_EXCLUSIVE, fieldRange.startField());
+            KiwiValidations.addError(context, templateAfterExclusive, fieldRange.startField());
             validity = Validity.INVALID;
         }
 
