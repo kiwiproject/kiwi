@@ -14,6 +14,7 @@ import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.kiwiproject.concurrent.Async.Mode;
 
+import java.time.Duration;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
@@ -338,29 +339,34 @@ class AsyncTest {
     class WithMaxTimeout {
 
         @Test
-        void testWithMaxTimeout() {
-            var task = new ConcurrentTask();
+        void shouldTimeout_WhenTaskTakesLongerThan_MaxTimeout() {
+            var task = new ConcurrentTask(Duration.ofSeconds(10));
             CompletableFuture<Integer> future = Async.doAsync(task::supply);
             CompletableFuture<Integer> futureWithTimeout = Async.withMaxTimeout(future, 5, TimeUnit.MILLISECONDS);
 
-            // verify that immediately after triggering run, the count is still 0
-            assertThat(task.getCurrentCount()).isZero();
+            assertThat(task.getCurrentCount())
+                    .describedAs("immediately after triggering run, the count should still be 0")
+                    .isZero();
 
             await().atMost(FIVE_HUNDRED_MILLISECONDS).until(futureWithTimeout::isCompletedExceptionally);
 
-            assertThat(futureWithTimeout)
-                    .hasFailedWithThrowableThat()
-                    .isExactlyInstanceOf(AsyncException.class)
-                    .hasMessage("TimeoutException occurred (maximum wait was specified as 5 MILLISECONDS)")
-                    .hasCauseInstanceOf(TimeoutException.class);
+            assertThat(task.getCurrentCount())
+                    .describedAs("the count should still be 0, since we expect to have timed out before the counter is incremented")
+                    .isZero();
+
+            assertThat(futureWithTimeout).isNotCancelled();
 
             var thrown = catchThrowable(futureWithTimeout::get);
             assertThat(thrown)
                     .isInstanceOf(ExecutionException.class)
                     .hasCauseExactlyInstanceOf(AsyncException.class);
 
-            var cause = thrown.getCause();
-            assertThat(cause).hasMessage("TimeoutException occurred (maximum wait was specified as 5 MILLISECONDS)");
+            var executionException = (ExecutionException) thrown;
+            var asyncException = (AsyncException) executionException.getCause();
+
+            assertThat(asyncException)
+                    .hasMessage("TimeoutException occurred (maximum wait was specified as 5 MILLISECONDS)")
+                    .hasCauseExactlyInstanceOf(TimeoutException.class);
         }
     }
 
@@ -379,8 +385,12 @@ class AsyncTest {
         private final long delayMillis;
 
         ConcurrentTask() {
+            this(Duration.ofMillis(100));
+        }
+
+        ConcurrentTask(Duration delay) {
             this.counter = new AtomicInteger();
-            this.delayMillis = 100;
+            this.delayMillis = delay.toMillis();
         }
 
         void run() {

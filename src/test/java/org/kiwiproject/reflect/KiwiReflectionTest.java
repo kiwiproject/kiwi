@@ -1201,7 +1201,8 @@ class KiwiReflectionTest {
         private final String title;
     }
 
-    @SuppressWarnings("unused")  // fields are not used
+    // Suppress several warnings since the fields are not used, and one of the static fields is intentionally not final
+    @SuppressWarnings({"unused", "FieldMayBeFinal"})
     @AllArgsConstructor
     @Getter
     static class NoFieldObj {

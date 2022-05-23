@@ -234,7 +234,9 @@ public final class KiwiStrings {
      * {@link com.google.common.base.Strings} class as
      * {{@link com.google.common.base.Strings#lenientFormat(String, Object...)}}. However, it only accepts {@code %s}
      * as the replacement placeholder. For performance comparisons of the JDK {@link String#format(String, Object...)}
-     * method, see http://stackoverflow.com/questions/12786902/performance-javas-string-format
+     * method, see <a href="http://stackoverflow.com/questions/12786902/performance-javas-string-format">Performance: Java's String.format [duplicate]</a>
+     * on Stack Overflow as well as
+     * <a href="https://stackoverflow.com/questions/513600/should-i-use-javas-string-format-if-performance-is-important">Should I use Java's String.format() if performance is important?</a>
      *
      * @param template a non-null string containing 0 or more {@code %s} or {@code {}} placeholders.
      * @param args     the arguments to be substituted into the message template. Arguments are converted
