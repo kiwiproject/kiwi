@@ -71,5 +71,7 @@ class OptionalsTest {
                         () -> new MyCustomException("bad things..."))
         ).isExactlyInstanceOf(MyCustomException.class)
                 .hasMessage("bad things...");
+
+        assertThat(called).isFalse();
     }
 }

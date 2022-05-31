@@ -20,7 +20,8 @@ import java.util.stream.StreamSupport;
  * Gratefully included here in Kiwi courtesy of Philipp Wagner from his "A Spliterator for MatchResults in Java"
  * blog entry. Slightly modified to check arguments and add an instance {@code stream} method.
  * <p>
- * Original blog post: https://bytefish.de/blog/matcher_spliterator/
+ * Original blog post: <a href="https://bytefish.de/blog/matcher_spliterator/">A Spliterator for MatchResults in Java</a>
+ * by Philipp Wagner.
  */
 public class MatchSpliterator extends Spliterators.AbstractSpliterator<MatchResult> {
 

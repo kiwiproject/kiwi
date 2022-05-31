@@ -49,7 +49,9 @@ class GithubWorkflowCacheTest {
     private static void logFilesInDirectory(Path directory) throws IOException {
         if (Files.exists(directory) && Files.isDirectory(directory)) {
             LOG.info("Listing directory {}:", directory);
-            Files.list(directory).forEach(path -> LOG.info("{}", path.toAbsolutePath()));
+            try (var paths = Files.list(directory)) {
+                paths.forEach(path -> LOG.info("{}", path.toAbsolutePath()));
+            }
         } else {
             LOG.warn("Directory {} was not found!", directory.toAbsolutePath());
         }

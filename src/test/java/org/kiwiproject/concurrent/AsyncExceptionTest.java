@@ -45,10 +45,7 @@ class AsyncExceptionTest {
 
         CompletableFuture<String> typedFuture = ex.getFuture();
 
-        assertThat(typedFuture)
-                .hasFailedWithThrowableThat()
-                .isExactlyInstanceOf(RuntimeException.class)
-                .hasMessage("this didn't work!");
+        assertThat(typedFuture).isSameAs(future);
     }
 
     private static CompletableFuture<String> newFailingCompletableFutureWithStringType() {

@@ -50,8 +50,8 @@ public class TimeBasedDirectoryCleanerTestHelper {
     }
 
     public List<File> filesInTempFolder() throws IOException {
-       return Files.list(cleanerPath)
-                .map(Path::toFile)
-               .collect(toList());
+        try (var paths = Files.list(cleanerPath)) {
+            return paths.map(Path::toFile).collect(toList());
+        }
     }
 }
