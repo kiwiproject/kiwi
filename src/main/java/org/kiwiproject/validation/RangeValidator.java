@@ -3,6 +3,7 @@ package org.kiwiproject.validation;
 import static com.google.common.base.Verify.verify;
 import static java.util.Objects.isNull;
 import static java.util.Objects.nonNull;
+import static org.apache.commons.lang3.StringUtils.isNotBlank;
 import static org.kiwiproject.validation.InternalKiwiValidators.TEMPLATE_REQUIRED;
 import static org.kiwiproject.validation.InternalKiwiValidators.toComparableOrNull;
 
@@ -17,15 +18,33 @@ import javax.validation.ConstraintValidatorContext;
 @Slf4j
 public class RangeValidator implements ConstraintValidator<Range, Object> {
 
-    private static final String TEMPLATE_BETWEEN = "{org.kiwiproject.validation.Range.between.message}";
-    private static final String TEMPLATE_LESS_THAN_OR_EQ = "{org.kiwiproject.validation.Range.lessThanOrEq.message}";
-    private static final String TEMPLATE_GREATER_THAN_OR_EQ = "{org.kiwiproject.validation.Range.greaterThanOrEq.message}";
+    private static final String TEMPLATE_BETWEEN_MIN_MAX_VALUES = "{org.kiwiproject.validation.Range.between.message.minMaxValues}";
+    private static final String TEMPLATE_BETWEEN_MIN_MAX_LABELS = "{org.kiwiproject.validation.Range.between.message.minMaxLabels}";
+    private static final String TEMPLATE_LESS_THAN_OR_EQ_MIN_MAX_VALUES = "{org.kiwiproject.validation.Range.lessThanOrEq.message.minMaxValues}";
+    private static final String TEMPLATE_LESS_THAN_OR_EQ_MIN_MAX_LABELS = "{org.kiwiproject.validation.Range.lessThanOrEq.message.minMaxLabels}";
+    private static final String TEMPLATE_GREATER_THAN_OR_EQ_MIN_MAX_VALUES = "{org.kiwiproject.validation.Range.greaterThanOrEq.message.minMaxValues}";
+    private static final String TEMPLATE_GREATER_THAN_OR_EQ_MIN_MAX_LABELS = "{org.kiwiproject.validation.Range.greaterThanOrEq.message.minMaxLabels}";
 
     private Range range;
+    private String templateBetween;
+    private String templateLessThanOrEq;
+    private String templateGreaterThanOrEq;
 
+    /**
+     * @param constraintAnnotation annotation instance for a given constraint declaration
+     * @implNote if <em>either</em> {@link Range#minLabel()} or {@link Range#maxLabel()} is present, this selects
+     * the template containing labels. This design is specifically due to the change in Hibernate Validator 6.2.x which
+     * disables EL (expression language) by default for custom validators, and allows this (custom) validator to
+     * operate correctly without EL enabled.
+     */
     @Override
     public void initialize(Range constraintAnnotation) {
         this.range = constraintAnnotation;
+
+        var useLabels = isNotBlank(constraintAnnotation.minLabel()) || isNotBlank(constraintAnnotation.maxLabel());
+        this.templateBetween = useLabels ? TEMPLATE_BETWEEN_MIN_MAX_LABELS : TEMPLATE_BETWEEN_MIN_MAX_VALUES;
+        this.templateLessThanOrEq = useLabels ? TEMPLATE_LESS_THAN_OR_EQ_MIN_MAX_LABELS : TEMPLATE_LESS_THAN_OR_EQ_MIN_MAX_VALUES;
+        this.templateGreaterThanOrEq = useLabels ? TEMPLATE_GREATER_THAN_OR_EQ_MIN_MAX_LABELS : TEMPLATE_GREATER_THAN_OR_EQ_MIN_MAX_VALUES;
     }
 
     @Override
@@ -35,7 +54,7 @@ public class RangeValidator implements ConstraintValidator<Range, Object> {
             validity = checkNull(value, context);
 
             if (validity == Validity.CONTINUE) {
-                //noinspection unchecked,rawtypes
+                // noinspection unchecked,rawtypes
                 validity = checkMinMax((Comparable) value, context);
             }
         } catch (Exception e) {
@@ -67,7 +86,7 @@ public class RangeValidator implements ConstraintValidator<Range, Object> {
         var max = toComparableOrNull(range.max(), value);
 
         if (hasBothMinAndMax(min, max) && outsideRange(min, max, value)) {
-            KiwiValidations.addError(context, TEMPLATE_BETWEEN);
+            KiwiValidations.addError(context, templateBetween);
             return Validity.INVALID;
         }
 
@@ -82,18 +101,18 @@ public class RangeValidator implements ConstraintValidator<Range, Object> {
         return value.compareTo(min) < 0 || value.compareTo(max) > 0;
     }
 
-    private static Validity checkMinOrMax(ConstraintValidatorContext context,
-                                          Comparable<?> min,
-                                          Comparable<?> max,
-                                          Comparable<Object> value) {
+    private Validity checkMinOrMax(ConstraintValidatorContext context,
+                                   Comparable<?> min,
+                                   Comparable<?> max,
+                                   Comparable<Object> value) {
 
         if (nonNull(min) && value.compareTo(min) < 0) {
-            KiwiValidations.addError(context, TEMPLATE_GREATER_THAN_OR_EQ);
+            KiwiValidations.addError(context, templateGreaterThanOrEq);
             return Validity.INVALID;
         }
 
         if (nonNull(max) && value.compareTo(max) > 0) {
-            KiwiValidations.addError(context, TEMPLATE_LESS_THAN_OR_EQ);
+            KiwiValidations.addError(context, templateLessThanOrEq);
             return Validity.INVALID;
         }
 

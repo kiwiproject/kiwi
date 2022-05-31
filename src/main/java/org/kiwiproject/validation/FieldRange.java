@@ -23,11 +23,16 @@ import java.lang.annotation.Target;
  * Note also that <em>direct field access using reflection</em> is used to obtain the start and end values as
  * currently implemented.
  * <p>
- * By default null values are not allowed, and the range check is exclusive, meaning start cannot equal end. You can
+ * By default, null values are not allowed, and the range check is exclusive, meaning start cannot equal end. You can
  * change the default behavior using the various options.
  * <p>
  * In addition to ensuring that the start and end fields define a valid range, you can also constrain them to minimum
  * and/or maximum values.
+ * <p>
+ * Use the {@link #minLabel()} and {@link #maxLabel()} to specify custom labels to use in place of the min and max
+ * values. This is useful in cases where the min and max are large numbers or when validating date/time values where
+ * the min and max are specified as milliseconds since the epoch. Note specifically that when both a minimum and a
+ * maximum are supplied, and you want to use labels, then you should supply both the min and max labels.
  * <p>
  * This validator's type support depends on whether minimum and maximum values are specified as part of the
  * configuration. If minimum and/or maximum are specified, then the supported types are the same as those supported
