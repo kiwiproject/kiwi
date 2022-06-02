@@ -262,6 +262,21 @@ public class Processes {
     }
 
     /**
+     * Check if the given exit code represents anything other than successful termination.
+     * In other words, is the exit code nonzero?
+     *
+     * @param exitCode the exit code to check
+     * @return true if the exit code is nonzero
+     * @see Process#exitValue()
+     * @implNote This method is specifically named to indicate that the exit code does not
+     * represent success, leaving the possibility open that a nonzero exit code can indicate
+     * some condition other thannext an error.
+     */
+    public static boolean isNonzeroExitCode(int exitCode) {
+        return !isSuccessfulExitCode(exitCode);
+    }
+
+    /**
      * Waits up to {@link #DEFAULT_WAIT_FOR_EXIT_TIME_SECONDS} for the given process to exit.
      *
      * @param process the process to wait for

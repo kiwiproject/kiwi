@@ -219,8 +219,23 @@ class ProcessesTest {
 
         @ParameterizedTest
         @ValueSource(ints = {-1, 1, 2, 3, 127, 255})
-        void shouldReturnFalseForNonZero(int code) {
+        void shouldReturnFalseForNonzero(int code) {
             assertThat(Processes.isSuccessfulExitCode(code)).isFalse();
+        }
+    }
+
+    @Nested
+    class IsNonzeroExitCode {
+
+        @Test
+        void shouldReturnFalseForZero() {
+            assertThat(Processes.isNonzeroExitCode(0)).isFalse();
+        }
+
+        @ParameterizedTest
+        @ValueSource(ints = {-1, 1, 2, 3, 127, 255})
+        void shouldReturnTrueForNonzero(int code) {
+            assertThat(Processes.isNonzeroExitCode(code)).isTrue();
         }
     }
 }
