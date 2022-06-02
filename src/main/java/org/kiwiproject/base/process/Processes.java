@@ -270,7 +270,7 @@ public class Processes {
      * @see Process#exitValue()
      * @implNote This method is specifically named to indicate that the exit code does not
      * represent success, leaving the possibility open that a nonzero exit code can indicate
-     * some condition other thannext an error.
+     * some condition other than an error.
      */
     public static boolean isNonzeroExitCode(int exitCode) {
         return !isSuccessfulExitCode(exitCode);
