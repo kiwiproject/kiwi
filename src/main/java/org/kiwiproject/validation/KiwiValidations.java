@@ -95,6 +95,15 @@ public class KiwiValidations {
     /**
      * Adds an error to the {@link ConstraintValidatorContext} using the specified template, thereby overriding
      * the constraint's default message.
+     * <p>
+     * <strong>NOTE:</strong>
+     * As of Hibernate Validator 6.2 and higher, expression language (EL) is <em>disabled</em> by default for
+     * custom violations. This means custom validator error messages that use EL will show the un-interpolated
+     * value in the message template, unless the custom validator has explicitly enabled EL. For example, given
+     * a template: <code>"'${validatedValue}' is not a valid ACME, Inc. product code."</code>, the error message
+     * will just be the template itself, so the user will see the literal <code>${validatedValue}</code> instead
+     * of the value that was validated. See this <a href="https://github.com/kiwiproject/kiwi/discussions/690">discussion</a>
+     * for additional information, and specifically see the References.
      *
      * @param context  the validator context
      * @param template the template to use
@@ -113,6 +122,11 @@ public class KiwiValidations {
      * or method. The {@code propertyName} can be used to specify the property node that the violation should be
      * attached to. For example, if a validator validates multiple fields and the annotation is applied to the
      * type, then this can be used to specify which field a constraint violation applies to.
+     * <p>
+     * <strong>NOTE:</strong>
+     * Please see the note in {@link #addError(ConstraintValidatorContext, String)} for important information
+     * regarding expression language (EL) being disabled by default in Hibernate Validator 6.2 and higher for
+     * custom violations.
      *
      * @param context      the validator context
      * @param template     the template to use
