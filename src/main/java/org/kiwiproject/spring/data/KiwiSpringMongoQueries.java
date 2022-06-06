@@ -117,7 +117,7 @@ public class KiwiSpringMongoQueries {
         checkArgumentNotNull(propertyName);
 
         if (isNull(startDateInclusiveMillis) && isNull(endDateInclusiveMillis)) {
-            LOG.info("start and end are both null; ignoring");
+            LOG.debug("start and end are both null; ignoring");
             return;
         }
 
@@ -206,7 +206,7 @@ public class KiwiSpringMongoQueries {
         checkArgumentNotNull(matchType);
 
         if (isBlank(matchString)) {
-            LOG.info("matchString is blank; ignoring");
+            LOG.debug("matchString is blank; ignoring");
             return;
         }
 
@@ -240,7 +240,7 @@ public class KiwiSpringMongoQueries {
         checkArgumentNotNull(matchType);
 
         if (isNull(matchStrings) || matchStrings.isEmpty()) {
-            LOG.info("matchStrings is null or empty; ignoring");
+            LOG.debug("matchStrings is null or empty; ignoring");
             return;
         }
 
@@ -290,7 +290,7 @@ public class KiwiSpringMongoQueries {
         checkArgumentNotNull(converter);
 
         if (isBlank(csv)) {
-            LOG.info("csv is blank; ignoring");
+            LOG.debug("csv is blank; ignoring");
             return;
         }
 
