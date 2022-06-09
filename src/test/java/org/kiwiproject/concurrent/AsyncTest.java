@@ -1,5 +1,7 @@
 package org.kiwiproject.concurrent;
 
+import static java.util.Objects.isNull;
+import static java.util.Objects.nonNull;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatCode;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -23,6 +25,7 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicReference;
 
 class AsyncTest {
 
@@ -57,6 +60,25 @@ class AsyncTest {
             confirmCompletion(task);
 
             assertThat(future).isCompleted();
+
+            // verify the count is one after completing successfully
+            assertThat(task.getCurrentCount()).isOne();
+        }
+
+        @Test
+        void shouldNotThrowExceptionWhenCompletesExceptionally() {
+            var ex = new RuntimeException("oops");
+            var task = new ConcurrentTask().withException(ex);
+            CompletableFuture<Void> future = Async.runAsync(task::run);
+
+            // verify that immediately after triggering run, the count is still 0
+            assertThat(task.getCurrentCount()).isZero();
+            confirmCompletion(task);
+
+            assertThat(future).isCompletedExceptionally();
+
+            // verify the count is one after completing exceptionally
+            assertThat(task.getCurrentCount()).isOne();
         }
 
         @Test
@@ -69,6 +91,9 @@ class AsyncTest {
             assertThat(task.getCurrentCount()).isOne();
 
             assertThat(future).isCompleted();
+
+            // sanity check that the count remains 1
+            assertThat(task.getCurrentCount()).isOne();
         }
     }
 
@@ -118,18 +143,45 @@ class AsyncTest {
     @Nested
     class WaitIfAsyncDisabled {
 
+        @BeforeEach
+        void setUp() {
+            Async.setUnitTestAsyncMode(Mode.DISABLED);
+        }
+
+        @Test
+        void shouldReturnTheSameFuture() {
+            var future = CompletableFuture.completedFuture(42);
+
+            var returnedFuture = Async.waitIfAsyncDisabled(future);
+            assertThat(returnedFuture).isSameAs(future);
+        }
+
         @Test
         void shouldNotThrowAnException_WhenFutureCompletesExceptionally() {
-            Async.setUnitTestAsyncMode(Mode.DISABLED);
-
             var future = CompletableFuture.failedFuture(new RuntimeException("boom"));
 
             assertThatCode(() -> Async.waitIfAsyncDisabled(future)).doesNotThrowAnyException();
         }
+
+        @Test
+        void shouldAllowAddingMoreBehavior_WhenFutureCompletesExceptionally() {
+            var ex = new RuntimeException("ka-bloom!");
+            var future = CompletableFuture.failedFuture(ex);
+
+            var throwableFromTheFuture = new AtomicReference<Throwable>();
+            assertThatCode(() -> {
+                var sameFuture = Async.waitIfAsyncDisabled(future);
+                sameFuture.whenComplete((result, throwable) -> {
+                    throwableFromTheFuture.set(throwable);
+                });
+            }).doesNotThrowAnyException();
+
+            assertThat(throwableFromTheFuture.get()).isSameAs(ex);
+        }
     }
 
     /**
-     * These tests call supplyAsync(Runnable) since it simply delegates to supplyAsync(Runnable).
+     * These tests call supplyAsync(Runnable) since it simply delegates to doAsync(Runnable).
      */
     @Nested
     class DoAsyncWithSupplier {
@@ -162,7 +214,7 @@ class AsyncTest {
     }
 
     /**
-     * These tests call supplyAsync(Runnable, Executor) since it simply delegates to supplyAsync(Runnable, Executor).
+     * These tests call supplyAsync(Runnable, Executor) since it simply delegates to doAsync(Runnable, Executor).
      */
     @Nested
     class DoAsyncWithSupplierAndExecutor {
@@ -384,6 +436,8 @@ class AsyncTest {
         private final AtomicInteger counter;
         private final long delayMillis;
 
+        private RuntimeException exceptionToThrow;
+
         ConcurrentTask() {
             this(Duration.ofMillis(100));
         }
@@ -391,6 +445,11 @@ class AsyncTest {
         ConcurrentTask(Duration delay) {
             this.counter = new AtomicInteger();
             this.delayMillis = delay.toMillis();
+        }
+
+        ConcurrentTask withException(RuntimeException exceptionToThrow) {
+            this.exceptionToThrow = exceptionToThrow;
+            return this;
         }
 
         void run() {
@@ -404,9 +463,17 @@ class AsyncTest {
                 performWait();
                 long endTime = System.nanoTime();
                 long elapsed = TimeUnit.NANOSECONDS.toMillis(endTime - startTime);
-                LOG.debug("performed task in: {}ms", elapsed);
 
-                return counter.incrementAndGet();
+                var completionStatus = isNull(exceptionToThrow) ? "successfully" : "exceptionally";
+                LOG.debug("performed task {} in: {}ms", completionStatus, elapsed);
+
+                var updatedCount = counter.incrementAndGet();
+
+                if (nonNull(exceptionToThrow)) {
+                    throw exceptionToThrow;
+                }
+
+                return updatedCount;
             } catch (InterruptedException e) {
                 Thread.currentThread().interrupt();
                 LOG.debug("Wait interrupted", e);
