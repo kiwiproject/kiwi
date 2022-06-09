@@ -7,6 +7,8 @@ import static org.kiwiproject.base.KiwiStrings.f;
 import com.google.common.annotations.VisibleForTesting;
 import lombok.experimental.UtilityClass;
 import lombok.extern.slf4j.Slf4j;
+import org.kiwiproject.base.KiwiThrowables;
+import org.kiwiproject.base.UUIDs;
 
 import java.util.Collection;
 import java.util.List;
@@ -204,7 +206,7 @@ public class Async {
     @VisibleForTesting
     static <T> CompletableFuture<T> waitIfAsyncDisabled(CompletableFuture<T> future) {
         if (asyncMode == Mode.DISABLED) {
-            LOG.trace("asyncMode = DISABLED; wait for the future!");
+            LOG.warn("asyncMode = DISABLED; wait for the future!");
             try {
                 future.get();
             } catch (InterruptedException e) {
@@ -213,16 +215,27 @@ public class Async {
             } catch (ExecutionException e) {
                 LOG.error("The future completed exceptionally: ", e);
             }
+        } else {
+            future.whenComplete(Async::logExceptionIfPresent);
         }
 
-        future.whenComplete(Async::logException);
         return future;
     }
 
-    private static <T> void logException(T result, Throwable thrown) {
+    private static <T> void logExceptionIfPresent(T result, Throwable thrown) {
         if (nonNull(thrown)) {
-            LOG.error("Encountered exception in async task: {}", thrown.getMessage());
-            LOG.debug("Exception details", thrown);
+            var errorID = UUIDs.randomUUIDString();
+            var causeOptional = KiwiThrowables.nextCauseOf(thrown);
+            var causeMessage = causeOptional.map(Throwable::getMessage).orElse(null);
+            LOG.error("Encountered {} exception in async task (errorID: {})." +
+                            " Message: {} ; Cause: {} ; Cause message: {} (enable DEBUG level to see stack traces and refer to the errorID)",
+                    thrown.getClass().getName(),
+                    errorID,
+                    thrown.getMessage(),
+                    causeOptional.orElse(null),
+                    causeMessage
+            );
+            LOG.debug("Exception details (errorID: {}):", errorID, thrown);
         }
     }
 
@@ -329,6 +342,7 @@ public class Async {
                                                           ExecutorService executor) {
         Supplier<T> supplier = () -> {
             try {
+                LOG.trace("Waiting up to {} {} for future {} to complete", timeout, unit, future);
                 return future.get(timeout, unit);
             } catch (InterruptedException ex) {
                 Thread.currentThread().interrupt();
