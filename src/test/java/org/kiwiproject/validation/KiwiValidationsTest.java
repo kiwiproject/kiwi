@@ -155,7 +155,7 @@ class KiwiValidationsTest {
 
             var violation = violations.stream().findFirst().orElseThrow();
             assertThat(violation.getPropertyPath()).hasToString("name");
-            assertThat(violation.getMessage()).isEqualTo("'The Awesome' will always be regarded as invalid! (sorry)");
+            assertThat(violation.getMessage()).isEqualTo("will always be regarded as invalid! (sorry)");
         }
 
         @Test
@@ -199,7 +199,7 @@ class KiwiValidationsTest {
 
         @Override
         public boolean isValid(CharSequence value, ConstraintValidatorContext context) {
-            KiwiValidations.addError(context, "'${validatedValue}' will always be regarded as invalid! {suffix}");
+            KiwiValidations.addError(context, "will always be regarded as invalid! {suffix}");
 
             return false;
         }
