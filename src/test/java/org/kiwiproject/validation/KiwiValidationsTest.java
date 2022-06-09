@@ -13,6 +13,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import lombok.Data;
 import lombok.Value;
 import org.hibernate.validator.constraints.Length;
+import org.hibernate.validator.constraintvalidation.HibernateConstraintValidatorContext;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -29,6 +30,7 @@ import javax.validation.groups.Default;
 import java.lang.annotation.Documented;
 import java.lang.annotation.Retention;
 import java.lang.annotation.Target;
+import java.time.LocalDate;
 
 @DisplayName("KiwiValidations")
 class KiwiValidationsTest {
@@ -110,6 +112,22 @@ class KiwiValidationsTest {
                             "lastName",
                             "contactDetails.mobileNumber"
                     );
+        }
+
+        @Test
+        void shouldEvaluateExpressionLanguage_WhenCustomValidator_EnablesIt() {
+            var person = new Person();
+            person.setZipCode("12345-xyz");
+
+            var violations = KiwiValidations.validate(person);
+
+            assertThat(violations).hasSize(1);
+
+            var violation = violations.stream().findFirst().orElseThrow();
+            assertThat(violation.getPropertyPath()).hasToString("zipCode");
+            assertThat(violation.getMessage())
+                .startsWith("'12345-xyz' is not a valid ZIP code as of ")
+                .endsWith(String.valueOf(LocalDate.now().getYear()));
         }
     }
 
@@ -206,6 +224,45 @@ class KiwiValidationsTest {
     }
 
     /**
+     * Used to demonstrate enabling EL in custom validators.
+     */
+    @Documented
+    @Constraint(validatedBy = AlwaysInvalidZipCodeValidator.class)
+    @Target({METHOD, FIELD, ANNOTATION_TYPE, CONSTRUCTOR, PARAMETER, TYPE_USE})
+    @Retention(RUNTIME)
+    @interface AlwaysInvalidZipCode {
+        String message() default "";
+
+        Class<?>[] groups() default {};
+
+        Class<? extends Payload>[] payload() default {};
+    }
+
+    /**
+     * Used to demonstrate enabling EL in custom validators.
+     * <p>
+     * <strong>Must be public (otherwise Hibernate Validator cannot instantiate it)</strong>
+     */
+    public static class AlwaysInvalidZipCodeValidator implements ConstraintValidator<AlwaysInvalidZipCode, CharSequence> {
+
+        @Override
+        public boolean isValid(CharSequence value, ConstraintValidatorContext context) {
+            // This is specific to Hibernate Validator (as of 2022-06-09), so we have to go outside
+            // the standard Bean Validation APIs and use the Hibernate Validator API directly.
+            var hibernateContext = context.unwrap(HibernateConstraintValidatorContext.class);
+
+            hibernateContext.disableDefaultConstraintViolation();
+            hibernateContext.addExpressionVariable("validatedValue", value)
+                .addExpressionVariable("now", LocalDate.now().getYear())
+                .buildConstraintViolationWithTemplate("'${validatedValue}' is not a valid ZIP code as of ${now}")
+                .enableExpressionLanguage()
+                .addConstraintViolation();
+
+            return false;
+        }
+    }
+
+    /**
      * Used with {@link AddError}.
      */
     @Documented
@@ -257,6 +314,13 @@ class KiwiValidationsTest {
     static class AlternateThing {
 
         private String name;
+    }
+
+    @Data
+    static class Person {
+
+        @AlwaysInvalidZipCode
+        private String zipCode;
     }
 
     @Nested
