@@ -23,10 +23,15 @@ import org.apache.commons.lang3.tuple.Pair;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.io.TempDir;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.UncheckedIOException;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
@@ -86,14 +91,58 @@ class ProcessHelperTest {
     void testLaunch_UsingVarargs() {
         var process = processes.launch("sleep", "11");
 
-        assertProcessAlive(process);
+        assertProcessIsAliveThenKill(process);
     }
 
     @Test
     void testLaunch_UsingList() {
         var process = processes.launch(List.of("sleep", "11"));
 
-        assertProcessAlive(process);
+        assertProcessIsAliveThenKill(process);
+    }
+
+    @Test
+    void shouldLaunch_UsingList_AndNullWorkingDirectory() throws InterruptedException {
+        var processWithNullDir = processes.launch(null, List.of("ls", "-t"));
+        var linesFromNullDir = readLinesFromInputStreamOf(processWithNullDir);
+        waitForSuccessfulExit(processWithNullDir);
+
+        var processWithDotDir = processes.launch(new File("."), List.of("ls", "-t"));
+        var linesFromDotDir = readLinesFromInputStreamOf(processWithDotDir);
+        waitForSuccessfulExit(processWithDotDir);
+
+        assertThat(linesFromNullDir)
+                .describedAs("files from ls -t should be the same using null working directory and '.' directory")
+                .isEqualTo(linesFromDotDir);
+    }
+
+    @Test
+    void shouldLaunch_UsingList_AndWorkingDirectory(@TempDir Path tempDirPath) throws InterruptedException {
+        writeFile(tempDirPath, "a.txt", "aaa");
+        writeFile(tempDirPath, "b.txt", "bbb bbb");
+
+        var tempDir = tempDirPath.toFile();
+        var process = processes.launch(tempDir, List.of("ls", "-S"));
+        var lines = readLinesFromInputStreamOf(process);
+        waitForSuccessfulExit(process);
+
+        assertThat(lines)
+                .describedAs("files from ls -S should be sorted by b.txt (larger) then a.txt (smaller)")
+                .containsExactly("b.txt", "a.txt");
+    }
+
+    private static void waitForSuccessfulExit(Process process) throws InterruptedException {
+        process.waitFor(1, TimeUnit.SECONDS);
+        assertThat(process.exitValue()).isEqualTo(Processes.SUCCESS_EXIT_CODE);
+    }
+
+    private static void writeFile(Path parentDir, String fileName, String content) {
+        var absParentDirPath = parentDir.toAbsolutePath().toString();
+        try {
+            Files.writeString(Path.of(absParentDirPath, fileName), content, StandardCharsets.UTF_8);
+        } catch (IOException e) {
+            throw new UncheckedIOException(e);
+        }
     }
 
     @Test
@@ -106,9 +155,9 @@ class ProcessHelperTest {
                 .withMessageContaining("arguments");
     }
 
-    private void assertProcessAlive(Process process) {
+    private void assertProcessIsAliveThenKill(Process process) {
         try {
-            assertThat(process.isAlive()).isTrue();
+            assertProcessIsAlive(process);
         } finally {
             if (nonNull(process)) {
                 long pid = process.pid();
@@ -292,7 +341,7 @@ class ProcessHelperTest {
     @Test
     void testKill_WithExplicitTimeout() throws IOException {
         var process = new ProcessBuilder("sleep", "55").start();
-        assertThat(process.isAlive()).isTrue();
+        assertProcessIsAlive(process);
 
         int exitCode = processes.kill(
                 process.pid(),
@@ -307,7 +356,7 @@ class ProcessHelperTest {
     @Test
     void testKill_WithStringSignal_AndExplicitTimeout() throws IOException {
         var process = new ProcessBuilder("sleep", "55").start();
-        assertThat(process.isAlive()).isTrue();
+        assertProcessIsAlive(process);
 
         int exitCode = processes.kill(
                 process.pid(),
@@ -322,7 +371,7 @@ class ProcessHelperTest {
     @Test
     void testKill_WithDefaultTimeout() throws IOException {
         var process = new ProcessBuilder("sleep", "55").start();
-        assertThat(process.isAlive()).isTrue();
+        assertProcessIsAlive(process);
 
         int exitCode = processes.kill(
                 process.pid(),
@@ -336,7 +385,7 @@ class ProcessHelperTest {
     @Test
     void testKill_WithStringSignal_AndDefaultTimeout() throws IOException {
         var process = new ProcessBuilder("sleep", "55").start();
-        assertThat(process.isAlive()).isTrue();
+        assertProcessIsAlive(process);
 
         int exitCode = processes.kill(
                 process.pid(),
@@ -350,11 +399,15 @@ class ProcessHelperTest {
     @Test
     void testKillForcibly() throws IOException, InterruptedException {
         var process = new ProcessBuilder("sleep", "55").start();
-        assertThat(process.isAlive()).isTrue();
+        assertProcessIsAlive(process);
 
         boolean killedBeforeTimeout = processes.killForcibly(process, 2500, TimeUnit.MILLISECONDS);
 
         assertThat(killedBeforeTimeout).isTrue();
+    }
+
+    private void assertProcessIsAlive(Process process) {
+        assertThat(process.isAlive()).isTrue();
     }
 
     @Test

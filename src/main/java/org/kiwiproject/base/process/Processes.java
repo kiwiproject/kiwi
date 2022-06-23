@@ -24,6 +24,7 @@ import org.apache.commons.lang3.tuple.Pair;
 import org.kiwiproject.base.UncheckedInterruptedException;
 
 import javax.annotation.Nullable;
+import java.io.File;
 import java.io.IOException;
 import java.io.UncheckedIOException;
 import java.util.List;
@@ -278,6 +279,8 @@ public class Processes {
 
     /**
      * Waits up to {@link #DEFAULT_WAIT_FOR_EXIT_TIME_SECONDS} for the given process to exit.
+     * <p>
+     * Note that this method does <em>not</em> destroy the process if it times out waiting.
      *
      * @param process the process to wait for
      * @return an {@link Optional} that will contain the exit code if the process exited before the timeout, or
@@ -289,6 +292,8 @@ public class Processes {
 
     /**
      * Waits up to the specified {@code timeout} for the given process to exit.
+     * <p>
+     * Note that this method does <em>not</em> destroy the process if it times out waiting.
      *
      * @param process the process to wait for
      * @param timeout the value of the time to wait
@@ -321,8 +326,28 @@ public class Processes {
      * @see ProcessBuilder#start()
      */
     public static Process launch(List<String> command) {
+        return launch(null, command);
+    }
+
+    /**
+     * Launches a new process using the specified {@code command} with the given working directory.
+     * This is just a convenience wrapper around creating a new {@link ProcessBuilder}, setting the
+     * {@link ProcessBuilder#directory(File) working directory}, and calling {@link ProcessBuilder#start()}.
+     * <p>
+     * This wrapper converts any thrown {@link IOException} to an {@link UncheckedIOException}.
+     * <p>
+     * <em>If you need more flexibility than provided in this simple wrapper, use {@link ProcessBuilder} directly.</em>
+     *
+     * @param workingDirectory the working directory to use
+     * @param command          the list containing the program and its arguments
+     * @return the new {@link Process}
+     * @see ProcessBuilder#ProcessBuilder(List)
+     * @see ProcessBuilder#directory(File)
+     * @see ProcessBuilder#start()
+     */
+    public static Process launch(@Nullable File workingDirectory, List<String> command) {
         try {
-            return launchProcessInternal(command);
+            return launchProcessInternal(workingDirectory, command);
         } catch (IOException e) {
             throw new UncheckedIOException("Error launching command: " + command, e);
         }
@@ -571,7 +596,14 @@ public class Processes {
     }
 
     private static Process launchProcessInternal(List<String> command) throws IOException {
-        return new ProcessBuilder(command).start();
+        return launchProcessInternal(null, command);
+    }
+
+    private static Process launchProcessInternal(@Nullable File workingDirectory,
+                                                 List<String> command) throws IOException {
+        return new ProcessBuilder(command)
+                .directory(workingDirectory)
+                .start();
     }
 
     /**

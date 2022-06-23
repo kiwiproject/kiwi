@@ -8,6 +8,8 @@ import static org.kiwiproject.io.KiwiIO.streamLinesFromInputStreamOf;
 import com.google.common.annotations.VisibleForTesting;
 import org.apache.commons.lang3.tuple.Pair;
 
+import javax.annotation.Nullable;
+import java.io.File;
 import java.io.UncheckedIOException;
 import java.util.Collection;
 import java.util.List;
@@ -59,6 +61,18 @@ public class ProcessHelper {
      */
     public Process launch(List<String> command) {
         return Processes.launch(command);
+    }
+
+    /**
+     * Launches a new process using the specified {@code workingDirectory} and {@code command}.
+     *
+     * @param workingDirectory the working directory to use
+     * @param command          the list containing the program and its arguments
+     * @return the new {@link Process}
+     * @see Processes#launch(File, List)
+     */
+    public Process launch(@Nullable File workingDirectory, List<String> command) {
+        return Processes.launch(workingDirectory, command);
     }
 
     /**
