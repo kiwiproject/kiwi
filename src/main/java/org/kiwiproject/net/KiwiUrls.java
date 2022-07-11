@@ -60,7 +60,7 @@ public class KiwiUrls {
      * Look at the (lengthy) preamble in {@link java.util.regex.Pattern} for more information.
      */
     private static final Pattern URL_PATTERN = Pattern.compile(
-            "((?<scheme>[a-z]+)://)?(?<canonical>(?<subdomain>[a-z0-9-]+)(\\.(?<domain>[a-z0-9.-]+))?)(:(?<port>[0-9]+))?(?<path>/.*)?",
+            "((?<scheme>[a-z]+)://)?(?<canonical>(?<subdomain>[a-z\\d-]+)(\\.(?<domain>[a-z\\d.-]+))?)(:(?<port>\\d+))?(?<path>/.*)?",
             Pattern.CASE_INSENSITIVE
     );
 
