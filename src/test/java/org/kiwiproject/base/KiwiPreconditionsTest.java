@@ -3,6 +3,7 @@ package org.kiwiproject.base;
 import static com.google.common.collect.Lists.newArrayList;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatCode;
+import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.assertj.core.api.Assertions.catchThrowable;
 import static org.assertj.core.util.Sets.newLinkedHashSet;
@@ -24,6 +25,7 @@ import org.junit.jupiter.params.provider.ArgumentsSource;
 import org.junit.jupiter.params.provider.ValueSource;
 import org.kiwiproject.util.BlankStringArgumentsProvider;
 
+import java.math.BigInteger;
 import java.util.ArrayList;
 
 @DisplayName("KiwiPreconditions")
@@ -189,6 +191,125 @@ class KiwiPreconditionsTest {
                 .hasMessage("foo cannot be null (code: 42)");
 
         softly.assertThat(catchThrowable(() -> checkArgumentNotNull(new Object(), errorMessageTemplate, errorMessageArgs))).isNull();
+    }
+
+    @Nested
+    class CheckArgumentIsNull {
+
+        @Nested
+        class WithNoMessage {
+
+            @Test
+            void shouldNotThrow_WhenArgumentIsNull() {
+                assertThatCode(() -> KiwiPreconditions.checkArgumentIsNull(null))
+                        .doesNotThrowAnyException();
+            }
+
+            @Test
+            void shouldThrowIllegalArgument_WhenArgumentIsNotNull() {
+                assertThatIllegalArgumentException()
+                        .isThrownBy(() -> KiwiPreconditions.checkArgumentIsNull(new Object()));
+            }
+        }
+
+        @Nested
+        class WithMessage {
+
+            @Test
+            void shouldNotThrow_WhenArgumentIsNull() {
+                assertThatCode(() -> KiwiPreconditions.checkArgumentIsNull(null, "the argument cannot be null"))
+                        .doesNotThrowAnyException();
+            }
+
+            @Test
+            void shouldThrowIllegalArgument_WhenArgumentIsNotNull() {
+                var errorMessage = "the argument cannot be null";
+
+                assertThatIllegalArgumentException()
+                        .isThrownBy(() -> KiwiPreconditions.checkArgumentIsNull("foo", errorMessage))
+                        .withMessage(errorMessage);
+            }
+        }
+
+        @Nested
+        class WithTemplateMessage {
+
+            @Test
+            void shouldNotThrow_WhenArgumentIsNull() {
+                assertThatCode(() ->
+                        KiwiPreconditions.checkArgumentIsNull(null, "{} cannot be null", "foo"))
+                        .doesNotThrowAnyException();
+            }
+
+            @Test
+            void shouldThrowIllegalArgument_WhenArgumentIsNotNull() {
+                assertThatIllegalArgumentException()
+                        .isThrownBy(() ->
+                                KiwiPreconditions.checkArgumentIsNull(BigInteger.ONE, "{} cannot be null (code: {})", "bar", 84))
+                        .withMessage("bar cannot be null (code: 84)");
+            }
+        }
+    }
+
+    @Nested
+    class CheckArgumentIsBlank {
+
+        @Nested
+        class WithNoMessage {
+
+            @ParameterizedTest
+            @ArgumentsSource(BlankStringArgumentsProvider.class)
+            void shouldNotThrow_WhenArgumentIsBlank(String string) {
+                assertThatCode(() -> KiwiPreconditions.checkArgumentIsBlank(string))
+                        .doesNotThrowAnyException();
+            }
+
+            @Test
+            void shouldThrowIllegalArgument_WhenArgumentIsNotBlank() {
+                assertThatIllegalArgumentException()
+                        .isThrownBy(() -> KiwiPreconditions.checkArgumentIsBlank("hello, world"));
+            }
+        }
+
+        @Nested
+        class WithMessage {
+
+            @ParameterizedTest
+            @ArgumentsSource(BlankStringArgumentsProvider.class)
+            void shouldNotThrow_WhenArgumentIsBlank(String string) {
+                assertThatCode(() -> KiwiPreconditions.checkArgumentIsBlank(string, "the argument cannot be blank"))
+                        .doesNotThrowAnyException();
+            }
+
+            @Test
+            void shouldThrowIllegalArgument_WhenArgumentIsNotBlank() {
+                var errorMessage = "the argument cannot be blank";
+
+                assertThatIllegalArgumentException()
+                        .isThrownBy(() -> KiwiPreconditions.checkArgumentIsBlank("bar", errorMessage))
+                        .withMessage(errorMessage);
+            }
+        }
+
+        @Nested
+        class WithTemplateMessage {
+
+            @ParameterizedTest
+            @ArgumentsSource(BlankStringArgumentsProvider.class)
+            void shouldNotThrow_WhenArgumentIsBlank(String string) {
+                assertThatCode(() ->
+                        KiwiPreconditions.checkArgumentIsBlank(string, "{} cannot be blank", "foo"))
+                        .doesNotThrowAnyException();
+            }
+
+            @Test
+            void shouldThrowIllegalArgument_WhenArgumentIsNotBlank() {
+                assertThatIllegalArgumentException()
+                        .isThrownBy(() ->
+                                KiwiPreconditions.checkArgumentIsBlank("a non-blank value", "{} cannot be blank (code: {})", "bar", 84))
+                        .withMessage("bar cannot be blank (code: 84)");
+            }
+        }
     }
 
     @SuppressWarnings("unused")

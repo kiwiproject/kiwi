@@ -212,6 +212,46 @@ public class KiwiPreconditions {
         }
     }
 
+    /**
+     * Ensures that an object reference passed as a parameter to the calling method is null, throwing
+     * an {@link IllegalArgumentException} if not null.
+     *
+     * @param reference an object reference
+     * @param <T>       the object type
+     */
+    public static <T> void checkArgumentIsNull(T reference) {
+        Preconditions.checkArgument(isNull(reference));
+    }
+
+    /**
+     * Ensures that an object reference passed as a parameter to the calling method is null, throwing
+     * an {@link IllegalArgumentException} if not null.
+     *
+     * @param reference    an object reference
+     * @param errorMessage the error message for the exception
+     * @param <T>          the object type
+     */
+    public static <T> void checkArgumentIsNull(T reference, String errorMessage) {
+        Preconditions.checkArgument(isNull(reference), errorMessage);
+    }
+
+    /**
+     * Ensures that an object reference passed as a parameter to the calling method is null, throwing
+     * an {@link IllegalArgumentException} if not null.
+     *
+     * @param reference            an object reference
+     * @param errorMessageTemplate a template for the exception message should the check fail, according to how
+     *                             {@link KiwiStrings#format(String, Object...)} handles placeholders
+     * @param errorMessageArgs     the arguments to be substituted into the message template. Arguments
+     *                             are converted to Strings using {@link String#valueOf(Object)}.
+     * @param <T>                  the object type
+     */
+    public static <T> void checkArgumentIsNull(T reference, String errorMessageTemplate, Object... errorMessageArgs) {
+        if (nonNull(reference)) {
+            throw newIllegalArgumentException(errorMessageTemplate, errorMessageArgs);
+        }
+    }
+
     private static IllegalArgumentException newIllegalArgumentException(String errorMessageTemplate,
                                                                         Object... errorMessageArgs) {
         var errorMessage = format(errorMessageTemplate, errorMessageArgs);
@@ -251,6 +291,43 @@ public class KiwiPreconditions {
      */
     public static void checkArgumentNotBlank(String string, String errorMessageTemplate, Object... errorMessageArgs) {
         if (isBlank(string)) {
+            throw newIllegalArgumentException(errorMessageTemplate, errorMessageArgs);
+        }
+    }
+
+    /**
+     * Ensures that the string passed as a parameter to the calling method is null, empty or blank, throwing
+     * an {@link IllegalArgumentException} if it is not null, empty, or blank.
+     *
+     * @param string a string
+     */
+    public static void checkArgumentIsBlank(String string) {
+        Preconditions.checkArgument(isBlank(string));
+    }
+
+    /**
+     * Ensures that the string passed as a parameter to the calling method is null, empty or blank, throwing
+     * an {@link IllegalArgumentException} if it is not null, empty, or blank.
+     *
+     * @param string       a string
+     * @param errorMessage the error message for the exception
+     */
+    public static void checkArgumentIsBlank(String string, String errorMessage) {
+        Preconditions.checkArgument(isBlank(string), errorMessage);
+    }
+
+    /**
+     * Ensures that the string passed as a parameter to the calling method is null, empty or blank, throwing
+     * an {@link IllegalArgumentException} if it is not null, empty, or blank.
+     *
+     * @param string               a string
+     * @param errorMessageTemplate a template for the exception message should the check fail, according to how
+     *                             {@link KiwiStrings#format(String, Object...)} handles placeholders
+     * @param errorMessageArgs     the arguments to be substituted into the message template. Arguments
+     *                             are converted to Strings using {@link String#valueOf(Object)}.
+     */
+    public static void checkArgumentIsBlank(String string, String errorMessageTemplate, Object... errorMessageArgs) {
+        if (isNotBlank(string)) {
             throw newIllegalArgumentException(errorMessageTemplate, errorMessageArgs);
         }
     }
