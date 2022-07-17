@@ -1,15 +1,24 @@
 package org.kiwiproject.validation;
 
+import static org.kiwiproject.base.KiwiStrings.format;
+import static org.kiwiproject.collect.KiwiSets.isNotNullOrEmpty;
+import static org.kiwiproject.collect.KiwiSets.isNullOrEmpty;
+
+import com.google.common.base.Preconditions;
 import lombok.experimental.UtilityClass;
 import lombok.extern.slf4j.Slf4j;
+import org.kiwiproject.base.KiwiStrings;
 import org.kiwiproject.reflect.KiwiReflection;
 
 import javax.validation.ConstraintValidatorContext;
 import javax.validation.ConstraintViolation;
+import javax.validation.ConstraintViolationException;
 import javax.validation.Validation;
 import javax.validation.Validator;
 import javax.validation.groups.Default;
+import java.util.List;
 import java.util.Set;
+import java.util.function.Function;
 
 /**
  * Static utilities related to Jakarta Bean Validation (formerly Java Bean Validation).
@@ -90,6 +99,236 @@ public class KiwiValidations {
      */
     public static <T> Set<ConstraintViolation<T>> validate(T object, Class<?>... groupClasses) {
         return validatorInstance.validate(object, groupClasses);
+    }
+
+    /**
+     * Validate the given object using the singleton validator instance against the {@link Default} group, and throw
+     * a {@link ConstraintViolationException} if validation fails.
+     *
+     * @param object the object to validate
+     * @param <T>    the object type
+     */
+    public static <T> void validateThrowing(T object) {
+        var violations = KiwiValidations.validate(object);
+        throwConstraintViolationExceptionIfNotEmpty(violations);
+    }
+
+    /**
+     * Validate the given object using the singleton validator instance against the specified validation groups, and
+     * throw a {@link ConstraintViolationException} if validation fails.
+     *
+     * @param object       the object to validate
+     * @param groupClasses zero or more validation group classes
+     * @param <T>          the object type
+     */
+    public static <T> void validateThrowing(T object, Class<?>... groupClasses) {
+        var violations = KiwiValidations.validate(object, groupClasses);
+        throwConstraintViolationExceptionIfNotEmpty(violations);
+    }
+
+    /**
+     * If the set of constraint violations is not empty, throw a {@link ConstraintViolationException}.
+     *
+     * @param violations the constraint violations
+     * @param <T>        the object type
+     */
+    public static <T> void throwConstraintViolationExceptionIfNotEmpty(Set<ConstraintViolation<T>> violations) {
+        if (isNotNullOrEmpty(violations)) {
+            throw new ConstraintViolationException(violations);
+        }
+    }
+
+    /**
+     * Validate the given object using the singleton validator instance against the {@link Default} group.
+     * If the argument is not valid, throws an {@link IllegalArgumentException}. The exception message is
+     * supplied by {@link #checkArgumentNoViolations(Set)}.
+     *
+     * @param object the object to validate
+     * @param <T>    the object type
+     * @see #checkArgumentNoViolations(Set)
+     */
+    public static <T> void checkArgumentValid(T object) {
+        var violations = KiwiValidations.validate(object);
+        checkArgumentNoViolations(violations);
+    }
+
+    /**
+     * Validate the given object using the singleton validator instance against the {@link Default} group.
+     * If the argument is not valid, throws an {@link IllegalArgumentException}.
+     *
+     * @param object       the object to validate
+     * @param errorMessage the error message for the exception
+     * @param <T>          the object type
+     */
+    public static <T> void checkArgumentValid(T object, String errorMessage) {
+        var violations = KiwiValidations.validate(object);
+        checkArgumentNoViolations(violations, errorMessage);
+    }
+
+    /**
+     * Validate the given object using the singleton validator instance against the {@link Default} group.
+     * If the argument is not valid, throws an {@link IllegalArgumentException}.
+     *
+     * @param object               the object to validate
+     * @param errorMessageTemplate a template for the exception message should the check fail, according to how
+     *                             {@link KiwiStrings#format(String, Object...)} handles placeholders
+     * @param errorMessageArgs     the arguments to be substituted into the message template. Arguments
+     *                             are converted to Strings using {@link String#valueOf(Object)}.
+     * @param <T>                  the object type
+     */
+    public static <T> void checkArgumentValid(T object, String errorMessageTemplate, Object... errorMessageArgs) {
+        var violations = KiwiValidations.validate(object);
+        checkArgumentNoViolations(violations, errorMessageTemplate, errorMessageArgs);
+    }
+
+    /**
+     * Validate the given object using the singleton validator instance against the {@link Default} group.
+     * If the argument is not valid, throws an {@link IllegalArgumentException}.
+     *
+     * @param object              the object to validate
+     * @param errorMessageCreator a Function that transforms constraint violations into an error message for the exception
+     * @param <T>                 the object type
+     */
+    public static <T> void checkArgumentValid(T object,
+                                              Function<Set<ConstraintViolation<T>>, String> errorMessageCreator) {
+        var violations = KiwiValidations.validate(object);
+        checkArgumentNoViolations(violations, errorMessageCreator);
+    }
+
+    /**
+     * Validate the given object using the singleton validator instance against the specified validation groups.
+     * If the argument is not valid, throws an {@link IllegalArgumentException}. The exception message is
+     * supplied by {@link #checkArgumentNoViolations(Set)}.
+     *
+     * @param object       the object to validate
+     * @param groupClasses zero or more validation group classes
+     * @param <T>          the object type
+     * @see #checkArgumentNoViolations(Set)
+     */
+    public static <T> void checkArgumentValid(T object, Class<?>... groupClasses) {
+        var violations = KiwiValidations.validate(object, groupClasses);
+        checkArgumentNoViolations(violations);
+    }
+
+    /**
+     * Validate the given object using the singleton validator instance against the specified validation groups.
+     * If the argument is not valid, throws an {@link IllegalArgumentException}.
+     *
+     * @param object       the object to validate
+     * @param errorMessage the error message for the exception
+     * @param groupClasses zero or more validation group classes
+     * @param <T>          the object type
+     */
+    public static <T> void checkArgumentValid(T object, String errorMessage, Class<?>... groupClasses) {
+        var violations = KiwiValidations.validate(object, groupClasses);
+        checkArgumentNoViolations(violations, errorMessage);
+    }
+
+    /**
+     * Validate the given object using the singleton validator instance against the specified validation groups.
+     * If the argument is not valid, throws an {@link IllegalArgumentException}.
+     *
+     * @param object               the object to validate
+     * @param errorMessageTemplate a template for the exception message should the check fail, according to how
+     *                             {@link KiwiStrings#format(String, Object...)} handles placeholders
+     * @param errorMessageArgs     the arguments to be substituted into the message template. Arguments
+     *                             are converted to Strings using {@link String#valueOf(Object)}.
+     * @param groupClasses         zero or more validation group classes
+     * @param <T>                  the object type
+     */
+    public static <T> void checkArgumentValid(T object,
+                                              String errorMessageTemplate,
+                                              List<Object> errorMessageArgs,
+                                              Class<?>... groupClasses) {
+        var violations = KiwiValidations.validate(object, groupClasses);
+        checkArgumentNoViolations(violations, errorMessageTemplate, errorMessageArgs.toArray());
+    }
+
+    /**
+     * Validate the given object using the singleton validator instance against the specified validation groups.
+     * If the argument is not valid, throws an {@link IllegalArgumentException}.
+     *
+     * @param object              the object to validate
+     * @param errorMessageCreator a Function that transforms constraint violations into an error message for the exception
+     * @param groupClasses        zero or more validation group classes
+     * @param <T>                 the object type
+     */
+    public static <T> void checkArgumentValid(T object,
+                                              Function<Set<ConstraintViolation<T>>, String> errorMessageCreator,
+                                              Class<?>... groupClasses) {
+        var violations = KiwiValidations.validate(object, groupClasses);
+        checkArgumentNoViolations(violations, errorMessageCreator);
+    }
+
+    /**
+     * Ensures the set of constraint violations is empty, throwing an {@link IllegalArgumentException} otherwise.
+     * The exception message is supplied by {@link KiwiConstraintViolations#simpleCombinedErrorMessageOrNull(Set)}.
+     *
+     * @param violations the set of constraint violations to check
+     * @param <T>        the object type
+     */
+    public static <T> void checkArgumentNoViolations(Set<ConstraintViolation<T>> violations) {
+        checkArgumentNoViolations(violations, KiwiConstraintViolations::simpleCombinedErrorMessageOrNull);
+    }
+
+    /**
+     * Ensures the set of constraint violations is empty, throwing an {@link IllegalArgumentException} otherwise.
+     *
+     * @param violations   the set of constraint violations to check
+     * @param errorMessage the error message for the exception
+     * @param <T>          the object type
+     */
+    public static <T> void checkArgumentNoViolations(Set<ConstraintViolation<T>> violations,
+                                                     String errorMessage) {
+        Preconditions.checkArgument(isNullOrEmpty(violations), errorMessage);
+    }
+
+    /**
+     * Ensures the set of constraint violations is empty, throwing an {@link IllegalArgumentException} otherwise.
+     *
+     * @param violations           the set of constraint violations to check
+     * @param errorMessageTemplate a template for the exception message should the check fail, according to how
+     *                             {@link KiwiStrings#format(String, Object...)} handles placeholders
+     * @param errorMessageArgs     the arguments to be substituted into the message template. Arguments
+     *                             are converted to Strings using {@link String#valueOf(Object)}.
+     * @param <T>                  the object type
+     */
+    public static <T> void checkArgumentNoViolations(Set<ConstraintViolation<T>> violations,
+                                                     String errorMessageTemplate,
+                                                     Object... errorMessageArgs) {
+        if (isNotNullOrEmpty(violations)) {
+            var errorMessage = format(errorMessageTemplate, errorMessageArgs);
+            throw new IllegalArgumentException(errorMessage);
+        }
+    }
+
+    /**
+     * Ensures the set of constraint violations is empty, throwing an {@link IllegalArgumentException} otherwise.
+     *
+     * @param violations          the set of constraint violations to check
+     * @param errorMessageCreator a Function that transforms constraint violations into an error message for the exception
+     * @param <T>                 the object type
+     */
+    public static <T> void checkArgumentNoViolations(Set<ConstraintViolation<T>> violations,
+                                                     Function<Set<ConstraintViolation<T>>, String> errorMessageCreator) {
+
+        if (isNotNullOrEmpty(violations)) {
+            var errorMessage = getErrorMessageOrFallback(violations, errorMessageCreator);
+            throw new IllegalArgumentException(errorMessage);
+        }
+    }
+
+    private static <T> String getErrorMessageOrFallback(Set<ConstraintViolation<T>> violations,
+                                                        Function<Set<ConstraintViolation<T>>, String> errorMessageCreator) {
+        try {
+            return errorMessageCreator.apply(violations);
+        } catch (Exception e) {
+            LOG.warn("errorMessageCreator threw exception creating message. Falling back to default message.", e);
+        }
+
+        return KiwiConstraintViolations
+                .simpleCombinedErrorMessageOrEmpty(violations)
+                .orElse("Argument contained one or more constraint violations");
     }
 
     /**
