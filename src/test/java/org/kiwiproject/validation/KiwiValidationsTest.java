@@ -9,18 +9,27 @@ import static java.lang.annotation.ElementType.TYPE;
 import static java.lang.annotation.ElementType.TYPE_USE;
 import static java.lang.annotation.RetentionPolicy.RUNTIME;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatCode;
+import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
+import static org.assertj.core.api.Assertions.catchThrowableOfType;
+import static org.kiwiproject.base.KiwiStrings.f;
 
 import lombok.Data;
 import lombok.Value;
 import org.hibernate.validator.constraints.Length;
 import org.hibernate.validator.constraintvalidation.HibernateConstraintValidatorContext;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.NullAndEmptySource;
 
 import javax.validation.Constraint;
 import javax.validation.ConstraintValidator;
 import javax.validation.ConstraintValidatorContext;
+import javax.validation.ConstraintViolation;
+import javax.validation.ConstraintViolationException;
 import javax.validation.Payload;
 import javax.validation.Valid;
 import javax.validation.constraints.Email;
@@ -31,6 +40,8 @@ import java.lang.annotation.Documented;
 import java.lang.annotation.Retention;
 import java.lang.annotation.Target;
 import java.time.LocalDate;
+import java.util.List;
+import java.util.Set;
 
 @DisplayName("KiwiValidations")
 class KiwiValidationsTest {
@@ -126,13 +137,68 @@ class KiwiValidationsTest {
             var violation = violations.stream().findFirst().orElseThrow();
             assertThat(violation.getPropertyPath()).hasToString("zipCode");
             assertThat(violation.getMessage())
-                .startsWith("'12345-xyz' is not a valid ZIP code as of ")
-                .endsWith(String.valueOf(LocalDate.now().getYear()));
+                    .startsWith("'12345-xyz' is not a valid ZIP code as of ")
+                    .endsWith(String.valueOf(LocalDate.now().getYear()));
         }
     }
 
     @Nested
-    class ViolateWithGroups {
+    class ValidateThrowing {
+
+        @Test
+        void shouldValidate_ValidObjects() {
+            var contactDetails = new SampleContactDetails("alice@example.org", "444-555-1212");
+            var alice = new SamplePerson("Alice", "Jones", null, contactDetails);
+
+            assertThatCode(() -> KiwiValidations.validateThrowing(alice)).doesNotThrowAnyException();
+        }
+
+        @Test
+        void shouldValidate_InvalidObjects() {
+            var contactDetails = new SampleContactDetails("bob@example.org", "");
+            var bob = new SamplePerson("Bob", null, null, contactDetails);
+
+            var exception = catchThrowableOfType(() -> KiwiValidations.validateThrowing(bob), ConstraintViolationException.class);
+            var violations = exception.getConstraintViolations();
+            assertThat(violations)
+                    .extracting(v -> v.getPropertyPath().toString())
+                    .containsOnly(
+                            "lastName",
+                            "contactDetails.mobileNumber"
+                    );
+        }
+    }
+
+    @Nested
+    class ValidateThrowingWithGroups {
+
+        @Test
+        void shouldValidate_ValidObjects() {
+            var contactDetails = new SampleContactDetails("alice@example.org", "444-555-1212");
+            var alice = new SamplePerson("Alice", "Jones", "123-45-6789", contactDetails);
+
+            assertThatCode(() -> KiwiValidations.validateThrowing(alice, Default.class, Secret.class)).doesNotThrowAnyException();
+        }
+
+        @Test
+        void shouldValidate_InvalidObjects() {
+            var contactDetails = new SampleContactDetails("bob@example.org", "");
+            var bob = new SamplePerson(null, "S", null, contactDetails);
+
+            var exception = catchThrowableOfType(() -> KiwiValidations.validateThrowing(bob, Default.class, Secret.class), ConstraintViolationException.class);
+            var violations = exception.getConstraintViolations();
+            assertThat(violations)
+                    .extracting(v -> v.getPropertyPath().toString())
+                    .containsOnly(
+                            "firstName",
+                            "lastName",
+                            "ssn",
+                            "contactDetails.mobileNumber");
+        }
+    }
+
+    @Nested
+    class ValidateWithGroups {
 
         @Test
         void shouldValidate_ValidObjects() {
@@ -156,6 +222,278 @@ class KiwiValidationsTest {
                             "lastName",
                             "ssn",
                             "contactDetails.mobileNumber");
+        }
+    }
+
+    @Nested
+    class CheckArgumentValid {
+
+        private SamplePerson validPerson;
+        private SamplePerson invalidPerson;
+
+        @BeforeEach
+        void setUp() {
+            var validContactDetails = new SampleContactDetails("bob@sacamano.org", "703-555-6677");
+            validPerson = new SamplePerson("Bob", "Sacamano", "123-45-6789", validContactDetails);
+
+            invalidPerson = new SamplePerson("Alice", "", null, null);
+        }
+
+        @Nested
+        class WithNoMessage {
+
+            @Test
+            void shouldNotThrow_WhenArgumentIsValid() {
+                assertThatCode(() -> KiwiValidations.checkArgumentValid(validPerson)).doesNotThrowAnyException();
+            }
+
+            @Test
+            void shouldThrowIllegalArgument_WhenArgumentIsNotValid() {
+                var violations = KiwiValidations.validate(invalidPerson);
+                var expectedMessage = KiwiConstraintViolations.simpleCombinedErrorMessage(violations);
+                assertThatIllegalArgumentException()
+                        .isThrownBy(() -> KiwiValidations.checkArgumentValid(invalidPerson))
+                        .withMessage(expectedMessage);
+            }
+        }
+
+        @Nested
+        class WithMessage {
+
+            @Test
+            void shouldNotThrow_WhenArgumentIsValid() {
+                assertThatCode(() -> KiwiValidations.checkArgumentValid(validPerson, "person is invalid"))
+                        .doesNotThrowAnyException();
+            }
+
+            @Test
+            void shouldThrowIllegalArgument_WhenArgumentIsNotValid() {
+                assertThatIllegalArgumentException()
+                        .isThrownBy(() -> KiwiValidations.checkArgumentValid(invalidPerson, "person is invalid"))
+                        .withMessage("person is invalid");
+            }
+        }
+
+        @Nested
+        class WithMessageTemplate {
+
+            @Test
+            void shouldNotThrow_WhenArgumentIsValid() {
+                assertThatCode(() -> KiwiValidations.checkArgumentValid(validPerson, "invalid person: {}", "bob"))
+                        .doesNotThrowAnyException();
+            }
+
+            @Test
+            void shouldThrowIllegalArgument_WhenArgumentIsNotValid() {
+                assertThatIllegalArgumentException()
+                        .isThrownBy(() -> KiwiValidations.checkArgumentValid(invalidPerson, "invalid person: {}", "bob"))
+                        .withMessage("invalid person: bob");
+            }
+        }
+
+        @Nested
+        class WithMessageCreator {
+
+            @Test
+            void shouldNotThrow_WhenArgumentIsValid() {
+                assertThatCode(() -> KiwiValidations.checkArgumentValid(validPerson,
+                        constraintViolations -> f("person has {} errors", constraintViolations.size())))
+                        .doesNotThrowAnyException();
+            }
+
+            @Test
+            void shouldThrowIllegalArgument_WhenArgumentIsNotValid() {
+                assertThatIllegalArgumentException()
+                        .isThrownBy(() -> KiwiValidations.checkArgumentValid(invalidPerson,
+                                constraintViolations -> f("please fix {} error(s)", constraintViolations.size())))
+                        .withMessage("please fix 3 error(s)");
+            }
+        }
+    }
+
+    @Nested
+    class CheckArgumentValidWithGroups {
+
+        private SamplePerson validPerson;
+        private SamplePerson invalidPerson;
+        private Class<?>[] groups;
+
+        @BeforeEach
+        void setUp() {
+            var validContactDetails = new SampleContactDetails("bob@sacamano.org", "703-555-6677");
+            validPerson = new SamplePerson("Bob", "Sacamano", "123-45-6789", validContactDetails);
+
+            invalidPerson = new SamplePerson("Susan", "Ross", "", null);
+
+            groups = new Class[]{Default.class, Secret.class};
+        }
+
+        @Nested
+        class WithNoMessage {
+
+            @Test
+            void shouldNotThrow_WhenArgumentIsValid() {
+                assertThatCode(() -> KiwiValidations.checkArgumentValid(validPerson, groups))
+                        .doesNotThrowAnyException();
+            }
+
+            @Test
+            void shouldThrowIllegalArgument_WhenArgumentIsNotValid() {
+                var violations = KiwiValidations.validate(invalidPerson, groups);
+                var expectedMessage = KiwiConstraintViolations.simpleCombinedErrorMessage(violations);
+                assertThatIllegalArgumentException()
+                        .isThrownBy(() -> KiwiValidations.checkArgumentValid(invalidPerson, groups))
+                        .withMessage(expectedMessage);
+            }
+        }
+
+        @Nested
+        class WithMessage {
+
+            @Test
+            void shouldNotThrow_WhenArgumentIsValid() {
+                assertThatCode(() -> KiwiValidations.checkArgumentValid(validPerson, "person is invalid", groups))
+                        .doesNotThrowAnyException();
+            }
+
+            @Test
+            void shouldThrowIllegalArgument_WhenArgumentIsNotValid() {
+                assertThatIllegalArgumentException()
+                        .isThrownBy(() -> KiwiValidations.checkArgumentValid(invalidPerson, "person is invalid", groups))
+                        .withMessage("person is invalid");
+            }
+        }
+
+        @Nested
+        class WithMessageTemplate {
+
+            @Test
+            void shouldNotThrow_WhenArgumentIsValid() {
+                assertThatCode(() -> KiwiValidations.checkArgumentValid(validPerson, "invalid person: {}", List.of("bob"), groups))
+                        .doesNotThrowAnyException();
+            }
+
+            @Test
+            void shouldThrowIllegalArgument_WhenArgumentIsNotValid() {
+                assertThatIllegalArgumentException()
+                        .isThrownBy(() -> KiwiValidations.checkArgumentValid(invalidPerson, "invalid person: {}", List.of("bob"), groups))
+                        .withMessage("invalid person: bob");
+            }
+        }
+
+        @Nested
+        class WithMessageCreator {
+
+            @Test
+            void shouldNotThrow_WhenArgumentIsValid() {
+                assertThatCode(() -> KiwiValidations.checkArgumentValid(validPerson,
+                        constraintViolations -> f("person has {} errors", constraintViolations.size()), groups))
+                        .doesNotThrowAnyException();
+            }
+
+            @Test
+            void shouldThrowIllegalArgument_WhenArgumentIsNotValid() {
+                assertThatIllegalArgumentException()
+                        .isThrownBy(() -> KiwiValidations.checkArgumentValid(invalidPerson,
+                                constraintViolations -> f("please fix {} error(s)", constraintViolations.size()), groups))
+                        .withMessage("please fix 2 error(s)");
+            }
+        }
+    }
+
+    @Nested
+    class CheckArgumentNoViolations {
+
+        private Set<ConstraintViolation<SamplePerson>> violations;
+
+        @BeforeEach
+        void setUp() {
+            violations = getConstraintViolations();
+        }
+
+        private Set<ConstraintViolation<SamplePerson>> getConstraintViolations() {
+            return KiwiValidations.validate(new SamplePerson("", "", "", null));
+        }
+
+        @Nested
+        class WithNoMessage {
+
+            @ParameterizedTest
+            @NullAndEmptySource
+            void shouldNotThrow_WhenNullOrEmptyArgument(Set<ConstraintViolation<Person>> violations) {
+                assertThatCode(() -> KiwiValidations.checkArgumentNoViolations(violations)).doesNotThrowAnyException();
+            }
+
+            @Test
+            void shouldThrowIllegalArgument_WhenNonEmptyArgument() {
+                var expectedMessage = KiwiConstraintViolations.simpleCombinedErrorMessage(violations);
+                assertThatIllegalArgumentException()
+                        .isThrownBy(() -> KiwiValidations.checkArgumentNoViolations(violations))
+                        .withMessage(expectedMessage);
+            }
+        }
+
+        @Nested
+        class WithMessage {
+
+            @ParameterizedTest
+            @NullAndEmptySource
+            void shouldNotThrow_WhenNullOrEmptyArgument(Set<ConstraintViolation<Person>> violations) {
+                assertThatCode(() -> KiwiValidations.checkArgumentNoViolations(violations, "invalid argument"))
+                        .doesNotThrowAnyException();
+            }
+
+            @Test
+            void shouldThrowIllegalArgument_WhenNonEmptyArgument() {
+                assertThatIllegalArgumentException()
+                        .isThrownBy(() -> KiwiValidations.checkArgumentNoViolations(violations, "invalid argument"))
+                        .withMessage("invalid argument");
+            }
+        }
+
+        @Nested
+        class WithMessageTemplate {
+
+            @ParameterizedTest
+            @NullAndEmptySource
+            void shouldNotThrow_WhenNullOrEmptyArgument(Set<ConstraintViolation<Person>> violations) {
+                assertThatCode(() -> KiwiValidations.checkArgumentNoViolations(violations, "invalid {} argument: {}", "foo", "bar"))
+                        .doesNotThrowAnyException();
+            }
+
+            @Test
+            void shouldThrowIllegalArgument_WhenNonEmptyArgument() {
+                assertThatIllegalArgumentException()
+                        .isThrownBy(() -> KiwiValidations.checkArgumentNoViolations(violations, "invalid {} argument: {}", "foo", "bar"))
+                        .withMessage("invalid foo argument: bar");
+            }
+        }
+
+        @Nested
+        class WithMessageCreator {
+
+            @ParameterizedTest
+            @NullAndEmptySource
+            void shouldNotThrow_WhenNullOrEmptyArgument(Set<ConstraintViolation<Person>> violations) {
+                assertThatCode(() -> KiwiValidations.checkArgumentNoViolations(violations, constraintViolations -> "created message"))
+                        .doesNotThrowAnyException();
+            }
+
+            @Test
+            void shouldThrowIllegalArgument_WhenNonEmptyArgument() {
+                assertThatIllegalArgumentException()
+                        .isThrownBy(() -> KiwiValidations.checkArgumentNoViolations(violations, constraintViolations -> "num violations: " + constraintViolations.size()))
+                        .withMessage("num violations: %d", violations.size());
+            }
+
+            @Test
+            void shouldThrowIllegalArgument_WhenNonEmptyArgument_CatchingExceptionsThrownByFunction() {
+                assertThatIllegalArgumentException()
+                        .isThrownBy(() -> KiwiValidations.checkArgumentNoViolations(violations, constraintViolations -> {
+                            throw new RuntimeException("error creating message");
+                        }))
+                        .withMessage(KiwiConstraintViolations.simpleCombinedErrorMessage(violations));
+            }
         }
     }
 
@@ -253,10 +591,10 @@ class KiwiValidationsTest {
 
             hibernateContext.disableDefaultConstraintViolation();
             hibernateContext.addExpressionVariable("validatedValue", value)
-                .addExpressionVariable("now", LocalDate.now().getYear())
-                .buildConstraintViolationWithTemplate("'${validatedValue}' is not a valid ZIP code as of ${now}")
-                .enableExpressionLanguage()
-                .addConstraintViolation();
+                    .addExpressionVariable("now", LocalDate.now().getYear())
+                    .buildConstraintViolationWithTemplate("'${validatedValue}' is not a valid ZIP code as of ${now}")
+                    .enableExpressionLanguage()
+                    .addConstraintViolation();
 
             return false;
         }

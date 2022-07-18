@@ -20,8 +20,11 @@ import java.util.function.Supplier;
  * Static utility methods similar to those found in {@link Preconditions}, but with a lovely
  * Kiwi flavor to them. That class has good documentation, so go read it if you need more information on the
  * intent and general usage.
+ * <p>
+ * If you're looking for preconditions related to validating arguments using Jakarta Beans Validation, they
+ * are in {@link org.kiwiproject.validation.KiwiValidations KiwiValidations}.
  *
- * @implNote Many of the methods in this class use Lombok's {@link SneakyThrows} so that methods do not need to declare
+ * @implNote Several methods in this class use Lombok's {@link SneakyThrows} so that they do not need to declare
  * that they throw exceptions of type T, <em>for the case that T is a checked exception</em>. Read more details about
  * how this works in {@link SneakyThrows}. Most notably, this should give you more insight into how the JVM (versus
  * Java the language) actually work: <em>"The JVM does not check for the consistency of the checked exception system;
