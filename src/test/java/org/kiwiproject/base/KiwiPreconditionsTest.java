@@ -22,11 +22,15 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ArgumentsSource;
+import org.junit.jupiter.params.provider.NullAndEmptySource;
 import org.junit.jupiter.params.provider.ValueSource;
 import org.kiwiproject.util.BlankStringArgumentsProvider;
 
 import java.math.BigInteger;
 import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 @DisplayName("KiwiPreconditions")
 @ExtendWith(SoftAssertionsExtension.class)
@@ -308,6 +312,158 @@ class KiwiPreconditionsTest {
                         .isThrownBy(() ->
                                 KiwiPreconditions.checkArgumentIsBlank("a non-blank value", "{} cannot be blank (code: {})", "bar", 84))
                         .withMessage("bar cannot be blank (code: 84)");
+            }
+        }
+    }
+
+    @Nested
+    class CheckCollectionArgumentNotEmpty {
+
+        @Nested
+        class WithNoMessage {
+
+            @Test
+            void shouldNotThrow_WhenArgumentIsNotEmpty() {
+                assertThatCode(() -> KiwiPreconditions.checkArgumentNotEmpty(List.of(1)))
+                        .doesNotThrowAnyException();
+
+                assertThatCode(() -> KiwiPreconditions.checkArgumentNotEmpty(Set.of(42)))
+                        .doesNotThrowAnyException();
+            }
+
+            @ParameterizedTest
+            @NullAndEmptySource
+            void shouldThrowWhenListArgument_IsNullOrEmpty(List<Integer> list) {
+                assertThatIllegalArgumentException()
+                        .isThrownBy(() -> KiwiPreconditions.checkArgumentNotEmpty(list));
+            }
+
+            @ParameterizedTest
+            @NullAndEmptySource
+            void shouldThrowWhenSetArgument_IsNullOrEmpty(Set<Integer> set) {
+                assertThatIllegalArgumentException()
+                        .isThrownBy(() -> KiwiPreconditions.checkArgumentNotEmpty(set));
+            }
+        }
+
+        @Nested
+        class WithMessage {
+
+            @Test
+            void shouldNotThrow_WhenArgumentIsNotEmpty() {
+                assertThatCode(() -> KiwiPreconditions.checkArgumentNotEmpty(List.of(1), "invalid list"))
+                        .doesNotThrowAnyException();
+
+                assertThatCode(() -> KiwiPreconditions.checkArgumentNotEmpty(Set.of(42), "invalid set"))
+                        .doesNotThrowAnyException();
+            }
+
+            @ParameterizedTest
+            @NullAndEmptySource
+            void shouldThrowWhenListArgument_IsNullOrEmpty(List<Long> list) {
+                assertThatIllegalArgumentException()
+                        .isThrownBy(() -> KiwiPreconditions.checkArgumentNotEmpty(list, "invalid list"))
+                        .withMessage("invalid list");
+            }
+
+            @ParameterizedTest
+            @NullAndEmptySource
+            void shouldThrowWhenSetArgument_IsNullOrEmpty(Set<Long> set) {
+                assertThatIllegalArgumentException()
+                        .isThrownBy(() -> KiwiPreconditions.checkArgumentNotEmpty(set, "invalid set"))
+                        .withMessage("invalid set");
+            }
+        }
+
+        @Nested
+        class WithMessageTemplate {
+
+            @Test
+            void shouldNotThrow_WhenArgumentIsNotEmpty() {
+                assertThatCode(() ->
+                        KiwiPreconditions.checkArgumentNotEmpty(List.of(1), "bad {} map", "foo"))
+                        .doesNotThrowAnyException();
+
+                assertThatCode(() ->
+                        KiwiPreconditions.checkArgumentNotEmpty(Set.of(42), "bad {} set", "bar"))
+                        .doesNotThrowAnyException();
+            }
+
+            @ParameterizedTest
+            @NullAndEmptySource
+            void shouldThrowWhenListArgument_IsNullOrEmpty(List<String> list) {
+                assertThatIllegalArgumentException()
+                        .isThrownBy(() ->
+                                KiwiPreconditions.checkArgumentNotEmpty(list, "bad {} list", "bar"))
+                        .withMessage("bad bar list");
+            }
+
+            @ParameterizedTest
+            @NullAndEmptySource
+            void shouldThrowWhenSetArgument_IsNullOrEmpty(Set<String> set) {
+                assertThatIllegalArgumentException()
+                        .isThrownBy(() ->
+                                KiwiPreconditions.checkArgumentNotEmpty(set, "bad {} set", "foo"))
+                        .withMessage("bad foo set");
+            }
+        }
+    }
+
+    @Nested
+    class CheckMapArgumentNotEmpty {
+
+        @Nested
+        class WithNoMessage {
+
+            @Test
+            void shouldNotThrow_WhenArgumentIsNotEmpty() {
+                assertThatCode(() -> KiwiPreconditions.checkArgumentNotEmpty(Map.of("k1", "v1")))
+                        .doesNotThrowAnyException();
+            }
+
+            @ParameterizedTest
+            @NullAndEmptySource
+            void shouldThrowWhenArgument_IsNullOrEmpty(Map<String, Integer> map) {
+                assertThatIllegalArgumentException()
+                        .isThrownBy(() -> KiwiPreconditions.checkArgumentNotEmpty(map));
+            }
+        }
+
+        @Nested
+        class WithMessage {
+
+            @Test
+            void shouldNotThrow_WhenArgumentIsNotEmpty() {
+                assertThatCode(() ->
+                        KiwiPreconditions.checkArgumentNotEmpty(Map.of("k1", "v1"), "invalid map"))
+                        .doesNotThrowAnyException();
+            }
+
+            @ParameterizedTest
+            @NullAndEmptySource
+            void shouldThrowWhenArgument_IsNullOrEmpty(Map<Integer, String> map) {
+                assertThatIllegalArgumentException()
+                        .isThrownBy(() -> KiwiPreconditions.checkArgumentNotEmpty(map, "invalid map"));
+            }
+        }
+
+        @Nested
+        class WithMessageTemplate {
+
+            @Test
+            void shouldNotThrow_WhenArgumentIsNotEmpty() {
+                assertThatCode(() ->
+                        KiwiPreconditions.checkArgumentNotEmpty(Map.of("k1", "v1"), "invalid {} {} map", "foo", "bar"))
+                        .doesNotThrowAnyException();
+            }
+
+            @ParameterizedTest
+            @NullAndEmptySource
+            void shouldThrowWhenArgument_IsNullOrEmpty(Map<String, Object> map) {
+                assertThatIllegalArgumentException()
+                        .isThrownBy(() ->
+                                KiwiPreconditions.checkArgumentNotEmpty(map, "invalid {} {} map", "foo", "bar"))
+                        .withMessage("invalid foo bar map");
             }
         }
     }

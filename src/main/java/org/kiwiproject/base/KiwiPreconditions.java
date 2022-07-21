@@ -11,8 +11,10 @@ import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.Preconditions;
 import lombok.SneakyThrows;
 import lombok.experimental.UtilityClass;
+import org.kiwiproject.collect.KiwiMaps;
 
 import java.util.Collection;
+import java.util.Map;
 import java.util.function.IntSupplier;
 import java.util.function.Supplier;
 
@@ -255,12 +257,6 @@ public class KiwiPreconditions {
         }
     }
 
-    private static IllegalArgumentException newIllegalArgumentException(String errorMessageTemplate,
-                                                                        Object... errorMessageArgs) {
-        var errorMessage = format(errorMessageTemplate, errorMessageArgs);
-        return new IllegalArgumentException(errorMessage);
-    }
-
     /**
      * Ensures that the string passed as a parameter to the calling method is not null, empty or blank, throwing
      * an {@link IllegalArgumentException} if it is null, empty, or blank.
@@ -333,6 +329,107 @@ public class KiwiPreconditions {
         if (isNotBlank(string)) {
             throw newIllegalArgumentException(errorMessageTemplate, errorMessageArgs);
         }
+    }
+
+    /**
+     * Ensures that the collection passed as a parameter to the calling method is not null or empty.
+     * Throws an {@link IllegalArgumentException} if the collection is null or empty.
+     *
+     * @param collection a collection, possibly null
+     * @param <T>        the type of object in the collection
+     */
+    public static <T> void checkArgumentNotEmpty(Collection<T> collection) {
+        Preconditions.checkArgument(isNotNullOrEmpty(collection));
+    }
+
+    /**
+     * Ensures that the collection passed as a parameter to the calling method is not null or empty.
+     * Throws an {@link IllegalArgumentException} if the collection is null or empty.
+     *
+     * @param collection   a collection, possibly null
+     * @param errorMessage the error message for the exception
+     * @param <T>          the type of object in the collection
+     */
+    public static <T> void checkArgumentNotEmpty(Collection<T> collection, String errorMessage) {
+        Preconditions.checkArgument(isNotNullOrEmpty(collection), errorMessage);
+    }
+
+    /**
+     * Ensures that the collection passed as a parameter to the calling method is not null or empty.
+     * Throws an {@link IllegalArgumentException} if the collection is null or empty.
+     *
+     * @param collection           a collection, possibly null
+     * @param errorMessageTemplate a template for the exception message should the check fail, according to how
+     *                             {@link KiwiStrings#format(String, Object...)} handles placeholders
+     * @param errorMessageArgs     the arguments to be substituted into the message template. Arguments
+     *                             are converted to Strings using {@link String#valueOf(Object)}.
+     * @param <T>                  the type of object in the collection
+     */
+    public static <T> void checkArgumentNotEmpty(Collection<T> collection,
+                                                 String errorMessageTemplate,
+                                                 Object... errorMessageArgs) {
+        if (isNullOrEmpty(collection)) {
+            throw newIllegalArgumentException(errorMessageTemplate, errorMessageArgs);
+        }
+    }
+
+    private static <T> boolean isNotNullOrEmpty(Collection<T> collection) {
+        return !isNullOrEmpty(collection);
+    }
+
+    private static <T> boolean isNullOrEmpty(Collection<T> collection) {
+        return isNull(collection) || collection.isEmpty();
+    }
+
+    /**
+     * Ensures that the map passed as a parameter to the calling method is not null or empty.
+     * Throws an {@link IllegalArgumentException} if the map is null or empty.
+     *
+     * @param map a map, possibly null
+     * @param <K> the type of keys in the map
+     * @param <V> the type of values in the map
+     */
+    public static <K, V> void checkArgumentNotEmpty(Map<K, V> map) {
+        Preconditions.checkArgument(KiwiMaps.isNotNullOrEmpty(map));
+    }
+
+    /**
+     * Ensures that the map passed as a parameter to the calling method is not null or empty.
+     * Throws an {@link IllegalArgumentException} if the map is null or empty.
+     *
+     * @param map          a map, possibly null
+     * @param errorMessage the error message for the exception
+     * @param <K>          the type of keys in the map
+     * @param <V>          the type of values in the map
+     */
+    public static <K, V> void checkArgumentNotEmpty(Map<K, V> map, String errorMessage) {
+        Preconditions.checkArgument(KiwiMaps.isNotNullOrEmpty(map), errorMessage);
+    }
+
+    /**
+     * Ensures that the map passed as a parameter to the calling method is not null or empty.
+     * Throws an {@link IllegalArgumentException} if the map is null or empty.
+     *
+     * @param map                  a map, possibly null
+     * @param errorMessageTemplate a template for the exception message should the check fail, according to how
+     *                             {@link KiwiStrings#format(String, Object...)} handles placeholders
+     * @param errorMessageArgs     the arguments to be substituted into the message template. Arguments
+     *                             are converted to Strings using {@link String#valueOf(Object)}.
+     * @param <K>                  the type of keys in the map
+     * @param <V>                  the type of values in the map
+     */
+    public static <K, V> void checkArgumentNotEmpty(Map<K, V> map,
+                                                    String errorMessageTemplate,
+                                                    Object... errorMessageArgs) {
+        if (KiwiMaps.isNullOrEmpty(map)) {
+            throw newIllegalArgumentException(errorMessageTemplate, errorMessageArgs);
+        }
+    }
+
+    private static IllegalArgumentException newIllegalArgumentException(String errorMessageTemplate,
+                                                                        Object... errorMessageArgs) {
+        var errorMessage = format(errorMessageTemplate, errorMessageArgs);
+        return new IllegalArgumentException(errorMessage);
     }
 
     /**
