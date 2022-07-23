@@ -237,7 +237,7 @@ public class KiwiLists {
      */
     public static <T> List<T> distinct(Collection<T> collection) {
         checkArgument(nonNull(collection), "collection can not be null");
-        return distinctOrNull(collection);
+        return  distinctListFrom(collection);
     }
 
     /**
@@ -248,7 +248,23 @@ public class KiwiLists {
      * @return a new list with only unique elements or null.
      */
     public static <T> List<T> distinctOrNull(Collection<T> collection) {
-        return nonNull(collection) ? collection.stream().distinct().collect(toList()) : null;
+        return nonNull(collection) ? distinctListFrom(collection) : null;
+    }
+
+    /**
+     * Returns a list of the collection elements with duplicates stripped out or an empty list if the input collection
+     * is null (or empty).
+     *
+     * @param collection the collection of values
+     * @param <T>        the type of items in the collection
+     * @return a new list with only unique elements or an empty list
+     */
+    public static <T> List<T> distinctOrEmpty(Collection<T> collection) {
+        return nonNull(collection) ? distinctListFrom(collection) : new ArrayList<>();
+    }
+
+    private static <T> List<T> distinctListFrom(Collection<T> collection) {
+        return collection.stream().distinct().collect(toList());
     }
 
     /**

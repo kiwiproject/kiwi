@@ -17,6 +17,7 @@ import org.junit.jupiter.api.RepeatedTest;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.NullAndEmptySource;
 import org.junit.jupiter.params.provider.ValueSource;
 import org.kiwiproject.junit.jupiter.WhiteBoxTest;
 
@@ -24,6 +25,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
@@ -342,6 +344,7 @@ class KiwiListsTest {
 
         @Test
         void shouldReturnDistinct(SoftAssertions softly) {
+            softly.assertThat(KiwiLists.distinct(newArrayList())).isEmpty();
             softly.assertThat(KiwiLists.distinct(newArrayList(1, 2, 3))).hasSize(3);
             softly.assertThat(KiwiLists.distinct(newArrayList(1, 1, 1))).hasSize(1);
             softly.assertThat(KiwiLists.distinct(newArrayList("a", "b", "b"))).hasSize(2);
@@ -361,6 +364,33 @@ class KiwiListsTest {
         @Test
         void shouldAllowNull() {
             assertThat(KiwiLists.distinctOrNull(null)).isNull();
+        }
+
+        @Test
+        void shouldReturnEmptyList_GivenEmptyList() {
+            assertThat(KiwiLists.distinctOrNull(List.of())).isEmpty();
+        }
+
+        @Test
+        void shouldReturnDistinctList() {
+            assertThat(KiwiLists.distinctOrNull(List.of(42, 42, 42, 84, 126, 126, 336, 336)))
+                    .containsExactly(42, 84, 126, 336);
+        }
+    }
+
+    @Nested
+    class DistinctOrEmpty {
+
+        @ParameterizedTest
+        @NullAndEmptySource
+        void shouldReturnEmptyList_GivenNullOrEmptyCollection(Set<String> strings) {
+            assertThat(KiwiLists.distinctOrEmpty(strings)).isEmpty();
+        }
+
+        @Test
+        void shouldReturnDistinctList() {
+            assertThat(KiwiLists.distinctOrEmpty(List.of(42, 42, 84, 84, 126, 336, 336)))
+                    .containsExactly(42, 84, 126, 336);
         }
     }
 
