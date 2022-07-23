@@ -365,6 +365,17 @@ class KiwiListsTest {
         void shouldAllowNull() {
             assertThat(KiwiLists.distinctOrNull(null)).isNull();
         }
+
+        @Test
+        void shouldReturnEmptyList_GivenEmptyList() {
+            assertThat(KiwiLists.distinctOrNull(List.of())).isEmpty();
+        }
+
+        @Test
+        void shouldReturnDistinctList() {
+            assertThat(KiwiLists.distinctOrNull(List.of(42, 42, 42, 84, 126, 126, 336, 336)))
+                    .containsExactly(42, 84, 126, 336);
+        }
     }
 
     @Nested
@@ -374,6 +385,12 @@ class KiwiListsTest {
         @NullAndEmptySource
         void shouldReturnEmptyList_GivenNullOrEmptyCollection(Set<String> strings) {
             assertThat(KiwiLists.distinctOrEmpty(strings)).isEmpty();
+        }
+
+        @Test
+        void shouldReturnDistinctList() {
+            assertThat(KiwiLists.distinctOrEmpty(List.of(42, 42, 84, 84, 126, 336, 336)))
+                    .containsExactly(42, 84, 126, 336);
         }
     }
 
