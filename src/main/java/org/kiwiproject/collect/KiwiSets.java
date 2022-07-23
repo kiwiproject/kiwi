@@ -24,7 +24,7 @@ public class KiwiSets {
     }
 
     /**
-     * Checks whether the specified is neither null nor empty.
+     * Checks whether the specified set is neither null nor empty.
      *
      * @param set the set
      * @param <T> the type of items in the set
@@ -35,11 +35,11 @@ public class KiwiSets {
     }
 
     /**
-     * Checks whether the specified list is non-null and has only one item.
+     * Checks whether the specified set is non-null and has only one item.
      *
      * @param set the set
      * @param <T> the type of items in the set
-     * @return {@code true} if list is non-null and has exactly one item; {@code false}
+     * @return {@code true} if set is non-null and has exactly one item; {@code false}
      */
     public static <T> boolean hasOneElement(Set<T> set) {
         return nonNull(set) && set.size() == 1;
