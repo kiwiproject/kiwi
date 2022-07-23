@@ -6,12 +6,15 @@ import static java.util.Objects.nonNull;
 import static org.apache.commons.lang3.StringUtils.isBlank;
 import static org.apache.commons.lang3.StringUtils.isNotBlank;
 import static org.kiwiproject.base.KiwiStrings.format;
+import static org.kiwiproject.collect.KiwiCollections.isNotNullOrEmpty;
+import static org.kiwiproject.collect.KiwiCollections.isNullOrEmpty;
+import static org.kiwiproject.collect.KiwiMaps.isNotNullOrEmpty;
+import static org.kiwiproject.collect.KiwiMaps.isNullOrEmpty;
 
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.Preconditions;
 import lombok.SneakyThrows;
 import lombok.experimental.UtilityClass;
-import org.kiwiproject.collect.KiwiMaps;
 
 import java.util.Collection;
 import java.util.Map;
@@ -373,14 +376,6 @@ public class KiwiPreconditions {
         }
     }
 
-    private static <T> boolean isNotNullOrEmpty(Collection<T> collection) {
-        return !isNullOrEmpty(collection);
-    }
-
-    private static <T> boolean isNullOrEmpty(Collection<T> collection) {
-        return isNull(collection) || collection.isEmpty();
-    }
-
     /**
      * Ensures that the map passed as a parameter to the calling method is not null or empty.
      * Throws an {@link IllegalArgumentException} if the map is null or empty.
@@ -390,7 +385,7 @@ public class KiwiPreconditions {
      * @param <V> the type of values in the map
      */
     public static <K, V> void checkArgumentNotEmpty(Map<K, V> map) {
-        Preconditions.checkArgument(KiwiMaps.isNotNullOrEmpty(map));
+        Preconditions.checkArgument(isNotNullOrEmpty(map));
     }
 
     /**
@@ -403,7 +398,7 @@ public class KiwiPreconditions {
      * @param <V>          the type of values in the map
      */
     public static <K, V> void checkArgumentNotEmpty(Map<K, V> map, String errorMessage) {
-        Preconditions.checkArgument(KiwiMaps.isNotNullOrEmpty(map), errorMessage);
+        Preconditions.checkArgument(isNotNullOrEmpty(map), errorMessage);
     }
 
     /**
@@ -421,7 +416,7 @@ public class KiwiPreconditions {
     public static <K, V> void checkArgumentNotEmpty(Map<K, V> map,
                                                     String errorMessageTemplate,
                                                     Object... errorMessageArgs) {
-        if (KiwiMaps.isNullOrEmpty(map)) {
+        if (isNullOrEmpty(map)) {
             throw newIllegalArgumentException(errorMessageTemplate, errorMessageArgs);
         }
     }
