@@ -3,6 +3,8 @@ package org.kiwiproject.json;
 import static com.google.common.collect.Lists.newArrayList;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.entry;
+import static org.kiwiproject.jackson.KiwiTypeReferences.LIST_OF_STRING_TYPE_REFERENCE;
+import static org.kiwiproject.jackson.KiwiTypeReferences.MAP_OF_STRING_TO_OBJECT_TYPE_REFERENCE;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonView;
@@ -37,9 +39,6 @@ import java.util.Map;
 class JsonHelperAdvancedFeaturesTest {
 
     private static final String SAMPLE_JSON = FixtureHelpers.fixture("JsonHelperTests/sample.json");
-
-    private static final TypeReference<List<String>> LIST_OF_STRING_TYPE_REF = new TypeReference<>() {
-    };
 
     private JsonHelper jsonHelper;
 
@@ -339,7 +338,7 @@ class JsonHelperAdvancedFeaturesTest {
             var map = Map.of("array", List.of("a", "b", "c"));
             var json = jsonHelper.getObjectMapper().writeValueAsString(map);
 
-            assertThat(jsonHelper.getPath(json, "array", LIST_OF_STRING_TYPE_REF))
+            assertThat(jsonHelper.getPath(json, "array", LIST_OF_STRING_TYPE_REFERENCE))
                     .containsExactly("a", "b", "c");
         }
 
@@ -356,9 +355,7 @@ class JsonHelperAdvancedFeaturesTest {
             softly.assertThat(jsonHelper.getPath(inputObject, "objectVar", Object.class))
                     .isEqualTo(sampleObject.getObjectVar());
 
-            var targetStringListType = new TypeReference<List<String>>() {
-            };
-            softly.assertThat(jsonHelper.getPath(inputObject, "stringList", targetStringListType))
+            softly.assertThat(jsonHelper.getPath(inputObject, "stringList", LIST_OF_STRING_TYPE_REFERENCE))
                     .isEqualTo(sampleObject.getStringList());
 
             var targetObjectListType = new TypeReference<List<Object>>() {
@@ -366,9 +363,7 @@ class JsonHelperAdvancedFeaturesTest {
             softly.assertThat(jsonHelper.getPath(inputObject, "objectList", targetObjectListType))
                     .isEqualTo(sampleObject.getObjectList());
 
-            var targetMapType = new TypeReference<Map<String, Object>>() {
-            };
-            softly.assertThat(jsonHelper.getPath(inputObject, "objectMap", targetMapType))
+            softly.assertThat(jsonHelper.getPath(inputObject, "objectMap", MAP_OF_STRING_TO_OBJECT_TYPE_REFERENCE))
                     .isEqualTo(sampleObject.getObjectMap());
         }
 

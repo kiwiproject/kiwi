@@ -4,6 +4,7 @@ import static com.google.common.base.Preconditions.checkArgument;
 import static java.util.Objects.nonNull;
 import static org.kiwiproject.base.KiwiPreconditions.checkArgumentNotBlank;
 import static org.kiwiproject.base.KiwiPreconditions.checkArgumentNotNull;
+import static org.kiwiproject.jackson.KiwiTypeReferences.MAP_OF_STRING_TO_OBJECT_TYPE_REFERENCE;
 
 import com.fasterxml.jackson.annotation.JsonView;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -22,9 +23,6 @@ import java.util.Map;
  * be available at runtime.
  */
 public class YamlHelper {
-
-    private static final TypeReference<Map<String, Object>> MAP_TYPE_REFERENCE = new TypeReference<>() {
-    };
 
     private final ObjectMapper objectMapper;
 
@@ -146,7 +144,7 @@ public class YamlHelper {
      * @throws IllegalArgumentException if the YAML is blank or null
      */
     public Map<String, Object> toMap(String yaml) {
-        return toMap(yaml, MAP_TYPE_REFERENCE);
+        return toMap(yaml, MAP_OF_STRING_TO_OBJECT_TYPE_REFERENCE);
     }
 
     /**

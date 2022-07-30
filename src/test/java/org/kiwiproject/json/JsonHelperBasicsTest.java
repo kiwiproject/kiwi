@@ -5,6 +5,8 @@ import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.assertj.core.api.Assertions.entry;
 import static org.kiwiproject.collect.KiwiMaps.newLinkedHashMap;
+import static org.kiwiproject.jackson.KiwiTypeReferences.LIST_OF_MAP_OF_STRING_TO_OBJECT_TYPE_REFERENCE;
+import static org.kiwiproject.jackson.KiwiTypeReferences.MAP_OF_STRING_TO_OBJECT_TYPE_REFERENCE;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
@@ -568,8 +570,7 @@ class JsonHelperBasicsTest {
             var jasonJson = jsonHelper.toJsonFromKeyValuePairs("firstName", "Jason", "lastName", "Whatever", "age", 27);
             var json = "[" + bobJson + "," + jasonJson + "]";
 
-            var people = jsonHelper.toObjectList(json, new TypeReference<List<Map<String, Object>>>() {
-            });
+            var people = jsonHelper.toObjectList(json, LIST_OF_MAP_OF_STRING_TO_OBJECT_TYPE_REFERENCE);
 
             assertThat(people)
                     .containsOnlyOnce(
@@ -663,8 +664,7 @@ class JsonHelperBasicsTest {
         @ParameterizedTest
         @NullAndEmptySource
         void shouldReturnNull_GivenTypeReference_AndNullOrEmptyInput(String value) {
-            var people = jsonHelper.toMap(value, new TypeReference<Map<String, Object>>() {
-            });
+            var people = jsonHelper.toMap(value, MAP_OF_STRING_TO_OBJECT_TYPE_REFERENCE);
 
             assertThat(people).isNull();
         }
@@ -672,8 +672,7 @@ class JsonHelperBasicsTest {
         @ParameterizedTest
         @ValueSource(strings = {" ", "  ", "\t", " \n "})
         void shouldReturnNull_GivenTypeReference_AndBlankInput(String value) {
-            var people = jsonHelper.toMap(value, new TypeReference<Map<String, Object>>() {
-            });
+            var people = jsonHelper.toMap(value, MAP_OF_STRING_TO_OBJECT_TYPE_REFERENCE);
 
             assertThat(people).isNull();
         }
@@ -682,9 +681,7 @@ class JsonHelperBasicsTest {
         void shouldThrow_GivenTypeReference_AndBadJson() {
             var json = "BAD_JSON_INPUT";
 
-            var targetMapType = new TypeReference<Map<String, Object>>() {
-            };
-            assertThatThrownBy(() -> jsonHelper.toMap(json, targetMapType))
+            assertThatThrownBy(() -> jsonHelper.toMap(json, MAP_OF_STRING_TO_OBJECT_TYPE_REFERENCE))
                     .isExactlyInstanceOf(RuntimeJsonException.class)
                     .hasCauseExactlyInstanceOf(JsonParseException.class);
         }

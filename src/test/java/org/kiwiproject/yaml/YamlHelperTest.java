@@ -6,6 +6,7 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.assertj.core.api.Assertions.entry;
 import static org.assertj.core.api.Assertions.tuple;
 import static org.kiwiproject.collect.KiwiMaps.newLinkedHashMap;
+import static org.kiwiproject.jackson.KiwiTypeReferences.MAP_OF_STRING_TO_OBJECT_TYPE_REFERENCE;
 
 import com.fasterxml.jackson.annotation.JsonView;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -85,8 +86,7 @@ class YamlHelperTest {
                     "john", john
             ));
 
-            var map = new YAMLMapper().readValue(yaml, new TypeReference<Map<String, Object>>() {
-            });
+            var map = new YAMLMapper().readValue(yaml, MAP_OF_STRING_TO_OBJECT_TYPE_REFERENCE);
 
             assertThat(map).containsOnlyKeys("bob", "john");
 

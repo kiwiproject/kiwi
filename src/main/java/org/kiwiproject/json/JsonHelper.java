@@ -13,6 +13,7 @@ import static org.kiwiproject.collect.KiwiLists.first;
 import static org.kiwiproject.collect.KiwiLists.isNotNullOrEmpty;
 import static org.kiwiproject.collect.KiwiLists.isNullOrEmpty;
 import static org.kiwiproject.collect.KiwiMaps.newHashMap;
+import static org.kiwiproject.jackson.KiwiTypeReferences.MAP_OF_STRING_TO_OBJECT_TYPE_REFERENCE;
 
 import com.fasterxml.jackson.annotation.JsonView;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -71,9 +72,6 @@ import java.util.stream.Stream;
  */
 @Slf4j
 public class JsonHelper {
-
-    private static final TypeReference<Map<String, Object>> MAP_TYPE_REFERENCE = new TypeReference<>() {
-    };
 
     private static final Pattern ARRAY_INDEX_PATTERN = Pattern.compile("\\[(\\d+)]");
 
@@ -459,7 +457,7 @@ public class JsonHelper {
         }
 
         try {
-            return objectMapper.readValue(json, MAP_TYPE_REFERENCE);
+            return objectMapper.readValue(json, MAP_OF_STRING_TO_OBJECT_TYPE_REFERENCE);
         } catch (JsonProcessingException e) {
             throw new RuntimeJsonException(e);
         }
@@ -621,7 +619,7 @@ public class JsonHelper {
      * @return a new map instance
      */
     public Map<String, Object> convertToMap(Object fromObject) {
-        return convertToMap(fromObject, MAP_TYPE_REFERENCE);
+        return convertToMap(fromObject, MAP_OF_STRING_TO_OBJECT_TYPE_REFERENCE);
     }
 
     /**
