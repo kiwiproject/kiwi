@@ -19,6 +19,7 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 @DisplayName("KiwiGenericTypes")
 @ExtendWith(DropwizardExtensionsSupport.class)
@@ -72,6 +73,13 @@ class KiwiGenericTypesTest {
         public Response getOnSale() {
             var onSale = List.of(true, false, false);
             return Response.ok(onSale).build();
+        }
+
+        @GET
+        @Path("/bodyTypes")
+        public Response getBodyTypes() {
+            var types = List.of("sedan", "sedan", "SUV");
+            return Response.ok(types).build();
         }
     }
 
@@ -175,5 +183,15 @@ class KiwiGenericTypesTest {
                 .get(KiwiGenericTypes.LIST_OF_BOOLEAN_GENERIC_TYPE);
 
         assertThat(onSale).containsExactly(true, false, false);
+    }
+
+    @Test
+    void shouldSupportSetOfStrings() {
+        Set<String> models = RESOURCES.client()
+                .target("/genericTypes/bodyTypes")
+                .request()
+                .get(KiwiGenericTypes.SET_OF_STRING_GENERIC_TYPE);
+
+        assertThat(models).containsExactlyInAnyOrder("sedan", "SUV");
     }
 }

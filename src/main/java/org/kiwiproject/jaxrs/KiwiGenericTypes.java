@@ -5,6 +5,7 @@ import lombok.experimental.UtilityClass;
 import javax.ws.rs.core.GenericType;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * Utilities/constants for containing common, re-usable types of {@link GenericType} objects.
@@ -41,6 +42,10 @@ public class KiwiGenericTypes {
             };
 
     public static final GenericType<List<Boolean>> LIST_OF_BOOLEAN_GENERIC_TYPE =
+            new GenericType<>() {
+            };
+
+    public static final GenericType<Set<String>> SET_OF_STRING_GENERIC_TYPE =
             new GenericType<>() {
             };
 }
