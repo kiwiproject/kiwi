@@ -11,12 +11,8 @@ import java.time.Duration;
 public class KiwiDropwizardDurations {
 
     public static Duration fromDropwizardDuration(io.dropwizard.util.Duration duration) {
-        var javaDuration = Duration.ofMillis(duration.toMilliseconds());
-
-        if (javaDuration.isZero()) {
-            return Duration.ofNanos(duration.toNanoseconds());
-        }
-
-        return javaDuration;
+        var unit = duration.getUnit();
+        var quantity = duration.getQuantity();
+        return Duration.of(quantity, unit.toChronoUnit());
     }
 }
