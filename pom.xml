@@ -32,7 +32,7 @@
         <kiwi-bom.version>0.17.0</kiwi-bom.version>
 
         <!-- Versions for provided dependencies -->
-        <retrying-again.version>1.0.9</retrying-again.version>
+        <retrying-again.version>1.0.10</retrying-again.version>
 
         <!-- Sonar properties -->
         <sonar.projectKey>kiwiproject_kiwi</sonar.projectKey>
