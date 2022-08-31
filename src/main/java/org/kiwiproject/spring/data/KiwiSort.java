@@ -8,6 +8,8 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
 
+import java.util.Locale;
+
 /**
  * Describes a sort on a specific property that is applied to a result list.
  */
@@ -40,6 +42,41 @@ public class KiwiSort {
 
         Direction(boolean ascending) {
             this.ascending = ascending;
+        }
+
+        /**
+         * Converts the given value to a {@link Direction} in a case-insensitive manner and ignoring leading and
+         * trailing whitespace.
+         * <p>
+         * Uses the default {@link Locale} to convert the value to uppercase.
+         *
+         * @param value the value to convert
+         * @return the {@link Direction} representing the given value
+         * @throws IllegalArgumentException if there is no {@link Direction} that matches after converting to uppercase
+         *                                  and stripping leading and trailing whitespace
+         * @see Locale#getDefault()
+         */
+        public static Direction fromString(String value) {
+            return Direction.fromString(value, Locale.getDefault());
+        }
+
+        /**
+         * Converts the given value to a {@link Direction} in a case-insensitive manner and ignoring leading and
+         * trailing whitespace.
+         * <p>
+         * Uses the given {@link Locale} to convert the value to uppercase.
+         *
+         * @param value  the value to convert
+         * @param locale the Locale to use to uppercase the value
+         * @return the {@link Direction} representing the given value
+         * @throws IllegalArgumentException if there is no {@link Direction} that matches after converting to uppercase
+         *                                  and stripping leading and trailing whitespace
+         */
+        public static Direction fromString(String value, Locale locale) {
+            checkArgumentNotBlank(value, "direction value must not be blank");
+
+            var upperCaseValue = value.strip().toUpperCase(locale);
+            return Direction.valueOf(upperCaseValue);
         }
     }
 
