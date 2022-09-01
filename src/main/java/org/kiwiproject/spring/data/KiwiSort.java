@@ -69,6 +69,32 @@ public class KiwiSort {
     private boolean ascending;
 
     /**
+     * Create a new instance with ascending sort direction.
+     * <p>
+     * If you want to specify that the sort is not case-sensitive, you can immediately call the
+     * {@link #ignoringCase()} in a fluent style.
+     *
+     * @param property the property the sort is applied to
+     * @return a new instance
+     */
+    public static KiwiSort ofAscending(String property) {
+        return of(property, Direction.ASC);
+    }
+
+    /**
+     * Create a new instance with descending sort direction.
+     * <p>
+     * If you want to specify that the sort is not case-sensitive, you can immediately call the
+     * {@link #ignoringCase()} in a fluent style.
+     *
+     * @param property the property the sort is applied to
+     * @return a new instance
+     */
+    public static KiwiSort ofDescending(String property) {
+        return of(property, Direction.DESC);
+    }
+
+    /**
      * Create a new instance.
      * <p>
      * If you want to specify that the sort is not case-sensitive, you can immediately call the
