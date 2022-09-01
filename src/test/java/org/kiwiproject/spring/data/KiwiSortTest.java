@@ -27,12 +27,22 @@ import java.util.stream.Stream;
 class KiwiSortTest {
 
     @Test
-    void shouldCreateNewInstanceUsingFactoryMethod(SoftAssertions softly) {
+    void shouldCreateNewInstanceUsing_DirectionEnumFactoryMethod(SoftAssertions softly) {
         var sort = KiwiSort.of("someProperty", KiwiSort.Direction.DESC);
 
         softly.assertThat(sort.getProperty()).isEqualTo("someProperty");
         softly.assertThat(sort.getDirection()).isEqualTo("DESC");
         softly.assertThat(sort.isAscending()).isFalse();
+        softly.assertThat(sort.isIgnoreCase()).isFalse();
+    }
+
+    @Test
+    void shouldCreateNewInstanceUsing_DirectionStringFactoryMethod(SoftAssertions softly) {
+        var sort = KiwiSort.of("someProperty", "asc");
+
+        softly.assertThat(sort.getProperty()).isEqualTo("someProperty");
+        softly.assertThat(sort.getDirection()).isEqualTo("ASC");
+        softly.assertThat(sort.isAscending()).isTrue();
         softly.assertThat(sort.isIgnoreCase()).isFalse();
     }
 
@@ -43,7 +53,20 @@ class KiwiSortTest {
             " ' ' , DESC",
             " lastName, ",
     })
-    void shouldValidateArgumentsWhenUsingFactoryMethod(String property, KiwiSort.Direction direction) {
+    void shouldValidateArgumentsWhenUsing_DirectionEnumFactoryMethod(String property, KiwiSort.Direction direction) {
+        assertThatIllegalArgumentException()
+                .isThrownBy(() -> KiwiSort.of(property, direction));
+    }
+
+    @ParameterizedTest
+    @CsvSource({
+            " , ASC",
+            " '' , ASC",
+            " ' ' , DESC",
+            " lastName, ",
+            " lastName, DIAGONALLY",
+    })
+    void shouldValidateArgumentsWhenUsing_DirectionStringFactoryMethod(String property, String direction) {
         assertThatIllegalArgumentException()
                 .isThrownBy(() -> KiwiSort.of(property, direction));
     }
