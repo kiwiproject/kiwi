@@ -19,7 +19,6 @@ import org.junit.jupiter.params.provider.MethodSource;
 import org.junit.jupiter.params.provider.ValueSource;
 import org.kiwiproject.util.BlankStringArgumentsProvider;
 
-import java.util.Locale;
 import java.util.stream.Stream;
 
 @DisplayName("KiwiSort")
@@ -110,34 +109,16 @@ class KiwiSortTest {
                 "des"
         })
         void shouldThrowIllegalArgument_ForInvalidValues(String value) {
-            var expectedMessage = getExpectedExceptionMessage(value);
-
             assertThatIllegalArgumentException()
                     .describedAs("expecting IllegalArgumentException with same message as from Enum#valueOf")
                     .isThrownBy(() -> KiwiSort.Direction.fromString(value))
-                    .withMessage(expectedMessage);
-        }
-
-        private String getExpectedExceptionMessage(String invalidValue) {
-            try {
-                KiwiSort.Direction.fromString(invalidValue);
-            } catch (Exception e) {
-                return e.getMessage();
-            }
-
-            throw new IllegalStateException(f("Expected value '%s' to be invalid!", invalidValue));
+                    .withMessage("no matching enum constant found in Direction");
         }
 
         @ParameterizedTest
         @MethodSource("org.kiwiproject.spring.data.KiwiSortTest#directionEnumValues")
-        void shouldCreateFromStringsInDefaultLocale(String value, KiwiSort.Direction expected) {
+        void shouldCreateFromStrings(String value, KiwiSort.Direction expected) {
             assertThat(KiwiSort.Direction.fromString(value)).isEqualTo(expected);
-        }
-
-        @ParameterizedTest
-        @MethodSource("org.kiwiproject.spring.data.KiwiSortTest#directionEnumValues")
-        void shouldCreateFromSpecificLocale(String value, KiwiSort.Direction expected) {
-            assertThat(KiwiSort.Direction.fromString(value, Locale.ENGLISH)).isEqualTo(expected);
         }
     }
 

@@ -4,11 +4,11 @@ import static org.kiwiproject.base.KiwiPreconditions.checkArgumentNotBlank;
 import static org.kiwiproject.base.KiwiPreconditions.checkArgumentNotNull;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import org.apache.commons.lang3.EnumUtils;
+
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
-
-import java.util.Locale;
 
 /**
  * Describes a sort on a specific property that is applied to a result list.
@@ -47,36 +47,19 @@ public class KiwiSort {
         /**
          * Converts the given value to a {@link Direction} in a case-insensitive manner and ignoring leading and
          * trailing whitespace.
-         * <p>
-         * Uses the default {@link Locale} to convert the value to uppercase.
          *
          * @param value the value to convert
          * @return the {@link Direction} representing the given value
-         * @throws IllegalArgumentException if there is no {@link Direction} that matches after converting to uppercase
+         * @throws IllegalArgumentException if there is no {@link Direction} that matches ignoring case
          *                                  and stripping leading and trailing whitespace
-         * @see Locale#getDefault()
          */
         public static Direction fromString(String value) {
-            return Direction.fromString(value, Locale.getDefault());
-        }
-
-        /**
-         * Converts the given value to a {@link Direction} in a case-insensitive manner and ignoring leading and
-         * trailing whitespace.
-         * <p>
-         * Uses the given {@link Locale} to convert the value to uppercase.
-         *
-         * @param value  the value to convert
-         * @param locale the Locale to use to uppercase the value
-         * @return the {@link Direction} representing the given value
-         * @throws IllegalArgumentException if there is no {@link Direction} that matches after converting to uppercase
-         *                                  and stripping leading and trailing whitespace
-         */
-        public static Direction fromString(String value, Locale locale) {
             checkArgumentNotBlank(value, "direction value must not be blank");
 
-            var upperCaseValue = value.strip().toUpperCase(locale);
-            return Direction.valueOf(upperCaseValue);
+            var direction = EnumUtils.getEnumIgnoreCase(Direction.class, value.strip());
+            checkArgumentNotNull(direction, "no matching enum constant found in Direction");
+
+            return direction;
         }
     }
 
@@ -93,34 +76,14 @@ public class KiwiSort {
      *
      * @param property  the property the sort is applied to
      * @param direction the sort direction as a String, which must resolve via {@link Direction#fromString(String)}
-     *                  in the default {@link Locale}
      * @return a new instance
      * @throws IllegalArgumentException if property is blank or direction is blank or invalid
      */
     public static KiwiSort of(String property, String direction) {
-        return of(property, direction, Locale.getDefault());
-    }
-
-    /**
-     * Create a new instance.
-     * <p>
-     * If you want to specify that the sort is not case-sensitive, you can immediately call the
-     * {@link #ignoringCase()} in a fluent style.
-     *
-     * @param property  the property the sort is applied to
-     * @param direction the sort direction as a String, which must resolve via {@link Direction#fromString(String)}
-     *                  in the given {@link Locale}
-     * @param locale    the Locale to use to uppercase the value
-     * @return a new instance
-     * @throws IllegalArgumentException if property is blank or direction is blank or invalid
-     */
-    public static KiwiSort of(String property, String direction, Locale locale) {
         checkArgumentNotBlank(property);
         checkArgumentNotBlank(direction);
-        checkArgumentNotNull(locale);
 
-        var directionEnum = Direction.fromString(direction, locale);
-        return of(property, directionEnum);
+        return of(property, Direction.fromString(direction));
     }
 
     /**
