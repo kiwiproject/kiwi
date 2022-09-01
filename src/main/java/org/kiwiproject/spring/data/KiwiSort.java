@@ -92,6 +92,44 @@ public class KiwiSort {
      * {@link #ignoringCase()} in a fluent style.
      *
      * @param property  the property the sort is applied to
+     * @param direction the sort direction as a String, which must resolve via {@link Direction#fromString(String)}
+     *                  in the default {@link Locale}
+     * @return a new instance
+     * @throws IllegalArgumentException if property is blank or direction is blank or invalid
+     */
+    public static KiwiSort of(String property, String direction) {
+        return of(property, direction, Locale.getDefault());
+    }
+
+    /**
+     * Create a new instance.
+     * <p>
+     * If you want to specify that the sort is not case-sensitive, you can immediately call the
+     * {@link #ignoringCase()} in a fluent style.
+     *
+     * @param property  the property the sort is applied to
+     * @param direction the sort direction as a String, which must resolve via {@link Direction#fromString(String)}
+     *                  in the given {@link Locale}
+     * @param locale    the Locale to use to uppercase the value
+     * @return a new instance
+     * @throws IllegalArgumentException if property is blank or direction is blank or invalid
+     */
+    public static KiwiSort of(String property, String direction, Locale locale) {
+        checkArgumentNotBlank(property);
+        checkArgumentNotBlank(direction);
+        checkArgumentNotNull(locale);
+
+        var directionEnum = Direction.fromString(direction, locale);
+        return of(property, directionEnum);
+    }
+
+    /**
+     * Create a new instance.
+     * <p>
+     * If you want to specify that the sort is not case-sensitive, you can immediately call the
+     * {@link #ignoringCase()} in a fluent style.
+     *
+     * @param property  the property the sort is applied to
      * @param direction the sort direction
      * @return a new instance
      * @throws IllegalArgumentException if property is blank or direction is null
@@ -109,7 +147,7 @@ public class KiwiSort {
     }
 
     /**
-     * Specifies that the sort is <em>not</em> case sensitive, i.e. it ignores case.
+     * Specifies that the sort is <em>not</em> case-sensitive, i.e. it ignores case.
      *
      * @return this instance, for method chaining
      */
