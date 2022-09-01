@@ -3,7 +3,6 @@ package org.kiwiproject.spring.data;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
 import static org.junit.jupiter.params.provider.Arguments.arguments;
-import static org.kiwiproject.base.KiwiStrings.f;
 
 import org.assertj.core.api.SoftAssertions;
 import org.assertj.core.api.junit.jupiter.SoftAssertionsExtension;
@@ -68,6 +67,40 @@ class KiwiSortTest {
     void shouldValidateArgumentsWhenUsing_DirectionStringFactoryMethod(String property, String direction) {
         assertThatIllegalArgumentException()
                 .isThrownBy(() -> KiwiSort.of(property, direction));
+    }
+
+    @Test
+    void shouldCreateNewAscendingInstance(SoftAssertions softly) {
+        var sort = KiwiSort.ofAscending("sortedProperty");
+
+        softly.assertThat(sort.getProperty()).isEqualTo("sortedProperty");
+        softly.assertThat(sort.getDirection()).isEqualTo("ASC");
+        softly.assertThat(sort.isAscending()).isTrue();
+        softly.assertThat(sort.isIgnoreCase()).isFalse();
+    }
+
+    @ParameterizedTest
+    @ArgumentsSource(BlankStringArgumentsProvider.class)
+    void shouldNotPermitBlankPropertyForAscendingSort(String value) {
+        assertThatIllegalArgumentException()
+                .isThrownBy(() -> KiwiSort.ofAscending(value));
+    }
+
+    @Test
+    void shouldCreateNewDescendingInstance(SoftAssertions softly) {
+        var sort = KiwiSort.ofDescending("sortedProperty");
+
+        softly.assertThat(sort.getProperty()).isEqualTo("sortedProperty");
+        softly.assertThat(sort.getDirection()).isEqualTo("DESC");
+        softly.assertThat(sort.isAscending()).isFalse();
+        softly.assertThat(sort.isIgnoreCase()).isFalse();
+    }
+
+    @ParameterizedTest
+    @ArgumentsSource(BlankStringArgumentsProvider.class)
+    void shouldNotPermitBlankPropertyForDescendingSort(String value) {
+        assertThatIllegalArgumentException()
+                .isThrownBy(() -> KiwiSort.ofDescending(value));
     }
 
     @Test
