@@ -8,7 +8,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import io.dropwizard.configuration.ResourceConfigurationSourceProvider;
 import io.dropwizard.configuration.YamlConfigurationFactory;
 import io.dropwizard.jackson.Jackson;
-import io.dropwizard.testing.FixtureHelpers;
 import io.dropwizard.util.Duration;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -18,6 +17,7 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.junit.jupiter.params.provider.ValueSource;
+import org.kiwiproject.internal.Fixtures;
 import org.kiwiproject.validation.ValidationTestHelper;
 import org.opentest4j.AssertionFailedError;
 
@@ -127,7 +127,7 @@ class SftpConfigTest {
 
             @Test
             void shouldAllowOverridingDefaultValues() throws IOException {
-                var json = FixtureHelpers.fixture("SftpConfigTest/config-all-properties.json");
+                var json = Fixtures.fixture("SftpConfigTest/config-all-properties.json");
                 var sftpConfig = DW_OBJECT_MAPPER.readValue(json, SftpConfig.class);
                 assertExplicitlySpecifiedProperties(sftpConfig);
                 assertDefaultValuesOverridden(sftpConfig);
@@ -135,7 +135,7 @@ class SftpConfigTest {
 
             @Test
             void shouldRespectDefaultValues() throws IOException {
-                var json = FixtureHelpers.fixture("SftpConfigTest/config-minimal-properties.json");
+                var json = Fixtures.fixture("SftpConfigTest/config-minimal-properties.json");
                 var sftpConfig = DW_OBJECT_MAPPER.readValue(json, SftpConfig.class);
                 assertExplicitlySpecifiedProperties(sftpConfig);
                 assertDefaultValuesUsed(sftpConfig);

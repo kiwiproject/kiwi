@@ -19,7 +19,6 @@ import com.fasterxml.jackson.core.format.DataFormatDetector;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import io.dropwizard.testing.FixtureHelpers;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.EqualsAndHashCode;
@@ -34,6 +33,7 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
 import org.junit.jupiter.params.provider.NullAndEmptySource;
 import org.junit.jupiter.params.provider.ValueSource;
+import org.kiwiproject.internal.Fixtures;
 import org.kiwiproject.json.JsonHelper.OutputFormat;
 import org.kiwiproject.junit.jupiter.WhiteBoxTest;
 
@@ -252,7 +252,7 @@ class JsonHelperBasicsTest {
 
         @Test
         void shouldSerializeBasicTypes() {
-            var sampleJson = FixtureHelpers.fixture("JsonHelperTests/sample.json");
+            var sampleJson = Fixtures.fixture("JsonHelperTests/sample.json");
             assertThat(jsonHelper.toJson(sampleJson)).isEqualTo(sampleJson);
 
             assertThat(jsonHelper.toJson(1)).isEqualTo("1");
@@ -260,7 +260,7 @@ class JsonHelperBasicsTest {
             assertThat(jsonHelper.toJson(1.2345)).isEqualTo("1.2345");
 
             assertThat(jsonHelper.toJson(List.of("a", "b", "c")))
-                    .isEqualToIgnoringWhitespace(FixtureHelpers.fixture("JsonHelperTests/sampleList.json"));
+                    .isEqualToIgnoringWhitespace(Fixtures.fixture("JsonHelperTests/sampleList.json"));
         }
 
         @Test
