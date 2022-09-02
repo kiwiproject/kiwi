@@ -3,6 +3,7 @@ package org.kiwiproject.jackson;
 import static java.nio.charset.StandardCharsets.US_ASCII;
 import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.kiwiproject.internal.Fixtures.fixture;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
@@ -10,7 +11,6 @@ import static org.mockito.Mockito.when;
 
 import com.fasterxml.jackson.core.format.DataFormatDetector;
 import com.fasterxml.jackson.dataformat.csv.CsvFactory;
-import com.google.common.io.Resources;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -28,34 +28,34 @@ class KiwiJacksonDataFormatsTest {
     private static final Charset DEFAULT_CHARSET = Charset.defaultCharset();
 
     private static final String JSON_DEFAULT_CHARSET =
-            fixtureWithCharset("KiwiJacksonDataFormatsTest/sample.json", DEFAULT_CHARSET);
+            fixture("KiwiJacksonDataFormatsTest/sample.json", DEFAULT_CHARSET);
     private static final String JSON_UTF8_CHARSET =
-            fixtureWithCharset("KiwiJacksonDataFormatsTest/sample.json", UTF_8);
+            fixture("KiwiJacksonDataFormatsTest/sample.json", UTF_8);
     private static final String JSON_US_ASCII_CHARSET =
-            fixtureWithCharset("KiwiJacksonDataFormatsTest/sample.json", US_ASCII);
+            fixture("KiwiJacksonDataFormatsTest/sample.json", US_ASCII);
 
     private static final String XML_DEFAULT_CHARSET =
-            fixtureWithCharset("KiwiJacksonDataFormatsTest/sample.xml", DEFAULT_CHARSET);
+            fixture("KiwiJacksonDataFormatsTest/sample.xml", DEFAULT_CHARSET);
     private static final String XML_UTF8_CHARSET =
-            fixtureWithCharset("KiwiJacksonDataFormatsTest/sample.xml", UTF_8);
+            fixture("KiwiJacksonDataFormatsTest/sample.xml", UTF_8);
     private static final String XML_US_ASCII_CHARSET =
-            fixtureWithCharset("KiwiJacksonDataFormatsTest/sample.xml", US_ASCII);
+            fixture("KiwiJacksonDataFormatsTest/sample.xml", US_ASCII);
 
     // YAML files that DO contain the opening --- as specified in the YAML specifications
     private static final String YAML_FORMAL_DEFAULT_CHARSET =
-            fixtureWithCharset("KiwiJacksonDataFormatsTest/sample-formal.yml", DEFAULT_CHARSET);
+            fixture("KiwiJacksonDataFormatsTest/sample-formal.yml", DEFAULT_CHARSET);
     private static final String YAML_FORMAL_UTF8_CHARSET =
-            fixtureWithCharset("KiwiJacksonDataFormatsTest/sample-formal.yml", UTF_8);
+            fixture("KiwiJacksonDataFormatsTest/sample-formal.yml", UTF_8);
     private static final String YAML_FORMAL_US_ASCII_CHARSET =
-            fixtureWithCharset("KiwiJacksonDataFormatsTest/sample-formal.yml", US_ASCII);
+            fixture("KiwiJacksonDataFormatsTest/sample-formal.yml", US_ASCII);
 
     // YAML files that do NOT contain the opening --- as specified in the YAML specifications
     private static final String YAML_INFORMAL_DEFAULT_CHARSET =
-            fixtureWithCharset("KiwiJacksonDataFormatsTest/sample-informal.yml", DEFAULT_CHARSET);
+            fixture("KiwiJacksonDataFormatsTest/sample-informal.yml", DEFAULT_CHARSET);
     private static final String YAML_INFORMAL_UTF8_CHARSET =
-            fixtureWithCharset("KiwiJacksonDataFormatsTest/sample-informal.yml", UTF_8);
+            fixture("KiwiJacksonDataFormatsTest/sample-informal.yml", UTF_8);
     private static final String YAML_INFORMAL_US_ASCII_CHARSET =
-            fixtureWithCharset("KiwiJacksonDataFormatsTest/sample-informal.yml", US_ASCII);
+            fixture("KiwiJacksonDataFormatsTest/sample-informal.yml", US_ASCII);
 
     private static final String RANDOM_TEXT = "Something wicked this way comes";
 
@@ -323,7 +323,7 @@ class KiwiJacksonDataFormatsTest {
 
             @Test
             void shouldDetectFormats_SupportedBy_ProvidedDataFormatDetector() {
-                var sampleCsv = fixtureWithCharset("KiwiJacksonDataFormatsTest/sample.csv", UTF_8);
+                var sampleCsv = fixture("KiwiJacksonDataFormatsTest/sample.csv", UTF_8);
 
                 assertThat(KiwiJacksonDataFormats.detectFormat(sampleCsv, UTF_8, csvOnlyFormatDetector))
                         .hasValue(CsvFactory.FORMAT_NAME_CSV);
@@ -346,15 +346,4 @@ class KiwiJacksonDataFormatsTest {
         );
     }
 
-    /**
-     * "Stolen" from {@link io.dropwizard.testing.FixtureHelpers} since they made it private there for whatever
-     * reason! Renamed so as not to collide with the fixture method.
-     */
-    private static String fixtureWithCharset(String filename, Charset charset) {
-        try {
-            return Resources.toString(Resources.getResource(filename), charset).trim();
-        } catch (IOException e) {
-            throw new IllegalArgumentException(e);
-        }
-    }
 }

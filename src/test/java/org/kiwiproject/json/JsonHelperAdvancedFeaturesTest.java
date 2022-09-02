@@ -11,7 +11,6 @@ import com.fasterxml.jackson.annotation.JsonView;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JsonNode;
-import io.dropwizard.testing.FixtureHelpers;
 import lombok.Value;
 import org.assertj.core.api.SoftAssertions;
 import org.assertj.core.api.junit.jupiter.SoftAssertionsExtension;
@@ -24,6 +23,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 import org.kiwiproject.collect.KiwiMaps;
+import org.kiwiproject.internal.Fixtures;
 import org.kiwiproject.json.JsonHelper.MergeOption;
 import org.kiwiproject.json.JsonHelper.OutputFormat;
 
@@ -38,7 +38,7 @@ import java.util.Map;
 @ExtendWith(SoftAssertionsExtension.class)
 class JsonHelperAdvancedFeaturesTest {
 
-    private static final String SAMPLE_JSON = FixtureHelpers.fixture("JsonHelperTests/sample.json");
+    private static final String SAMPLE_JSON = Fixtures.fixture("JsonHelperTests/sample.json");
 
     private JsonHelper jsonHelper;
 
@@ -391,7 +391,7 @@ class JsonHelperAdvancedFeaturesTest {
 
         @Test
         void shouldGetNestedAndArrayPathsInJson(SoftAssertions softly) {
-            var json = FixtureHelpers.fixture("JsonHelperTests/sampleComplexObject.json");
+            var json = Fixtures.fixture("JsonHelperTests/sampleComplexObject.json");
 
             softly.assertThat(jsonHelper.getPath(json, "root.str", String.class))
                     .isEqualTo("string");

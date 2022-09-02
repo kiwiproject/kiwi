@@ -1,8 +1,8 @@
 package org.kiwiproject.json;
 
-import static io.dropwizard.testing.FixtureHelpers.fixture;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.entry;
+import static org.kiwiproject.internal.Fixtures.fixture;
 
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
