@@ -16,6 +16,9 @@ import org.junit.jupiter.params.provider.ArgumentsSource;
 import org.junit.jupiter.params.provider.CsvSource;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.junit.jupiter.params.provider.ValueSource;
+import org.kiwiproject.json.JsonHelper;
+import org.kiwiproject.json.JsonHelper.OutputFormat;
+import org.kiwiproject.spring.data.KiwiSort.Direction;
 import org.kiwiproject.util.BlankStringArgumentsProvider;
 
 import java.util.stream.Stream;
@@ -26,11 +29,13 @@ class KiwiSortTest {
 
     @Test
     void shouldCreateNewInstanceUsing_DirectionEnumFactoryMethod(SoftAssertions softly) {
-        var sort = KiwiSort.of("someProperty", KiwiSort.Direction.DESC);
+        var sort = KiwiSort.of("someProperty", Direction.DESC);
 
         softly.assertThat(sort.getProperty()).isEqualTo("someProperty");
         softly.assertThat(sort.getDirection()).isEqualTo("DESC");
+        softly.assertThat(sort.getDirectionObject()).isEqualTo(Direction.DESC);
         softly.assertThat(sort.isAscending()).isFalse();
+        softly.assertThat(sort.isDescending()).isTrue();
         softly.assertThat(sort.isIgnoreCase()).isFalse();
     }
 
@@ -40,7 +45,9 @@ class KiwiSortTest {
 
         softly.assertThat(sort.getProperty()).isEqualTo("someProperty");
         softly.assertThat(sort.getDirection()).isEqualTo("ASC");
+        softly.assertThat(sort.getDirectionObject()).isEqualTo(Direction.ASC);
         softly.assertThat(sort.isAscending()).isTrue();
+        softly.assertThat(sort.isDescending()).isFalse();
         softly.assertThat(sort.isIgnoreCase()).isFalse();
     }
 
@@ -51,7 +58,7 @@ class KiwiSortTest {
             " ' ' , DESC",
             " lastName, ",
     })
-    void shouldValidateArgumentsWhenUsing_DirectionEnumFactoryMethod(String property, KiwiSort.Direction direction) {
+    void shouldValidateArgumentsWhenUsing_DirectionEnumFactoryMethod(String property, Direction direction) {
         assertThatIllegalArgumentException()
                 .isThrownBy(() -> KiwiSort.of(property, direction));
     }
@@ -75,7 +82,9 @@ class KiwiSortTest {
 
         softly.assertThat(sort.getProperty()).isEqualTo("sortedProperty");
         softly.assertThat(sort.getDirection()).isEqualTo("ASC");
+        softly.assertThat(sort.getDirectionObject()).isEqualTo(Direction.ASC);
         softly.assertThat(sort.isAscending()).isTrue();
+        softly.assertThat(sort.isDescending()).isFalse();
         softly.assertThat(sort.isIgnoreCase()).isFalse();
     }
 
@@ -92,7 +101,9 @@ class KiwiSortTest {
 
         softly.assertThat(sort.getProperty()).isEqualTo("sortedProperty");
         softly.assertThat(sort.getDirection()).isEqualTo("DESC");
+        softly.assertThat(sort.getDirectionObject()).isEqualTo(Direction.DESC);
         softly.assertThat(sort.isAscending()).isFalse();
+        softly.assertThat(sort.isDescending()).isTrue();
         softly.assertThat(sort.isIgnoreCase()).isFalse();
     }
 
@@ -105,17 +116,19 @@ class KiwiSortTest {
 
     @Test
     void shouldSetIgnoringCase(SoftAssertions softly) {
-        var sort = KiwiSort.of("otherProperty", KiwiSort.Direction.ASC).ignoringCase();
+        var sort = KiwiSort.of("otherProperty", Direction.ASC).ignoringCase();
 
         softly.assertThat(sort.getProperty()).isEqualTo("otherProperty");
         softly.assertThat(sort.getDirection()).isEqualTo("ASC");
+        softly.assertThat(sort.getDirectionObject()).isEqualTo(Direction.ASC);
         softly.assertThat(sort.isAscending()).isTrue();
+        softly.assertThat(sort.isDescending()).isFalse();
         softly.assertThat(sort.isIgnoreCase()).isTrue();
     }
 
     @Test
     void shouldCallToString() {
-        var sort = KiwiSort.of("someProperty", KiwiSort.Direction.DESC);
+        var sort = KiwiSort.of("someProperty", Direction.DESC);
         var str = sort.toString();
         assertThat(str).isNotBlank();
     }
@@ -128,7 +141,7 @@ class KiwiSortTest {
         @ArgumentsSource(BlankStringArgumentsProvider.class)
         void shouldRequireNonBlankValue(String value) {
             assertThatIllegalArgumentException()
-                    .isThrownBy(() -> KiwiSort.Direction.fromString(value))
+                    .isThrownBy(() -> Direction.fromString(value))
                     .withMessage("direction value must not be blank");
         }
 
@@ -144,30 +157,59 @@ class KiwiSortTest {
         void shouldThrowIllegalArgument_ForInvalidValues(String value) {
             assertThatIllegalArgumentException()
                     .describedAs("expecting IllegalArgumentException with same message as from Enum#valueOf")
-                    .isThrownBy(() -> KiwiSort.Direction.fromString(value))
+                    .isThrownBy(() -> Direction.fromString(value))
                     .withMessage("no matching enum constant found in Direction");
         }
 
         @ParameterizedTest
         @MethodSource("org.kiwiproject.spring.data.KiwiSortTest#directionEnumValues")
-        void shouldCreateFromStrings(String value, KiwiSort.Direction expected) {
-            assertThat(KiwiSort.Direction.fromString(value)).isEqualTo(expected);
+        void shouldCreateFromStrings(String value, Direction expected) {
+            assertThat(Direction.fromString(value)).isEqualTo(expected);
+        }
+    }
+
+    @Nested
+    class DirectionEnum {
+
+        @Test
+        void shouldHaveExpectedAscendingValue() {
+            assertThat(Direction.ASC.isAscending()).isTrue();
+            assertThat(Direction.DESC.isAscending()).isFalse();
+        }
+
+        @Test
+        void shouldHaveExpectedDescendingValue() {
+            assertThat(Direction.ASC.isDescending()).isFalse();
+            assertThat(Direction.DESC.isDescending()).isTrue();
         }
     }
 
     static Stream<Arguments> directionEnumValues() {
         return Stream.of(
-                arguments("asc", KiwiSort.Direction.ASC),
-                arguments(" asc ", KiwiSort.Direction.ASC),
-                arguments("  \r\n\tasc\r\n\t  ", KiwiSort.Direction.ASC),
-                arguments("ASC", KiwiSort.Direction.ASC),
-                arguments("Asc", KiwiSort.Direction.ASC),
-                arguments("AsC", KiwiSort.Direction.ASC),
-                arguments("desc", KiwiSort.Direction.DESC),
-                arguments("\r\ndesc\t \t \r\n", KiwiSort.Direction.DESC),
-                arguments("DESC", KiwiSort.Direction.DESC),
-                arguments("Desc", KiwiSort.Direction.DESC),
-                arguments("DeSc", KiwiSort.Direction.DESC)
+                arguments("asc", Direction.ASC),
+                arguments(" asc ", Direction.ASC),
+                arguments("  \r\n\tasc\r\n\t  ", Direction.ASC),
+                arguments("ASC", Direction.ASC),
+                arguments("Asc", Direction.ASC),
+                arguments("AsC", Direction.ASC),
+                arguments("desc", Direction.DESC),
+                arguments("\r\ndesc\t \t \r\n", Direction.DESC),
+                arguments("DESC", Direction.DESC),
+                arguments("Desc", Direction.DESC),
+                arguments("DeSc", Direction.DESC)
         );
+    }
+
+    @Test
+    void shouldSerializeToJson(SoftAssertions softly) {
+        var jsonHelper = JsonHelper.newDropwizardJsonHelper();
+        var json = jsonHelper.toJson(KiwiSort.ofAscending("lastName"), OutputFormat.PRETTY);
+
+        softly.assertThat(json).containsIgnoringWhitespaces("\"direction\" : \"ASC\"");
+        softly.assertThat(json).containsIgnoringWhitespaces("\"property\" : \"lastName\"");
+        softly.assertThat(json).containsIgnoringWhitespaces("\"ignoreCase\" : false");
+        softly.assertThat(json).containsIgnoringWhitespaces("\"ascending\" : true");
+        softly.assertThat(json).containsIgnoringWhitespaces("\"descending\" : false");
+        softly.assertThat(json).doesNotContain("\"directionObject\" :");
     }
 }

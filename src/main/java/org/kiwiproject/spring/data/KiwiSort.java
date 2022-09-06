@@ -3,6 +3,7 @@ package org.kiwiproject.spring.data;
 import static org.kiwiproject.base.KiwiPreconditions.checkArgumentNotBlank;
 import static org.kiwiproject.base.KiwiPreconditions.checkArgumentNotNull;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.Getter;
 import lombok.Setter;
@@ -60,8 +61,19 @@ public class KiwiSort {
 
             return direction;
         }
+
+        /**
+         * Convenience method to allow checking if this {@link Direction} is descending.
+         *
+         * @return true if this sort is descending, false if ascending
+         */
+        public boolean isDescending() {
+            return !ascending;
+        }
     }
 
+    @JsonIgnore
+    private Direction directionObject;
     private String direction;  // this is intentionally a string, for JSON serialization purposes
     private String property;
     private boolean ignoreCase;
@@ -128,6 +140,7 @@ public class KiwiSort {
 
         var sort = new KiwiSort();
         sort.setProperty(property);
+        sort.setDirectionObject(direction);
         sort.setDirection(direction.name());
         sort.setAscending(direction.isAscending());
         sort.setIgnoreCase(false);
@@ -142,5 +155,14 @@ public class KiwiSort {
     public KiwiSort ignoringCase() {
         setIgnoreCase(true);
         return this;
+    }
+
+    /**
+     * Convenience method to allow checking if this {@link KiwiSort} is descending.
+     *
+     * @return true if this sort is descending, false if ascending
+     */
+    public boolean isDescending() {
+        return !ascending;
     }
 }
