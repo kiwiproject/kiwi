@@ -56,14 +56,14 @@ public class PagingRequest implements PagingParams {
 
     /**
      * The primary sort property. Default is null.
-     * <p>
-     * This is only relevant if a primarySort has been specified.
      */
     @QueryParam("primarySort")
     private String primarySort;
 
     /**
      * The primary sort direction. Default is ascending (ASC).
+     * <p>
+     * This is only relevant if a primarySort has been specified.
      */
     @QueryParam("primaryDirection")
     @DefaultValue("ASC")
