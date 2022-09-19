@@ -14,5 +14,5 @@ Almost all the dependencies in the POM have _provided_ scope, so that we don't b
 This downside to this is that you must specifically add any required dependencies to your own POM in order to use a
 specific feature in Kiwi.
 
-The only required dependencies are guava, kiwi, and slf4j-api. If you use the Maven Enforcer plugin, you could therefore
+The only required dependencies are guava, commons-lang3, and slf4j-api. If you use the Maven Enforcer plugin, you could therefore
 run into dependency convergence errors if the kiwi versions are different from the ones you're using.
