@@ -7,8 +7,8 @@ import org.slf4j.Logger;
 import org.slf4j.event.Level;
 
 /**
- * Package-private helper class to log attempts at different SLF4J logging levels (since SLF4J 1.7.x does not
- * provide any log methods that accept a {@link Level} object, we unfortunately have to resort to this instead).
+ * Package-private helper class to log attempts at different SLF4J logging levels. SLF4J does not
+ * provide any log methods that accept a {@link Level} object, so we unfortunately have to resort to this instead.
  *
  * @see Logger SLFJ Logger
  * @see Level SLF4J Level
