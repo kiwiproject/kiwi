@@ -177,13 +177,6 @@
             <groupId>org.assertj</groupId>
             <artifactId>assertj-guava</artifactId>
             <scope>test</scope>
-            <exclusions>
-                <!-- TODO: Remove this exclusion when back in sync, or ass assertj-guava to kiwi-parent -->
-                <exclusion>
-                    <groupId>org.assertj</groupId>
-                    <artifactId>assertj-core</artifactId>
-                </exclusion>
-            </exclusions>
         </dependency>
 
         <dependency>
