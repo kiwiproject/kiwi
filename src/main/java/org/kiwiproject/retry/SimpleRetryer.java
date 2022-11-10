@@ -83,7 +83,7 @@ public class SimpleRetryer {
     public static final String DEFAULT_TYPE = "object";
 
     /**
-     * THe {@link KiwiEnvironment} to use when sleeping between retry attempts.
+     * The {@link KiwiEnvironment} to use when sleeping between retry attempts.
      */
     @VisibleForTesting
     @Builder.Default
