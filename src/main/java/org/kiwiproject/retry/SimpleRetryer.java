@@ -50,7 +50,7 @@ import java.util.function.Supplier;
  *     </tr>
  *     <tr>
  *         <td>logLevelForSubsequentAttempts</td>
- *         <td>{@link Level#TRACE}</td>
+ *         <td>{@link #DEFAULT_RETRY_LOG_LEVEL}</td>
  *         <td>the log level at which retries will be logged (the first attempt is always logged at TRACE)</td>
  *     </tr>
  * </table>
@@ -81,6 +81,11 @@ public class SimpleRetryer {
      * Default value to include in attempt log messages.
      */
     public static final String DEFAULT_TYPE = "object";
+
+    /**
+     * Default value of the log level to use when logging retry attempts.
+     */
+    public static final Level DEFAULT_RETRY_LOG_LEVEL = Level.TRACE;
 
     /**
      * The {@link KiwiEnvironment} to use when sleeping between retry attempts.
@@ -122,7 +127,7 @@ public class SimpleRetryer {
      */
     @VisibleForTesting
     @Builder.Default
-    Level logLevelForSubsequentAttempts = Level.TRACE;
+    Level logLevelForSubsequentAttempts = DEFAULT_RETRY_LOG_LEVEL;
 
     /**
      * Try to get an object.
