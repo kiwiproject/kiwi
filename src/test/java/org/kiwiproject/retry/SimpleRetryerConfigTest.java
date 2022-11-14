@@ -212,4 +212,38 @@ class SimpleRetryerConfigTest {
         @Valid
         private SimpleRetryerConfig retryerConfig;
     }
+
+    @Nested
+    class NewRetryer {
+
+        @Test
+        void shouldCreateNewInstances() {
+            var config = new SimpleRetryerConfig();
+            config.setMaxAttempts(5);
+            config.setLogLevelForSubsequentAttempts(Level.DEBUG);
+
+            var retryer = config.newRetryer();
+
+            assertAll(
+                () -> assertThat(retryer.maxAttempts).isEqualTo(config.getMaxAttempts()),
+                () -> assertThat(retryer.retryDelayTime).isEqualTo(config.getRetryDelayTime()),
+                () -> assertThat(retryer.retryDelayUnit).isEqualTo(config.getRetryDelayUnit()),
+                () -> assertThat(retryer.commonType).isEqualTo(config.getCommonType()),
+                () -> assertThat(retryer.logLevelForSubsequentAttempts).isEqualTo(config.getLogLevelForSubsequentAttempts())
+            );
+        }
+
+        @Test
+        void shouldCreateUniqueInstances() {
+            var config = new SimpleRetryerConfig();
+
+            var retryer1 = config.newRetryer();
+            var retryer2 = config.newRetryer();
+            var retryer3 = config.newRetryer();
+
+            assertThat(retryer1)
+                    .isNotSameAs(retryer2)
+                    .isNotSameAs(retryer3);
+        }
+    }
 }

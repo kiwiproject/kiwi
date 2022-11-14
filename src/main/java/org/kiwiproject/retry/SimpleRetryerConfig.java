@@ -13,8 +13,10 @@ import java.util.concurrent.TimeUnit;
 /**
  * Configuration class that can be used to configure {@link SimpleRetryer} instances. This is
  * intended for usage with external configurations, e.g. a YAML configuration file, that will
- * be validated once instantiated. When constructing programmatically, prefer creating directly
- * via {@code SimpleRetryer.builder()}.
+ * be validated once instantiated. You can construct {@link SimpleRetryer} instances directly
+ * from this instance using {@link #newRetryer}.
+ * <p>
+ * When constructing programmatically, prefer creating directly via {@code SimpleRetryer.builder()}.
  */
 @Getter
 @Setter
@@ -34,4 +36,17 @@ public class SimpleRetryerConfig {
 
     @NotNull
     Level logLevelForSubsequentAttempts = SimpleRetryer.DEFAULT_RETRY_LOG_LEVEL;
+
+    /**
+     * Construct a new instance using the values in this configuration.
+     */
+    public SimpleRetryer newRetryer() {
+        return SimpleRetryer.builder()
+                .maxAttempts(maxAttempts)
+                .retryDelayTime(retryDelayTime)
+                .retryDelayUnit(retryDelayUnit)
+                .commonType(commonType)
+                .logLevelForSubsequentAttempts(logLevelForSubsequentAttempts)
+                .build();
+    }
 }
