@@ -13,7 +13,8 @@ import java.util.concurrent.TimeUnit;
 /**
  * Configuration class that can be used to configure {@link SimpleRetryer} instances. This is
  * intended for usage with external configurations, e.g. a YAML configuration file, that will
- * be validated once instantiated.
+ * be validated once instantiated. When constructing programmatically, prefer creating directly
+ * via {@code SimpleRetryer.builder()}.
  */
 @Getter
 @Setter
