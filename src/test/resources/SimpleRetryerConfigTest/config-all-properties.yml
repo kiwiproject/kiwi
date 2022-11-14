@@ -1,0 +1,7 @@
+---
+retryerConfig:
+  maxAttempts: 5
+  retryDelayTime: 1
+  retryDelayUnit: SECONDS
+  commonType: some type
+  logLevelForSubsequentAttempts: DEBUG
