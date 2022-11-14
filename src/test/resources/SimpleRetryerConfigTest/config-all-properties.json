@@ -1,0 +1,7 @@
+{
+    "maxAttempts": 10,
+    "retryDelayTime": 75000,
+    "retryDelayUnit": "MICROSECONDS",
+    "commonType": "an expensive object",
+    "logLevelForSubsequentAttempts": "WARN"
+}

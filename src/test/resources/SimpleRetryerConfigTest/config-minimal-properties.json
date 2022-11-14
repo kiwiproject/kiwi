@@ -1,0 +1,4 @@
+{
+    "maxAttempts": 7,
+    "logLevelForSubsequentAttempts": "DEBUG"
+}
