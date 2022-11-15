@@ -101,7 +101,7 @@ class VaultEncryptionHelperTest {
 
             assertThatIllegalArgumentException()
                     .isThrownBy(() -> new VaultEncryptionHelper(config))
-                    .withMessage("vaultPasswordFilePath is required");
+                    .withMessageContaining("vaultPasswordFilePath is required");
         }
 
         @Test
@@ -111,30 +111,45 @@ class VaultEncryptionHelperTest {
 
             assertThatIllegalArgumentException()
                     .isThrownBy(() -> new VaultEncryptionHelper(config))
-                    .withMessage("vault password file does not exist: %s", config.getVaultPasswordFilePath());
+                    .withMessageContaining("vault password file does not exist: %s", config.getVaultPasswordFilePath());
         }
 
         @ParameterizedTest
         @NullAndEmptySource
         void shouldValidateAnsibleVaultPath(String ansibleVaultPath) {
             var config = new VaultConfiguration();
-            config.setVaultPasswordFilePath(configuration.getVaultPasswordFilePath());  // passes validation
             config.setAnsibleVaultPath(ansibleVaultPath);
 
             assertThatIllegalArgumentException()
                     .isThrownBy(() -> new VaultEncryptionHelper(config))
-                    .withMessage("ansibleVaultPath is required");
+                    .withMessageContaining("ansibleVaultPath is required");
         }
 
         @Test
         void shouldValidateAnsibleVaultPathExists() {
             var config = new VaultConfiguration();
-            config.setVaultPasswordFilePath(configuration.getVaultPasswordFilePath());  // passes validation
             config.setAnsibleVaultPath("/almost/certainly/does/not/exist.txt");
 
             assertThatIllegalArgumentException()
                     .isThrownBy(() -> new VaultEncryptionHelper(config))
-                    .withMessage("ansible-vault executable does not exist: %s", config.getAnsibleVaultPath());
+                    .withMessageContaining("ansible-vault executable does not exist: %s", config.getAnsibleVaultPath());
+        }
+
+        @ParameterizedTest
+        @CsvSource({
+            " , , 'vaultPasswordFilePath is required, ansibleVaultPath is required' ",
+            " , /invalid/path/to/ansible-vault, 'vaultPasswordFilePath is required, ansible-vault executable does not exist: /invalid/path/to/ansible-vault' ",
+            " /invalid/vault/password/file/path, , 'vault password file does not exist: /invalid/vault/password/file/path, ansibleVaultPath is required'",
+            "/invalid/vault/password/file/path , /invalid/path/to/ansible-vault, 'vault password file does not exist: /invalid/vault/password/file/path, ansible-vault executable does not exist: /invalid/path/to/ansible-vault'",
+        })
+        void shouldReportAllValidationErrors(String vaultPasswordFilePath, String ansibleVaultPath, String expectedMessage) {
+            var config = new VaultConfiguration();
+            config.setVaultPasswordFilePath(vaultPasswordFilePath);
+            config.setAnsibleVaultPath(ansibleVaultPath);
+
+            assertThatIllegalArgumentException()
+                    .isThrownBy(() -> new VaultEncryptionHelper(config))
+                    .withMessage(expectedMessage);
         }
     }
 
