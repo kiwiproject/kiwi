@@ -6,10 +6,14 @@ import static org.kiwiproject.validation.ValidationTestHelper.DEFAULT_VALIDATOR;
 import static org.kiwiproject.validation.ValidationTestHelper.assertOnePropertyViolation;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
-
+import io.dropwizard.Configuration;
+import io.dropwizard.configuration.ResourceConfigurationSourceProvider;
+import io.dropwizard.configuration.YamlConfigurationFactory;
+import io.dropwizard.jackson.Jackson;
+import lombok.Getter;
+import lombok.Setter;
 import org.assertj.core.api.junit.jupiter.SoftAssertionsExtension;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -22,18 +26,10 @@ import org.kiwiproject.internal.Fixtures;
 import org.opentest4j.AssertionFailedError;
 import org.slf4j.event.Level;
 
-import java.nio.file.Paths;
-import java.util.concurrent.TimeUnit;
-
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
-
-import io.dropwizard.Configuration;
-import io.dropwizard.configuration.ResourceConfigurationSourceProvider;
-import io.dropwizard.configuration.YamlConfigurationFactory;
-import io.dropwizard.jackson.Jackson;
-import lombok.Getter;
-import lombok.Setter;
+import java.nio.file.Paths;
+import java.util.concurrent.TimeUnit;
 
 @DisplayName("SimpleRetryerConfig")
 @ExtendWith(SoftAssertionsExtension.class)
@@ -61,29 +57,29 @@ class SimpleRetryerConfigTest {
         class FromJson {
 
             @Test
-            void shouldAllowOverridingDefaultValues() throws JsonMappingException, JsonProcessingException {
+            void shouldAllowOverridingDefaultValues() throws JsonProcessingException {
                 var json = Fixtures.fixture("SimpleRetryerConfigTest/config-all-properties.json");
                 var retryerConfig = DROPWIZARD_OBJECT_MAPPER.readValue(json, SimpleRetryerConfig.class);
                 assertAll(
-                    () -> assertThat(retryerConfig.getMaxAttempts()).isEqualTo(10),
-                    () -> assertThat(retryerConfig.getRetryDelayTime()).isEqualTo(75_000),
-                    () -> assertThat(retryerConfig.getRetryDelayUnit()).isEqualTo(TimeUnit.MICROSECONDS),
-                    () -> assertThat(retryerConfig.getCommonType()).isEqualTo("an expensive object"),
-                    () -> assertThat(retryerConfig.getLogLevelForSubsequentAttempts()).isEqualTo(Level.WARN)
+                        () -> assertThat(retryerConfig.getMaxAttempts()).isEqualTo(10),
+                        () -> assertThat(retryerConfig.getRetryDelayTime()).isEqualTo(75_000),
+                        () -> assertThat(retryerConfig.getRetryDelayUnit()).isEqualTo(TimeUnit.MICROSECONDS),
+                        () -> assertThat(retryerConfig.getCommonType()).isEqualTo("an expensive object"),
+                        () -> assertThat(retryerConfig.getLogLevelForSubsequentAttempts()).isEqualTo(Level.WARN)
                 );
             }
 
             @Test
-            void shouldRespectDefaultValues() throws JsonMappingException, JsonProcessingException {
+            void shouldRespectDefaultValues() throws JsonProcessingException {
                 var json = Fixtures.fixture("SimpleRetryerConfigTest/config-minimal-properties.json");
                 var retryerConfig = DROPWIZARD_OBJECT_MAPPER.readValue(json, SimpleRetryerConfig.class);
                 var defaultRetryerConfig = new SimpleRetryerConfig();
                 assertAll(
-                    () -> assertThat(retryerConfig.getMaxAttempts()).isEqualTo(7),
-                    () -> assertThat(retryerConfig.getRetryDelayTime()).isEqualTo(defaultRetryerConfig.getRetryDelayTime()),
-                    () -> assertThat(retryerConfig.getRetryDelayUnit()).isEqualTo(defaultRetryerConfig.getRetryDelayUnit()),
-                    () -> assertThat(retryerConfig.getCommonType()).isEqualTo(defaultRetryerConfig.getCommonType()),
-                    () -> assertThat(retryerConfig.getLogLevelForSubsequentAttempts()).isEqualTo(Level.DEBUG)
+                        () -> assertThat(retryerConfig.getMaxAttempts()).isEqualTo(7),
+                        () -> assertThat(retryerConfig.getRetryDelayTime()).isEqualTo(defaultRetryerConfig.getRetryDelayTime()),
+                        () -> assertThat(retryerConfig.getRetryDelayUnit()).isEqualTo(defaultRetryerConfig.getRetryDelayUnit()),
+                        () -> assertThat(retryerConfig.getCommonType()).isEqualTo(defaultRetryerConfig.getCommonType()),
+                        () -> assertThat(retryerConfig.getLogLevelForSubsequentAttempts()).isEqualTo(Level.DEBUG)
                 );
             }
         }
@@ -94,17 +90,17 @@ class SimpleRetryerConfigTest {
             private static final String SYSTEM_PROPERTY_PREFIX = "dw";
 
             @Test
-            void shouldDeserializeUsingPlainYamlObjectMapper() throws JsonMappingException, JsonProcessingException {
+            void shouldDeserializeUsingPlainYamlObjectMapper() throws JsonProcessingException {
                 var yamlMapper = new ObjectMapper(new YAMLFactory());
                 var yaml = Fixtures.fixture("SimpleRetryerConfigTest/config-all-properties.yml");
                 var config = yamlMapper.readValue(yaml, AppConfiguration.class);
                 var retryerConfig = config.getRetryerConfig();
                 assertAll(
-                    () -> assertThat(retryerConfig.getMaxAttempts()).isEqualTo(5),
-                    () -> assertThat(retryerConfig.getRetryDelayTime()).isEqualTo(1),
-                    () -> assertThat(retryerConfig.getRetryDelayUnit()).isEqualTo(TimeUnit.SECONDS),
-                    () -> assertThat(retryerConfig.getCommonType()).isEqualTo("some type"),
-                    () -> assertThat(retryerConfig.getLogLevelForSubsequentAttempts()).isEqualTo(Level.DEBUG)
+                        () -> assertThat(retryerConfig.getMaxAttempts()).isEqualTo(5),
+                        () -> assertThat(retryerConfig.getRetryDelayTime()).isEqualTo(1),
+                        () -> assertThat(retryerConfig.getRetryDelayUnit()).isEqualTo(TimeUnit.SECONDS),
+                        () -> assertThat(retryerConfig.getCommonType()).isEqualTo("some type"),
+                        () -> assertThat(retryerConfig.getLogLevelForSubsequentAttempts()).isEqualTo(Level.DEBUG)
                 );
             }
 
