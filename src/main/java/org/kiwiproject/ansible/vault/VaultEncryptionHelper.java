@@ -17,6 +17,8 @@ import java.io.IOException;
 import java.io.UncheckedIOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -68,14 +70,33 @@ public class VaultEncryptionHelper {
      * Validates and returns (assuming validation passed) a defensive copy of the given configuration.
      */
     private static VaultConfiguration validateAndCopyVaultConfiguration(VaultConfiguration configuration) {
-        checkArgumentNotBlank(configuration.getVaultPasswordFilePath(), "vaultPasswordFilePath is required");
-        checkArgument(isExistingPath(configuration.getVaultPasswordFilePath()),
-                "vault password file does not exist: %s", configuration.getVaultPasswordFilePath());
-        checkArgumentNotBlank(configuration.getAnsibleVaultPath(), "ansibleVaultPath is required");
-        checkArgument(isExistingPath(configuration.getAnsibleVaultPath()),
-                "ansible-vault executable does not exist: %s", configuration.getAnsibleVaultPath());
+        var errors = new ArrayList<String>();
+        addErrorIfBlankOrInvalid(errors,
+                configuration.getVaultPasswordFilePath(),
+                "vaultPasswordFilePath",
+                "vault password file");
+        addErrorIfBlankOrInvalid(errors,
+                configuration.getAnsibleVaultPath(),
+                "ansibleVaultPath",
+                "ansible-vault executable");
 
-        return configuration.copyOf();
+        if (errors.isEmpty()) {
+            return configuration.copyOf();
+        }
+
+        var message = String.join(", ", errors);
+        throw new IllegalArgumentException(message);
+    }
+
+    private static void addErrorIfBlankOrInvalid(List<String> errors,
+                                                 String filePath,
+                                                 String propertyName,
+                                                 String propertyDescription) {
+        if (isBlank(filePath)) {
+            errors.add(propertyName + " is required");
+        } else if (isNotExistingPath(filePath)) {
+            errors.add(propertyDescription + " does not exist: " + filePath);
+        }
     }
 
     /**
@@ -288,6 +309,10 @@ public class VaultEncryptionHelper {
         } finally {
             deleteFileQuietly(tempFilePath);
         }
+    }
+
+    private static boolean isNotExistingPath(String filePath) {
+        return !isExistingPath(filePath);
     }
 
     private static boolean isExistingPath(String filePath) {
