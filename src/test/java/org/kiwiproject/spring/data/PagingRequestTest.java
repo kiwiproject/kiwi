@@ -45,9 +45,9 @@ class PagingRequestTest {
         softly.assertThat(pagingRequest.getPage()).isZero();
         softly.assertThat(pagingRequest.getLimit()).isEqualTo(100);
         softly.assertThat(pagingRequest.getPrimarySort()).isNull();
-        softly.assertThat(pagingRequest.getPrimaryDirection()).isNull();
+        softly.assertThat(pagingRequest.getPrimaryDirection()).isEqualTo(Sort.Direction.ASC);
         softly.assertThat(pagingRequest.getSecondarySort()).isNull();
-        softly.assertThat(pagingRequest.getSecondaryDirection()).isNull();
+        softly.assertThat(pagingRequest.getSecondaryDirection()).isEqualTo(Sort.Direction.ASC);
     }
 
     @Test
