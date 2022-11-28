@@ -1,5 +1,7 @@
 package org.kiwiproject.spring.data;
 
+import static org.apache.commons.lang3.StringUtils.isNotBlank;
+
 import org.springframework.data.domain.Sort;
 
 /**
@@ -54,6 +56,7 @@ public interface PagingParams {
 
     /**
      * @return the primary sort direction
+     * @apiNote Implementations should return a non-null value if {@link #hasPrimarySort()} returns true
      */
     Sort.Direction getPrimaryDirection();
 
@@ -74,6 +77,7 @@ public interface PagingParams {
 
     /**
      * @return the secondary sort direction
+     * @apiNote Implementations should return a non-null value if {@link #hasSecondarySort()} returns true
      */
     Sort.Direction getSecondaryDirection();
 
@@ -82,4 +86,30 @@ public interface PagingParams {
      */
     void setSecondaryDirection(Sort.Direction secondaryDirection);
 
+    /**
+     * Check if there is a primary or secondary sort.
+     *
+     * @return true if there is a primary or secondary sort
+     */
+    default boolean hasSort() {
+        return hasPrimarySort() || hasSecondarySort();
+    }
+
+    /**
+     * Check if there is a primary sort.
+     *
+     * @return true if {@link #getPrimarySort()} is not blank
+     */
+    default boolean hasPrimarySort() {
+        return isNotBlank(getPrimarySort());
+    }
+
+    /**
+     * Check if there is a secondary sort.
+     *
+     * @return true if {@link #getSecondarySort()} is not blank
+     */
+    default boolean hasSecondarySort() {
+        return isNotBlank(getSecondarySort());
+    }
 }
