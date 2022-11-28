@@ -67,7 +67,7 @@ public class PagingRequest implements PagingParams {
      */
     @QueryParam("primaryDirection")
     @DefaultValue("ASC")
-    private Sort.Direction primaryDirection;
+    private Sort.Direction primaryDirection = Sort.Direction.ASC;
 
     /**
      * The secondary sort property. Default is null.
@@ -82,5 +82,5 @@ public class PagingRequest implements PagingParams {
      */
     @QueryParam("secondaryDirection")
     @DefaultValue("ASC")
-    private Sort.Direction secondaryDirection;
+    private Sort.Direction secondaryDirection = Sort.Direction.ASC;
 }
