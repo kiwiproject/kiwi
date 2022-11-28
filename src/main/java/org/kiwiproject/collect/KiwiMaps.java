@@ -5,6 +5,7 @@ import static org.kiwiproject.base.KiwiPreconditions.checkEvenItemCount;
 
 import lombok.experimental.UtilityClass;
 
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -22,9 +23,9 @@ public class KiwiMaps {
     /**
      * Checks whether the specified map is null or empty.
      *
-     * @param map  the map
-     * @param <K>  the type of the keys in the map
-     * @param <V>  the type of the values in the map
+     * @param map the map
+     * @param <K> the type of the keys in the map
+     * @param <V> the type of the values in the map
      * @return {@code true} if map is null or empty; {@code false} otherwise
      */
     public static <K, V> boolean isNullOrEmpty(Map<K, V> map) {
@@ -44,10 +45,34 @@ public class KiwiMaps {
     }
 
     /**
-     * Creates a <i>mutable</i>, {@link java.util.HashMap} instance containing key/value pairs as parsed in pairs from
-     * the items argument. The items argument contains keys and values in the form:
+     * Creates an <em>unmodifiable</em> {@link java.util.HashMap} instance containing key/value pairs as parsed in
+     * pairs from the {@code items} argument. The items argument contains keys and values in the form:
      * <p>
-     * <i>key-1, value-1, key-2, value-2, ... , key-N, value-N</i>
+     * <em>key-1, value-1, key-2, value-2, ... , key-N, value-N</em>
+     * <p>
+     * Note that trying to cast the returned value to a {@link HashMap} will result in a {@link ClassCastException}
+     * because the actual type returned by {@link Collections#unmodifiableMap(Map)} is a private class that
+     * implements {@link Map}. Since it is generally it is best to use the interface type {@link Map} this should
+     * not present a problem in most use cases.
+     * <p>
+     * Unlike the factory methods in {@link Map}, null keys and values <em>are</em> permitted.
+     *
+     * @param items the items containing keys and values, in pairs
+     * @param <K>   the type of the keys in the map
+     * @param <V>   the type of the values in the map
+     * @return a new <em>unmodifiable</em> HashMap with data from items
+     * @implNote Wraps result of {@link #newHashMap(Object...)} with {@link Collections#unmodifiableMap(Map)}
+     * @see #newHashMap(Object...)
+     */
+    public static <K, V> Map<K, V> newUnmodifiableHashMap(Object... items) {
+        return Collections.unmodifiableMap(newHashMap(items));
+    }
+
+    /**
+     * Creates a <em>mutable</em>, {@link java.util.HashMap} instance containing key/value pairs as parsed in pairs from
+     * the {@code items} argument. The items argument contains keys and values in the form:
+     * <p>
+     * <em>key-1, value-1, key-2, value-2, ... , key-N, value-N</em>
      *
      * @param items the items containing keys and values, in pairs
      * @param <K>   the type of the keys in the map
@@ -62,10 +87,34 @@ public class KiwiMaps {
     }
 
     /**
-     * Creates a <i>mutable</i>, {@link java.util.LinkedHashMap} instance containing key/value pairs as parsed in pairs from
-     * the items argument. The items argument contains keys and values in the form:
+     * Creates an <em>unmodifiable</em>, {@link java.util.LinkedHashMap} instance containing key/value pairs as parsed
+     * in pairs from the {@code items} argument. The items argument contains keys and values in the form:
      * <p>
-     * <i>key-1, value-1, key-2, value-2, ... , key-N, value-N</i>
+     * <em>key-1, value-1, key-2, value-2, ... , key-N, value-N</em>
+     * <p>
+     * Note that trying to cast the returned value to a {@link java.util.LinkedHashMap} will result in a {@link ClassCastException}
+     * because the actual type returned by {@link Collections#unmodifiableMap(Map)} is a private class that
+     * implements {@link Map}. Since it is generally it is best to use the interface type {@link Map} this should
+     * not present a problem in most use cases.
+     * <p>
+     * Unlike the factory methods in {@link Map}, null keys and values <em>are</em> permitted.
+     *
+     * @param items the items containing keys and values, in pairs
+     * @param <K>   the type of the keys in the map
+     * @param <V>   the type of the values in the map
+     * @return a new <em>unmodifiable</em> LinkedHashMap with data from items
+     * @implNote Wraps result of {@link #newLinkedHashMap(Object...)} with {@link Collections#unmodifiableMap(Map)}
+     * @see #newLinkedHashMap(Object...)
+     */
+    public static <K, V> Map<K, V> newUnmodifiableLinkedHashMap(Object... items) {
+        return Collections.unmodifiableMap(newLinkedHashMap(items));
+    }
+
+    /**
+     * Creates a <em>mutable</em>, {@link java.util.LinkedHashMap} instance containing key/value pairs as parsed in
+     * pairs from the {@code items} argument. The items argument contains keys and values in the form:
+     * <p>
+     * <em>key-1, value-1, key-2, value-2, ... , key-N, value-N</em>
      *
      * @param items the items containing keys and values, in pairs
      * @param <K>   the type of the keys in the map
@@ -80,10 +129,35 @@ public class KiwiMaps {
     }
 
     /**
-     * Creates a <i>mutable</i>, {@link java.util.TreeMap} instance containing key/value pairs as parsed in pairs from
-     * the items argument. The items argument contains keys and values in the form:
+     * Creates an <em>unmodifiable</em>, {@link java.util.TreeMap} instance containing key/value pairs as parsed in
+     * pairs from the {@code items} argument. The items argument contains keys and values in the form:
      * <p>
-     * <i>key-1, value-1, key-2, value-2, ... , key-N, value-N</i>
+     * <em>key-1, value-1, key-2, value-2, ... , key-N, value-N</em>
+     * <p>
+     * Note that trying to cast the returned value to a {@link TreeMap} will result in a {@link ClassCastException}
+     * because the actual type returned by {@link Collections#unmodifiableMap(Map)} is a private class that
+     * implements {@link Map}. Since it is generally it is best to use the interface type {@link Map} this should
+     * not present a problem in most use cases.
+     * <p>
+     * Like the factory methods in {@link Map}, null keys and values are <em>not</em> permitted.
+     *
+     * @param items the items containing keys and values, in pairs
+     * @param <K>   the type of the keys in the map
+     * @param <V>   the type of the values in the map
+     * @return a new <em>unmodifiable</em> TreeMap with data from items
+     * @implNote Wraps result of {@link #newTreeMap(Object...)} with {@link Collections#unmodifiableMap(Map)}
+     * @see #newTreeMap(Object...)
+     */
+    public static <K extends Comparable<? super K>, V> SortedMap<K, V> newUnmodifiableTreeMap(Object... items) {
+        SortedMap<K, V> sortedMap = newTreeMap(items);
+        return Collections.unmodifiableSortedMap(sortedMap);
+    }
+
+    /**
+     * Creates a <em>mutable</em>, {@link java.util.TreeMap} instance containing key/value pairs as parsed in pairs from
+     * the {@code items} argument. The items argument contains keys and values in the form:
+     * <p>
+     * <em>key-1, value-1, key-2, value-2, ... , key-N, value-N</em>
      *
      * @param items the items containing keys and values, in pairs
      * @param <K>   the type of the keys in the map
@@ -98,10 +172,34 @@ public class KiwiMaps {
     }
 
     /**
-     * Creates a <i>mutable</i>, {@link ConcurrentHashMap} instance containing key/value pairs as parsed in pairs from
-     * the items argument. The items argument contains keys and values in the form:
+     * Creates an <em>unmodifiable</em>, {@link ConcurrentHashMap} instance containing key/value pairs as parsed in
+     * pairs from the {@code items} argument. The items argument contains keys and values in the form:
      * <p>
-     * <i>key-1, value-1, key-2, value-2, ... , key-N, value-N</i>
+     * <em>key-1, value-1, key-2, value-2, ... , key-N, value-N</em>
+     * <p>
+     * Note that, unlike {@link #newConcurrentHashMap(Object...)}, this method has a return type of {@link Map}.
+     * This is because {@link Collections#unmodifiableMap(Map)} returns {@link Map} and trying to cast the returned
+     * instance to a {@link ConcurrentMap} results in a {@link ClassCastException}. Since it is generally it is best
+     * to use the interface type {@link Map} this should not present a problem in most use cases.
+     * <p>
+     * Like the factory methods in {@link Map}, null keys and values are <em>not</em> permitted.
+     *
+     * @param items the items containing keys and values, in pairs
+     * @param <K>   the type of the keys in the map
+     * @param <V>   the type of the values in the map
+     * @return a new <em>unmodifiable</em> ConcurrentHashMap with data from items
+     * @implNote Wraps result of {@link #newConcurrentHashMap(Object...)} with {@link Collections#unmodifiableMap(Map)}
+     * @see #newConcurrentHashMap(Object...)
+     */
+    public static <K, V> Map<K, V> newUnmodifiableConcurrentHashMap(Object... items) {
+        return Collections.unmodifiableMap(newConcurrentHashMap(items));
+    }
+
+    /**
+     * Creates a <em>mutable</em>, {@link ConcurrentHashMap} instance containing key/value pairs as parsed in pairs from
+     * the {@code items} argument. The items argument contains keys and values in the form:
+     * <p>
+     * <em>key-1, value-1, key-2, value-2, ... , key-N, value-N</em>
      *
      * @param items the items containing keys and values, in pairs
      * @param <K>   the type of the keys in the map

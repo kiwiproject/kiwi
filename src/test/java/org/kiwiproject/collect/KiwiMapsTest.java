@@ -172,8 +172,8 @@ class KiwiMapsTest {
     @Test
     void testNewConcurrentHashMap() {
         Object[] items = wordToNumberArray();
-        ConcurrentMap<String, Integer> treeMap = KiwiMaps.newConcurrentHashMap(items);
-        assertThat(treeMap)
+        ConcurrentMap<String, Integer> concurrentMap = KiwiMaps.newConcurrentHashMap(items);
+        assertThat(concurrentMap)
                 .isExactlyInstanceOf(ConcurrentHashMap.class)
                 .containsAllEntriesOf(newWordNumberMap());
     }
@@ -275,4 +275,84 @@ class KiwiMapsTest {
         }
     }
 
+    @Test
+    void shouldCreateUnmodifiableHashMap() {
+        Object[] items = wordToNumberArray();
+        Map<String, Integer> unmodifiableHashMap = KiwiMaps.newUnmodifiableHashMap(items);
+        assertThat(unmodifiableHashMap).containsAllEntriesOf(newWordNumberMap());
+
+        // noinspection ConstantConditions
+        assertThatThrownBy(() -> unmodifiableHashMap.put("six", 6))
+                .isInstanceOf(UnsupportedOperationException.class);
+    }
+
+    @Test
+    void shouldPermitNullsInUnmodifiableHashMap() {
+        Map<String, Integer> map = KiwiMaps.newUnmodifiableHashMap(
+                "null", null, "one", 1, "two", 2, null, 42);
+
+        assertThat(map).contains(
+                entry("null", null),
+                entry("one", 1),
+                entry("two", 2),
+                entry(null, 42)
+        );
+    }
+
+    @Test
+    void shouldCreateUnmodifiableLinkedHashMap() {
+        Object[] items = wordToNumberArray();
+        Map<String, Integer> unmodifiableLinkedHashMap = KiwiMaps.newUnmodifiableLinkedHashMap(items);
+        assertThat(unmodifiableLinkedHashMap).containsAllEntriesOf(newWordNumberMap());
+        List<String> expectedKeys = Arrays.stream(items)
+                .filter(obj -> obj instanceof String)
+                .map(String.class::cast)
+                .collect(toList());
+        assertThat(unmodifiableLinkedHashMap.keySet()).containsExactlyElementsOf(expectedKeys);
+
+        // noinspection ConstantConditions
+        assertThatThrownBy(() -> unmodifiableLinkedHashMap.put("seven", 7))
+                .isInstanceOf(UnsupportedOperationException.class);
+    }
+
+    @Test
+    void shouldPermitNullsInUnmodifiableLinkedHashMap() {
+        Map<String, Integer> map = KiwiMaps.newUnmodifiableLinkedHashMap(
+                "null", null, "one", 1, "two", 2, null, 42);
+
+        assertThat(map).contains(
+                entry("null", null),
+                entry("one", 1),
+                entry("two", 2),
+                entry(null, 42)
+        );
+    }
+
+    @Test
+    void shouldCreateUnmodifiableTreeMap() {
+        Object[] items = wordToNumberArray();
+        Map<String, Integer> unmodifiableTreeMap = KiwiMaps.newUnmodifiableTreeMap(items);
+        assertThat(unmodifiableTreeMap).containsAllEntriesOf(newWordNumberMap());
+        List<String> expectedKeys = Arrays.stream(items)
+                .filter(obj -> obj instanceof String)
+                .map(String.class::cast)
+                .sorted()
+                .collect(toList());
+        assertThat(unmodifiableTreeMap.keySet()).containsExactlyElementsOf(expectedKeys);
+
+        // noinspection ConstantConditions
+        assertThatThrownBy(() -> unmodifiableTreeMap.put("eight", 8))
+                .isInstanceOf(UnsupportedOperationException.class);
+    }
+
+    @Test
+    void shouldCreateUnmodifiableConcurrentHashMap() {
+        Object[] items = wordToNumberArray();
+        Map<String, Integer> unmodifiableConcurrentHashMap = KiwiMaps.newUnmodifiableConcurrentHashMap(items);
+        assertThat(unmodifiableConcurrentHashMap).containsAllEntriesOf(newWordNumberMap());
+
+        // noinspection ConstantConditions
+        assertThatThrownBy(() -> unmodifiableConcurrentHashMap.put("nine", 9))
+                .isInstanceOf(UnsupportedOperationException.class);
+    }
 }
