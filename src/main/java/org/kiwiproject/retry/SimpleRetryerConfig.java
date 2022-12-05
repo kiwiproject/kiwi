@@ -38,6 +38,8 @@ public class SimpleRetryerConfig {
 
     /**
      * Construct a new instance using the values in this configuration.
+     *
+     * @return a new retryer instance
      */
     public SimpleRetryer newRetryer() {
         return SimpleRetryer.builder()
