@@ -4,12 +4,11 @@ import static com.google.common.base.Preconditions.checkArgument;
 import static java.util.Objects.isNull;
 import static org.kiwiproject.base.KiwiPreconditions.checkArgumentNotNull;
 
+import lombok.experimental.UtilityClass;
 import org.checkerframework.checker.nullness.qual.Nullable;
 import org.kiwiproject.collect.KiwiArrays;
 
 import java.util.Arrays;
-
-import lombok.experimental.UtilityClass;
 
 /**
  * Static utilities for working with {@link Enum}.
