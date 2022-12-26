@@ -1,5 +1,6 @@
 package org.kiwiproject.time;
 
+import static java.util.Objects.isNull;
 import static org.kiwiproject.time.KiwiInstants.minusDays;
 import static org.kiwiproject.time.KiwiInstants.minusHours;
 import static org.kiwiproject.time.KiwiInstants.minusMinutes;
@@ -12,6 +13,7 @@ import static org.kiwiproject.time.KiwiInstants.plusMonths;
 import static org.kiwiproject.time.KiwiInstants.plusYears;
 
 import lombok.experimental.UtilityClass;
+import org.checkerframework.checker.nullness.qual.Nullable;
 
 import java.time.Instant;
 import java.util.Date;
@@ -41,6 +43,22 @@ public class KiwiDates {
      */
     public static Date dateFrom(Instant instant) {
         return Date.from(instant);
+    }
+
+    /**
+     * Return the {@link Date} converted from {@code instant}, or {@code null} if {@code instant} is {@code null}.
+     * <p>
+     * This is a null-safe wrapper around {@link Date#from(Instant)}, and is useful in situations when you might
+     * have a {@code null} instant.
+     *
+     * @param instant the {@link Instant} to convert, may be null
+     * @return the converted {@link Date} or {@code null}
+     * @apiNote This method only exists because {@link Date#from(Instant)} throws {@link NullPointerException} if its
+     * arguments is {@code null}.
+     */
+    @Nullable
+    public static Date dateFromInstantOrNull(@Nullable Instant instant) {
+        return isNull(instant) ? null : dateFrom(instant);
     }
 
     /**
