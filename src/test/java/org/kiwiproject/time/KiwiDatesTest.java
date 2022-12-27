@@ -34,6 +34,23 @@ class KiwiDatesTest {
     }
 
     @Nested
+    class DateFromInstantOrNull {
+
+        @Test
+        void shouldReturnNullWhenGivenNull() {
+            assertThat(KiwiDates.dateFromInstantOrNull(null)).isNull();
+        }
+
+        @Test
+        void shouldConvertNonNullInstant() {
+            var instant = Instant.now();
+            var date = KiwiDates.dateFromInstantOrNull(instant);
+
+            assertThat(date).isEqualTo(instant);
+        }
+    }
+
+    @Nested
     class MinuteAdjusters {
 
         private Instant aMinuteAgo;

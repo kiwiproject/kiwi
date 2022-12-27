@@ -1,15 +1,20 @@
 package org.kiwiproject.time;
 
+import static java.util.Objects.isNull;
 import static org.kiwiproject.base.KiwiPreconditions.checkArgumentNotNull;
 
 import lombok.experimental.UtilityClass;
+import org.checkerframework.checker.nullness.qual.Nullable;
 
+import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
+import java.util.Calendar;
 import java.util.Date;
+import java.util.GregorianCalendar;
 
 /**
  * A collection of small utility methods to convert between legacy {@link Date} and the Java 8 date/time API classes.
@@ -20,7 +25,7 @@ import java.util.Date;
  * All methods throw {@link IllegalArgumentException} if null values are passed into them.
  *
  * @implNote {@link Date}, according to its JavaDoc, is "intended to reflect coordinated universal time (UTC)"
- * though "it may not do so exactly". The utilities in this class convert arguments to to UTC before converting
+ * though "it may not do so exactly". The utilities in this class convert arguments to UTC before converting
  * to {@link Date} in order to reflect that intention.
  */
 @UtilityClass
@@ -61,6 +66,40 @@ public class KiwiDateTimeConverters {
         checkArgumentNotNull(zonedDateTime);
 
         return Date.from(zonedDateTime.toInstant());
+    }
+
+    /**
+     * Return the {@link Instant} converted from {@code date}, or {@code null} if {@code date} is {@code null}.
+     * <p>
+     * This is a null-safe wrapper around {@link Date#toInstant()}, and is useful in situations when you might
+     * have a {@code null} date.
+     *
+     * @param date the {@link Date} to convert, may be null
+     * @return the converted {@link Instant} or {@code null}
+     * @implNote This method only exists because {@link Date#toInstant()} is an instance method and obviously a
+     * {@link NullPointerException} is thrown if you attempt to call it when the receiver is {@code null}, i.e.
+     * {@code maybeNullDate.toInstant()}.
+     */
+    @Nullable
+    public static Instant toInstantOrNull(@Nullable Date date) {
+        return isNull(date) ? null : date.toInstant();
+    }
+
+    /**
+     * Return the {@link Instant} converted from {@code calendar}, or {@code null} if {@code calendar} is {@code null}.
+     * <p>
+     * This is a null-safe wrapper around {@link Calendar#toInstant()}, and is useful in situations when you might
+     * have a {@code null} calendar.
+     *
+     * @param calendar the {@link Calendar} to convert, may be null
+     * @return the converted {@link Instant} or {@code null}
+     * @implNote This method only exists because {@link Calendar#toInstant()} is an instance method and obviously a
+     * {@link NullPointerException} is thrown if you attempt to call it when the receiver is {@code null}, i.e.
+     * {@code maybeNullCalendar.toInstant()}.
+     */
+    @Nullable
+    public static Instant toInstantOrNull(@Nullable Calendar calendar) {
+        return isNull(calendar) ? null : calendar.toInstant();
     }
 
     /**
@@ -135,5 +174,25 @@ public class KiwiDateTimeConverters {
         checkArgumentNotNull(zoneId);
 
         return date.toInstant().atZone(zoneId);
+    }
+
+    /**
+     * Return the {@link ZonedDateTime} converted from {@code calendar}, or {@code null} if {@code calendar}
+     * is {@code null}.
+     * <p>
+     * This is a null-safe wrapper around {@link GregorianCalendar#toZonedDateTime()}, and is useful in situations
+     * when you might have a {@code null} calendar.
+     *
+     * @param calendar the {@link GregorianCalendar} to convert, may be null
+     * @return the converted {@link ZonedDateTime} or {@code null}
+     * @implNote This method only exists because {@link GregorianCalendar#toZonedDateTime()} is an instance method and
+     * obviously a {@link NullPointerException} is thrown if you attempt to call it when the receiver is
+     * {@code null}, i.e. {@code maybeNullGregorianCalendar.toZonedDateTime()}. Note also that {@code toZonedDateTime}
+     * is only in {@link GregorianCalendar}, not the base {@link Calendar}, which is the reason this accepts a
+     * {@link GregorianCalendar} argument.
+     */
+    @Nullable
+    public static ZonedDateTime toZonedDateTimeOrNull(@Nullable GregorianCalendar calendar) {
+        return isNull(calendar) ? null : calendar.toZonedDateTime();
     }
 }

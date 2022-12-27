@@ -1,5 +1,7 @@
 package org.kiwiproject.time;
 
+import static java.util.Calendar.DAY_OF_YEAR;
+import static java.util.Calendar.YEAR;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
 import static org.kiwiproject.time.KiwiDateTimeTestConstants.GUY_FAWKES_AS_DATE;
@@ -26,6 +28,9 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.GregorianCalendar;
 
 /**
  * @implNote Uses constants defined in {@link KiwiDateTimeTestConstants}.
@@ -85,6 +90,86 @@ class KiwiDateTimeConvertersTest {
 
             softly.assertThat(KiwiDateTimeConverters.toDate(GUY_FAWKES_AS_ZONED_DATE_TIME_IN_TOKYO))
                     .isEqualTo(GUY_FAWKES_AS_DATE);
+        }
+    }
+
+    @Nested
+    class ToInstantOrNull_UsingDate {
+
+        @Test
+        void shouldReturnNullWhenGivenLiteralNull() {
+            assertThat(KiwiDateTimeConverters.toInstantOrNull((Date) null)).isNull();
+        }
+
+        @SuppressWarnings("ConstantValue")
+        @Test
+        void shouldReturnNullWhenGivenNull() {
+            Date date = null;
+            assertThat(KiwiDateTimeConverters.toInstantOrNull(date)).isNull();
+        }
+
+        @Test
+        void shouldConvertNonNullDate() {
+            var date = new Date();
+            var instant = KiwiDateTimeConverters.toInstantOrNull(date);
+
+            assertThat(instant).isEqualTo(date.toInstant());
+        }
+    }
+
+    @Nested
+    class ToInstantOrNull_UsingCalendar {
+
+        @Test
+        void shouldReturnNullWhenGivenLiteralNullCalendar() {
+            assertThat(KiwiDateTimeConverters.toInstantOrNull((Calendar) null)).isNull();
+        }
+
+        @SuppressWarnings("ConstantValue")
+        @Test
+        void shouldReturnNullWhenGivenNullCalendar() {
+            Calendar calendar = null;
+            assertThat(KiwiDateTimeConverters.toInstantOrNull(calendar)).isNull();
+        }
+
+        @Test
+        void shouldReturnNullWhenGivenLiteralNullGregorianCalendar() {
+            assertThat(KiwiDateTimeConverters.toInstantOrNull((GregorianCalendar) null)).isNull();
+        }
+
+        @SuppressWarnings("ConstantValue")
+        @Test
+        void shouldReturnNullWhenGivenNullGregorianCalendar() {
+            GregorianCalendar calendar = null;
+            assertThat(KiwiDateTimeConverters.toInstantOrNull(calendar)).isNull();
+        }
+
+        @Test
+        void shouldConvertNonNullCalendar() {
+            var calendar = Calendar.getInstance();
+            var instant = KiwiDateTimeConverters.toInstantOrNull(calendar);
+
+            assertThat(instant).isEqualTo(calendar.toInstant());
+        }
+
+        @Test
+        void shouldConvertNonNullGregorianCalendar() {
+            var calendar = new GregorianCalendar();
+            var instant = KiwiDateTimeConverters.toInstantOrNull(calendar);
+
+            assertThat(instant).isEqualTo(calendar.toInstant());
+        }
+
+        @Test
+        void shouldConvertNonNullJapaneseImperialCalendar() {
+            var calendar = new Calendar.Builder()
+                    .setCalendarType("japanese")
+                    .setFields(YEAR, 1, DAY_OF_YEAR, 1)
+                    .build();
+            assertThat(calendar.getCalendarType()).isEqualTo("japanese");  // sanity check
+            var instant = KiwiDateTimeConverters.toInstantOrNull(calendar);
+
+            assertThat(instant).isEqualTo(calendar.toInstant());
         }
     }
 
@@ -217,6 +302,23 @@ class KiwiDateTimeConvertersTest {
 
             softly.assertThat(KiwiDateTimeConverters.toZonedDateTime(GUY_FAWKES_AS_DATE, TOKYO_TIME))
                     .isEqualTo(GUY_FAWKES_AS_ZONED_DATE_TIME_IN_TOKYO);
+        }
+    }
+
+    @Nested
+    class ToZonedDateTimeOrNull {
+
+        @Test
+        void shouldReturnNullWhenGivenNull() {
+            assertThat(KiwiDateTimeConverters.toZonedDateTimeOrNull(null)).isNull();
+        }
+
+        @Test
+        void shouldConvertNonNullGregorianCalendar() {
+            var calendar = new GregorianCalendar();
+            var zonedDateTime = KiwiDateTimeConverters.toZonedDateTimeOrNull(calendar);
+
+            assertThat(zonedDateTime).isEqualTo(calendar.toZonedDateTime());
         }
     }
 }
