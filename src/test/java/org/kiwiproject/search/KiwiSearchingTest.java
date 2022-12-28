@@ -148,6 +148,63 @@ class KiwiSearchingTest {
     }
 
     @Nested
+    class ZeroBasedOffsetForOneBasedPaging {
+
+        @Test
+        void shouldReturnExpectedZeroBasedOffset(SoftAssertions softly) {
+            softly.assertThat(KiwiSearching.zeroBasedOffsetForOneBasedPaging(1, 25)).isEqualTo(0);
+            softly.assertThat(KiwiSearching.zeroBasedOffsetForOneBasedPaging(10, 25)).isEqualTo(9 * 25);
+            softly.assertThat(KiwiSearching.zeroBasedOffsetForOneBasedPaging(100, 25)).isEqualTo(99 * 25);
+            softly.assertThat(KiwiSearching.zeroBasedOffsetForOneBasedPaging(1_000, 25)).isEqualTo(999 * 25);
+            softly.assertThat(KiwiSearching.zeroBasedOffsetForOneBasedPaging(1_000, 20)).isEqualTo(999 * 20);
+        }
+
+        @ParameterizedTest
+        @ValueSource(ints = {-10, -1, 0})
+        void shouldThrowException_WhenInvalidPageSize(int pageSize) {
+            assertThatIllegalArgumentException()
+                    .isThrownBy(() -> KiwiSearching.zeroBasedOffsetForOneBasedPaging(1, pageSize));
+        }
+
+        @ParameterizedTest
+        @ValueSource(ints = {-100, -2, -1, 0})
+        void shouldThrowException_WhenInvalidPageNumber(int pageNumber) {
+            assertThatIllegalArgumentException()
+                    .isThrownBy(() -> KiwiSearching.zeroBasedOffsetForOneBasedPaging(pageNumber, 10))
+                    .withMessage(PageNumberingScheme.ONE_BASED.getPageNumberError());
+        }
+    }
+
+    @Nested
+    class ZeroBasedOffsetForZeroBasedPaging {
+
+        @Test
+        void shouldReturnExpectedZeroBasedOffset(SoftAssertions softly) {
+            softly.assertThat(KiwiSearching.zeroBasedOffsetForZeroBasedPaging(0, 25)).isEqualTo(0);
+            softly.assertThat(KiwiSearching.zeroBasedOffsetForZeroBasedPaging(1, 25)).isEqualTo(25);
+            softly.assertThat(KiwiSearching.zeroBasedOffsetForZeroBasedPaging(10, 25)).isEqualTo(10 * 25);
+            softly.assertThat(KiwiSearching.zeroBasedOffsetForZeroBasedPaging(100, 25)).isEqualTo(100 * 25);
+            softly.assertThat(KiwiSearching.zeroBasedOffsetForZeroBasedPaging(1_000, 25)).isEqualTo(1_000 * 25);
+            softly.assertThat(KiwiSearching.zeroBasedOffsetForZeroBasedPaging(1_000, 20)).isEqualTo(1_000 * 20);
+        }
+
+        @ParameterizedTest
+        @ValueSource(ints = { -10, -1, 0 })
+        void shouldThrowException_WhenInvalidPageSize(int pageSize) {
+            assertThatIllegalArgumentException()
+                    .isThrownBy(() -> KiwiSearching.zeroBasedOffsetForZeroBasedPaging(1, pageSize));
+        }
+
+        @ParameterizedTest
+        @ValueSource(ints = { -100, -2, -1 })
+        void shouldThrowException_WhenInvalidPageNumber(int pageNumber) {
+            assertThatIllegalArgumentException()
+                    .isThrownBy(() -> KiwiSearching.zeroBasedOffsetForZeroBasedPaging(pageNumber, 10))
+                    .withMessage(PageNumberingScheme.ZERO_BASED.getPageNumberError());
+        }
+    }
+
+    @Nested
     class NumberOfPages {
 
         @Test
