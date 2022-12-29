@@ -132,6 +132,35 @@ public class KiwiSearching {
     }
 
     /**
+     * Calculate the <em>zero-based offset</em> for the given page number and size using page numbers starting
+     * at one, after first validating the page number and size. Useful for any data access library that requires a
+     * zero-based offset.
+     * <p>
+     * This method is an alias for {@link #zeroBasedOffset(int, int)}.
+     *
+     * @param pageNumber the page number (one-based)
+     * @param pageSize   the page size
+     * @return the zero-based offset, e.g. for use in SQL queries using OFFSET and LIMIT
+     * @see #zeroBasedOffset(int, int)
+     */
+    public static int zeroBasedOffsetForOneBasedPaging(int pageNumber, int pageSize) {
+        return zeroBasedOffset(pageNumber, pageSize);
+    }
+
+    /**
+     * Calculate the <em>zero-based offset</em> for the given page number and size using page numbers starting
+     * at zero, after first validating the page number and size. Useful for any data access library that requires a
+     * zero-based offset.
+     *
+     * @param pageNumber the page number (zero-based)
+     * @param pageSize   the page size
+     * @return the zero-based offset, e.g. for use in SQL queries using OFFSET and LIMIT
+     */
+    public static int zeroBasedOffsetForZeroBasedPaging(int pageNumber, int pageSize) {
+        return zeroBasedOffset(pageNumber, PageNumberingScheme.ZERO_BASED, pageSize);
+    }
+
+    /**
      * Calculate the <em>zero-based offset</em> for the given page number and size using the given page numbering
      * scheme, after first validating the page number and size. Useful for any data access library that requires
      * a zero-based offset.
