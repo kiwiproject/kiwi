@@ -8,7 +8,8 @@ import lombok.experimental.UtilityClass;
 
 /**
  * Utilities related to searching and pagination. Supports both zero- and one-based page numbering but the
- * default is one-based. Use the methods that accept
+ * default is one-based. Use the methods that accept {@link PageNumberingScheme} to work with either zero-
+ * or one-based numbering.
  */
 @UtilityClass
 public class KiwiSearching {
@@ -35,7 +36,11 @@ public class KiwiSearching {
         @Getter
         public final String pageNumberError;
 
-        private final int minimumPageNumber;
+        /**
+         * @implNote Allow access through traditional getter method or via public (immutable) field
+         */
+        @Getter
+        public final int minimumPageNumber;
 
         PageNumberingScheme(String pageNumberError, int minimumPageNumber) {
             this.pageNumberError = pageNumberError;
