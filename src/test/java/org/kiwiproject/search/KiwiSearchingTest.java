@@ -252,4 +252,20 @@ class KiwiSearchingTest {
             }
         }
     }
+
+    @Nested
+    class PageNumberingSchemeEnum {
+
+        @Test
+        void shouldHaveZeroAsMinimumPage_ForZeroBasedNumbering() {
+            assertThat(PageNumberingScheme.ZERO_BASED.minimumPageNumber).isZero();
+            assertThat(PageNumberingScheme.ZERO_BASED.getMinimumPageNumber()).isZero();
+        }
+
+        @Test
+        void shouldHaveOneAsMinimumPage_ForOneBasedNumbering() {
+            assertThat(PageNumberingScheme.ONE_BASED.minimumPageNumber).isOne();
+            assertThat(PageNumberingScheme.ONE_BASED.getMinimumPageNumber()).isOne();
+        }
+    }
 }
