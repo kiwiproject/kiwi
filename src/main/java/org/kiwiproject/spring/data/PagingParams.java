@@ -1,7 +1,9 @@
 package org.kiwiproject.spring.data;
 
+import static java.util.Objects.nonNull;
 import static org.apache.commons.lang3.StringUtils.isNotBlank;
 
+import org.kiwiproject.search.KiwiSearching.PageNumberingScheme;
 import org.springframework.data.domain.Sort;
 
 /**
@@ -35,6 +37,16 @@ public interface PagingParams {
     void setPage(Integer page);
 
     /**
+     * @return the numbering scheme used by this instance
+     */
+    PageNumberingScheme getNumbering();
+
+    /**
+     * @param numbering the numbering scheme this instance should use
+     */
+    void setNumbering(PageNumberingScheme numbering);
+
+    /**
      * @return the page size limit
      */
     Integer getLimit();
@@ -43,6 +55,15 @@ public interface PagingParams {
      * @param limit the page size limit
      */
     void setLimit(Integer limit);
+
+    /**
+     * Check if all pagination properties exist.
+     *
+     * @return true if page, numbering scheme, and limit are all non-null, otherwise false
+     */
+    default boolean hasPaginationProperties() {
+        return nonNull(getPage()) && nonNull(getNumbering()) && nonNull(getLimit());
+    }
 
     /**
      * @return the primary sort property

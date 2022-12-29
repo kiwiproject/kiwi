@@ -6,6 +6,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
+import org.kiwiproject.search.KiwiSearching.PageNumberingScheme;
 
 @DisplayName("PagingParams")
 class PagingParamsTest {
@@ -15,6 +16,32 @@ class PagingParamsTest {
     @BeforeEach
     void setUp() {
         pagingParams = new PagingRequest();
+    }
+
+    @ParameterizedTest
+    @CsvSource(
+            value = {
+                    "1, ONE_BASED, 10, true",
+                    "0, ZERO_BASED, 15, true",
+                    "null, null, null, false",
+                    "null, ZERO_BASED, 25, false",
+                    "0, null, 15, false",
+                    "0, ZERO_BASED, null, false",
+                    "null, null, 10, false",
+                    "null, ONE_BASED, null, false",
+                    "1, null, null, false",
+                    "1, null, 50, false",
+            },
+            nullValues = "null"
+    )
+    void shouldHavePaginationProperties(
+            Integer page, PageNumberingScheme numbering, Integer limit, boolean isExpectedToHavePaginationProperties) {
+
+        pagingParams.setPage(page);
+        pagingParams.setNumbering(numbering);
+        pagingParams.setLimit(limit);
+
+        assertThat(pagingParams.hasPaginationProperties()).isEqualTo(isExpectedToHavePaginationProperties);
     }
 
     @ParameterizedTest
