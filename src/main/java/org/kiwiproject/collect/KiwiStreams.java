@@ -1,7 +1,11 @@
 package org.kiwiproject.collect;
 
+import static org.kiwiproject.base.KiwiPreconditions.checkArgumentNotNull;
+import static org.kiwiproject.base.KiwiStrings.f;
+
 import lombok.experimental.UtilityClass;
 
+import java.util.Collection;
 import java.util.Optional;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
@@ -41,6 +45,56 @@ public final class KiwiStreams {
                 .map(typeToFind::cast)
                 .filter(predicate)
                 .findFirst();
+    }
+
+    /**
+     * Return a sequential or parallel {@link Stream} over {@code collection} based on
+     * the given {@link StreamMode}.
+     * <p>
+     * Normally you must hard code the type of stream directly in the code using either
+     * {@link Collection#stream()} or {@link Collection#parallelStream()}. This method
+     * provides a simple way to determine how to process a stream at runtime, for
+     * example based on number of elements or type of algorithm.
+     *
+     * @param <T> the type of collection elements
+     * @param collection the collection to stream
+     * @param mode the mode to use when streaming the collection
+     * @return a sequential or parallel {@link Stream} over {@code collection}
+     */
+    public static <T> Stream<T> stream(Collection<T> collection, StreamMode mode) {
+        checkArgumentNotNull(collection);
+        checkArgumentNotNull(mode);
+
+        switch (mode) {
+            case SEQUENTIAL:
+                return collection.stream();
+
+            case PARALLEL:
+                return collection.parallelStream();
+
+            default:
+               throw new IllegalStateException(f("unexpected StreamMode: {}", mode));
+        }
+    }
+
+    /**
+     * Describes the type of {@link Stream}.
+     */
+    public enum StreamMode {
+
+        /**
+         * A sequential stream.
+         *
+         * @see Collection#stream()
+         */
+        SEQUENTIAL,
+
+        /**
+         * A possibly parallel stream.
+         *
+         * @see Collection#parallelStream()
+         */
+        PARALLEL
     }
 
 }

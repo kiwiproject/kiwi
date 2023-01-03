@@ -1,16 +1,21 @@
 package org.kiwiproject.collect;
 
 import static java.util.stream.Collectors.toList;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
 
 import lombok.Value;
 import org.assertj.core.api.SoftAssertions;
 import org.assertj.core.api.junit.jupiter.SoftAssertionsExtension;
 import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.kiwiproject.collect.KiwiStreams.StreamMode;
 
 import java.io.Serializable;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Stream;
 
 @DisplayName("KiwiStreams")
@@ -106,5 +111,35 @@ class KiwiStreamsTest {
 
     private Stream<? extends Serializable> streamOf42() {
         return Stream.of(42, 42.0, "42");
+    }
+
+    @Nested
+    class StreamUsingMode {
+
+        @Test
+        void shouldRequireCollection() {
+            assertThatIllegalArgumentException()
+                    .isThrownBy(() -> KiwiStreams.stream(null, StreamMode.SEQUENTIAL));
+        }
+
+        @Test
+        void shouldRequireStreamMode() {
+            assertThatIllegalArgumentException()
+                    .isThrownBy(() -> KiwiStreams.stream(Set.of(1, 2, 3), null));
+        }
+
+        @Test
+        void shouldProcessStreamsSequentially() {
+            var collection = Set.of(1, 2, 3, 4, 5);
+            var stream = KiwiStreams.stream(collection, StreamMode.SEQUENTIAL);
+            assertThat(stream.isParallel()).isFalse();
+        }
+
+        @Test
+        void shouldProcessStreamsInParallel() {
+            var collection = Set.of("a", "b", "c", "d", "e");
+            var stream = KiwiStreams.stream(collection, StreamMode.PARALLEL);
+            assertThat(stream.isParallel()).isTrue();
+        }
     }
 }
