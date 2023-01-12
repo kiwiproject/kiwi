@@ -684,7 +684,7 @@ public class KiwiReflection {
     public static <T> T newInstanceUsingNoArgsConstructor(Class<T> type) {
         checkArgumentNotNull(type);
         try {
-            return (T) type.getDeclaredConstructor().newInstance();
+            return type.getDeclaredConstructor().newInstance();
         } catch (NoSuchMethodException | IllegalAccessException e) {
             var message = f("{} does not have a declared no-args constructor", type);
             throw new IllegalArgumentException(message, e);
@@ -745,7 +745,7 @@ public class KiwiReflection {
         }
     }
 
-    private static List<? extends Class<?>> getTypesOrThrow(Object... objects) {
+    private static List<Class<?>> getTypesOrThrow(Object... objects) {
         try {
             return Arrays.stream(objects).map(Object::getClass).collect(toList());
         } catch (NullPointerException npe) {
@@ -753,7 +753,7 @@ public class KiwiReflection {
         }
     }
 
-    private static boolean argumentsAreCompatible(Class<?>[] parameterTypes, List<? extends Class<?>> exactArgTypes) {
+    private static boolean argumentsAreCompatible(Class<?>[] parameterTypes, List<Class<?>> exactArgTypes) {
         for (var i = 0; i < parameterTypes.length; i++) {
             var paramType = parameterTypes[i];
             var exactArgType = exactArgTypes.get(i);
