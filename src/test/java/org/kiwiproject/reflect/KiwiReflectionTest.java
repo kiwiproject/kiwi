@@ -1,10 +1,15 @@
 package org.kiwiproject.reflect;
 
+import static java.util.Objects.isNull;
 import static java.util.function.Predicate.not;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatCode;
+import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
+import static org.assertj.core.api.Assertions.assertThatNullPointerException;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.kiwiproject.base.KiwiPreconditions.checkArgumentNotNull;
+
+import com.google.common.collect.Lists;
 
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -15,6 +20,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.Singular;
 import lombok.ToString;
+import lombok.experimental.UtilityClass;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.assertj.core.api.SoftAssertions;
@@ -31,7 +37,11 @@ import org.kiwiproject.reflect.KiwiReflection.Accessor;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+
+import java.io.UncheckedIOException;
+import java.io.UnsupportedEncodingException;
 import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.ArrayList;
@@ -1186,6 +1196,273 @@ class KiwiReflectionTest {
         }
     }
 
+    @Nested
+    class NewInstanceUsingNoArgsConstructor {
+
+        @Test
+        void shouldCreateNewInstance() {
+            var emptyPerson = KiwiReflection.newInstanceUsingNoArgsConstructor(Person.class);
+
+            assertThat(emptyPerson).isNotNull();
+            assertThat(emptyPerson.getFirstName()).isNull();
+            assertThat(emptyPerson.getLastName()).isNull();
+            assertThat(emptyPerson.getAge()).isNull();
+        }
+
+        @Test
+        void shouldThrowIllegalArgument_WhenTypeIsNull() {
+            assertThatIllegalArgumentException()
+                    .isThrownBy(() -> KiwiReflection.newInstanceUsingNoArgsConstructor(null))
+                    .withNoCause();
+        }
+
+        @Test
+        void shouldThrowIllegalArgument_WhenNoArgsConstructorDoesNotExist() {
+            assertThatIllegalArgumentException()
+                    .isThrownBy(() -> KiwiReflection.newInstanceUsingNoArgsConstructor(User.class))
+                    .withCauseInstanceOf(NoSuchMethodException.class)
+                    .withMessage("%s does not have a declared no-args constructor", User.class);
+        }
+
+        @Test
+        void shouldThrowIllegalArgument_WhenNoArgsConstructorIsPrivate() {
+            assertThatIllegalArgumentException()
+                    .isThrownBy(() -> KiwiReflection.newInstanceUsingNoArgsConstructor(SomeUtilities.class))
+                    .withCauseInstanceOf(IllegalAccessException.class)
+                    .withMessage("%s does not have a declared no-args constructor", SomeUtilities.class);
+        }
+
+        @Test
+        void shouldThrowRuntimeReflectionException_WhenProblemInvokingConstructor() {
+            assertThatThrownBy(() -> KiwiReflection.newInstanceUsingNoArgsConstructor(Erroneous.class))
+                    .isExactlyInstanceOf(RuntimeReflectionException.class)
+                    .hasCauseInstanceOf(InvocationTargetException.class);
+        }
+    }
+
+    @Nested
+    class NewInstanceInferringParamTypes {
+
+        @Test
+        void shouldCreateWhenThereAreNoArguments() {
+            var user = KiwiReflection.newInstanceInferringParamTypes(Person.class);
+
+            assertThat(user).isNotNull();
+            assertThat(user.getFirstName()).isNull();
+            assertThat(user.getLastName()).isNull();
+            assertThat(user.getAge()).isNull();
+        }
+
+        @Test
+        void shouldCreateWhenArgumentsMatchParameterTypesExactly_TwoStringArgs() {
+            var alice = KiwiReflection.newInstanceInferringParamTypes(User.class,
+                    "alice.jones@nowhere.com", "monkey-123!");
+
+            assertThat(alice).isNotNull();
+            assertThat(alice.getUsername()).isEqualTo("alice.jones@nowhere.com");
+            assertThat(alice.getPassword()).isEqualTo("monkey-123!");
+            assertThat(alice.getEmail()).isEqualTo("alice.jones@nowhere.com");
+        }
+
+        @Test
+        void shouldCreateWhenArgumentsMatchParameterTypesExactly_TwoArgs() {
+            var alice = KiwiReflection.newInstanceInferringParamTypes(User.class,
+                    "alice.jones@nowhere.com", "monkey-123!".getBytes());
+
+            assertThat(alice).isNotNull();
+            assertThat(alice.getUsername()).isEqualTo("alice.jones@nowhere.com");
+            assertThat(alice.getPassword()).isEqualTo("monkey-123!");
+            assertThat(alice.getEmail()).isEqualTo("alice.jones@nowhere.com");
+        }
+
+        @Test
+        void shouldCreateWhenArgumentsMatchParameterTypesExactly_ThreeArgs() {
+            var alice = KiwiReflection.newInstanceInferringParamTypes(User.class,
+                    "alice.jones@nowhere.com", "monkey-123!".getBytes(), "alicej");
+
+            assertThat(alice).isNotNull();
+            assertThat(alice.getUsername()).isEqualTo("alicej");
+            assertThat(alice.getPassword()).isEqualTo("monkey-123!");
+            assertThat(alice.getEmail()).isEqualTo("alice.jones@nowhere.com");
+        }
+
+        @Test
+        void shouldCreateWhenArgumentsCanBeAssignedToParameterTypes() {
+            var alice = KiwiReflection.newInstanceInferringParamTypes(User.class,
+                    "alice.jones@nowhere.com", "monkey-123!", "alicej");
+
+            assertThat(alice).isNotNull();
+            assertThat(alice.getUsername()).isEqualTo("alicej");
+            assertThat(alice.getPassword()).isEqualTo("monkey-123!");
+            assertThat(alice.getEmail()).isEqualTo("alice.jones@nowhere.com");
+        }
+
+        @Test
+        void shouldThrowIllegalArgument_IfTypeIsNull() {
+            assertThatIllegalArgumentException()
+                    .isThrownBy(() -> KiwiReflection.newInstanceInferringParamTypes(null, "arg1", "arg2"))
+                    .withNoCause();
+        }
+
+        @Test
+        void shouldThrowIllegalArgument_IfArgumentsIsNull() {
+            assertThatIllegalArgumentException()
+                    .isThrownBy(() -> KiwiReflection.newInstanceInferringParamTypes(User.class, (Object[]) null))
+                    .withNoCause();
+        }
+
+        @Test
+        void shouldThrowIllegalArgument_WhenNoMatchingConstructor() {
+            assertThatIllegalArgumentException()
+                    .isThrownBy(() -> KiwiReflection.newInstanceInferringParamTypes(User.class, "bob"))
+                    .withNoCause()
+                    .withMessage("No declared constructor found for argument types: %s", List.of(String.class));
+        }
+
+        @Test
+        void shouldThrowIllegalArgument_WhenNoMatchingConstructor_DueToPrimitiveConstructorParameter() {
+            assertThatIllegalArgumentException()
+                    .isThrownBy(() -> KiwiReflection.newInstanceInferringParamTypes(Primitive.class, "foo", 84))
+                    .withNoCause()
+                    .withMessage("No declared constructor found for argument types: %s", List.of(String.class, Integer.class));
+        }
+
+        @Test
+        void shouldThrowNullPointerException_IfAnyArgumentIsNull() {
+            assertThatNullPointerException()
+                    .isThrownBy(() -> KiwiReflection.newInstanceInferringParamTypes(User.class,"carlos@acme.com", "carlos_g", null))
+                    .withNoCause()
+                    .withMessage("Cannot infer types because one (or more) arguments is null");
+        }
+
+        @Test
+        void shouldThrowRuntimeReflectionException_WhenProblemInvokingConstructor() {
+            assertThatThrownBy(() -> KiwiReflection.newInstanceInferringParamTypes(Erroneous.class, "foo", 42))
+                    .isExactlyInstanceOf(RuntimeReflectionException.class)
+                    .hasCauseInstanceOf(InvocationTargetException.class);
+        }
+    }
+
+    @Nested
+    class NewInstanceUsingParameterTypesAndArguments {
+
+        @Test
+        void shouldCreateForNoArgsConstructor() {
+            var emptyPerson = KiwiReflection.newInstance(Person.class, List.of(), List.of());
+
+            assertThat(emptyPerson).isNotNull();
+            assertThat(emptyPerson.getFirstName()).isNull();
+            assertThat(emptyPerson.getLastName()).isNull();
+            assertThat(emptyPerson.getAge()).isNull();
+        }
+
+        @Test
+        void shouldCreateWhenContainsMatchingConstructor() {
+            var paramTypes = List.<Class<?>>of(String.class, byte[].class, String.class);
+            var args = List.<Object>of("bsmith@foo.com", "password!".getBytes(), "bsmith");
+
+            var bob = KiwiReflection.newInstance(User.class, paramTypes, args);
+
+            assertThat(bob).isNotNull();
+            assertThat(bob.getUsername()).isEqualTo("bsmith");
+            assertThat(bob.getPassword()).isEqualTo("password!");
+            assertThat(bob.getEmail()).isEqualTo("bsmith@foo.com");
+        }
+
+        @Test
+        void shouldCreateWhenAnArgumentIsNull() {
+            var paramTypes = List.<Class<?>>of(String.class, byte[].class, String.class);
+            var args = Lists.<Object>newArrayList("bsmith@foo.com", "password!".getBytes(), null);
+
+            var bob = KiwiReflection.newInstance(User.class, paramTypes, args);
+
+            assertThat(bob).isNotNull();
+            assertThat(bob.getUsername()).isEqualTo("bsmith@foo.com");
+            assertThat(bob.getPassword()).isEqualTo("password!");
+            assertThat(bob.getEmail()).isEqualTo("bsmith@foo.com");
+        }
+
+        @Test
+        void shouldThrowIllegalArgument_WhenTypeIsNull() {
+            assertThatIllegalArgumentException()
+                    .isThrownBy(() -> KiwiReflection.newInstance(null, List.of(), List.of()))
+                    .withNoCause();
+        }
+
+        @Test
+        void shouldThrowIllegalArgument_WhenParameterTypesIsNull() {
+            assertThatIllegalArgumentException()
+                    .isThrownBy(() -> KiwiReflection.newInstance(User.class, null, List.of("alice@testing.org", "monkey_789")))
+                    .withNoCause();
+        }
+
+        @Test
+        void shouldThrowIllegalArgument_WhenArgumentsIsNull() {
+            assertThatIllegalArgumentException()
+                    .isThrownBy(() -> KiwiReflection.newInstance(User.class, List.of(String.class, String.class), null))
+                    .withNoCause();
+        }
+
+        @Test
+        void shouldThrowIllegalArgument_WhenParamTypesAndArgsLengthMismatch() {
+            assertThatIllegalArgumentException()
+                    .isThrownBy(() -> KiwiReflection.newInstance(User.class, List.of(String.class, String.class), List.of("bob@acme.org")))
+                    .withNoCause()
+                    .withMessage("parameter types and arguments must have same size");
+        }
+
+        @Test
+        void shouldThrowIllegalArgument_WhenNoMatchingConstructor() {
+            List<Class<?>> parameterTypes = List.of(String.class);
+            assertThatIllegalArgumentException()
+                    .isThrownBy(() -> KiwiReflection.newInstance(User.class, parameterTypes, List.of("carlos@testing.org")))
+                    .withCauseInstanceOf(NoSuchMethodException.class)
+                    .withMessage("No declared constructor exists in %s for parameter types: %s", User.class, parameterTypes);
+        }
+
+        @Test
+        void shouldThrowIllegalArgument_WhenConstructorIsPrivate() {
+            List<Class<?>> parameterTypes = List.of(Integer.TYPE);
+            assertThatIllegalArgumentException()
+                    .isThrownBy(() -> KiwiReflection.newInstance(AddingFactory.class, parameterTypes, List.of(42)))
+                    .withCauseInstanceOf(IllegalAccessException.class)
+                    .withMessage("No declared constructor exists in %s for parameter types: %s", AddingFactory.class, parameterTypes);
+        }
+
+        @Test
+        void shouldThrowRuntimeReflectionException_WhenProblemInvokingConstructor() {
+            List<Class<?>> parameterTypes = List.of(String.class, Integer.class);
+            List<Object> args = List.of("foo", 42);
+            assertThatThrownBy(() -> KiwiReflection.newInstance(Erroneous.class, parameterTypes, args))
+                    .isExactlyInstanceOf(RuntimeReflectionException.class)
+                    .hasCauseInstanceOf(InvocationTargetException.class);
+        }
+    }
+
+    @Nested
+    class NewInstanceUsingParameterTypesAndVariableArguments {
+
+        @Test
+        void shouldDelegateToNewInstanceWithTwoLists() {
+            var paramTypes = List.<Class<?>>of(String.class, byte[].class, String.class);
+            var alice = KiwiReflection.newInstanceExactParamTypes(User.class,
+                    paramTypes, "ajones@acme.com", "1-p-2-a-3-ssword!".getBytes(), "ajones");
+
+            assertThat(alice).isNotNull();
+            assertThat(alice.getUsername()).isEqualTo("ajones");
+            assertThat(alice.getPassword()).isEqualTo("1-p-2-a-3-ssword!");
+            assertThat(alice.getEmail()).isEqualTo("ajones@acme.com");
+        }
+
+        @Test
+        void shouldThrowIllegalArgument_WhenArgumentsIsNull() {
+            var parameterTypes = List.<Class<?>>of(String.class, byte[].class, String.class);
+            assertThatIllegalArgumentException()
+                    .isThrownBy(() -> KiwiReflection.newInstanceExactParamTypes(User.class, parameterTypes, (Object[]) null))
+                    .withNoCause();
+        }
+    }
+
     @AllArgsConstructor
     @NoArgsConstructor
     @Getter
@@ -1199,6 +1476,85 @@ class KiwiReflectionTest {
     @Getter
     static class Employee extends Person {
         private final String title;
+    }
+
+    @Getter
+    static class User {
+        private String username;
+        private String password;
+        private String email;
+
+        User(String email, String password) {
+            this(email, password, email);
+        }
+
+        User(String email, byte[] password) {
+            this(email, password, email);
+        }
+
+        User(String email, byte[] password, @Nullable String username) {
+            this.email = email.toString();
+            try {
+                this.password = new String(password, "UTF-8");
+            } catch (UnsupportedEncodingException e) {
+                throw new UncheckedIOException(e);
+            }
+            this.username = firstNonNull(username, email);
+        }
+
+        User(CharSequence email, CharSequence password, @Nullable CharSequence username) {
+            this.email = email.toString();
+            this.password = password.toString();
+            this.username = firstNonNull(username, email);
+        }
+
+        private static String firstNonNull(CharSequence seq1, CharSequence seq2) {
+            if (isNull(seq1) && isNull(seq2)) {
+                throw new IllegalArgumentException("both arguments are null!");
+            }
+
+            return isNull(seq1) ? seq2.toString() : seq1.toString();
+        }
+    }
+
+    @UtilityClass
+    static class SomeUtilities {
+
+        int add(int x, int y) {
+            return x + y;
+        }
+    }
+
+    static class AddingFactory {
+
+        private final int base;
+
+        private AddingFactory(int base) {
+            this.base = base;
+        }
+
+        static AddingFactory newAddingFactory(int base) {
+            return newAddingFactory(base);
+        }
+
+        int add(int other) {
+            return base + other;
+        }
+    }
+
+    static class Erroneous {
+        Erroneous() {
+            throw new IllegalStateException();
+        }
+
+        Erroneous(String s, Integer i) {
+            throw new RuntimeException("oops");
+        }
+    }
+
+    static class Primitive {
+        Primitive(String s, int i) {
+        }
     }
 
     // Suppress several warnings since the fields are not used, and one of the static fields is intentionally not final

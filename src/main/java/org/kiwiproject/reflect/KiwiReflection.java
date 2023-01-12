@@ -10,11 +10,17 @@ import static org.kiwiproject.base.KiwiPreconditions.checkArgumentNotNull;
 import static org.kiwiproject.base.KiwiPreconditions.requireNotNull;
 import static org.kiwiproject.base.KiwiStrings.f;
 
+import com.google.common.annotations.Beta;
 import com.google.common.annotations.VisibleForTesting;
+import com.google.common.base.Preconditions;
+import com.google.common.collect.Streams;
 import com.google.common.primitives.Primitives;
 import lombok.experimental.UtilityClass;
 import lombok.extern.slf4j.Slf4j;
+import net.bytebuddy.asm.Advice.OffsetMapping.Factory.Illegal;
+
 import org.apache.commons.lang3.StringUtils;
+import org.kiwiproject.base.KiwiPreconditions;
 import org.kiwiproject.base.KiwiStrings;
 
 import java.lang.reflect.Field;
@@ -660,6 +666,157 @@ public class KiwiReflection {
                     f("Error invoking void method [%s] on target [%s] with args %s",
                             method.getName(), target, Arrays.toString(args)),
                     e);
+        }
+    }
+
+    /**
+     * Convenience method to create a new instance of the given type using its no-args constructor.
+     *
+     * @param <T> the type of object
+     * @param type the {@link Class} representing the object type
+     * @return a new instance
+     * @throws RuntimeReflectionException if any error occurs invoking the constructor
+     * @throws IllegalArgumentException if a no-args constructor does not exist, is private, etc.
+     * @see Class#getDeclaredConstructor(Class...)
+     * @see java.lang.reflect.Constructor#newInstance(Object...)
+     */
+    @Beta
+    public static <T> T newInstanceUsingNoArgsConstructor(Class<T> type) {
+        checkArgumentNotNull(type);
+        try {
+            return (T) type.getDeclaredConstructor().newInstance();
+        } catch (NoSuchMethodException | IllegalAccessException e) {
+            var message = f("{} does not have a declared no-args constructor", type);
+            throw new IllegalArgumentException(message, e);
+        } catch (Exception e) {
+            throw new RuntimeReflectionException(e);
+        }
+    }
+
+    /**
+     * Create a new instance of the given type using {@code arguments} to determine the constructor
+     * argument types, using the first matching constructor based on the argument types and actual
+     * constructor parameters. A constructor will match if the constructor parameter type is assignable
+     * from the argument type. For example if a one-argument constructor accepts a {@link CharSequence} and
+     * the actual argument type is {@link String}, the constructor matches since String is assignable to
+     * CharSequence.
+     * <p>
+     * <em>Note that this method cannot be used if any of the arguments are {@code null}.</em> The reason
+     * is that the type cannot be inferred. If any argument might be null, or you don't know or aren't sure, use
+     * {@link #newInstance(Class, List, Object...)} instead.
+     * <p>
+     * <em>Another caveat is that constructors accepting primitives will not be inferred correctly.</em>.
+     * For example if the constructor accepts an {@code int}, because of the varargs the argument will be inferred
+     * as {@link Integer} and the constructor with primitive will not be found. This restriction might be fixed
+     * in a future release.
+     *
+     * @param <T> the type of object
+     * @param type the {@link Class} representing the object type
+     * @param arguments the constructor arguments
+     * @return a new instance
+     * @throws IllegalArgumentException if no matching constructor was found for the given arguments
+     * @throws NullPointerException if any of the arguments is {@code null}
+     * @throws RuntimeReflectionException if any error occurs invoking the constructor
+     * @see Class#getDeclaredConstructors()
+     * @see java.lang.reflect.Constructor#newInstance(Object...)
+     */
+    @SuppressWarnings("unchecked")
+    @Beta
+    public static <T> T newInstanceInferringParamTypes(Class<T> type, Object... arguments) {
+        checkArgumentNotNull(type);
+        checkArgumentNotNull(arguments);
+
+        if (arguments.length == 0) {
+            return newInstanceUsingNoArgsConstructor(type);
+        }
+
+        var exactArgTypes = getTypesOrThrow(arguments);
+
+        var constructor = Arrays.stream(type.getDeclaredConstructors())
+                .filter(ctor -> ctor.getParameterCount() == arguments.length)
+                .filter(ctor -> argumentsAreCompatible(ctor.getParameterTypes(), exactArgTypes))
+                .findFirst()
+                .orElseThrow(() -> new IllegalArgumentException(f("No declared constructor found for argument types: {}", exactArgTypes)));
+
+        try {
+            return (T) constructor.newInstance(arguments);
+        } catch (Exception e) {
+            throw new RuntimeReflectionException(e);
+        }
+    }
+
+    private static List<? extends Class<?>> getTypesOrThrow(Object... objects) {
+        try {
+            return Arrays.stream(objects).map(Object::getClass).collect(toList());
+        } catch (NullPointerException npe) {
+            throw new NullPointerException("Cannot infer types because one (or more) arguments is null");
+        }
+    }
+
+    private static boolean argumentsAreCompatible(Class<?>[] parameterTypes, List<? extends Class<?>> exactArgTypes) {
+        for (var i = 0; i < parameterTypes.length; i++) {
+            var paramType = parameterTypes[i];
+            var exactArgType = exactArgTypes.get(i);
+
+            if (!paramType.isAssignableFrom(exactArgType)) {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    /**
+     * This method is an alias for {@link #newInstance(Class, List, List)}, with the arguments as varargs, which
+     * may be more convenient in some situations. See that method's javadoc for more details, including the types
+     * of exceptions that can be thrown.
+     *
+     * @param <T> the type of object
+     * @param type the {@link Class} representing the object type
+     * @param parameterTypes the constructor parameter types
+     * @param arguments the constructor arguments
+     * @return a new instance
+     * @see #newInstance(Class, List, List)
+     * @apiNote This method is named differently than {@link #newInstance(Class, List, List)} to avoid amiguity
+     * that happens with method overloads when one (or more) uses varargs and the others don't.
+     */
+    @Beta
+    public static <T> T newInstanceExactParamTypes(Class<T> type, List<Class<?>> parameterTypes, Object... arguments) {
+        checkArgumentNotNull(arguments);
+        return newInstance(type, parameterTypes, List.of(arguments));
+    }
+
+    /**
+     * Create a new instance of the given type using a constructor having the given parameter types, and supplying
+     * the arguments to that constructor.
+     * <p>
+     * <em>Note that the parameter types must match exactly.</em>
+     *
+     * @param <T> the type of object
+     * @param type the {@link Class} representing the object type
+     * @param parameterTypes the constructor parameter types
+     * @param arguments the constructor arguments
+     * @return a new instance
+     * @throws IllegalArgumentException if any of the arguments is null, if the length of parameter types and
+     * arguments is different, or if no constructor exists with the given parameter types
+     * @throws RuntimeReflectionException if any error occurs invoking the constructor
+     * @see Class#getDeclaredConstructor(Class...)
+     * @see java.lang.reflect.Constructor#newInstance(Object...)
+     */
+    public static <T> T newInstance(Class<T> type, List<Class<?>> parameterTypes, List<Object> arguments) {
+        checkArgumentNotNull(type);
+        checkArgumentNotNull(parameterTypes);
+        checkArgumentNotNull(arguments);
+        checkArgument(parameterTypes.size() == arguments.size(), "parameter types and arguments must have same size");
+
+        try {
+            var constructor = type.getDeclaredConstructor(parameterTypes.toArray(new Class[0]));
+            return constructor.newInstance(arguments.toArray(new Object[0]));
+        } catch (NoSuchMethodException | IllegalAccessException e) {
+            var message = f("No declared constructor exists in {} for parameter types: {}", type, parameterTypes);
+            throw new IllegalArgumentException(message, e);
+        } catch (Exception e) {
+            throw new RuntimeReflectionException(e);
         }
     }
 }
