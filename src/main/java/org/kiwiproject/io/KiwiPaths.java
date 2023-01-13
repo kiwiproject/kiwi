@@ -22,7 +22,6 @@ public class KiwiPaths {
      * @return the {@link Path} of the given resource name
      * @see Resources#getResource(String)
      */
-    // because Guava's Resources has been around for a long time
     public static Path pathFromResourceName(String resourceName) {
         try {
             return Paths.get(Resources.getResource(resourceName).toURI());
