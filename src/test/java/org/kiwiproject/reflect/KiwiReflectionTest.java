@@ -1298,6 +1298,23 @@ class KiwiReflectionTest {
         }
 
         @Test
+        void shouldCreateWhenParameterTypeIsPrimitiveAndArgumentIsWrapperType() {
+            var obj = KiwiReflection.newInstanceInferringParamTypes(Primitive.class,
+                    "foo", (byte) 24, (short) 10, 42, 84L, 126.0F, 168.0, false, 'z');
+
+            assertThat(obj).isNotNull();
+            assertThat(obj.s).isEqualTo("foo");
+            assertThat(obj.byt).isEqualTo((byte) 24);
+            assertThat(obj.sh).isEqualTo((short) 10);
+            assertThat(obj.i).isEqualTo(42);
+            assertThat(obj.lng).isEqualTo(84L);
+            assertThat(obj.f).isEqualTo(126.0F);
+            assertThat(obj.d).isEqualTo(168.0);
+            assertThat(obj.b).isFalse();
+            assertThat(obj.c).isEqualTo('z');
+        }
+
+        @Test
         void shouldThrowIllegalArgument_IfTypeIsNull() {
             assertThatIllegalArgumentException()
                     .isThrownBy(() -> KiwiReflection.newInstanceInferringParamTypes(null, "arg1", "arg2"))
@@ -1317,14 +1334,6 @@ class KiwiReflectionTest {
                     .isThrownBy(() -> KiwiReflection.newInstanceInferringParamTypes(User.class, "bob"))
                     .withNoCause()
                     .withMessage("No declared constructor found for argument types: %s", List.of(String.class));
-        }
-
-        @Test
-        void shouldThrowIllegalArgument_WhenNoMatchingConstructor_DueToPrimitiveConstructorParameter() {
-            assertThatIllegalArgumentException()
-                    .isThrownBy(() -> KiwiReflection.newInstanceInferringParamTypes(Primitive.class, "foo", 84))
-                    .withNoCause()
-                    .withMessage("No declared constructor found for argument types: %s", List.of(String.class, Integer.class));
         }
 
         @Test
@@ -1552,9 +1561,17 @@ class KiwiReflectionTest {
         }
     }
 
+    @AllArgsConstructor
     static class Primitive {
-        Primitive(String s, int i) {
-        }
+        String s;
+        byte byt;
+        short sh;
+        int i;
+        long lng;
+        float f;
+        double d;
+        boolean b;
+        char c;
     }
 
     // Suppress several warnings since the fields are not used, and one of the static fields is intentionally not final

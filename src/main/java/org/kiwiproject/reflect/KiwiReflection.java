@@ -761,12 +761,24 @@ public class KiwiReflection {
             var paramType = parameterTypes[i];
             var exactArgType = exactArgTypes.get(i);
 
-            if (!paramType.isAssignableFrom(exactArgType)) {
+            if (!paramType.isAssignableFrom(exactArgType) && !matchesPrimitive(paramType, exactArgType)) {
                 return false;
             }
         }
 
         return true;
+    }
+
+    private static boolean matchesPrimitive(Class<?> parameterType, Class<?> argType) {
+        return parameterType.isPrimitive() &&
+                ((parameterType.equals(byte.class) && argType.equals(Byte.class))
+                        || (parameterType.equals(short.class) && argType.equals(Short.class))
+                        || (parameterType.equals(int.class) && argType.equals(Integer.class))
+                        || (parameterType.equals(long.class) && argType.equals(Long.class))
+                        || (parameterType.equals(float.class) && argType.equals(Float.class))
+                        || (parameterType.equals(double.class) && argType.equals(Double.class))
+                        || (parameterType.equals(boolean.class) && argType.equals(Boolean.class))
+                        || (parameterType.equals(char.class) && argType.equals(Character.class)));
     }
 
     /**
