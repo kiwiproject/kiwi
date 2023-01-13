@@ -707,11 +707,6 @@ public class KiwiReflection {
      * <em>Note that this method cannot be used if any of the arguments are {@code null}.</em> The reason
      * is that the type cannot be inferred. If any argument might be null, or you don't know or aren't sure, use
      * {@link #newInstance(Class, List, Object...)} instead.
-     * <p>
-     * <em>Another caveat is that constructors accepting primitives will not be inferred correctly.</em>.
-     * For example if the constructor accepts an {@code int}, because of the varargs the argument will be inferred
-     * as {@link Integer} and the constructor with primitive will not be found. This restriction might be fixed
-     * in a future release.
      *
      * @param <T> the type of object
      * @param type the {@link Class} representing the object type
