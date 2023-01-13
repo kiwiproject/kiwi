@@ -16,7 +16,7 @@ import com.fasterxml.jackson.databind.ser.BeanPropertyWriter;
 import com.fasterxml.jackson.databind.ser.BeanSerializerModifier;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.kiwiproject.junit.jupiter.WhiteBoxTest;
+import org.kiwiproject.junit.jupiter.ClearBoxTest;
 
 import java.io.IOException;
 import java.util.List;
@@ -181,7 +181,7 @@ class PropertyMaskingSafePropertyWriterTest {
         );
     }
 
-    @WhiteBoxTest
+    @ClearBoxTest
     void shouldCatchExceptionsThrownWritingReplacementText() throws IOException {
         var jsonGenerator = mock(JsonGenerator.class);
         doThrow(new IOException("oops"))

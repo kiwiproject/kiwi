@@ -8,7 +8,7 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * Indicator that a test is "white box", generally used to indicate a test is calling a non-public API.
+ * Indicator that a test is "clear box", generally used to indicate a test is calling a non-public API.
  * This is often useful when testing complex internal logic or exceptions that are difficult or near impossible
  * to simulate.
  * <p>
@@ -18,5 +18,5 @@ import java.lang.annotation.Target;
 @Target({ElementType.ANNOTATION_TYPE, ElementType.METHOD})
 @Retention(RetentionPolicy.RUNTIME)
 @Test
-public @interface WhiteBoxTest {
+public @interface ClearBoxTest {
 }

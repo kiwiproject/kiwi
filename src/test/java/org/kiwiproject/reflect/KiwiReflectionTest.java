@@ -26,7 +26,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
-import org.kiwiproject.junit.jupiter.WhiteBoxTest;
+import org.kiwiproject.junit.jupiter.ClearBoxTest;
 import org.kiwiproject.reflect.KiwiReflection.Accessor;
 
 import javax.annotation.Nonnull;
@@ -850,7 +850,7 @@ class KiwiReflectionTest {
          * @implNote Pass null as the method name to cause NPE instead of the usual NoSuchMethodException
          * when {@link Class#getMethod(String, Class[])} is called.
          */
-        @WhiteBoxTest
+        @ClearBoxTest
         void shouldCatchAllExceptions() {
             var method = KiwiReflection.findMethodOrNull(AccessorTestClass.class, null, Long.class);
 

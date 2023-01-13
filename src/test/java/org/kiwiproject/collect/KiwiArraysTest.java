@@ -15,7 +15,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
-import org.kiwiproject.junit.jupiter.WhiteBoxTest;
+import org.kiwiproject.junit.jupiter.ClearBoxTest;
 
 import java.util.Collections;
 import java.util.Comparator;
@@ -324,7 +324,7 @@ class KiwiArraysTest {
     @Nested
     class CheckMinimumSize {
 
-        @WhiteBoxTest
+        @ClearBoxTest
         void shouldThrow_WhenNullArgument() {
             assertThatThrownBy(() -> KiwiArrays.checkMinimumSize(null, 10))
                     .isExactlyInstanceOf(NullPointerException.class);

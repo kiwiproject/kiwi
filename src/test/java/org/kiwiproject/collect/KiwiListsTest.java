@@ -19,7 +19,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.NullAndEmptySource;
 import org.junit.jupiter.params.provider.ValueSource;
-import org.kiwiproject.junit.jupiter.WhiteBoxTest;
+import org.kiwiproject.junit.jupiter.ClearBoxTest;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -332,7 +332,7 @@ class KiwiListsTest {
     @Nested
     class CheckMinimumSize {
 
-        @WhiteBoxTest
+        @ClearBoxTest
         void shouldThrow_WhenNullArgument() {
             assertThatThrownBy(() -> KiwiLists.checkMinimumSize(null, 10))
                     .isExactlyInstanceOf(NullPointerException.class);
