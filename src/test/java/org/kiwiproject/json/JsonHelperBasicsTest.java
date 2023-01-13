@@ -35,7 +35,7 @@ import org.junit.jupiter.params.provider.NullAndEmptySource;
 import org.junit.jupiter.params.provider.ValueSource;
 import org.kiwiproject.internal.Fixtures;
 import org.kiwiproject.json.JsonHelper.OutputFormat;
-import org.kiwiproject.junit.jupiter.WhiteBoxTest;
+import org.kiwiproject.junit.jupiter.ClearBoxTest;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
@@ -210,7 +210,7 @@ class JsonHelperBasicsTest {
             assertThat(result.getErrorOrNull()).isNull();
         }
 
-        @WhiteBoxTest
+        @ClearBoxTest
         void shouldCatchIOExceptions() throws IOException {
             var formatDetector = mock(DataFormatDetector.class);
             when(formatDetector.findFormat(any(byte[].class))).thenThrow(new IOException("Whoops!"));
