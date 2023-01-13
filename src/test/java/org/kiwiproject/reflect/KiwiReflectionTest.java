@@ -1229,7 +1229,7 @@ class KiwiReflectionTest {
             assertThatIllegalArgumentException()
                     .isThrownBy(() -> KiwiReflection.newInstanceUsingNoArgsConstructor(SomeUtilities.class))
                     .withCauseInstanceOf(IllegalAccessException.class)
-                    .withMessage("%s does not have a declared no-args constructor", SomeUtilities.class);
+                    .withMessage("%s has a no-args constructor that is not accessible", SomeUtilities.class);
         }
 
         @Test
@@ -1426,7 +1426,7 @@ class KiwiReflectionTest {
             assertThatIllegalArgumentException()
                     .isThrownBy(() -> KiwiReflection.newInstance(AddingFactory.class, parameterTypes, List.of(42)))
                     .withCauseInstanceOf(IllegalAccessException.class)
-                    .withMessage("No declared constructor exists in %s for parameter types: %s", AddingFactory.class, parameterTypes);
+                    .withMessage("%s has a constructor that is not accessible for parameter types: %s", AddingFactory.class, parameterTypes);
         }
 
         @Test

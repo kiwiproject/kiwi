@@ -685,8 +685,11 @@ public class KiwiReflection {
         checkArgumentNotNull(type);
         try {
             return type.getDeclaredConstructor().newInstance();
-        } catch (NoSuchMethodException | IllegalAccessException e) {
+        } catch (NoSuchMethodException e) {
             var message = f("{} does not have a declared no-args constructor", type);
+            throw new IllegalArgumentException(message, e);
+        } catch (IllegalAccessException e) {
+            var message = f("{} has a no-args constructor that is not accessible", type);
             throw new IllegalArgumentException(message, e);
         } catch (Exception e) {
             throw new RuntimeReflectionException(e);
@@ -812,8 +815,11 @@ public class KiwiReflection {
         try {
             var constructor = type.getDeclaredConstructor(parameterTypes.toArray(new Class[0]));
             return constructor.newInstance(arguments.toArray(new Object[0]));
-        } catch (NoSuchMethodException | IllegalAccessException e) {
+        } catch (NoSuchMethodException e) {
             var message = f("No declared constructor exists in {} for parameter types: {}", type, parameterTypes);
+            throw new IllegalArgumentException(message, e);
+        } catch (IllegalAccessException e) {
+            var message = f("{} has a constructor that is not accessible for parameter types: {}", type, parameterTypes);
             throw new IllegalArgumentException(message, e);
         } catch (Exception e) {
             throw new RuntimeReflectionException(e);
