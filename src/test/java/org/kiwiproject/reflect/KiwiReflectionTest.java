@@ -1337,6 +1337,15 @@ class KiwiReflectionTest {
         }
 
         @Test
+        void shouldThrowIllegalArgument_WhenNoMatchingConstructor_InvolvingPrimitiveParameterTypes() {
+            assertThatIllegalArgumentException()
+                    .isThrownBy(() -> KiwiReflection.newInstanceInferringParamTypes(Primitive.class, "foo", 24, 42L, 84.0))
+                    .withNoCause()
+                    .withMessage("No declared constructor found for argument types: %s",
+                            List.of(String.class, Integer.class, Long.class, Double.class));
+        }
+
+        @Test
         void shouldThrowNullPointerException_IfAnyArgumentIsNull() {
             assertThatNullPointerException()
                     .isThrownBy(() -> KiwiReflection.newInstanceInferringParamTypes(User.class,"carlos@acme.com", "carlos_g", null))
@@ -1561,6 +1570,7 @@ class KiwiReflectionTest {
         }
     }
 
+    @NoArgsConstructor
     @AllArgsConstructor
     static class Primitive {
         String s;
