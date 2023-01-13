@@ -31,6 +31,8 @@ import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.junit.jupiter.params.provider.ValueSource;
 import org.kiwiproject.junit.jupiter.WhiteBoxTest;
 import org.kiwiproject.reflect.KiwiReflection.Accessor;
@@ -48,6 +50,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 import java.util.function.Predicate;
+import java.util.stream.Stream;
 
 @DisplayName("KiwiReflection")
 @ExtendWith(SoftAssertionsExtension.class)
@@ -1345,6 +1348,16 @@ class KiwiReflectionTest {
                             List.of(String.class, Integer.class, Long.class, Double.class));
         }
 
+        @Nested
+        class IsMatchingPrimitiveArg {
+
+            @ParameterizedTest
+            @MethodSource("org.kiwiproject.reflect.KiwiReflectionTest#matchesPrimitiveArguments")
+            void shouldReturnExpectedValue(Class<?> parameterType, Class<?> argType, boolean expectMatch) {
+                assertThat(KiwiReflection.matchesPrimitive(parameterType, argType)).isEqualTo(expectMatch);
+            }
+        }
+
         @Test
         void shouldThrowNullPointerException_IfAnyArgumentIsNull() {
             assertThatNullPointerException()
@@ -1359,6 +1372,32 @@ class KiwiReflectionTest {
                     .isExactlyInstanceOf(RuntimeReflectionException.class)
                     .hasCauseInstanceOf(InvocationTargetException.class);
         }
+    }
+
+    static Stream<Arguments> matchesPrimitiveArguments() {
+        return Stream.of(
+            // matching results
+            Arguments.of(byte.class, Byte.class, true),
+            Arguments.of(short.class, Short.class, true),
+            Arguments.of(int.class, Integer.class, true),
+            Arguments.of(long.class, Long.class, true),
+            Arguments.of(float.class, Float.class, true),
+            Arguments.of(double.class, Double.class, true),
+            Arguments.of(boolean.class, Boolean.class, true),
+            Arguments.of(char.class, Character.class, true),
+
+            // non-matching results
+            Arguments.of(String.class, Integer.class, false),
+            Arguments.of(String.class, String.class, false),
+            Arguments.of(byte.class, Integer.class, false),
+            Arguments.of(short.class, Double.class, false),
+            Arguments.of(int.class, String.class, false),
+            Arguments.of(long.class, Character.class, false),
+            Arguments.of(float.class, List.class, false),
+            Arguments.of(double.class, String.class, false),
+            Arguments.of(boolean.class, Long.class, false),
+            Arguments.of(char.class, Float.class, false)
+        );
     }
 
     @Nested

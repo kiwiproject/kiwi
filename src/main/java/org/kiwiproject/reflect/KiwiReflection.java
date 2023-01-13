@@ -764,7 +764,8 @@ public class KiwiReflection {
         return true;
     }
 
-    private static boolean matchesPrimitive(Class<?> parameterType, Class<?> argType) {
+    @VisibleForTesting
+    static boolean matchesPrimitive(Class<?> parameterType, Class<?> argType) {
         return parameterType.isPrimitive() &&
                 ((parameterType.equals(byte.class) && argType.equals(Byte.class))
                         || (parameterType.equals(short.class) && argType.equals(Short.class))
