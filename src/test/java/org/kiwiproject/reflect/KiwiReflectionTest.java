@@ -1241,6 +1241,13 @@ class KiwiReflectionTest {
                     .isExactlyInstanceOf(RuntimeReflectionException.class)
                     .hasCauseInstanceOf(InvocationTargetException.class);
         }
+
+        @Test
+        void shouldThrowRuntimeReflectionException_WhenTargetTypeIsAbstract() {
+            assertThatThrownBy(() -> KiwiReflection.newInstanceUsingNoArgsConstructor(NotQuiteReal.class))
+                    .isExactlyInstanceOf(RuntimeReflectionException.class)
+                    .hasCauseInstanceOf(InstantiationException.class);
+        }
     }
 
     @Nested
@@ -1372,6 +1379,13 @@ class KiwiReflectionTest {
                     .isExactlyInstanceOf(RuntimeReflectionException.class)
                     .hasCauseInstanceOf(InvocationTargetException.class);
         }
+
+        @Test
+        void shouldThrowRuntimeReflectionException_WhenTargetTypeIsAbstract() {
+            assertThatThrownBy(() -> KiwiReflection.newInstanceInferringParamTypes(NotQuiteReal.class, "the value"))
+                    .isExactlyInstanceOf(RuntimeReflectionException.class)
+                    .hasCauseInstanceOf(InstantiationException.class);
+        }
     }
 
     static Stream<Arguments> matchesPrimitiveArguments() {
@@ -1494,6 +1508,15 @@ class KiwiReflectionTest {
                     .isExactlyInstanceOf(RuntimeReflectionException.class)
                     .hasCauseInstanceOf(InvocationTargetException.class);
         }
+
+        @Test
+        void shouldThrowRuntimeReflectionException_WhenTargetTypeIsAbstract() {
+            List<Class<?>> parameterTypes = List.of(String.class);
+            List<Object> args = List.of("the value");
+            assertThatThrownBy(() -> KiwiReflection.newInstance(NotQuiteReal.class, parameterTypes, args))
+                    .isExactlyInstanceOf(RuntimeReflectionException.class)
+                    .hasCauseInstanceOf(InstantiationException.class);
+        }
     }
 
     @Nested
@@ -1607,6 +1630,12 @@ class KiwiReflectionTest {
         Erroneous(String s, Integer i) {
             throw new RuntimeException("oops");
         }
+    }
+
+    @NoArgsConstructor
+    @AllArgsConstructor
+    static abstract class NotQuiteReal {
+        String value;
     }
 
     @NoArgsConstructor
