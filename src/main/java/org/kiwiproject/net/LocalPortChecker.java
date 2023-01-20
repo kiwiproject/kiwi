@@ -76,7 +76,7 @@ public class LocalPortChecker {
     /**
      * Find a random open port. If no available port is found, return an empty {@link OptionalInt}.
      *
-     * @return an optional containing the first open port, or an empty optional
+     * @return an optional containing the first random port found, or an empty optional
      */
     public OptionalInt findRandomOpenPort() {
         return findRandomOpenPortAbove(0);
