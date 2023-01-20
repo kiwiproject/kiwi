@@ -2,19 +2,66 @@ package org.kiwiproject.base;
 
 import static com.google.common.base.Preconditions.checkArgument;
 import static java.util.Objects.isNull;
+import static org.apache.commons.lang3.StringUtils.isBlank;
 import static org.kiwiproject.base.KiwiPreconditions.checkArgumentNotNull;
 
+import com.google.common.base.Enums;
 import lombok.experimental.UtilityClass;
+import org.apache.commons.lang3.EnumUtils;
 import org.checkerframework.checker.nullness.qual.Nullable;
 import org.kiwiproject.collect.KiwiArrays;
 
 import java.util.Arrays;
+import java.util.Optional;
 
 /**
  * Static utilities for working with {@link Enum}.
  */
 @UtilityClass
 public class KiwiEnums {
+
+    /**
+     * Return an optional enum constant for the given enum type and value. This performs an exact match of the enum
+     * constant names. For a case-insensitive comparison, you can use {@link #getIfPresentIgnoreCase(Class, String)}.
+     *
+     * @param <E> the enum type
+     * @param enumClass the enum class
+     * @param value the string value to compare against, may be blank
+     * @return an Optional that may contain an {@link Enum} constant or be empty
+     * @implNote This wraps Guava's {@link Enums#getIfPresent(Class, String)} and adapts the Guava Optional return
+     * type to a Java Optional. Unlike Guava, it permits blank values, in which case an empty Optional is returned.
+     */
+    public static <E extends Enum<E>> Optional<E> getIfPresent(Class<E> enumClass, @Nullable String value) {
+        checkArgumentNotNull(enumClass);
+        if (isBlank(value)) {
+            return Optional.empty();
+        }
+
+        return Enums.getIfPresent(enumClass, value).toJavaUtil();
+    }
+
+    /**
+     * Return an optional enum constant for the given enum type and value, compared against the enum constants
+     * in a case-insensitive manner, and ignoring any leading or trailing whitespace.
+     *
+     * @param <E> the enum type
+     * @param enumClass the enum class
+     * @param value the string value to compare against, may be blank
+     * @return an Optional that may contain an {@link Enum} constant or be empty
+     * @implNote This wraps Apache Commons' {@link EnumUtils#getEnumIgnoreCase(Class, String)} but returns
+     * am Optional instead of null if no enum constant is found. In addition, it ignores leading and trailing
+     * whitespace.
+     */
+    public static <E extends Enum<E>> Optional<E> getIfPresentIgnoreCase(Class<E> enumClass, @Nullable String value) {
+        checkArgumentNotNull(enumClass);
+        if (isBlank(value)) {
+            return Optional.empty();
+        }
+
+        // First try the value as-is, then fallback to the value with leading & trailing whitespace stripped
+        return Optional.ofNullable(EnumUtils.getEnumIgnoreCase(enumClass, value))
+            .or(() -> Optional.ofNullable(EnumUtils.getEnumIgnoreCase(enumClass, value.strip())));
+    }
 
     /**
      * Compares the given enum's {@link Enum#name() name} with the given value for equality.

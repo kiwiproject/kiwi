@@ -8,12 +8,106 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ArgumentsSource;
+import org.junit.jupiter.params.provider.CsvSource;
 import org.junit.jupiter.params.provider.EnumSource;
 import org.junit.jupiter.params.provider.NullAndEmptySource;
 import org.junit.jupiter.params.provider.ValueSource;
+import org.kiwiproject.util.BlankStringArgumentsProvider;
 
 @DisplayName("KiwiEnums")
 class KiwiEnumsTest {
+
+    @Nested
+    class GetIfPresent {
+
+        @Test
+        void shouldThrowIllegalArgumentWhenEnumClasIsNull() {
+            assertThatIllegalArgumentException()
+                    .isThrownBy(() -> KiwiEnums.getIfPresent(null, "WINTER"));
+        }
+
+        @ParameterizedTest
+        @ArgumentsSource(BlankStringArgumentsProvider.class)
+        void shouldReturnEmptyOptionalWhenGivenBlankInput(String input) {
+            assertThat(KiwiEnums.getIfPresent(Season.class, input)).isEmpty();
+        }
+
+        @ParameterizedTest
+        @EnumSource(Season.class)
+        void shouldReturnOptionalContainingEnumConstant(Season season) {
+            var name = season.name();
+            assertThat(KiwiEnums.getIfPresent(Season.class, name)).containsSame(season);
+        }
+
+        @ParameterizedTest
+        @ValueSource(strings = {
+            "fall",
+            "Winter",
+            "spring",
+            "SummER",
+            "summer",
+            "foo",
+            "bar"
+        })
+        void shouldReturnEmptyOptionalWhenNoMatchingEnumConstantExists(String input) {
+            assertThat(KiwiEnums.getIfPresent(Season.class, input)).isEmpty();
+        }
+    }
+
+    @Nested
+    class GetIfPresentIgnoreCase {
+
+        @Test
+        void shouldThrowIllegalArgumentWhenEnumClasIsNull() {
+            assertThatIllegalArgumentException()
+                    .isThrownBy(() -> KiwiEnums.getIfPresentIgnoreCase(null, "FALL"));
+        }
+
+        @ParameterizedTest
+        @ArgumentsSource(BlankStringArgumentsProvider.class)
+        void shouldReturnEmptyOptionalWhenGivenBlankInput(String input) {
+            assertThat(KiwiEnums.getIfPresent(Season.class, input)).isEmpty();
+        }
+
+        @ParameterizedTest
+        @CsvSource({
+            "FALL, FALL",
+            "fall, FALL",
+            "Fall, FALL ",
+            "winter, WINTER ",
+            " '  winter', WINTER ",
+            " 'spring  ', SPRING",
+            "Spring, SPRING",
+            "SuMmEr, SUMMER",
+            " '  summer  ', SUMMER",
+            " '\nSUMMER\t\t', SUMMER",
+            " '  \tsummer  \t\t\r\n', SUMMER",
+            " '\t\r\n\r\nFall\r\n\r\n\f\t  \t', FALL"
+        })
+        void shouldReturnOptionalContainingEnumConstantIgnoringCaseAndLeadingAndTrailingWhitespace(String input, Season expectedSeason) {
+            assertThat(KiwiEnums.getIfPresentIgnoreCase(Season.class, input)).containsSame(expectedSeason);
+        }
+
+        @ParameterizedTest
+        @ValueSource(strings = {
+            "_winter_",
+            "the summer",
+            "AUTUMN",
+            "foo",
+            "SUM_MER",
+            "Win.ter",
+            "bar",
+            "baz"
+        })
+        void shouldReturnEmptyOptionalWhenNoMatchingEnumConstantExists(String input) {
+            assertThat(KiwiEnums.getIfPresentIgnoreCase(Season.class, input)).isEmpty();
+        }
+    }
+
+    enum Season {
+        FALL, WINTER, SPRING, SUMMER
+    }
 
     @Nested
     class Equals {
