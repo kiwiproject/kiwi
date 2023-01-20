@@ -14,6 +14,7 @@ import org.junit.jupiter.params.provider.ValueSource;
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.util.OptionalInt;
+import java.util.concurrent.ThreadLocalRandom;
 
 @DisplayName("LocalPortChecker")
 class LocalPortCheckerTest {
@@ -104,4 +105,51 @@ class LocalPortCheckerTest {
         }
     }
 
+    @Nested
+    class FindRandomOpenPort {
+
+        @RepeatedTest(25)
+        void shouldFindAnOpenPort() {
+            var port = localPortChecker.findRandomOpenPort().orElseThrow();
+            assertThat(port).isPositive().isLessThanOrEqualTo(MAX_PORT);
+        }
+    }
+
+    @Nested
+    class FindRandomOpenPortFrom {
+
+        @RepeatedTest(25)
+        void shouldFindAnOpenPortFromStartPort() {
+            var startPort = ThreadLocalRandom.current().nextInt(1, MAX_PORT);
+            var port = localPortChecker.findRandomOpenPortFrom(startPort).orElseThrow();
+            assertThat(port).isPositive().isLessThanOrEqualTo(MAX_PORT);
+        }
+
+        @ParameterizedTest
+        @ValueSource(ints = {-1024, -1, 0, (MAX_PORT + 1), 500_000})
+        void shouldThrowIllegalArgumentException_ForInvalidPorts(int port) {
+            assertThatIllegalArgumentException()
+                    .isThrownBy(() -> localPortChecker.findRandomOpenPortFrom(port))
+                    .withMessage("Invalid start port: %d", port);
+        }
+    }
+
+    @Nested
+    class FindRandomOpenPortAbove {
+
+        @RepeatedTest(25)
+        void shouldFindAnOpenPortFromStartPort() {
+            var startPort = ThreadLocalRandom.current().nextInt(0, MAX_PORT - 1);
+            var port = localPortChecker.findRandomOpenPortAbove(startPort).orElseThrow();
+            assertThat(port).isPositive().isLessThanOrEqualTo(MAX_PORT);
+        }
+
+        @ParameterizedTest
+        @ValueSource(ints = {-1024, -1, (MAX_PORT + 1), 500_000})
+        void shouldThrowIllegalArgumentException_ForInvalidPorts(int port) {
+            assertThatIllegalArgumentException()
+                    .isThrownBy(() -> localPortChecker.findRandomOpenPortAbove(port))
+                    .withMessage("Invalid start port: %d", port);
+        }
+    }
 }
