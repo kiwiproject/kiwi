@@ -77,7 +77,6 @@ public class LocalPortChecker {
      * Find a random open port. If no available port is found, return an empty {@link OptionalInt}.
      *
      * @return an optional containing the first open port, or an empty optional
-     * @throws IllegalArgumentException if port is not between 1 and {@link #MAX_PORT}
      */
     public OptionalInt findRandomOpenPort() {
         return findRandomOpenPortAbove(0);
@@ -89,6 +88,7 @@ public class LocalPortChecker {
      *
      * @param port the port to start from (inclusive)
      * @return an optional containing the first open port, or an empty optional
+     * @throws IllegalArgumentException if port is not between 1 and {@link #MAX_PORT}
      * @implNote Since this method looks for availability of a specific port, zero is invalid because it is a reserved
      * port used to indicate a random port and is never bound directly to.
      */
