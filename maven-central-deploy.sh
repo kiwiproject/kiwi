@@ -19,7 +19,7 @@ status=$(git status)
 if [[ "$status" == *"Your branch is up to date"* ]]; then
   echo "Repository is up to date."
 else
-  echo "WARNING: Repository is not up to date."
+  echo "WARNING: Repository is not up to date. Run git pull --rebase and then re-run this script."
   exit 1
 fi
 
