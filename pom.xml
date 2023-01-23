@@ -34,6 +34,9 @@
         <!-- Versions for provided dependencies -->
         <retrying-again.version>1.0.15</retrying-again.version>
 
+        <!-- Versions for test dependencies -->
+        <test-containers.version>1.17.6</test-containers.version>
+
         <!-- Sonar properties -->
         <sonar.projectKey>kiwiproject_kiwi</sonar.projectKey>
         <sonar.organization>kiwiproject</sonar.organization>
@@ -46,6 +49,14 @@
                 <groupId>org.kiwiproject</groupId>
                 <artifactId>kiwi-bom</artifactId>
                 <version>${kiwi-bom.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+
+            <dependency>
+                <groupId>org.testcontainers</groupId>
+                <artifactId>testcontainers-bom</artifactId>
+                <version>${test-containers.version}</version>
                 <type>pom</type>
                 <scope>import</scope>
             </dependency>
@@ -224,6 +235,18 @@
         <dependency>
             <groupId>de.bwaldvogel</groupId>
             <artifactId>mongo-java-server</artifactId>
+            <scope>test</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.testcontainers</groupId>
+            <artifactId>junit-jupiter</artifactId>
+            <scope>test</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.testcontainers</groupId>
+            <artifactId>mongodb</artifactId>
             <scope>test</scope>
         </dependency>
 
