@@ -42,8 +42,8 @@
         <sonar.organization>kiwiproject</sonar.organization>
         <sonar.host.url>https://sonarcloud.io</sonar.host.url>
 
-        <source.dir>src/main/java</source.dir>
-        <test.source.dir>src/test/java</test.source.dir>
+        <!-- <source.dir>src/main/java</source.dir>
+        <test.source.dir>src/test/java</test.source.dir> -->
     </properties>
 
     <dependencyManagement>
@@ -249,19 +249,19 @@
 
     </dependencies>
 
-    <build>
+    <!-- <build>
         <sourceDirectory>${source.dir}</sourceDirectory>
         <testSourceDirectory>${test.source.dir}</testSourceDirectory>
-    </build>
+    </build> -->
 
     <profiles>
         <profile>
             <id>codeql</id>
 
-            <properties>
+            <!-- <properties>
                 <source.dir>target/generated-sources/delombok</source.dir>
                 <test.source.dir>target/generated-test-sources/delombok</test.source.dir>
-            </properties>
+            </properties> -->
 
             <build>
                 <plugins>
