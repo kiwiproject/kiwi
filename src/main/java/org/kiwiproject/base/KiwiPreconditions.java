@@ -29,9 +29,9 @@ import java.util.function.Supplier;
  * If you're looking for preconditions related to validating arguments using Jakarta Beans Validation, they
  * are in {@link org.kiwiproject.validation.KiwiValidations KiwiValidations}.
  *
- * @implNote Several methods in this class use Lombok's {@link SneakyThrows} so that they do not need to declare
+ * @implNote Several methods in this class use Lombok's {@link lombok.SneakyThrows} so that they do not need to declare
  * that they throw exceptions of type T, <em>for the case that T is a checked exception</em>. Read more details about
- * how this works in {@link SneakyThrows}. Most notably, this should give you more insight into how the JVM (versus
+ * how this works in {@link lombok.SneakyThrows}. Most notably, this should give you more insight into how the JVM (versus
  * Java the language) actually work: <em>"The JVM does not check for the consistency of the checked exception system;
  * javac does, and this annotation lets you opt out of its mechanism."</em>
  */
@@ -49,7 +49,7 @@ public class KiwiPreconditions {
      * @param expression    a boolean expression
      * @param exceptionType the type of exception to be thrown if {@code expression} is false
      * @param <T>           the type of exception
-     * @implNote This uses Lombok's {@link SneakyThrows} to throw any checked exceptions without declaring them.
+     * @implNote This uses Lombok's {@link lombok.SneakyThrows} to throw any checked exceptions without declaring them.
      */
     @SneakyThrows(Throwable.class)
     public static <T extends Throwable> void checkArgument(boolean expression, Class<T> exceptionType) {
@@ -67,7 +67,7 @@ public class KiwiPreconditions {
      * @param exceptionType the type of exception to be thrown if {@code expression} is false
      * @param errorMessage  the exception message to use if the check fails
      * @param <T>           the type of exception
-     * @implNote This uses Lombok's {@link SneakyThrows} to throw any checked exceptions without declaring them.
+     * @implNote This uses Lombok's {@link lombok.SneakyThrows} to throw any checked exceptions without declaring them.
      */
     @SneakyThrows(Throwable.class)
     public static <T extends Throwable> void checkArgument(boolean expression,
@@ -93,7 +93,7 @@ public class KiwiPreconditions {
      * @param <T>                  the type of exception
      * @throws NullPointerException if the check fails and either {@code errorMessageTemplate} or
      *                              {@code errorMessageArgs} is null (don't let this happen)
-     * @implNote This uses Lombok's {@link SneakyThrows} to throw any checked exceptions without declaring them.
+     * @implNote This uses Lombok's {@link lombok.SneakyThrows} to throw any checked exceptions without declaring them.
      */
     @SneakyThrows(Throwable.class)
     public static <T extends Throwable> void checkArgument(boolean expression,
