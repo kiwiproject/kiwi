@@ -87,7 +87,7 @@ import java.util.stream.Stream;
  * features of this class. It isn't perfect, but it works and, in our opinion anyway, doesn't intrude too much on
  * building JAX-RS requests. In other words, we think it is a decent trade off.
  *
- * @implNote Internally this uses Lombok's {@link Delegate}, which is why this class doesn't implement {@link WebTarget}
+ * @implNote Internally this uses Lombok's {@link lombok.Delegate}, which is why this class doesn't implement {@link WebTarget}
  * directly. While this lets us easily delegate method calls to a {@link WebTarget}, it also restricts what we can do
  * here, and is the primary reason why there are usage restrictions. However, in our general usage this implementation
  * has been enough for our needs. Nevertheless, this is currently marked with the Guava {@link Beta} annotation in case

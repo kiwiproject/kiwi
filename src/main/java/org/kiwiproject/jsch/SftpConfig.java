@@ -128,7 +128,7 @@ public class SftpConfig {
      * @param disableStrictHostChecking if true, we will set {@code StrictHostKeyChecking=no}
      * @param timeout                   the SFTP connection timeout
      * @implNote This is intentionally not using Lombok because using {@link lombok.AllArgsConstructor} together
-     * with @{@link Builder} results in an all-args constructor that does not respect {@link lombok.Builder.Default}.
+     * with @{@link lombok.Builder} results in an all-args constructor that does not respect {@link lombok.Builder.Default}.
      * As a result we need to handle the defaults ourselves. This is intended to be used during deserialization
      * from an external configuration file (e.g. a Dropwizard YAML configuration file, or from JSON). Prefer the
      * builder when constructing programmatically.
