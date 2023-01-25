@@ -706,7 +706,7 @@ public class KiwiReflection {
      * <p>
      * <em>Note that this method cannot be used if any of the arguments are {@code null}.</em> The reason
      * is that the type cannot be inferred. If any argument might be null, or you don't know or aren't sure, use
-     * {@link #newInstance(Class, List, Object...)} instead.
+     * {@link #newInstance(Class, List, List)} instead.
      *
      * @param <T> the type of object
      * @param type the {@link Class} representing the object type
