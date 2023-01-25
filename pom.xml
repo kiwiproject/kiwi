@@ -41,6 +41,9 @@
         <sonar.projectKey>kiwiproject_kiwi</sonar.projectKey>
         <sonar.organization>kiwiproject</sonar.organization>
         <sonar.host.url>https://sonarcloud.io</sonar.host.url>
+
+        <source.dir>src/main/java</source.dir>
+        <test.source.dir>src/test/java</test.source.dir>
     </properties>
 
     <dependencyManagement>
@@ -245,5 +248,55 @@
         </dependency>
 
     </dependencies>
+
+    <build>
+        <sourceDirectory>${source.dir}</sourceDirectory>
+        <testSourceDirectory>${test.source.dir}</testSourceDirectory>
+    </build>
+
+    <profiles>
+        <profile>
+            <id>codeql</id>
+
+            <properties>
+                <source.dir>target/generated-sources/delombok</source.dir>
+                <test.source.dir>target/generated-test-sources/delombok</test.source.dir>
+            </properties>
+
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.projectlombok</groupId>
+                        <artifactId>lombok-maven-plugin</artifactId>
+                        <version>1.18.20.0</version>
+                        <executions>
+                            <execution>
+                                <id>delombok</id>
+                                <phase>generate-sources</phase>
+                                <goals>
+                                    <goal>delombok</goal>
+                                </goals>
+                                <configuration>
+                                    <addOutputDirectory>false</addOutputDirectory>
+                                    <sourceDirectory>src/main/java</sourceDirectory>
+                                </configuration>
+                            </execution>
+                            <execution>
+                                <id>test-delombok</id>
+                                <phase>generate-test-sources</phase>
+                                <goals>
+                                    <goal>testDelombok</goal>
+                                </goals>
+                                <configuration>
+                                    <addOutputDirectory>false</addOutputDirectory>
+                                    <sourceDirectory>src/test/java</sourceDirectory>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+    </profiles>
 
 </project>
