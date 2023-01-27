@@ -1535,11 +1535,32 @@ class KiwiReflectionTest {
         }
 
         @Test
-        void shouldThrowIllegalArgument_WhenArgumentsIsNull() {
-            var parameterTypes = List.<Class<?>>of(String.class, byte[].class, String.class);
-            assertThatIllegalArgumentException()
-                    .isThrownBy(() -> KiwiReflection.newInstanceExactParamTypes(User.class, parameterTypes, (Object[]) null))
-                    .withNoCause();
+        void shouldCreateWhenAnArgumentIsNull() {
+            var paramTypes = List.<Class<?>>of(String.class, byte[].class, String.class);
+            var bob = KiwiReflection.newInstanceExactParamTypes(User.class,
+                    paramTypes, "bsmith@foo.com", "password!".getBytes(), null);
+
+            assertThat(bob).isNotNull();
+            assertThat(bob.getUsername()).isEqualTo("bsmith@foo.com");
+            assertThat(bob.getPassword()).isEqualTo("password!");
+            assertThat(bob.getEmail()).isEqualTo("bsmith@foo.com");
+        }
+
+        @Test
+        void shouldCreateWhenNeedToCastSingleNullArgument() {
+            var paramTypes = List.<Class<?>>of(String.class);
+            var oneArg = KiwiReflection.newInstanceExactParamTypes(OneArg.class, paramTypes, (String) null);
+
+            assertThat(oneArg.value).isNull();
+        }
+
+        @Test
+        void shouldCreateWhenUnambiguousNullArguments() {
+            var paramTypes = List.<Class<?>>of(String.class, Integer.class);
+            var twoArg = KiwiReflection.newInstanceExactParamTypes(TwoArg.class, paramTypes, null, null);
+
+            assertThat(twoArg.value1).isNull();
+            assertThat(twoArg.value2).isNull();
         }
     }
 
@@ -1595,6 +1616,17 @@ class KiwiReflectionTest {
 
             return isNull(seq1) ? seq2.toString() : seq1.toString();
         }
+    }
+
+    @AllArgsConstructor
+    static class OneArg {
+        String value;
+    }
+
+    @AllArgsConstructor
+    static class TwoArg {
+        String value1;
+        Integer value2;
     }
 
     @UtilityClass

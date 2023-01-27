@@ -13,6 +13,7 @@ import static org.kiwiproject.base.KiwiStrings.f;
 import com.google.common.annotations.Beta;
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.Preconditions;
+import com.google.common.collect.Lists;
 import com.google.common.collect.Streams;
 import com.google.common.primitives.Primitives;
 import lombok.experimental.UtilityClass;
@@ -785,7 +786,8 @@ public class KiwiReflection {
      * @param <T> the type of object
      * @param type the {@link Class} representing the object type
      * @param parameterTypes the constructor parameter types
-     * @param arguments the constructor arguments
+     * @param arguments the constructor arguments; individual arguments may be null (but note that a single literal
+     * null argument is ambiguous, and must be cast to make the intent clear to the compiler)
      * @return a new instance
      * @see #newInstance(Class, List, List)
      * @apiNote This method is named differently than {@link #newInstance(Class, List, List)} to avoid amiguity
@@ -794,7 +796,7 @@ public class KiwiReflection {
     @Beta
     public static <T> T newInstanceExactParamTypes(Class<T> type, List<Class<?>> parameterTypes, Object... arguments) {
         checkArgumentNotNull(arguments);
-        return newInstance(type, parameterTypes, List.of(arguments));
+        return newInstance(type, parameterTypes, Lists.newArrayList(arguments));
     }
 
     /**
@@ -806,7 +808,7 @@ public class KiwiReflection {
      * @param <T> the type of object
      * @param type the {@link Class} representing the object type
      * @param parameterTypes the constructor parameter types
-     * @param arguments the constructor arguments
+     * @param arguments the constructor arguments; individual arguments may be null
      * @return a new instance
      * @throws IllegalArgumentException if any of the arguments is null, if the length of parameter types and
      * arguments is different, or if no constructor exists with the given parameter types
