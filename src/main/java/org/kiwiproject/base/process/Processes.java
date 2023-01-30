@@ -392,7 +392,7 @@ public class Processes {
             var process = launchProcessInternal(command);
 
             return streamLinesFromInputStreamOf(process)
-                    .map(Long::valueOf)
+                    .map(Processes::getPidOrThrow)
                     .collect(toList());
         } catch (IOException e) {
             throw new UncheckedIOException(
@@ -500,7 +500,17 @@ public class Processes {
     private static Pair<Long, String> pairFromPgrepLine(String line) {
         List<String> splat = splitToList(line, SPACE, 2);
 
-        return Pair.of(Long.valueOf(first(splat)), second(splat));
+        var pid = getPidOrThrow(first(splat));
+        var command = second(splat);
+        return Pair.of(pid, command);
+    }
+
+    static Long getPidOrThrow(String pidString) {
+        try {
+            return Long.valueOf(pidString);
+        } catch (NumberFormatException e) {
+            throw new IllegalArgumentException("pid must be a number", e);
+        }
     }
 
     private static List<String> buildPgrepCommand(String user, String commandLine) {
