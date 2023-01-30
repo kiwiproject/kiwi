@@ -2,6 +2,7 @@ package org.kiwiproject.base.process;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatCode;
+import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assumptions.assumeTrue;
 import static org.mockito.Mockito.mock;
@@ -236,6 +237,17 @@ class ProcessesTest {
         @ValueSource(ints = {-1, 1, 2, 3, 127, 255})
         void shouldReturnTrueForNonzero(int code) {
             assertThat(Processes.isNonzeroExitCode(code)).isTrue();
+        }
+    }
+
+    @Nested
+    class GetPidOrThrow {
+
+        @ParameterizedTest
+        @ValueSource(strings = { "a", "", "foo", "12_000"})
+        void shouldThrowIllegalArgument_WhenPidIsNotNumeric(String pidString) {
+            assertThatIllegalArgumentException()
+                    .isThrownBy(() -> Processes.getPidOrThrow(pidString));
         }
     }
 }

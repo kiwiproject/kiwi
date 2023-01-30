@@ -22,6 +22,7 @@ import org.junit.jupiter.params.provider.NullAndEmptySource;
 import org.junit.jupiter.params.provider.ValueSource;
 import org.kiwiproject.base.KiwiStrings;
 import org.kiwiproject.collect.KiwiMaps;
+import org.kiwiproject.junit.jupiter.ClearBoxTest;
 
 import java.net.MalformedURLException;
 import java.net.URLEncoder;
@@ -179,6 +180,28 @@ class KiwiUrlsTest {
         assertThat(components.getPath()).isEmpty();
     }
 
+    @Test
+    void testExtractAll_WithNonNumericPort() {
+        var components = KiwiUrls.extractAllFrom("http://prod-server-8.xxx.prod:foobar/");
+
+        assertThat(components.getScheme()).isNull();
+        assertThat(components.getSubDomainName()).isNull();
+        assertThat(components.getDomainName()).isNull();
+        assertThat(components.getPort()).isEmpty();
+        assertThat(components.getPath()).isEmpty();
+    }
+
+    @Test
+    void testExtractAll_WithNegativePort() {
+        var components = KiwiUrls.extractAllFrom("http://prod-server-8.xxx.prod:-8080/");
+
+        assertThat(components.getScheme()).isNull();
+        assertThat(components.getSubDomainName()).isNull();
+        assertThat(components.getDomainName()).isNull();
+        assertThat(components.getPort()).isEmpty();
+        assertThat(components.getPath()).isEmpty();
+    }
+
     @ParameterizedTest
     @CsvSource(value = {
             "https://news.bbc.co.uk:8080/a-news-article/about-stuff, news.bbc.co.uk",
@@ -265,6 +288,12 @@ class KiwiUrlsTest {
     @Test
     void testExtractPortFrom_WithBadUrl_ShouldBeEmpty() {
         assertThat(KiwiUrls.extractPortFrom(BAD_URL)).isEmpty();
+    }
+
+    @ClearBoxTest
+    void testGetPortOrThrow_WithNonNumericPort_ShouldThrowIllegalArgumentException() {
+        assertThatIllegalArgumentException()
+                .isThrownBy(() -> KiwiUrls.getPortOrThrow("foobar"));
     }
 
     @ParameterizedTest

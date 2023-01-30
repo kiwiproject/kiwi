@@ -505,6 +505,7 @@ public class Processes {
         return Pair.of(pid, command);
     }
 
+    @VisibleForTesting
     static Long getPidOrThrow(String pidString) {
         try {
             return Long.valueOf(pidString);
