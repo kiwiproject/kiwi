@@ -12,6 +12,7 @@ import static org.kiwiproject.base.KiwiStrings.f;
 import static org.kiwiproject.collect.KiwiLists.first;
 import static org.kiwiproject.collect.KiwiMaps.isNullOrEmpty;
 
+import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.Splitter;
 import com.google.common.collect.ListMultimap;
 import com.google.common.collect.Multimap;
@@ -318,7 +319,7 @@ public class KiwiUrls {
      * </ul>
      *
      * @param url the URL to analyze
-     * @return the {@link Components} found or an empty {@link Components} object if the URL was invalid
+     * @return the {@link Components} found or an "empty" {@link Components} object if the URL was invalid
      * @throws IllegalArgumentException if the port in the URL is not a number
      * @implNote This method does not check if the URL is valid or not.
      */
@@ -472,7 +473,8 @@ public class KiwiUrls {
         return OptionalInt.empty();
     }
 
-    private static int getPortOrThrow(String portString) {
+    @VisibleForTesting
+    static int getPortOrThrow(String portString) {
         try {
             return Integer.parseInt(portString);
         } catch (NumberFormatException e) {
