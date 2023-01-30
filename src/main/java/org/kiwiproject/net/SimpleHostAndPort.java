@@ -2,6 +2,7 @@ package org.kiwiproject.net;
 
 import static com.google.common.base.Preconditions.checkState;
 import static org.apache.commons.lang3.StringUtils.isBlank;
+import static org.kiwiproject.base.KiwiPreconditions.checkArgumentNotBlank;
 
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -50,15 +51,26 @@ public class SimpleHostAndPort {
      *
      * @param hostPortString a string containing host and port, e.g. foo.com:9000
      * @return a new SimpleHostAndPort instance
-     * @throws NullPointerException  if {@code hostPortString} is null
      * @throws IllegalStateException if not in the expected format
-     * @throws NumberFormatException if port is not a valid number
+     * @throws IllegalArgumentException if hostPortString is blank or port is not a valid number
+     * @implNote Does no validation on the host part
      */
     public static SimpleHostAndPort from(String hostPortString) {
+        checkArgumentNotBlank(hostPortString, "hostAndPortString must not be blank");
+
         var split = hostPortString.split(":");
         checkState(split.length == 2, "%s is not in format host:port", hostPortString);
 
-        return new SimpleHostAndPort(split[0], Integer.parseInt(split[1], 10));
+        var port = getPortOrThrow(split);
+        return new SimpleHostAndPort(split[0], port);
+    }
+
+    private static int getPortOrThrow(String[] split) {
+        try {
+            return Integer.parseInt(split[1], 10);
+        } catch (NumberFormatException e) {
+            throw new IllegalArgumentException(e);
+        }
     }
 
     /**
