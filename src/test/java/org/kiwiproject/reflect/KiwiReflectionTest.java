@@ -1594,7 +1594,7 @@ class KiwiReflectionTest {
         }
 
         User(String email, byte[] password, @Nullable String username) {
-            this.email = email.toString();
+            this.email = email;
             try {
                 this.password = new String(password, "UTF-8");
             } catch (UnsupportedEncodingException e) {
