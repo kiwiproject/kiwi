@@ -182,8 +182,8 @@ public class SftpTransfers {
         return connector.runCommandWithResponse(channel -> {
             changeToRemoteDirectory(channel, remotePath);
 
-            try (var inputStream = channel.get(remoteFilename)) {
-                var streamReader = new InputStreamReader(inputStream, StandardCharsets.UTF_8);
+            try (var inputStream = channel.get(remoteFilename);
+                 var streamReader = new InputStreamReader(inputStream, StandardCharsets.UTF_8)) {
                 var stringWriter = new StringWriter();
                 streamReader.transferTo(stringWriter);
                 return stringWriter.toString();
