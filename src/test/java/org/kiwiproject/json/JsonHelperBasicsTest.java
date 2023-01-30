@@ -138,8 +138,6 @@ class JsonHelperBasicsTest {
 
     @Test
     void shouldCreateNewDropwizardJsonHelper() {
-        var jsonHelper = JsonHelper.newDropwizardJsonHelper();
-
         var foo = newFoo();
         var json = jsonHelper.toJson(foo, OutputFormat.PRETTY);
 
@@ -151,8 +149,6 @@ class JsonHelperBasicsTest {
 
     @Test
     void shouldDeserializeDurationsUsingISO8601Format() {
-        var jsonHelper = JsonHelper.newDropwizardJsonHelper();
-
         var durations = jsonHelper.toObjectList("[ \"PT2M\", \"PT3H5M\" ]", new TypeReference<List<Duration>>() {
         });
 
