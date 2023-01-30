@@ -217,15 +217,6 @@ class RequiredValidatorTest {
         Map<String, Integer> requiredOrEmptyMap;
     }
 
-    @NoArgsConstructor
-    @AllArgsConstructor
-    static class HasIsEmpty {
-        int value;
-
-        public boolean isEmpty() {
-            return value == 0;
-        }
-    }
 
     @NoArgsConstructor
     @AllArgsConstructor

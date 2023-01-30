@@ -3,11 +3,13 @@ package org.kiwiproject.collect;
 import static com.google.common.collect.Sets.newHashSet;
 import static org.assertj.core.api.Assertions.assertThat;
 
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 import java.util.HashSet;
 import java.util.Set;
 
+@DisplayName("KiwiSets")
 class KiwiSetsTest {
 
     @SuppressWarnings("ConstantConditions")
