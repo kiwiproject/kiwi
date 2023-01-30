@@ -7,6 +7,7 @@ import static org.kiwiproject.validation.ValidationTestHelper.assertPropertyViol
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.junit.jupiter.api.BeforeEach;
@@ -399,6 +400,7 @@ class RangeValidatorTest {
     }
 
     @AllArgsConstructor
+    @EqualsAndHashCode
     static class IntHolder implements Comparable<IntHolder> {
 
         int value;
