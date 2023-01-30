@@ -298,7 +298,7 @@ public class ProcessHelper {
         if (lines.isEmpty()) {
             return Optional.empty();
         } else if (lines.size() == 1) {
-            return Optional.of(Long.valueOf(first(lines)));
+            return Optional.of(Processes.getPidOrThrow(first(lines)));
         } else {
             throw new IllegalStateException("More than one child process found for process ID " + parentProcessId);
         }
@@ -326,7 +326,7 @@ public class ProcessHelper {
         var process = launchPgrepWithParentPidFlag(parentProcessId, processHelper);
         Stream<String> stream = streamLinesFromInputStreamOf(process);
 
-        return stream.map(Long::valueOf).collect(toList());
+        return stream.map(Processes::getPidOrThrow).collect(toList());
     }
 
     /**
