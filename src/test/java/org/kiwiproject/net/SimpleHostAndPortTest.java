@@ -48,14 +48,9 @@ class SimpleHostAndPortTest {
     @ParameterizedTest
     @ArgumentsSource(BlankStringArgumentsProvider.class)
     void testFromWithNoDefaults_WithBlankStrings(String input) {
-        if (isNull(input)) {
-            assertThatThrownBy(() -> SimpleHostAndPort.from(null))
-                    .isExactlyInstanceOf(NullPointerException.class);
-        } else {
-            assertThatThrownBy(() -> SimpleHostAndPort.from(input))
-                    .isExactlyInstanceOf(IllegalStateException.class)
-                    .hasMessageEndingWith("is not in format host:port");
-        }
+        assertThatThrownBy(() -> SimpleHostAndPort.from(null))
+                .isExactlyInstanceOf(IllegalArgumentException.class)
+                .hasMessage("hostAndPortString must not be blank");
     }
 
     @Test
@@ -68,7 +63,7 @@ class SimpleHostAndPortTest {
     @Test
     void testFromWithNoDefaults_WithInvalidPort() {
         assertThatThrownBy(() -> SimpleHostAndPort.from("192.168.1.101:abc"))
-                .isExactlyInstanceOf(NumberFormatException.class);
+                .isExactlyInstanceOf(IllegalArgumentException.class);
     }
 
     @Test
