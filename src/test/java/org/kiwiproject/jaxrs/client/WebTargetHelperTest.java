@@ -1,10 +1,15 @@
 package org.kiwiproject.jaxrs.client;
 
 import static com.google.common.collect.Lists.newArrayList;
+import static javax.ws.rs.Priorities.AUTHORIZATION;
+import static javax.ws.rs.Priorities.ENTITY_CODER;
+import static javax.ws.rs.Priorities.USER;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
 import static org.kiwiproject.jaxrs.client.WebTargetHelper.withWebTarget;
 
+import org.glassfish.jersey.client.filter.CsrfProtectionFilter;
+import org.glassfish.jersey.client.filter.EncodingFeature;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
@@ -14,11 +19,18 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.NullAndEmptySource;
 import org.junit.jupiter.params.provider.NullSource;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.kiwiproject.collect.KiwiMaps;
 
+import javax.annotation.Priority;
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.ClientBuilder;
+import javax.ws.rs.client.ClientRequestContext;
+import javax.ws.rs.client.ClientRequestFilter;
+import javax.ws.rs.client.ClientResponseContext;
+import javax.ws.rs.client.ClientResponseFilter;
 import javax.ws.rs.client.WebTarget;
+import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedHashMap;
 import javax.ws.rs.core.MultivaluedMap;
 import java.util.List;
@@ -120,7 +132,7 @@ class WebTargetHelperTest {
                     .withMessage("value cannot be null for parameter bar");
 
             // NOTE: Only the first null value encountered will be reported, since there is
-            // no easy and clean way to accumulate errors that I can see. Thus only the 'bar'
+            // no easy and clean way to accumulate errors that I can see. Thus, only the 'bar'
             // parameter is reported in the exception.
         }
 
@@ -296,7 +308,7 @@ class WebTargetHelperTest {
                     .withMessage("value cannot be blank for parameter bar");
 
             // NOTE: Only the first null value encountered will be reported, since there is
-            // no easy and clean way to accumulate errors that I can see. Thus only the 'bar'
+            // no easy and clean way to accumulate errors that I can see. Thus, only the 'bar'
             // parameter is reported in the exception.
         }
 
@@ -689,6 +701,357 @@ class WebTargetHelperTest {
                         .contains("y=900")
                         .contains("z=5000");
             }
+        }
+    }
+
+    @Nested
+    class ShouldDelegateTo {
+
+        @Test
+        void getUri() {
+            var uri = withWebTarget(originalWebTarget).getUri();
+
+            assertThat(uri).isEqualTo(originalWebTarget.getUri());
+        }
+
+        @Test
+        void getUriBuilder() {
+            var uriBuilder = withWebTarget(originalWebTarget).getUriBuilder();
+
+            assertThat(uriBuilder.build()).isEqualTo(originalWebTarget.getUriBuilder().build());
+        }
+
+        @Test
+        void path() {
+            var newWebTarget = withWebTarget(originalWebTarget).path("/more");
+
+            assertThat(newWebTarget).isNotSameAs(originalWebTarget);
+            assertThat(newWebTarget.getUri()).isEqualTo(originalWebTarget.path("/more").getUri());
+        }
+
+        @Test
+        void resolveTemplate_Name_Value() {
+            var newWebTarget = withWebTarget(originalWebTarget)
+                    .path("more/{someParam}")
+                    .resolveTemplate("someParam", "theValue");
+
+            assertThat(newWebTarget).isNotSameAs(originalWebTarget);
+
+            var expectedUri = originalWebTarget
+                    .path("more/{someParam}")
+                    .resolveTemplate("someParam", "theValue")
+                    .getUri();
+            assertThat(newWebTarget.getUri()).isEqualTo(expectedUri);
+        }
+
+        @ParameterizedTest
+        @ValueSource(booleans = {true, false})
+        void resolveTemplate_Name_Value_EncodeSlashInPath(boolean encodeSlashInPath) {
+            var newWebTarget = withWebTarget(originalWebTarget)
+                    .path("more/{someParam}")
+                    .resolveTemplate("someParam", "theValue/theSubValue", encodeSlashInPath);
+
+            assertThat(newWebTarget).isNotSameAs(originalWebTarget);
+
+            var expectedUri = originalWebTarget
+                    .path("more/{someParam}")
+                    .resolveTemplate("someParam", "theValue/theSubValue", encodeSlashInPath)
+                    .getUri();
+            assertThat(newWebTarget.getUri()).isEqualTo(expectedUri);
+        }
+
+        @Test
+        void resolveTemplateFromEncoded_Name_Value() {
+            var newWebTarget = withWebTarget(originalWebTarget)
+                    .path("more/{moreValue}")
+                    .resolveTemplateFromEncoded("moreValue", "the%Value%foo");
+
+            assertThat(newWebTarget).isNotSameAs(originalWebTarget);
+
+            var expectedUri = originalWebTarget
+                    .path("more/{moreValue}")
+                    .resolveTemplateFromEncoded("moreValue", "the%Value%foo")
+                    .getUri();
+            assertThat(newWebTarget.getUri()).isEqualTo(expectedUri);
+        }
+
+        @Test
+        void resolveTemplates_TemplateValues() {
+            Map<String, Object> templateValues = Map.of(
+                    "moreValue", "1",
+                    "evenMoreValue", "2",
+                    "andSomeMoreValue", "3"
+            );
+
+            var newWebTarget = withWebTarget(originalWebTarget)
+                    .path("more/{moreValue}")
+                    .path("evenMore/{evenMoreValue}")
+                    .path("andSomeMore/{andSomeMoreValue}")
+                    .resolveTemplates(templateValues);
+
+            assertThat(newWebTarget).isNotSameAs(originalWebTarget);
+
+            var expectedUri = originalWebTarget
+                    .path("more/{moreValue}")
+                    .path("evenMore/{evenMoreValue}")
+                    .path("andSomeMore/{andSomeMoreValue}")
+                    .resolveTemplates(templateValues)
+                    .getUri();
+            assertThat(newWebTarget.getUri()).isEqualTo(expectedUri);
+        }
+
+
+        @ParameterizedTest
+        @ValueSource(booleans = {true, false})
+        void resolveTemplates_TemplateValues_EncodeSlashInPath(boolean encodeSlashInPath) {
+            Map<String, Object> templateValues = Map.of(
+                    "moreValue", "val/1",
+                    "evenMoreValue", "val/2",
+                    "andSomeMoreValue", "val/3"
+            );
+
+            var newWebTarget = withWebTarget(originalWebTarget)
+                    .path("more/{moreValue}")
+                    .path("evenMore/{evenMoreValue}")
+                    .path("andSomeMore/{andSomeMoreValue}")
+                    .resolveTemplates(templateValues, encodeSlashInPath);
+
+            assertThat(newWebTarget).isNotSameAs(originalWebTarget);
+
+            var expectedUri = originalWebTarget
+                    .path("more/{moreValue}")
+                    .path("evenMore/{evenMoreValue}")
+                    .path("andSomeMore/{andSomeMoreValue}")
+                    .resolveTemplates(templateValues, encodeSlashInPath)
+                    .getUri();
+            assertThat(newWebTarget.getUri()).isEqualTo(expectedUri);
+        }
+
+        @Test
+        void resolveTemplatesFromEncoded_TemplateValues() {
+            Map<String, Object> templateValues = Map.of(
+                    "moreValue", "val%1",
+                    "evenMoreValue", "val%2",
+                    "andSomeMoreValue", "val%3"
+            );
+
+            var newWebTarget = withWebTarget(originalWebTarget)
+                    .path("more/{moreValue}")
+                    .path("evenMore/{evenMoreValue}")
+                    .path("andSomeMore/{andSomeMoreValue}")
+                    .resolveTemplatesFromEncoded(templateValues);
+
+            assertThat(newWebTarget).isNotSameAs(originalWebTarget);
+
+            var expectedUri = originalWebTarget
+                    .path("more/{moreValue}")
+                    .path("evenMore/{evenMoreValue}")
+                    .path("andSomeMore/{andSomeMoreValue}")
+                    .resolveTemplatesFromEncoded(templateValues)
+                    .getUri();
+            assertThat(newWebTarget.getUri()).isEqualTo(expectedUri);
+        }
+
+        @Test
+        void matrixParam() {
+            var newWebTarget = withWebTarget(originalWebTarget)
+                    .matrixParam("p1", "a", "b", "c")
+                    .matrixParam("p2", 1, 3, 5);
+
+            assertThat(newWebTarget).isNotSameAs(originalWebTarget);
+
+            var expectedUri = originalWebTarget
+                    .matrixParam("p1", "a", "b", "c")
+                    .matrixParam("p2", 1, 3, 5)
+                    .getUri();
+            assertThat(newWebTarget.getUri()).isEqualTo(expectedUri);
+        }
+
+        @Test
+        void queryParam() {
+            var newWebTarget = withWebTarget(originalWebTarget)
+                    .queryParam("p1", "a", "b", "c")
+                    .queryParam("p2", 1, 3, 5)
+                    .queryParam("p3", 42);
+
+            assertThat(newWebTarget).isNotSameAs(originalWebTarget);
+
+            var expectedUri = originalWebTarget
+                    .queryParam("p1", "a", "b", "c")
+                    .queryParam("p2", 1, 3, 5)
+                    .queryParam("p3", 42)
+                    .getUri();
+            assertThat(newWebTarget.getUri()).isEqualTo(expectedUri);
+        }
+
+        @Test
+        void request() {
+            var invocationBuilder = withWebTarget(originalWebTarget).request();
+            assertThat(invocationBuilder).isNotNull();
+        }
+
+        @Test
+        void request_StringAcceptedResponseTypes() {
+            var invocationBuilder = withWebTarget(originalWebTarget)
+                    .request("application/json", "text/xml", "application/xml");
+            assertThat(invocationBuilder).isNotNull();
+        }
+
+        @Test
+        void request_MediaTypeAcceptedResponseTypes() {
+            var invocationBuilder = withWebTarget(originalWebTarget)
+                    .request(MediaType.APPLICATION_JSON_TYPE, MediaType.TEXT_XML_TYPE, MediaType.APPLICATION_XML_TYPE);
+            assertThat(invocationBuilder).isNotNull();
+        }
+
+        @Test
+        void getConfiguration() {
+            var config = withWebTarget(originalWebTarget).getConfiguration();
+
+            assertThat(config).isSameAs(originalWebTarget.getConfiguration());
+        }
+
+        @Test
+        void property() {
+            var originalWebTargetHelper = withWebTarget(originalWebTarget);
+            var newWebTarget = originalWebTargetHelper
+                    .property("p1", "v1")
+                    .property("p2", "v2")
+                    .property("p3", "v3");
+
+            assertThat(newWebTarget).isSameAs(originalWebTargetHelper);
+
+            var config = newWebTarget.getConfiguration();
+            assertThat(config).isSameAs(originalWebTarget.getConfiguration());
+            assertThat(config.getProperty("p1")).isEqualTo("v1");
+            assertThat(config.getProperty("p2")).isEqualTo("v2");
+            assertThat(config.getProperty("p3")).isEqualTo("v3");
+        }
+
+        @Test
+        void register_ClassComponent() {
+            var originalWebTargetHelper = withWebTarget(originalWebTarget);
+            var newWebTarget = originalWebTargetHelper
+                    .register(CsrfProtectionFilter.class)
+                    .register(EncodingFeature.class);
+
+            assertThat(newWebTarget).isSameAs(originalWebTargetHelper);
+
+            var config = newWebTarget.getConfiguration();
+            assertThat(config).isSameAs(originalWebTarget.getConfiguration());
+            assertThat(config.isRegistered(CsrfProtectionFilter.class)).isTrue();
+            assertThat(config.isRegistered(EncodingFeature.class)).isTrue();
+        }
+
+        @Test
+        void register_ClassComponent_IntPriority() {
+            var originalWebTargetHelper = withWebTarget(originalWebTarget);
+            var newWebTarget = originalWebTargetHelper
+                    .register(CsrfProtectionFilter.class, AUTHORIZATION)
+                    .register(EncodingFeature.class, ENTITY_CODER);
+
+            assertThat(newWebTarget).isSameAs(originalWebTargetHelper);
+
+            var config = newWebTarget.getConfiguration();
+            assertThat(config).isSameAs(originalWebTarget.getConfiguration());
+            assertThat(config.isRegistered(CsrfProtectionFilter.class)).isTrue();
+            assertThat(config.isRegistered(EncodingFeature.class)).isTrue();
+        }
+
+        @Test
+        void register_ClassComponent_ClassVarArgContracts() {
+            var originalWebTargetHelper = withWebTarget(originalWebTarget);
+            var newWebTarget = originalWebTargetHelper
+                    .register(NoOpClientLoggingFilter.class, ClientResponseFilter.class);
+
+            assertThat(newWebTarget).isSameAs(originalWebTargetHelper);
+
+            var config = newWebTarget.getConfiguration();
+            assertThat(config).isSameAs(originalWebTarget.getConfiguration());
+            assertThat(config.isRegistered(NoOpClientLoggingFilter.class)).isTrue();
+        }
+
+        @Test
+        void register_ClassComponent_MapContracts() {
+            var originalWebTargetHelper = withWebTarget(originalWebTarget);
+            var newWebTarget = originalWebTargetHelper
+                    .register(NoOpClientLoggingFilter.class, Map.of(ClientResponseFilter.class, USER));
+
+            assertThat(newWebTarget).isSameAs(originalWebTargetHelper);
+
+            var config = newWebTarget.getConfiguration();
+            assertThat(config).isSameAs(originalWebTarget.getConfiguration());
+            assertThat(config.isRegistered(NoOpClientLoggingFilter.class)).isTrue();
+        }
+
+        @Test
+        void register_ObjectComponent() {
+            var originalWebTargetHelper = withWebTarget(originalWebTarget);
+            var newWebTarget = originalWebTargetHelper
+                    .register(new CsrfProtectionFilter())
+                    .register(new EncodingFeature());
+
+            assertThat(newWebTarget).isSameAs(originalWebTargetHelper);
+
+            var config = newWebTarget.getConfiguration();
+            assertThat(config).isSameAs(originalWebTarget.getConfiguration());
+            assertThat(config.isRegistered(CsrfProtectionFilter.class)).isTrue();
+            assertThat(config.isRegistered(EncodingFeature.class)).isTrue();
+        }
+
+        @Test
+        void register_ObjectComponent_IntPriority() {
+            var originalWebTargetHelper = withWebTarget(originalWebTarget);
+            var newWebTarget = originalWebTargetHelper
+                    .register(new CsrfProtectionFilter(), AUTHORIZATION)
+                    .register(new EncodingFeature(), ENTITY_CODER);
+
+            assertThat(newWebTarget).isSameAs(originalWebTargetHelper);
+
+            var config = newWebTarget.getConfiguration();
+            assertThat(config).isSameAs(originalWebTarget.getConfiguration());
+            assertThat(config.isRegistered(CsrfProtectionFilter.class)).isTrue();
+            assertThat(config.isRegistered(EncodingFeature.class)).isTrue();
+        }
+
+        @Test
+        void register_ObjectComponent_ClassVarArgContracts() {
+            var originalWebTargetHelper = withWebTarget(originalWebTarget);
+            var newWebTarget = originalWebTargetHelper
+                    .register(new NoOpClientLoggingFilter(), ClientResponseFilter.class);
+
+            assertThat(newWebTarget).isSameAs(originalWebTargetHelper);
+
+            var config = newWebTarget.getConfiguration();
+            assertThat(config).isSameAs(originalWebTarget.getConfiguration());
+            assertThat(config.isRegistered(NoOpClientLoggingFilter.class)).isTrue();
+        }
+
+        @Test
+        void register_ObjectComponent_MapContracts() {
+            var originalWebTargetHelper = withWebTarget(originalWebTarget);
+            var newWebTarget = originalWebTargetHelper
+                    .register(new NoOpClientLoggingFilter(), Map.of(ClientResponseFilter.class, USER));
+
+            assertThat(newWebTarget).isSameAs(originalWebTargetHelper);
+
+            var config = newWebTarget.getConfiguration();
+            assertThat(config).isSameAs(originalWebTarget.getConfiguration());
+            assertThat(config.isRegistered(NoOpClientLoggingFilter.class)).isTrue();
+        }
+    }
+
+    @Priority(USER)
+    public static class NoOpClientLoggingFilter implements ClientRequestFilter, ClientResponseFilter {
+
+        @Override
+        public void filter(ClientRequestContext requestContext) {
+            // no-op
+        }
+
+        @Override
+        public void filter(ClientRequestContext requestContext, ClientResponseContext responseContext) {
+            // no-op
         }
     }
 

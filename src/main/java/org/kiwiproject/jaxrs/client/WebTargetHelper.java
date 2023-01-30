@@ -11,12 +11,16 @@ import static org.kiwiproject.collect.KiwiMaps.isNullOrEmpty;
 
 import com.google.common.annotations.Beta;
 import com.google.common.annotations.VisibleForTesting;
-import lombok.experimental.Delegate;
 import org.apache.commons.lang3.StringUtils;
 
 import javax.ws.rs.client.Client;
+import javax.ws.rs.client.Invocation;
 import javax.ws.rs.client.WebTarget;
+import javax.ws.rs.core.Configuration;
+import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
+import javax.ws.rs.core.UriBuilder;
+import java.net.URI;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
@@ -37,66 +41,30 @@ import java.util.stream.Stream;
  * <p>
  * Usage example (assuming {@link WebTargetClientHelper#withClient(Client) withClient} is statically imported):
  * <pre>
- * withClient(client).target("/search")
+ * var response = withClient(client).target("/search")
  *         .queryParamRequireNotBlank("q", query)
  *         .queryParamIfNotBlank("sort", sort)
  *         .queryParamIfNotBlank("page", page)
  *         .queryParamIfNotBlank("limit", limit)
- *         .queryParamFilterNotBlank("langs", langs);
- * </pre>
- * <h3>Limitations</h3>
- * This is a <strong>limited</strong> wrapper around {@link WebTarget} that provides enhanced functionality only for
- * adding query parameters. Only the methods defined in this class are chainable, i.e. once you call a method defined
- * in the regular {@link Client} interface, you leave the {@link WebTargetHelper} context.
- * <p>
- * For example you can <strong>NOT</strong> do this:
- * <pre>
- * withClient(client).target("/search")
- *         .queryParamRequireNotBlank("q", query)
- *         .queryParam("sort", sort)  // after this, only Client methods are accessible!!! WON'T COMPILE
- *         .queryParamIfNotBlank("page", page)
- *         .queryParamIfNotBlank("limit", limit)
- *         .queryParamFilterNotBlank("langs", langs);
- * </pre>
- * With the current basic implementation, this means certain usages will be awkward. For example, when using
- * both parameter templates and query parameters, the query parameters need to be added first, for the reason
- * given above about leaving the {@link WebTargetHelper} context. For example:
- * <pre>
- * var response = withClient(client).target("/users/{userId}/trades/{tradeId}")
- *         .queryParamIfNotBlank("displayCurrency", currency)
- *         .queryParamIfNotNull("showLimitPrice", showLimitPrice)
- *         .resolveTemplate("userId", userId)  // after this, only Client methods are accessible!!!
- *         .resolveTemplate("tradeId", tradeId)
+ *         .queryParamFilterNotBlank("langs", languages)
  *         .request()
  *         .get();
  * </pre>
- * One way to get around this restriction is to use methods from {@link WebTarget} as normal, and then wrap it
- * with a {@link WebTargetHelper} to add query parameters. The above example would then look like:
+ * This class implements {@link WebTarget}, and overridden methods return {@link WebTargetHelper}, so you can chain
+ * methods as you normally would. For example, using {@link #withWebTarget(WebTarget) withWebTarget}:
  * <pre>
- * var pathResolvedTarget = client.target("/users/{userId}/trades/{tradeId}")
- *         .resolveTemplate("userId", userId)
- *         .resolveTemplate("tradeId", tradeId);
- *
- * var response = withWebTarget(pathResolvedTarget)
- *         .queryParamIfNotBlank("displayCurrency", currency)
- *         .queryParamIfNotNull("showLimitPrice", showLimitPrice)
+ * var response = withWebTarget(originalTarget)
+ *         .path("/resolve/{id}")
+ *         .resolveTemplate("id", 42)
+ *         .queryParamIfNotBlank("format", format)
+ *         .queryParamIfNotNull("force", force)
  *         .request()
  *         .get();
  * </pre>
- * This usage allows for full functionality of {@link WebTarget} while still getting the enhanced query parameter
- * features of this class. It isn't perfect, but it works and, in our opinion anyway, doesn't intrude too much on
- * building JAX-RS requests. In other words, we think it is a decent trade off.
- *
- * @implNote Internally this uses Lombok's {@link lombok.Delegate}, which is why this class doesn't implement {@link WebTarget}
- * directly. While this lets us easily delegate method calls to a {@link WebTarget}, it also restricts what we can do
- * here, and is the primary reason why there are usage restrictions. However, in our general usage this implementation
- * has been enough for our needs. Nevertheless, this is currently marked with the Guava {@link Beta} annotation in case
- * we change our minds on the implementation.
  */
 @Beta
-public class WebTargetHelper {
+public class WebTargetHelper implements WebTarget {
 
-    @Delegate
     private final WebTarget webTarget;
 
     /**
@@ -140,7 +108,7 @@ public class WebTargetHelper {
      *
      * @param name  the parameter name
      * @param value the parameter value
-     * @return this instance
+     * @return a new instance
      * @throws IllegalArgumentException if name is blank or value is null
      */
     public WebTargetHelper queryParamRequireNotNull(String name, Object value) {
@@ -156,7 +124,7 @@ public class WebTargetHelper {
      *
      * @param name  the parameter name
      * @param value the parameter value
-     * @return this instance
+     * @return a new instance if name and value are not blank, otherwise this instance
      */
     public WebTargetHelper queryParamIfNotNull(String name, Object value) {
         if (isBlank(name) || isNull(value)) {
@@ -172,7 +140,7 @@ public class WebTargetHelper {
      *
      * @param name   the parameter name
      * @param values one or more parameter values
-     * @return this instance
+     * @return a new instance if name is not blank and values is not null or empty, otherwise this instance
      */
     public WebTargetHelper queryParamFilterNotNull(String name, Object... values) {
         if (isBlank(name) || isNullOrEmpty(values)) {
@@ -187,7 +155,7 @@ public class WebTargetHelper {
      *
      * @param name   the parameter name
      * @param values one or more parameter values
-     * @return this instance
+     * @return a new instance if name is not blank and values is not null or empty, otherwise this instance
      */
     public WebTargetHelper queryParamFilterNotNull(String name, List<Object> values) {
         if (isBlank(name) || isNullOrEmpty(values)) {
@@ -202,7 +170,7 @@ public class WebTargetHelper {
      *
      * @param name   the parameter name
      * @param stream containing one or more parameter values
-     * @return this instance
+     * @return a new instance if name is not blank and stream is not null, otherwise this instance
      */
     public WebTargetHelper queryParamFilterNotNull(String name, Stream<Object> stream) {
         if (isBlank(name) || isNull(stream)) {
@@ -238,7 +206,7 @@ public class WebTargetHelper {
      *
      * @param name  the parameter name
      * @param value the parameter value
-     * @return this instance
+     * @return a new instance if name is and value are not blank, otherwise this instance
      */
     public WebTargetHelper queryParamIfNotBlank(String name, String value) {
         if (isBlank(name) || isBlank(value)) {
@@ -254,7 +222,7 @@ public class WebTargetHelper {
      *
      * @param name   the parameter name
      * @param values one or more parameter values
-     * @return this instance
+     * @return a new instance if name is not blank and values is not null or empty, otherwise this instance
      */
     public WebTargetHelper queryParamFilterNotBlank(String name, String... values) {
         if (isBlank(name) || isNullOrEmpty(values)) {
@@ -269,7 +237,7 @@ public class WebTargetHelper {
      *
      * @param name   the parameter name
      * @param values one or more parameter values
-     * @return this instance
+     * @return a new instance if name is not blank and values is not null or empty, otherwise this instance
      */
     public WebTargetHelper queryParamFilterNotBlank(String name, List<String> values) {
         if (isBlank(name) || isNullOrEmpty(values)) {
@@ -284,7 +252,7 @@ public class WebTargetHelper {
      *
      * @param name   the parameter name
      * @param stream containing one or more parameter values
-     * @return this instance
+     * @return a new instance if name is not blank and stream is not null, otherwise this instance
      */
     public WebTargetHelper queryParamFilterNotBlank(String name, Stream<String> stream) {
         if (isBlank(name) || isNull(stream)) {
@@ -304,7 +272,7 @@ public class WebTargetHelper {
      *
      * @param parameters a map representing the query parameters
      * @param <V>        the type of keys in the map
-     * @return this instance
+     * @return a new instance if parameters is not null or empty, otherwise this instance
      * @implNote This method is distinct from {@link #queryParamsFromMultivaluedMap(MultivaluedMap)} because the
      * {@link MultivaluedMap} interface extends the regular Java {@link Map} and under certain circumstances this
      * method will be called even when the argument is actually a {@link MultivaluedMap}. By having separate and
@@ -325,7 +293,7 @@ public class WebTargetHelper {
 
         // NOTE: The above is effectively a foldLeft, which Java Streams does not have. The 3-arg reduce version is a lot
         // more difficult to understand than a simple loop with a mutable variable that we keep replacing. In addition,
-        // the reduce version cannot be strictly correct,  since we cannot define a combiner function which is "an
+        // the "reduce" version cannot be strictly correct,  since we cannot define a combiner function which is "an
         // associative, non-interfering, stateless function for combining" two WebTargetHelper instances. Instead, we
         // would require it is only used on a sequential (non-parallel) stream. Regardless, the implementation is less
         // clear than just a loop with a mutable variable, which is why this is not using the streams API. While the
@@ -341,7 +309,7 @@ public class WebTargetHelper {
      *
      * @param parameters a multivalued representing the query parameters
      * @param <V>        the type of keys in the map
-     * @return this instance
+     * @return a new instance if parameters is not null or empty, otherwise this instance
      * @implNote See implementation note on {@link #queryParamsFromMap(Map)} for an explanation why this method is
      * named separately and distinctly.
      */
@@ -357,7 +325,7 @@ public class WebTargetHelper {
         //    List<Object> in order to get the compiler to call queryParamFilterNotNull(String, List<Object>). If
         //    the cast is not done, the compiler instead "thinks" the value is an Object and selects the
         //    queryParamFilterNotNull(String, Object...) method, which does not work as expected because the value
-        //    of the MultivaluedMap is supposed to be a List<V>. The real reason this happens is because the type
+        //    of the MultivaluedMap is supposed to be a List<V>. The real reason this happens is that the type
         //    erasure of List<V> is simply List. The compiler then (incorrectly from what we'd like to happen) selects
         //    the vararg method as the one to call, since the raw List type is an Object, not a List<Object>.
         var targetHelper = this;
@@ -368,4 +336,230 @@ public class WebTargetHelper {
         return targetHelper;
     }
 
+    // -------------------------------------------------------------------------------------------
+    // Below are the methods from WebTarget (and its superinterface, Configurable).
+    //
+    // These methods follow the contracts of WebTarget methods, including those from
+    // its superinterface Configurable. The general contracts in WebTarget are:
+    //
+    // 1. Methods that return WebTarget return a new instance
+    // 2. Methods from the Configurable superinterface return "this", i.e. the property method
+    //    and the register methods
+    // 3. Other methods that return different types (e.g. URI) simply return those types
+    //
+    // So, the methods in this class follow the above contracts, except that they return
+    // WebTargetHelper instead of WebTarget and Configurable. Since WebTargetHelper
+    // implements WebTarget, they fulfill the same contracts and can be cast if desired,
+    // though casting, e.g. to WebTarget, would eliminate the ability to chain the methods.
+    // -------------------------------------------------------------------------------------------
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public URI getUri() {
+        return this.webTarget.getUri();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public UriBuilder getUriBuilder() {
+        return this.webTarget.getUriBuilder();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public WebTargetHelper path(String path) {
+        var newWebTarget = this.webTarget.path(path);
+        return new WebTargetHelper(newWebTarget);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public WebTargetHelper resolveTemplate(String name, Object value) {
+        var newWebTarget = this.webTarget.resolveTemplate(name, value);
+        return new WebTargetHelper(newWebTarget);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public WebTargetHelper resolveTemplate(String name, Object value, boolean encodeSlashInPath) {
+        var newWebTarget = this.webTarget.resolveTemplate(name, value, encodeSlashInPath);
+        return new WebTargetHelper(newWebTarget);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public WebTargetHelper resolveTemplateFromEncoded(String name, Object value) {
+        var newWebTarget = this.webTarget.resolveTemplateFromEncoded(name, value);
+        return new WebTargetHelper(newWebTarget);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public WebTargetHelper resolveTemplates(Map<String, Object> templateValues) {
+        var newWebTarget = this.webTarget.resolveTemplates(templateValues);
+        return new WebTargetHelper(newWebTarget);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public WebTargetHelper resolveTemplates(Map<String, Object> templateValues, boolean encodeSlashInPath) {
+        var newWebTarget = this.webTarget.resolveTemplates(templateValues, encodeSlashInPath);
+        return new WebTargetHelper(newWebTarget);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public WebTargetHelper resolveTemplatesFromEncoded(Map<String, Object> templateValues) {
+        var newWebTarget = this.webTarget.resolveTemplatesFromEncoded(templateValues);
+        return new WebTargetHelper(newWebTarget);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public WebTargetHelper matrixParam(String name, Object... values) {
+        var newWebTarget = this.webTarget.matrixParam(name, values);
+        return new WebTargetHelper(newWebTarget);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public WebTargetHelper queryParam(String name, Object... values) {
+        var newWebTarget = this.webTarget.queryParam(name, values);
+        return new WebTargetHelper(newWebTarget);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public Invocation.Builder request() {
+        return this.webTarget.request();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public Invocation.Builder request(String... acceptedResponseTypes) {
+        return this.webTarget.request(acceptedResponseTypes);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public Invocation.Builder request(MediaType... acceptedResponseTypes) {
+        return this.webTarget.request(acceptedResponseTypes);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public Configuration getConfiguration() {
+        return this.webTarget.getConfiguration();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public WebTargetHelper property(String name, Object value) {
+        this.webTarget.property(name, value);
+        return this;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public WebTargetHelper register(Class<?> componentClass) {
+        this.webTarget.register(componentClass);
+        return this;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public WebTargetHelper register(Class<?> componentClass, int priority) {
+        this.webTarget.register(componentClass, priority);
+        return this;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public WebTargetHelper register(Class<?> componentClass, Class<?>... contracts) {
+        this.webTarget.register(componentClass, contracts);
+        return this;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public WebTargetHelper register(Class<?> componentClass, Map<Class<?>, Integer> contracts) {
+        this.webTarget.register(componentClass, contracts);
+        return this;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public WebTargetHelper register(Object component) {
+        this.webTarget.register(component);
+        return this;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public WebTargetHelper register(Object component, int priority) {
+        this.webTarget.register(component, priority);
+        return this;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public WebTargetHelper register(Object component, Class<?>... contracts) {
+        this.webTarget.register(component, contracts);
+        return this;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public WebTargetHelper register(Object component, Map<Class<?>, Integer> contracts) {
+        this.webTarget.register(component, contracts);
+        return this;
+    }
 }
