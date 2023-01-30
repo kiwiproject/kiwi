@@ -91,9 +91,9 @@ class ArrayUserTypesUnitTest {
                 assertThat(arrayUserType.replace(original, null, null)).isSameAs(original);
             }
         }
+    }
 
-        class SerializableObject implements Serializable {
-        }
+    static class SerializableObject implements Serializable {
     }
 
     @Nested
