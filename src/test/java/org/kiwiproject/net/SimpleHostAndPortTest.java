@@ -1,6 +1,5 @@
 package org.kiwiproject.net;
 
-import static java.util.Objects.isNull;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
@@ -48,7 +47,7 @@ class SimpleHostAndPortTest {
     @ParameterizedTest
     @ArgumentsSource(BlankStringArgumentsProvider.class)
     void testFromWithNoDefaults_WithBlankStrings(String input) {
-        assertThatThrownBy(() -> SimpleHostAndPort.from(null))
+        assertThatThrownBy(() -> SimpleHostAndPort.from(input))
                 .isExactlyInstanceOf(IllegalArgumentException.class)
                 .hasMessage("hostAndPortString must not be blank");
     }
