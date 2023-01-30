@@ -319,6 +319,7 @@ public class KiwiUrls {
      *
      * @param url the URL to analyze
      * @return the {@link Components} found or an empty {@link Components} object if the URL was invalid
+     * @throws IllegalArgumentException if the port in the URL is not a number
      * @implNote This method does not check if the URL is valid or not.
      */
     public static Components extractAllFrom(String url) {
@@ -333,7 +334,7 @@ public class KiwiUrls {
             if (isBlank(portString)) {
                 port = defaultPortForScheme(scheme);
             } else {
-                port = Integer.parseInt(portString);
+                port = getPortOrThrow(portString);
             }
 
             var components = Components.builder()
@@ -453,15 +454,15 @@ public class KiwiUrls {
      * </p>
      *
      * @param url the URL to evaluate
-     * @return an {@link Optional} containing the port or {@link Optional#empty()} if it could not
-     * be found.
+     * @return an {@link Optional} containing the port or {@link Optional#empty()} if it could not be found.
+     * @throws IllegalArgumentException if the port is not a number
      * @implNote This method does not check if the URL is valid or not. Also, if you will need to extract more than
      * one section of the URL, you should instead use {@link KiwiUrls#extractAllFrom(String)}.
      */
     public static OptionalInt extractPortFrom(String url) {
         var optionalPort = findGroupInUrl(url, PORT_GROUP);
 
-        int port = optionalPort.map(Integer::parseInt)
+        int port = optionalPort.map(KiwiUrls::getPortOrThrow)
                 .orElseGet(() -> extractSchemeFrom(url).map(KiwiUrls::defaultPortForScheme).orElse(UNKNOWN_PORT));
 
         if (port > 0) {
@@ -469,6 +470,14 @@ public class KiwiUrls {
         }
 
         return OptionalInt.empty();
+    }
+
+    private static int getPortOrThrow(String portString) {
+        try {
+            return Integer.parseInt(portString);
+        } catch (NumberFormatException e) {
+            throw new IllegalArgumentException("port must be a number", e);
+        }
     }
 
     /**
