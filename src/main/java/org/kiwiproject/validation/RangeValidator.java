@@ -120,11 +120,12 @@ public class RangeValidator implements ConstraintValidator<Range, Object> {
     }
 
     private static void logWarning(Object value, Exception e) {
+        var type = isNull(value) ? null : value.getClass().getName();
         if (value instanceof Comparable) {
-            LOG.warn("Error validating Range for value: {} ; considering as invalid", value, e);
+            LOG.warn("Error validating Range for value of type {} (which may not be supported) ; considering as invalid", type, e);
         } else {
-            LOG.warn("Error validating Range for value that does not implement Comparable: {} ; considering as invalid",
-                    value, e);
+            LOG.warn("Error validating Range for value of type {} that does not implement Comparable ; considering as invalid",
+                    type, e);
         }
     }
 }
