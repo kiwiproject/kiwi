@@ -294,7 +294,12 @@ public class KiwiSecurity {
 
     /**
      * Return an {@link Optional} containing a {@link KeyStore} for the given {@link KeyStoreType}, path, and
-     * password, or an empty {@link Optional} if the arguments are (both) null.
+     * password, or an empty {@link Optional} if either path or password is null.
+     * <p>
+     * This method is intended to load an <em>existing</em> key store. If you need to programatically create a new
+     * one, use the {@link KeyStore} API directly.
+     * <p>
+     * If the returned Optional contains a KeyStore, it has been successfully loaded.
      *
      * @param keyStoreType the type of key store
      * @param path         the path to the key store
@@ -303,6 +308,7 @@ public class KiwiSecurity {
      * @throws IllegalArgumentException if keyStoreType is blank
      * @throws SSLContextException      if unable to create a {@link KeyStore}
      * @see KeyStore#getInstance(String)
+     * @see KeyStore#load(java.io.InputStream, char[])
      */
     public static Optional<KeyStore> getKeyStore(KeyStoreType keyStoreType, String path, String password) {
         checkArgumentNotNull(keyStoreType, "keyStoreType cannot be null");
@@ -311,7 +317,12 @@ public class KiwiSecurity {
 
     /**
      * Return an {@link Optional} containing a {@link KeyStore} for the given {@link KeyStoreType}, path, and
-     * password, or an empty {@link Optional} if the arguments are (both) null.
+     * password, or an empty {@link Optional} if either path or password is null.
+     * <p>
+     * This method is intended to load an <em>existing</em> key store. If you need to programatically create a new
+     * one, use the {@link KeyStore} API directly.
+     * <p>
+     * If the returned Optional contains a KeyStore, it has been successfully loaded.
      *
      * @param keyStoreType the type of key store
      * @param path         the path to the key store
@@ -320,11 +331,12 @@ public class KiwiSecurity {
      * @throws IllegalArgumentException if keyStoreType is blank
      * @throws SSLContextException      if unable to create a {@link KeyStore}
      * @see KeyStore#getInstance(String)
+     *  @see KeyStore#load(java.io.InputStream, char[])
      */
     public static Optional<KeyStore> getKeyStore(String keyStoreType, String path, String password) {
-        LOG.trace("Creating {} KeyStore/TrustStore for {}", keyStoreType, path);
-        if (isNull(path) && isNull(password)) {
-            LOG.debug("No keystore specified");
+        LOG.trace("Get and load {} KeyStore/TrustStore for {}", keyStoreType, path);
+        if (isNull(path) || isNull(password)) {
+            LOG.debug("No keystore specified (path and/or password is null)");
             return Optional.empty();
         }
 

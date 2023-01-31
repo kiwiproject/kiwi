@@ -10,6 +10,7 @@ import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ArgumentsSource;
+import org.junit.jupiter.params.provider.CsvSource;
 import org.junit.jupiter.params.provider.EnumSource;
 import org.kiwiproject.util.BlankStringArgumentsProvider;
 
@@ -352,17 +353,22 @@ class KiwiSecurityTest {
 
             @Test
             void whenValidStringTypeAndPathAndCredential() {
-                assertThat(KiwiSecurity.getKeyStore("JKS", path, password)).isNotNull();
+                assertThat(KiwiSecurity.getKeyStore("JKS", path, password)).isPresent();
             }
 
             @Test
             void whenValidKeyStoreAndTypeAndCredential() {
-                assertThat(KiwiSecurity.getKeyStore(KeyStoreType.JKS, path, password)).isNotNull();
+                assertThat(KiwiSecurity.getKeyStore(KeyStoreType.JKS, path, password)).isPresent();
             }
 
-            @Test
-            void whenGivenNullPathAndPassword() {
-                assertThat(KiwiSecurity.getKeyStore(KeyStoreType.JKS, null, null)).isEmpty();
+            @ParameterizedTest
+            @CsvSource(value = {
+                "null, null",
+                "/certs/my.jks, null",
+                "null, the_password!"
+            }, nullValues = "null")
+            void whenGivenNullPathOrPassword(String path, String password) {
+                assertThat(KiwiSecurity.getKeyStore(KeyStoreType.JKS, path, password)).isEmpty();
             }
         }
 
