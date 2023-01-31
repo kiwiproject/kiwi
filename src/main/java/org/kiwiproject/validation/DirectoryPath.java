@@ -15,7 +15,9 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.Target;
 
 /**
- * The annotated element must point to an existing directory.
+ * The annotated element must point to an existing directory. Please read the implementation note regarding
+ * intended usage of this annotation with respect to the potential for
+ * <a href="https://owasp.org/www-community/attacks/Path_Traversal">Path Traversal</a> attacks.
  * <p>
  * By default does not permit null values. If the element being validated allows {@code null} values, you can
  * set {@link #allowNull()} to {@code true}.
@@ -39,6 +41,12 @@ import java.lang.annotation.Target;
  * {@literal @}DirectoryPath(ensureReadable = true, ensureWritable = true, mkdirs = true)
  *  private String tempDir;
  * </pre>
+ *
+ * @implNote This annotation is not intended to validate user input from client-side applications, because of the
+ * possibility of <a href="https://owasp.org/www-community/attacks/Path_Traversal">Path Traversal</a> attacks. Instead,
+ * the intended usage is to validate application configuration parameters, e.g. an application reads a local
+ * configuration file at startup. Even this is not 100% safe, since the configuration could come from a remote
+ * location such as a configuration service, so users should understand the usage risks and mitigate when possible.
  */
 @Documented
 @Constraint(validatedBy = {DirectoryPathValidator.class})
