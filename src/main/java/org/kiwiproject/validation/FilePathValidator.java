@@ -11,6 +11,9 @@ import java.nio.file.Path;
 
 /**
  * Validates that a string value is a valid path, exists, and is a regular file (not a directory).
+ *
+ * @implNote Please read the implementation note in {@link FilePath} regarding the possibility of
+ * <a href="https://owasp.org/www-community/attacks/Path_Traversal">Path Traversal</a> attacks.
  */
 @Slf4j
 public class FilePathValidator implements ConstraintValidator<FilePath, String> {
