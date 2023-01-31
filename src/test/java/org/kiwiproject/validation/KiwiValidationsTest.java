@@ -23,7 +23,9 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ArgumentsSource;
 import org.junit.jupiter.params.provider.NullAndEmptySource;
+import org.kiwiproject.util.BlankStringArgumentsProvider;
 
 import javax.validation.Constraint;
 import javax.validation.ConstraintValidator;
@@ -685,6 +687,19 @@ class KiwiValidationsTest {
             var alice = new SamplePerson("Alice", "Jones", "123-45-6789", null);
 
             assertThat(KiwiValidations.getPropertyValue(alice, "dne")).isNull();
+        }
+
+        @Test
+        void shouldReturnNull_WhenBeanIsNull() {
+            assertThat(KiwiValidations.getPropertyValue(null, "lastName")).isNull();
+        }
+
+        @ParameterizedTest
+        @ArgumentsSource(BlankStringArgumentsProvider.class)
+        void shouldReturnNull_WhenFieldNameIsBlank(String input) {
+            var contactDetails = new SampleContactDetails("bob@gmail.com", "703-555-1212");
+
+            assertThat(KiwiValidations.getPropertyValue(contactDetails, input)).isNull();
         }
     }
 

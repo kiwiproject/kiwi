@@ -1,5 +1,7 @@
 package org.kiwiproject.validation;
 
+import static java.util.Objects.isNull;
+import static org.apache.commons.lang3.StringUtils.isBlank;
 import static org.kiwiproject.base.KiwiStrings.format;
 import static org.kiwiproject.collect.KiwiSets.isNotNullOrEmpty;
 import static org.kiwiproject.collect.KiwiSets.isNullOrEmpty;
@@ -7,6 +9,7 @@ import static org.kiwiproject.collect.KiwiSets.isNullOrEmpty;
 import com.google.common.base.Preconditions;
 import lombok.experimental.UtilityClass;
 import lombok.extern.slf4j.Slf4j;
+import org.checkerframework.checker.nullness.qual.Nullable;
 import org.kiwiproject.base.KiwiStrings;
 import org.kiwiproject.reflect.KiwiReflection;
 
@@ -387,14 +390,21 @@ public class KiwiValidations {
      *
      * @param bean      the object
      * @param fieldName the property/field name
-     * @return the value of the property in the object, <strong>or null</strong> if any problem occurs
+     * @return the value of the property in the object, <strong>or null</strong> if any problem occurs, {@code bean} is
+     * null, or {@code fieldName} is blank
      * @implNote This uses {@link KiwiReflection#findField(Object, String)} to obtain the value.
      */
+    @Nullable
     public static Object getPropertyValue(Object bean, String fieldName) {
+        if (isNull(bean) || isBlank(fieldName)) {
+            LOG.warn("bean is null or fieldName is blank; unable to continue so returning null");
+            return null;
+        }
+
         try {
             return KiwiReflection.findField(bean, fieldName).get(bean);
         } catch (Exception e) {
-            LOG.warn("Unable to get property value {} from object {}", fieldName, bean, e);
+            LOG.warn("Unable to get value of property '{}' from object of type {}", fieldName, bean.getClass().getName(), e);
             return null;
         }
     }
