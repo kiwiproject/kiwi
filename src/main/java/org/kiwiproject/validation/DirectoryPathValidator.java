@@ -2,6 +2,7 @@ package org.kiwiproject.validation;
 
 import static java.util.Objects.isNull;
 import static org.kiwiproject.logging.LazyLogParameterSupplier.lazy;
+import static org.kiwiproject.validation.InternalKiwiValidators.containsNulCharacter;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -48,8 +49,8 @@ public class DirectoryPathValidator implements ConstraintValidator<DirectoryPath
                     isWritableOrIgnoresEnsureReadable(file);
 
         } catch (Exception e) {
-            var hasNulCharacter = value.contains("\0") ? " Path contains Nul character!" : "";
-            LOG.warn("Exception thrown validating path [{}].{}", value, hasNulCharacter, e);
+            var nulCharacterMessage = containsNulCharacter(value) ? " Path contains Nul character!" : "";
+            LOG.warn("Exception thrown validating path.{}", nulCharacterMessage, e);
             return false;
         }
     }

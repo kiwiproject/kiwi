@@ -91,4 +91,8 @@ class InternalKiwiValidators {
         //noinspection unchecked
         return (Comparable<T>) typedValue;
     }
+
+    static boolean containsNulCharacter(String value) {
+        return value.contains("\0");
+    }
 }

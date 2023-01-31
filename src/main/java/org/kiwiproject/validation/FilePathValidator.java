@@ -1,6 +1,7 @@
 package org.kiwiproject.validation;
 
 import static java.util.Objects.isNull;
+import static org.kiwiproject.validation.InternalKiwiValidators.containsNulCharacter;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -31,7 +32,8 @@ public class FilePathValidator implements ConstraintValidator<FilePath, String> 
             var file = Path.of(value).toFile();
             return file.exists() && file.isFile();
         } catch (Exception e) {
-            LOG.warn("Exception thrown validating path [{}]", value, e);
+            var nulCharacterMessage = containsNulCharacter(value) ? " Path contains Nul character!" : "";
+            LOG.warn("Exception thrown validating path.{}", nulCharacterMessage, e);
             return false;
         }
     }
