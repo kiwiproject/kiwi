@@ -2,6 +2,7 @@
 [![Build](https://github.com/kiwiproject/kiwi/workflows/build/badge.svg)](https://github.com/kiwiproject/kiwi/actions?query=workflow%3Abuild)
 [![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=kiwiproject_kiwi&metric=alert_status)](https://sonarcloud.io/dashboard?id=kiwiproject_kiwi)
 [![Coverage](https://sonarcloud.io/api/project_badges/measure?project=kiwiproject_kiwi&metric=coverage)](https://sonarcloud.io/dashboard?id=kiwiproject_kiwi)
+[![CodeQL](https://github.com/kiwiproject/kiwi/actions/workflows/codeql.yml/badge.svg)](https://github.com/kiwiproject/kiwi/actions/workflows/codeql.yml)
 [![javadoc](https://javadoc.io/badge2/org.kiwiproject/kiwi/javadoc.svg)](https://javadoc.io/doc/org.kiwiproject/kiwi)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](https://opensource.org/licenses/MIT)
 [![Maven Central](https://img.shields.io/maven-central/v/org.kiwiproject/kiwi)](https://search.maven.org/search?q=g:org.kiwiproject%20a:kiwi)
