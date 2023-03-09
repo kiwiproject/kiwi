@@ -1,6 +1,7 @@
 package org.kiwiproject.base;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.assertj.core.util.Lists.newArrayList;
 import static org.kiwiproject.base.KiwiStrings.COMMA;
@@ -11,6 +12,8 @@ import static org.kiwiproject.base.KiwiStrings.blankToNull;
 import static org.kiwiproject.base.KiwiStrings.f;
 import static org.kiwiproject.base.KiwiStrings.format;
 import static org.kiwiproject.base.KiwiStrings.nullSafeSplitOnCommas;
+import static org.kiwiproject.base.KiwiStrings.nullSafeSplitToList;
+import static org.kiwiproject.base.KiwiStrings.nullSafeSplitWithTrimAndOmitEmpty;
 import static org.kiwiproject.base.KiwiStrings.splitOnCommas;
 import static org.kiwiproject.base.KiwiStrings.splitToList;
 import static org.kiwiproject.base.KiwiStrings.splitWithTrimAndOmitEmpty;
@@ -26,6 +29,7 @@ import org.junit.jupiter.params.provider.ValueSource;
 import org.kiwiproject.util.BlankStringArgumentsProvider;
 
 import java.util.List;
+import java.util.NoSuchElementException;
 
 @DisplayName("KiwiStrings")
 @ExtendWith(SoftAssertionsExtension.class)
@@ -110,6 +114,58 @@ class KiwiStringsTest {
         }
 
         @Nested
+        class NullSafeWithTrimAndOmitEmpty {
+
+            @ParameterizedTest
+            @ArgumentsSource(BlankStringArgumentsProvider.class)
+            void shouldReturnEmptyIterable_WithBlankArgument(String string) {
+                var iterable = nullSafeSplitWithTrimAndOmitEmpty(string);
+                assertThat(iterable).isEmpty();
+            }
+
+            @ParameterizedTest
+            @ArgumentsSource(BlankStringArgumentsProvider.class)
+            void shouldReturnEmptyIterable_WithBlankArgument_AndCharSeparator(String string) {
+                var iterable = nullSafeSplitWithTrimAndOmitEmpty(string, COMMA);
+                assertThat(iterable).isEmpty();
+            }
+
+            @ParameterizedTest
+            @ArgumentsSource(BlankStringArgumentsProvider.class)
+            void shouldReturnEmptyIterable_WithBlankArgument_AndStringSeparator(String string) {
+                var iterable = nullSafeSplitWithTrimAndOmitEmpty(string, String.valueOf(COMMA));
+                assertThat(iterable).isEmpty();
+            }
+
+            @Test
+            void shouldReturnEmptyIterableWithIteratorThatThrowsNoSuchElementException() {
+                var iterable = nullSafeSplitWithTrimAndOmitEmpty(null);
+                var iterator = iterable.iterator();
+
+                assertThat(iterator.hasNext()).isFalse();
+                assertThatExceptionOfType(NoSuchElementException.class).isThrownBy(() -> iterator.next());
+            }
+
+            @Test
+            void shouldSplit() {
+                var iterable = nullSafeSplitWithTrimAndOmitEmpty("a b c d");
+                assertThat(iterable).containsExactly("a", "b", "c", "d");
+            }
+
+            @Test
+            void shouldSplitUsingCharSeparator() {
+                var iterable = nullSafeSplitWithTrimAndOmitEmpty("a|b|c|d", '|');
+                assertThat(iterable).containsExactly("a", "b", "c", "d");
+            }
+
+            @Test
+            void shouldSplitUsingStringSeparator() {
+                var iterable = nullSafeSplitWithTrimAndOmitEmpty("a/b/c/d", "/");
+                assertThat(iterable).containsExactly("a", "b", "c", "d");
+            }
+        }
+
+        @Nested
         class ToList {
 
             @Test
@@ -168,6 +224,66 @@ class KiwiStringsTest {
 
                 var strings = splitToList(" this||is||a|| string  ", "||", 2);
                 assertThat(strings).hasSize(2).containsAll(expectedList);
+            }
+        }
+
+        @Nested
+        class NullSafeToList {
+
+            @ParameterizedTest
+            @ArgumentsSource(BlankStringArgumentsProvider.class)
+            void shouldReturnEmptyList_WithBlankArgument(String string) {
+                assertThat(nullSafeSplitToList(string)).isEmpty();
+            }
+
+            @ParameterizedTest
+            @ArgumentsSource(BlankStringArgumentsProvider.class)
+            void shouldReturnEmptyList_WithBlankArgument_AndCharSeparator(String string) {
+                assertThat(nullSafeSplitToList(string, COMMA)).isEmpty();
+            }
+
+            @ParameterizedTest
+            @ArgumentsSource(BlankStringArgumentsProvider.class)
+            void shouldReturnEmptyList_WithBlankArgument_AndStringSeparator(String string) {
+                assertThat(nullSafeSplitToList(string, String.valueOf(COMMA))).isEmpty();
+            }
+
+            @ParameterizedTest
+            @ArgumentsSource(BlankStringArgumentsProvider.class)
+            void shouldReturnEmptyList_WithBlankArgument_AndCharSeparator_AndMaxGroups(String string) {
+                assertThat(nullSafeSplitToList(string, NEWLINE, 5)).isEmpty();
+            }
+
+
+            @ParameterizedTest
+            @ArgumentsSource(BlankStringArgumentsProvider.class)
+            void shouldReturnEmptyList_WithBlankArgument_AndStringSeparator_AndMaxGroups(String string) {
+                assertThat(nullSafeSplitToList(string, String.valueOf(COMMA), 10)).isEmpty();
+            }
+
+            @Test
+            void shouldSplit() {
+                assertThat(nullSafeSplitToList("a b c d")).containsExactly("a", "b", "c", "d");
+            }
+
+            @Test
+            void shouldSplitUsingCharSeparator() {
+                assertThat(nullSafeSplitToList("a|b|c|d", '|')).containsExactly("a", "b", "c", "d");
+            }
+
+            @Test
+            void shouldSplitUsingCharSeparatorAndMaxGroups() {
+                assertThat(nullSafeSplitToList("a:b:c:d:e:f", ':', 4)).containsExactly("a", "b", "c", "d:e:f");
+            }
+
+            @Test
+            void shouldSplitUsingStringSeparator() {
+                assertThat(nullSafeSplitToList("a/b/c/d", "/")).containsExactly("a", "b", "c", "d");
+            }
+
+            @Test
+            void shouldSplitUsingStringSeparatorAndMaxGroups() {
+                assertThat(nullSafeSplitToList("a/b/c/d/e/f", "/", 4)).containsExactly("a", "b", "c", "d/e/f");
             }
         }
 
