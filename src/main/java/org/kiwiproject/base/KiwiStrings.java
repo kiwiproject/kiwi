@@ -5,8 +5,11 @@ import static org.apache.commons.lang3.StringUtils.isBlank;
 import com.google.common.base.Splitter;
 import com.google.common.collect.ImmutableList;
 import lombok.experimental.UtilityClass;
+import org.checkerframework.checker.nullness.qual.Nullable;
 
+import java.util.Iterator;
 import java.util.List;
+import java.util.NoSuchElementException;
 
 /**
  * Utility methods relating to strings or similar.
@@ -47,6 +50,31 @@ public final class KiwiStrings {
     private static final Splitter TRIMMING_AND_EMPTY_OMITTING_NEWLINE_SPLITTER =
             Splitter.on(NEWLINE).omitEmptyStrings().trimResults();
 
+    private static class EmptyIterator<E> implements Iterator<E> {
+
+        @Override
+        public boolean hasNext() {
+            return false;
+        }
+
+        @Override
+        public E next() {
+            throw new NoSuchElementException();
+        }
+    }
+
+    private static final Iterator<String> EMPTY_ITERATOR = new EmptyIterator<>();
+
+    private static class EmptyStringIterable implements Iterable<String> {
+
+        @Override
+        public Iterator<String> iterator() {
+            return EMPTY_ITERATOR;
+        }
+    }
+
+    private static final Iterable<String> EMPTY_ITERABLE = new EmptyStringIterable();
+
     /**
      * Splits the given {@link CharSequence}, using a {@link #SPACE} as the separator character, omitting any empty
      * strings and trimming leading and trailing whitespace.
@@ -57,6 +85,21 @@ public final class KiwiStrings {
      */
     public static Iterable<String> splitWithTrimAndOmitEmpty(CharSequence sequence) {
         return splitWithTrimAndOmitEmpty(sequence, SPACE);
+    }
+
+    /**
+     * Splits the given {@link CharSequence}, using a {@link #SPACE} as the separator character, omitting any empty
+     * strings and trimming leading and trailing whitespace.
+     *
+     * @param sequence the character sequence to be split, may be null
+     * @return an Iterable over the split strings, or an empty Iterable if {@code sequence} is blank
+     * @see #splitWithTrimAndOmitEmpty(CharSequence, char)
+     */
+    public static Iterable<String> nullSafeSplitWithTrimAndOmitEmpty(@Nullable CharSequence sequence) {
+        if (isBlank(sequence)) {
+            return EMPTY_ITERABLE;
+        }
+        return splitWithTrimAndOmitEmpty(sequence);
     }
 
     /**
@@ -83,6 +126,21 @@ public final class KiwiStrings {
     }
 
     /**
+     * Splits the given {@link CharSequence}, using the specified separator character, omitting any empty
+     * strings and trimming leading and trailing whitespace.
+     *
+     * @param sequence  the character sequence to be split, may be null
+     * @param separator the separator character to use
+     * @return an Iterable over the split strings, or an empty Iterable if {@code sequence} is blank
+     */
+    public static Iterable<String> nullSafeSplitWithTrimAndOmitEmpty(@Nullable CharSequence sequence, char separator) {
+        if (isBlank(sequence)) {
+            return EMPTY_ITERABLE;
+        }
+        return splitWithTrimAndOmitEmpty(sequence, separator);
+    }
+
+    /**
      * Splits the given {@link CharSequence}, using the specified separator string, omitting any empty
      * strings and trimming leading and trailing whitespace.
      *
@@ -95,6 +153,21 @@ public final class KiwiStrings {
     }
 
     /**
+     * Splits the given {@link CharSequence}, using the specified separator string, omitting any empty
+     * strings and trimming leading and trailing whitespace.
+     *
+     * @param sequence  the character sequence to be split, may be null
+     * @param separator the separator to use, e.g. {@code ", "}
+     * @return an Iterable over the split strings, or an empty Iterable if {@code sequence} is blank
+     */
+    public static Iterable<String> nullSafeSplitWithTrimAndOmitEmpty(@Nullable CharSequence sequence, String separator) {
+        if (isBlank(sequence)) {
+            return EMPTY_ITERABLE;
+        }
+        return splitWithTrimAndOmitEmpty(sequence, separator);
+    }
+
+    /**
      * Splits the given {@link CharSequence}, using a {@link #SPACE} as the separator character, omitting any empty
      * strings and trimming leading and trailing whitespace. Returns an <i>immutable</i> list.
      *
@@ -104,6 +177,21 @@ public final class KiwiStrings {
      */
     public static List<String> splitToList(CharSequence sequence) {
         return splitToList(sequence, SPACE);
+    }
+
+    /**
+     * Splits the given {@link CharSequence}, using a {@link #SPACE} as the separator character, omitting any empty
+     * strings and trimming leading and trailing whitespace. Returns an <i>immutable</i> list.
+     *
+     * @param sequence the character sequence to be split, may be null
+     * @return an immutable list containing the split strings, or an empty list if {@code sequence} is blank
+     * @see #splitWithTrimAndOmitEmpty(CharSequence, char)
+     */
+    public static List<String> nullSafeSplitToList(@Nullable CharSequence sequence) {
+        if (isBlank(sequence)) {
+            return List.of();
+        }
+        return splitToList(sequence);
     }
 
     /**
@@ -131,6 +219,22 @@ public final class KiwiStrings {
     }
 
     /**
+     * Splits the given {@link CharSequence}, using the specified separator character, omitting any empty
+     * strings and trimming leading and trailing whitespace. Returns an <i>immutable</i> list.
+     *
+     * @param sequence  the character sequence to be split, may be null
+     * @param separator the separator character to use
+     * @return an immutable list containing the split strings, or an empty list if {@code sequence} is blank
+     * @see #splitWithTrimAndOmitEmpty(CharSequence, char)
+     */
+    public static List<String> nullSafeSplitToList(@Nullable CharSequence sequence, char separator) {
+        if (isBlank(sequence)) {
+            return List.of();
+        }
+        return splitToList(sequence, separator);
+    }
+
+    /**
      * Splits the given {@link CharSequence}, using the specified separator character, into the maximum number of groups
      * specified omitting any empty strings and trimming leading and trailing whitespace. Returns an
      * <i>immutable</i> list.
@@ -142,6 +246,23 @@ public final class KiwiStrings {
      */
     public static List<String> splitToList(CharSequence sequence, char separator, int maxGroups) {
         return Splitter.on(separator).limit(maxGroups).omitEmptyStrings().trimResults().splitToList(sequence);
+    }
+
+    /**
+     * Splits the given {@link CharSequence}, using the specified separator character, into the maximum number of groups
+     * specified omitting any empty strings and trimming leading and trailing whitespace. Returns an
+     * <i>immutable</i> list.
+     *
+     * @param sequence  the character sequence to be split, may be null
+     * @param separator the separator character to use
+     * @param maxGroups the maximum number of groups to separate into
+     * @return an immutable list containing the split strings, or an empty list if {@code sequence} is blank
+     */
+    public static List<String> nullSafeSplitToList(@Nullable CharSequence sequence, char separator, int maxGroups) {
+        if (isBlank(sequence)) {
+            return List.of();
+        }
+        return splitToList(sequence, separator, maxGroups);
     }
 
     /**
@@ -157,6 +278,21 @@ public final class KiwiStrings {
     }
 
     /**
+     * Splits the given {@link CharSequence}, using the specified separator string, omitting any empty
+     * strings and trimming leading and trailing whitespace. Returns an <i>immutable</i> list.
+     *
+     * @param sequence  the character sequence to be split, may be null
+     * @param separator the separator string to use
+     * @return an immutable list containing the split strings, or an empty list if {@code sequence} is blank
+     */
+    public static List<String> nullSafeSplitToList(@Nullable CharSequence sequence, String separator) {
+        if (isBlank(sequence)) {
+            return List.of();
+        }
+        return splitToList(sequence, separator);
+    }
+
+    /**
      * Splits the given {@link CharSequence}, using the specified separator string, into the maximum number of groups
      * specified omitting any empty strings and trimming leading and trailing whitespace. Returns an
      * <i>immutable</i> list.
@@ -168,6 +304,23 @@ public final class KiwiStrings {
      */
     public static List<String> splitToList(CharSequence sequence, String separator, int maxGroups) {
         return Splitter.on(separator).limit(maxGroups).omitEmptyStrings().trimResults().splitToList(sequence);
+    }
+
+    /**
+     * Splits the given {@link CharSequence}, using the specified separator string, into the maximum number of groups
+     * specified omitting any empty strings and trimming leading and trailing whitespace. Returns an
+     * <i>immutable</i> list.
+     *
+     * @param sequence  the character sequence to be split, may be null
+     * @param separator the separator string to use
+     * @param maxGroups the maximum number of groups to separate into
+     * @return an immutable list containing the split strings, or an empty list if {@code sequence} is blank
+     */
+    public static List<String> nullSafeSplitToList(@Nullable CharSequence sequence, String separator, int maxGroups) {
+        if (isBlank(sequence)) {
+            return List.of();
+        }
+        return splitToList(sequence, separator, maxGroups);
     }
 
     /**
@@ -190,7 +343,7 @@ public final class KiwiStrings {
      * @return an immutable list containing the split strings, or an empty list if {@code sequence} is blank
      * @see #splitWithTrimAndOmitEmpty(CharSequence, char)
      */
-    public static List<String> nullSafeSplitOnCommas(CharSequence sequence) {
+    public static List<String> nullSafeSplitOnCommas(@Nullable CharSequence sequence) {
         if (isBlank(sequence)) {
             return List.of();
         }
