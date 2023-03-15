@@ -170,4 +170,72 @@ class KiwiPrimitivesTest {
                     .withCauseExactlyInstanceOf(NumberFormatException.class);
         }
     }
+
+    @Nested
+    class TryParseDoubleOrNull {
+
+        @Test
+        void shouldReturnDouble_WhenArgumentIsParseableToDouble() {
+            assertThat(KiwiPrimitives.tryParseDoubleOrNull("420000.042")).isEqualTo(420_000.042);
+        }
+
+        @ParameterizedTest
+        @NullAndEmptySource
+        void shouldReturnNull_WhenArgumentIsNullOrEmpty(String string) {
+            assertThat(KiwiPrimitives.tryParseDoubleOrNull(string)).isNull();
+        }
+
+        @ParameterizedTest
+        @ValueSource(strings = {" ", "abcd", "42a", "a42", "4,200", "420_000"})
+        void shouldReturnNull_WhenArgumentIsNotParseableToDouble(String string) {
+            assertThat(KiwiPrimitives.tryParseDoubleOrNull(string)).isNull();
+        }
+    }
+
+    @Nested
+    class TryParseDouble {
+
+        @Test
+        void shouldReturnOptionalHavingValue_WhenArgumentIsParseableToDouble() {
+            assertThat(KiwiPrimitives.tryParseDouble("840000.042")).hasValue(840_000.042);
+        }
+
+        @ParameterizedTest
+        @NullAndEmptySource
+        void shouldReturnEmptyOptional_WhenArgumentIsNullOrEmpty(String string) {
+            assertThat(KiwiPrimitives.tryParseDouble(string)).isEmpty();
+        }
+
+        @ParameterizedTest
+        @ValueSource(strings = {" ", "abcd", "42a", "a42", "4,200", "4200,00"})
+        void shouldReturnEmptyOptional_WhenArgumentIsNotParseableToDouble(String string) {
+            assertThat(KiwiPrimitives.tryParseDouble(string)).isEmpty();
+        }
+    }
+
+    @Nested
+    class TryParseDoubleOrThrow {
+
+        @Test
+        void shouldReturDouble_WhenArgumentIsParseableToDouble() {
+            assertThat(KiwiPrimitives.tryParseDoubleOrThrow("1260000.042")).isEqualTo(1_260_000.042);
+        }
+
+        @Test
+        void shouldThrow_WhenArgumentIsNull() {
+            assertThatIllegalStateException()
+                    .isThrownBy(() -> KiwiPrimitives.tryParseDoubleOrThrow(null))
+                    .withMessageContaining("java.lang.NullPointerException")
+                    .withCauseExactlyInstanceOf(NullPointerException.class);
+        }
+
+        @ParameterizedTest
+        @ValueSource(strings = {"", " ", "abcd", "42a", "a42", "4,200", "420-000"})
+        void shouldThrow_WhenArgumentIsNotParseableToDouble(String string) {
+            assertThatIllegalStateException()
+                    .isThrownBy(() -> KiwiPrimitives.tryParseDoubleOrThrow(string))
+                    .withMessageContaining(string)
+                    .withCauseExactlyInstanceOf(NumberFormatException.class);
+        }
+    }
 }
