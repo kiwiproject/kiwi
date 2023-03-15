@@ -5,6 +5,7 @@ import static com.google.common.base.Preconditions.checkArgument;
 import lombok.experimental.UtilityClass;
 
 import java.util.OptionalInt;
+import java.util.OptionalLong;
 
 /**
  * Static utilities that operate on primitive values, and are not already provided by classes in Guava's
@@ -82,6 +83,49 @@ public class KiwiPrimitives {
     public static int tryParseIntOrThrow(CharSequence cs) {
         try {
             return Integer.parseInt(cs.toString());
+        } catch (Exception e) {
+            throw new IllegalStateException(e);
+        }
+    }
+
+    /**
+     * Attempt to parse the given {@link CharSequence} to an {@link Long}.
+     *
+     * @param cs the value to parse
+     * @return the value as a Long or {@code null} if the value cannot be parsed
+     */
+    public static Long tryParseLongOrNull(CharSequence cs) {
+        try {
+            return Long.valueOf(cs.toString());
+        } catch (Exception e) {
+            return null;
+        }
+    }
+
+    /**
+     * Attempt to parse the given {@link CharSequence} to an {@code long}.
+     *
+     * @param cs the value to parse
+     * @return an {@link OptionalLong} that will contain the parsed value or will be empty if the input cannot be parsed
+     */
+    public static OptionalLong tryParseLong(CharSequence cs) {
+        try {
+            return OptionalLong.of(Long.parseLong(cs.toString()));
+        } catch (Exception e) {
+            return OptionalLong.empty();
+        }
+    }
+
+    /**
+     * Attempt to parse the given {@link CharSequence} to an {@code long}.
+     *
+     * @param cs the value to parse
+     * @return the parsed {@code long} value if successful; if it cannot be parsed this method always throws an exception
+     * @throws IllegalStateException if the value cannot be parsed
+     */
+    public static long tryParseLongOrThrow(CharSequence cs) {
+        try {
+            return Long.parseLong(cs.toString());
         } catch (Exception e) {
             throw new IllegalStateException(e);
         }

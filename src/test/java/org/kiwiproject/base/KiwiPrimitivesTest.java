@@ -66,7 +66,7 @@ class KiwiPrimitivesTest {
 
         @ParameterizedTest
         @NullAndEmptySource
-        void shouldReturnEmptyOptional_WhenArgumentIsNulOrEmpty(String string) {
+        void shouldReturnEmptyOptional_WhenArgumentIsNullOrEmpty(String string) {
             assertThat(KiwiPrimitives.tryParseInt(string)).isEmpty();
         }
 
@@ -98,6 +98,74 @@ class KiwiPrimitivesTest {
         void shouldThrow_WhenArgumentIsNotParseableToInt(String string) {
             assertThatIllegalStateException()
                     .isThrownBy(() -> KiwiPrimitives.tryParseIntOrThrow(string))
+                    .withMessageContaining(string)
+                    .withCauseExactlyInstanceOf(NumberFormatException.class);
+        }
+    }
+
+    @Nested
+    class TryParseLongOrNull {
+
+        @Test
+        void shouldReturnLong_WhenArgumentIsParseableToLong() {
+            assertThat(KiwiPrimitives.tryParseLongOrNull("420000")).isEqualTo(420_000L);
+        }
+
+        @ParameterizedTest
+        @NullAndEmptySource
+        void shouldReturnNull_WhenArgumentIsNullOrEmpty(String string) {
+            assertThat(KiwiPrimitives.tryParseLongOrNull(string)).isNull();
+        }
+
+        @ParameterizedTest
+        @ValueSource(strings = {" ", "abcd", "42a", "a42", "4,200", "420.0"})
+        void shouldReturnNull_WhenArgumentIsNotParseableToLong(String string) {
+            assertThat(KiwiPrimitives.tryParseLongOrNull(string)).isNull();
+        }
+    }
+
+    @Nested
+    class TryParseLong {
+
+        @Test
+        void shouldReturnOptionalHavingValue_WhenArgumentIsParseableToLong() {
+            assertThat(KiwiPrimitives.tryParseLong("840000")).hasValue(840_000L);
+        }
+
+        @ParameterizedTest
+        @NullAndEmptySource
+        void shouldReturnEmptyOptional_WhenArgumentIsNullOrEmpty(String string) {
+            assertThat(KiwiPrimitives.tryParseLong(string)).isEmpty();
+        }
+
+        @ParameterizedTest
+        @ValueSource(strings = {" ", "abcd", "42a", "a42", "4,200", "420.0"})
+        void shouldReturnEmptyOptional_WhenArgumentIsNotParseableToLong(String string) {
+            assertThat(KiwiPrimitives.tryParseLong(string)).isEmpty();
+        }
+    }
+
+    @Nested
+    class TryParseLongOrThrow {
+
+        @Test
+        void shouldReturLong_WhenArgumentIsParseableToLong() {
+            assertThat(KiwiPrimitives.tryParseLongOrThrow("1260000")).isEqualTo(1_260_000L);
+        }
+
+        @Test
+        void shouldThrow_WhenArgumentIsNull() {
+            assertThatIllegalStateException()
+                    .isThrownBy(() -> KiwiPrimitives.tryParseLongOrThrow(null))
+                    .withMessageContaining("java.lang.NullPointerException")
+                    .withCauseExactlyInstanceOf(NullPointerException.class);
+        }
+
+        @ParameterizedTest
+        @ValueSource(strings = {"", " ", "abcd", "42a", "a42", "4,200", "420.0"})
+        void shouldThrow_WhenArgumentIsNotParseableToLong(String string) {
+            assertThatIllegalStateException()
+                    .isThrownBy(() -> KiwiPrimitives.tryParseLongOrThrow(string))
                     .withMessageContaining(string)
                     .withCauseExactlyInstanceOf(NumberFormatException.class);
         }
