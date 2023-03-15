@@ -73,7 +73,7 @@ public class KiwiPrimitives {
     }
 
     /**
-     * Attempt to parse the given {@link CharSequence} to an {@code int}/
+     * Attempt to parse the given {@link CharSequence} to an {@code int}.
      *
      * @param cs the value to parse
      * @return the parsed {@code int} value if successful; if it cannot be parsed this method always throws an exception
