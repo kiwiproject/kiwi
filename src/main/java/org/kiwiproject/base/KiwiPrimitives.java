@@ -4,6 +4,7 @@ import static com.google.common.base.Preconditions.checkArgument;
 
 import lombok.experimental.UtilityClass;
 
+import java.util.OptionalDouble;
 import java.util.OptionalInt;
 import java.util.OptionalLong;
 
@@ -126,6 +127,49 @@ public class KiwiPrimitives {
     public static long tryParseLongOrThrow(CharSequence cs) {
         try {
             return Long.parseLong(cs.toString());
+        } catch (Exception e) {
+            throw new IllegalStateException(e);
+        }
+    }
+
+    /**
+     * Attempt to parse the given {@link CharSequence} to an {@link Double}.
+     *
+     * @param cs the value to parse
+     * @return the value as a Double or {@code null} if the value cannot be parsed
+     */
+    public static Double tryParseDoubleOrNull(CharSequence cs) {
+        try {
+            return Double.valueOf(cs.toString());
+        } catch (Exception e) {
+            return null;
+        }
+    }
+
+    /**
+     * Attempt to parse the given {@link CharSequence} to an {@code double}.
+     *
+     * @param cs the value to parse
+     * @return an {@link OptionalDouble} that will contain the parsed value or will be empty if the input cannot be parsed
+     */
+    public static OptionalDouble tryParseDouble(CharSequence cs) {
+        try {
+            return OptionalDouble.of(Double.parseDouble(cs.toString()));
+        } catch (Exception e) {
+            return OptionalDouble.empty();
+        }
+    }
+
+    /**
+     * Attempt to parse the given {@link CharSequence} to an {@code double}.
+     *
+     * @param cs the value to parse
+     * @return the parsed {@code double} value if successful; if it cannot be parsed this method always throws an exception
+     * @throws IllegalStateException if the value cannot be parsed
+     */
+    public static double tryParseDoubleOrThrow(CharSequence cs) {
+        try {
+            return Double.parseDouble(cs.toString());
         } catch (Exception e) {
             throw new IllegalStateException(e);
         }
