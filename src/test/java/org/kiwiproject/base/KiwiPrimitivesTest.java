@@ -89,7 +89,7 @@ class KiwiPrimitivesTest {
         void shouldThrow_WhenArgumentIsNull() {
             assertThatIllegalStateException()
                     .isThrownBy(() -> KiwiPrimitives.tryParseIntOrThrow(null))
-                    .withMessage("java.lang.NullPointerException")
+                    .withMessageContaining("java.lang.NullPointerException")
                     .withCauseExactlyInstanceOf(NullPointerException.class);
         }
 

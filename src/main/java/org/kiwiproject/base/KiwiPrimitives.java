@@ -4,7 +4,6 @@ import static com.google.common.base.Preconditions.checkArgument;
 
 import lombok.experimental.UtilityClass;
 
-import java.util.Optional;
 import java.util.OptionalInt;
 
 /**
