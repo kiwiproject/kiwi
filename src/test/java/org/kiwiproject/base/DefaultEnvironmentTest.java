@@ -240,6 +240,29 @@ class DefaultEnvironmentTest {
         }
     }
 
+    @Nested
+    class CurrentProcessHandle {
+
+        @Test
+        void shouldReturnProcessHandle() {
+            var currentProcessHandle = env.currentProcessHandle();
+            assertThat(currentProcessHandle).isNotNull();
+        }
+
+        @Test
+        void shouldAllowUnsupportedExceptionsToEscape() {
+            var envSpy = spy(env);
+            var errorMessage = "this fake JVM doesn't support getting the current process handle";
+            doThrow(new UnsupportedOperationException(errorMessage))
+                    .when(envSpy)
+                    .currentProcessHandle();
+
+            assertThatThrownBy(envSpy::currentProcessHandle)
+                    .isExactlyInstanceOf(UnsupportedOperationException.class)
+                    .hasMessage(errorMessage);
+        }
+    }
+
     @Test
     void testSleep() throws InterruptedException {
         long sleepTime = 50;

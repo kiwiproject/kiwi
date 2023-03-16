@@ -182,6 +182,14 @@ public interface KiwiEnvironment {
     OptionalLong tryGetCurrentPid();
 
     /**
+     * Returns a ProcessHandle for the current process.
+     *
+     * @return a handle to the current process
+     * @see ProcessHandle#current()
+     */
+    ProcessHandle currentProcessHandle();
+
+    /**
      * Sleep for the given number of milliseconds.
      *
      * @param milliseconds the number of milliseconds to sleep
