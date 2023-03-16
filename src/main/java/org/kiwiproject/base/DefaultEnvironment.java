@@ -139,6 +139,11 @@ public class DefaultEnvironment implements KiwiEnvironment {
     }
 
     @Override
+    public ProcessHandle currentProcessHandle() {
+        return ProcessHandle.current();
+    }
+
+    @Override
     public void sleep(long milliseconds) throws InterruptedException {
         Thread.sleep(milliseconds);
     }
