@@ -9,7 +9,6 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.kiwiproject.dropwizard.metrics.health.TimeBasedDirectoryCleanerHealthCheck;
-import org.kiwiproject.dropwizard.util.KiwiDropwizardDurations;
 import org.kiwiproject.io.TimeBasedDirectoryCleaner;
 import org.slf4j.event.Level;
 
@@ -62,7 +61,7 @@ public class TimeBasedDirectoryCleanerConfig {
 
         var cleaner = TimeBasedDirectoryCleaner.builder()
                 .directoryPath(directoryPath)
-                .retentionThreshold(KiwiDropwizardDurations.fromDropwizardDuration(retentionThreshold))
+                .retentionThreshold(retentionThreshold.toJavaDuration())
                 .deleteErrorLogLevel(deleteErrorLogLevel)
                 .build();
 
@@ -93,7 +92,7 @@ public class TimeBasedDirectoryCleanerConfig {
 
         environment.healthChecks().register(
                 format("{}({})", lowerCamelCaseCleanerClassName(), directoryPath),
-                new TimeBasedDirectoryCleanerHealthCheck(cleaner, KiwiDropwizardDurations.fromDropwizardDuration(healthCheckWarningDuration))
+                new TimeBasedDirectoryCleanerHealthCheck(cleaner, healthCheckWarningDuration.toJavaDuration())
         );
 
         LOG.info("Registered health check for {} directory cleaner with warning duration {}", directoryPath, healthCheckWarningDuration);
