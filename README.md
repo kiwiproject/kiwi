@@ -5,7 +5,7 @@
 [![CodeQL](https://github.com/kiwiproject/kiwi/actions/workflows/codeql.yml/badge.svg)](https://github.com/kiwiproject/kiwi/actions/workflows/codeql.yml)
 [![javadoc](https://javadoc.io/badge2/org.kiwiproject/kiwi/javadoc.svg)](https://javadoc.io/doc/org.kiwiproject/kiwi)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](https://opensource.org/licenses/MIT)
-[![Maven Central](https://img.shields.io/maven-central/v/org.kiwiproject/kiwi)](https://central.sonatype.com/artifact/org.kiwiproject/kiwi/2.5.0)
+[![Maven Central](https://img.shields.io/maven-central/v/org.kiwiproject/kiwi)](https://central.sonatype.com/artifact/org.kiwiproject/kiwi/)
 
 Kiwi is a utility library. It contains a variety of utilities that we have built over time and find useful.
 In general, we look first to either Google Guava or Apache Commons for utilities, but if they don't have something
