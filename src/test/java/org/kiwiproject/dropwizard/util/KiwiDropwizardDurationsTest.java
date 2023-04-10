@@ -12,6 +12,7 @@ import org.junit.jupiter.params.provider.CsvSource;
 import java.time.temporal.ChronoUnit;
 
 @DisplayName("KiwiDropwizardDurations")
+@SuppressWarnings("deprecation")
 class KiwiDropwizardDurationsTest {
 
     @Nested
