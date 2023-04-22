@@ -10,7 +10,6 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.kiwiproject.base.KiwiPreconditions.checkArgumentNotNull;
 
 import com.google.common.collect.Lists;
-
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -36,16 +35,16 @@ import org.junit.jupiter.params.provider.MethodSource;
 import org.junit.jupiter.params.provider.ValueSource;
 import org.kiwiproject.junit.jupiter.ClearBoxTest;
 import org.kiwiproject.reflect.KiwiReflection.Accessor;
+import org.kiwiproject.reflect.sub.Box;
+import org.kiwiproject.reflect.sub.OtherPerson;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-
-import java.io.UncheckedIOException;
-import java.io.UnsupportedEncodingException;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
@@ -73,6 +72,20 @@ class KiwiReflectionTest {
             assertThat(lastNameField).isNotNull();
             assertThat(lastNameField.getName()).isEqualTo("lastName");
             assertThat(lastNameField.getType()).isEqualTo(String.class);
+        }
+
+        @Test
+        void shouldSetAccessible_WhenNotPublic() {
+            var jane = new OtherPerson("Jane", "Doe", 43);
+            var firstNameField = KiwiReflection.findField(jane, "firstName");
+            assertThat(firstNameField.canAccess(jane)).isTrue();
+        }
+
+        @Test
+        void shouldBeAccessible_WhenPublic() {
+            var box = new Box("iPhone");
+            var contentsField = KiwiReflection.findField(box, "contents");
+            assertThat(contentsField.canAccess(box)).isTrue();
         }
 
         @Test
@@ -1581,9 +1594,9 @@ class KiwiReflectionTest {
 
     @Getter
     static class User {
-        private String username;
-        private String password;
-        private String email;
+        private final String username;
+        private final String password;
+        private final String email;
 
         User(String email, String password) {
             this(email, password, email);
@@ -1595,11 +1608,7 @@ class KiwiReflectionTest {
 
         User(String email, byte[] password, @Nullable String username) {
             this.email = email;
-            try {
-                this.password = new String(password, "UTF-8");
-            } catch (UnsupportedEncodingException e) {
-                throw new UncheckedIOException(e);
-            }
+            this.password = new String(password, StandardCharsets.UTF_8);
             this.username = firstNonNull(username, email);
         }
 
