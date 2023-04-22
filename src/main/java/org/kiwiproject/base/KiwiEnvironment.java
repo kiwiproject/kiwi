@@ -11,6 +11,7 @@ import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.Date;
 import java.util.Map;
+import java.util.Optional;
 import java.util.OptionalLong;
 import java.util.Properties;
 import java.util.concurrent.TimeUnit;
@@ -188,6 +189,19 @@ public interface KiwiEnvironment {
      * @see ProcessHandle#current()
      */
     ProcessHandle currentProcessHandle();
+
+    /**
+     * Tries to obtain a {@link ProcessHandle} for a process with the given ID. If the process does not exist, then
+     * an empty Optional is returned.
+     *
+     * @param pid the process ID
+     * @return an Optional containing a ProcessHandle for the given process ID, or an empty Optional if the process
+     * does not exist
+     * @see ProcessHandle#of(long)
+     * @implNote Implementations may throw the same exceptions as {@link ProcessHandle#of(long)}, but are not required
+     * to do so.
+     */
+    Optional<ProcessHandle> processHandleOfPid(long pid);
 
     /**
      * Sleep for the given number of milliseconds.

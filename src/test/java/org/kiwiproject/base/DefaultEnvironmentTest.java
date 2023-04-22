@@ -3,6 +3,8 @@ package org.kiwiproject.base;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatCode;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.junit.jupiter.api.Assumptions.assumeTrue;
+import static org.kiwiproject.base.KiwiStrings.format;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.anyLong;
@@ -13,6 +15,7 @@ import static org.mockito.Mockito.verify;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
+import org.junit.jupiter.api.RepeatedTest;
 import org.junit.jupiter.api.Test;
 import org.kiwiproject.collect.KiwiMaps;
 
@@ -30,6 +33,7 @@ import java.util.Date;
 import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
+import java.util.concurrent.ThreadLocalRandom;
 import java.util.concurrent.TimeUnit;
 
 @DisplayName("DefaultKiwiEnvironment")
@@ -260,6 +264,27 @@ class DefaultEnvironmentTest {
             assertThatThrownBy(envSpy::currentProcessHandle)
                     .isExactlyInstanceOf(UnsupportedOperationException.class)
                     .hasMessage(errorMessage);
+        }
+    }
+
+    @Nested
+    class ProcessHandleOfPid {
+
+        @Test
+        void shouldReturnProcessHandle_ForAnExistingProcess() {
+            var pid = ProcessHandle.current().pid();
+            var processHandle = env.processHandleOfPid(pid).orElseThrow();
+            assertThat(processHandle).isEqualTo(ProcessHandle.current());
+        }
+
+        @RepeatedTest(5)
+        void shouldReturnEmptyOptional_WhenProcessDoesNotExist() {
+            // use a range for pids that should never exist
+            var randomPid = ThreadLocalRandom.current().nextLong(100_000, 200_001);
+            assumeTrue(ProcessHandle.of(randomPid).isEmpty(),
+                    () -> format("Expected process having pid {} not to exist, but it does", randomPid));
+
+            assertThat(env.processHandleOfPid(randomPid)).isEmpty();
         }
     }
 
