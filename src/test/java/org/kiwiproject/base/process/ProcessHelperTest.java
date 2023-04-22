@@ -22,6 +22,7 @@ import com.google.common.base.StandardSystemProperty;
 import org.apache.commons.lang3.tuple.Pair;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 
@@ -540,6 +541,25 @@ class ProcessHelperTest {
         @Override
         public int read() throws IOException {
             throw new IOException(message);
+        }
+    }
+
+    @Nested
+    class Which {
+
+        /**
+         * @implNote This test assumes {@link Processes#which(String)} works. This is a trade-off to make this
+         * test much simpler than having to replicate its logic in this test.
+         */
+        @Test
+        void shouldFindProgramThatExists() {
+            var lsPath = Processes.which("ls").orElseThrow();
+            assertThat(processes.which("ls")).contains(lsPath);
+        }
+
+        @Test
+        void shouldReturnEmptyOptional_WhenProgramDoesNotExistInPath() {
+            assertThat(processes.which("killify")).isEmpty();
         }
     }
 }

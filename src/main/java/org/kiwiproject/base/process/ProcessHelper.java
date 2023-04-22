@@ -337,4 +337,15 @@ public class ProcessHelper {
         return processHelper.launch("pgrep", "-P", String.valueOf(parentProcessId));
     }
 
+    /**
+     * Locate a program in the user's path.
+     *
+     * @param program the program to locate
+     * @return an Optional containing the full path to the program, or an empty Optional if not found
+     * @implNote If there is more than program found, only the first one is returned
+     * @see Processes#which(String)
+     */
+    public Optional<String> which(String program) {
+        return Processes.which(program);
+    }
 }
