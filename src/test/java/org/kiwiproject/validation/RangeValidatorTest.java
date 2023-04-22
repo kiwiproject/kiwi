@@ -54,7 +54,7 @@ class RangeValidatorTest {
 
     /**
      * @implNote In these cases, there should be a WARN level log, but we're not going to try to test
-     * that side-effect, and will just rely instead on manual inspection.
+     * that side effect, and will just rely instead on manual inspection.
      */
     @Nested
     class UnsupportedTypes {
@@ -62,13 +62,15 @@ class RangeValidatorTest {
         @Test
         void shouldBeInvalid() {
             var obj = new HasUnsupportedType(LocalDate.now());
-            assertPropertyViolations(validator, obj, "value", "unknown validation error");
+            assertPropertyViolations(validator, obj, "value",
+                    "unknown validation error (type may be unsupported or may not be Comparable)");
         }
 
         @Test
         void shouldBeInvalid_WhenNotComparable() {
             var obj = new HasAnIncomparable(new AnIncomparable());
-            assertPropertyViolations(validator, obj, "value", "unknown validation error");
+            assertPropertyViolations(validator, obj, "value",
+                    "unknown validation error (type may be unsupported or may not be Comparable)");
         }
     }
 
@@ -300,14 +302,14 @@ class RangeValidatorTest {
     @NoArgsConstructor
     @AllArgsConstructor
     static class NullableValue {
-        @Range
+        @Range(min = "0")
         Integer value;
     }
 
     @NoArgsConstructor
     @AllArgsConstructor
     static class NotNullableValue {
-        @Range(allowNull = false)
+        @Range(max = "100", allowNull = false)
         Integer value;
     }
 
@@ -337,7 +339,7 @@ class RangeValidatorTest {
 
     @AllArgsConstructor
     static class HasAnIncomparable {
-        @Range
+        @Range(min = "A")
         AnIncomparable value;
     }
 

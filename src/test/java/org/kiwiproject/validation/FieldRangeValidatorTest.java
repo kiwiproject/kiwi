@@ -98,13 +98,15 @@ class FieldRangeValidatorTest {
         void shouldBeInvalid_WhenMinMaxForcesConversionToComparable() {
             var today = LocalDate.now();
             var obj = HasUnsupportedType.builder().date1(today).date2(today.plusDays(2)).build();
-            assertViolations(validator, obj, "date1 unknown validation error");
+            assertViolations(validator, obj,
+                    "date1 unknown validation error (type may be unsupported or may not be Comparable)");
         }
 
         @Test
         void shouldBeInvalid_WhenNotComparable() {
             var obj = HasAnIncomparable.builder().ic1(new AnIncomparable()).ic2(new AnIncomparable()).build();
-            assertViolations(validator, obj, "ic1 unknown validation error");
+            assertViolations(validator, obj,
+                    "ic1 unknown validation error (type may be unsupported or may not be Comparable)");
         }
     }
 

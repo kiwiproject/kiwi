@@ -54,7 +54,7 @@ import java.lang.annotation.Target;
 @Repeatable(FieldRanges.class)
 public @interface FieldRange {
 
-    String message() default "{org.kiwiproject.validation.FieldRange.between.message}";
+    String message() default "{org.kiwiproject.validation.FieldRange.unknownError.message}";
 
     Class<?>[] groups() default {};
 
