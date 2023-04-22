@@ -4,6 +4,7 @@ import static java.util.Objects.isNull;
 import static org.kiwiproject.base.KiwiStrings.f;
 
 import lombok.Getter;
+import lombok.Synchronized;
 import org.kiwiproject.collect.KiwiMaps;
 
 import javax.net.ssl.SSLContext;
@@ -211,7 +212,8 @@ public class SimpleSSLContextFactory {
      * @implNote This is intended to be called infrequently, e.g. once when a service/app starts. Thus, making it
      * synchronized was the easiest way to ensure thread-safety.
      */
-    public synchronized SSLContext getSslContext() {
+    @Synchronized
+    public SSLContext getSslContext() {
         if (isNull(sslContext)) {
             sslContext = KiwiSecurity.createSslContext(
                     keyStorePath, keyStorePassword, trustStorePath, trustStorePassword, protocol);
