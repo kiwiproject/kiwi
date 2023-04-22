@@ -24,7 +24,7 @@ import java.util.concurrent.TimeUnit;
  * for the greatest flexibility when connecting to different SFTP locations.
  *
  * @implNote This uses Dropwizard's {@link Duration} and several Dropwizard validation annotations in addition to the
- * standard Java Beans Validation annotations, so you will need to ensure the the appropriate Dropwizard JAR files are
+ * standard Java Beans Validation annotations, so you will need to ensure the appropriate Dropwizard JAR files are
  * on the class/module path.
  */
 @Getter
