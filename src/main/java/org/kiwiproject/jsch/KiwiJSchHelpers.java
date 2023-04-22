@@ -21,7 +21,17 @@ public class KiwiJSchHelpers {
 
     /**
      * Detect the key exchange for a given host (or IP address) and {@link HostKeyRepository}, which is
-     * JSch's encapsulation of the {@code known hosts} file.
+     * JSch's encapsulation of the {@code known_hosts} file.
+     * <p>
+     * This method supports only a subset of the possible formats in {@code known_hosts}. The supported formats are:
+     * <ul>
+     *     <li>{@code hostname}, e.g. {@code dev-svc-1.acme.com}</li>
+     *     <li>{@code ip_address}, e.g. {@code 192.168.1.150}</li>
+     *     <li>{@code hostname,ip_address}, e,g, {@code dev-svc-1.acme.com,192.168.1.150}</li>
+     * </ul>
+     * {@code known_hosts} can have various other formats, but we do not support them at the present time.
+     * See <a href="https://github.com/kiwiproject/kiwi/discussions/577">this discussion on known_hosts formats</a>
+     * for additional information.
      *
      * @param host       the host name or IP to match
      * @param knownHosts the known hosts
@@ -39,7 +49,7 @@ public class KiwiJSchHelpers {
     }
 
     /**
-     * Sets the given key exchange type (e.g. {@code ssh-rsa} or {@code ecdsa-sha2-nistp256} on the specified session.
+     * Sets the given key exchange type, e.g. {@code ssh-rsa} or {@code ecdsa-sha2-nistp256} on the specified session.
      *
      * @param session         the JSch session
      * @param keyExchangeType key exchange type
@@ -71,8 +81,13 @@ public class KiwiJSchHelpers {
                 hostName = splat[0];
                 ipAddress = splat[1];
             } else {
-                hostName = host;
-                ipAddress = null;
+                if (InetAddresses.isInetAddress(host)) {
+                    hostName = null;
+                    ipAddress = host;
+                } else {
+                    hostName = host;
+                    ipAddress = null;
+                }
             }
         }
 
