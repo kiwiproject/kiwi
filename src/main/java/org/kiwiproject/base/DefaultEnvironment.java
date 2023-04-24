@@ -150,6 +150,11 @@ public class DefaultEnvironment implements KiwiEnvironment {
     }
 
     @Override
+    public Thread currentThread() {
+        return Thread.currentThread();
+    }
+
+    @Override
     public void sleep(long milliseconds) throws InterruptedException {
         Thread.sleep(milliseconds);
     }

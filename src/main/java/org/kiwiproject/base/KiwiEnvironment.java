@@ -191,6 +191,14 @@ public interface KiwiEnvironment {
     ProcessHandle currentProcessHandle();
 
     /**
+     * Returns a reference to the currently executing thread object.
+     *
+     * @return the currently executing thread
+     * @see Thread#currentThread()
+     */
+    Thread currentThread();
+
+    /**
      * Tries to obtain a {@link ProcessHandle} for a process with the given ID. If the process does not exist, then
      * an empty Optional is returned.
      *

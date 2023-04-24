@@ -289,6 +289,11 @@ class DefaultEnvironmentTest {
     }
 
     @Test
+    void shouldReturnCurrentThread() {
+        assertThat(env.currentThread()).isSameAs(Thread.currentThread());
+    }
+
+    @Test
     void testSleep() throws InterruptedException {
         long sleepTime = 50;
         long start = System.currentTimeMillis();
