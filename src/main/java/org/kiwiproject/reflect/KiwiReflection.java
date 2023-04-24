@@ -12,16 +12,11 @@ import static org.kiwiproject.base.KiwiStrings.f;
 
 import com.google.common.annotations.Beta;
 import com.google.common.annotations.VisibleForTesting;
-import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
-import com.google.common.collect.Streams;
 import com.google.common.primitives.Primitives;
 import lombok.experimental.UtilityClass;
 import lombok.extern.slf4j.Slf4j;
-import net.bytebuddy.asm.Advice.OffsetMapping.Factory.Illegal;
-
 import org.apache.commons.lang3.StringUtils;
-import org.kiwiproject.base.KiwiPreconditions;
 import org.kiwiproject.base.KiwiStrings;
 
 import java.lang.reflect.Field;
@@ -96,10 +91,10 @@ public class KiwiReflection {
     }
 
     /**
-     * Find a field by name in the specified target object, whether it is private or not.
+     * Find a field by name in the specified target object, whether it is public or not.
      * <p>
-     * Note specifically this method uses {@link Field#setAccessible(boolean)} to make the returned
-     * field accessible and thus is subject to a {@link SecurityException} or
+     * Note specifically that if the field is <em>not</em> public, this method uses {@link Field#setAccessible(boolean)}
+     * to make it accessible and thus is subject to a {@link SecurityException} or
      * {@link java.lang.reflect.InaccessibleObjectException}.
      *
      * @param target    the target object
@@ -111,11 +106,21 @@ public class KiwiReflection {
     public static Field findField(Object target, String fieldName) {
         try {
             var field = target.getClass().getDeclaredField(fieldName);
-            field.setAccessible(true);
+            setAccessibleIfNotPublic(field);
             return field;
         } catch (Exception e) {
             throw new RuntimeReflectionException(f("Cannot get field [%s] in object [%s]", fieldName, target), e);
         }
+    }
+
+    private static void setAccessibleIfNotPublic(Field field) {
+        if (isNotPublic(field)) {
+            field.setAccessible(true);
+        }
+    }
+
+    private static boolean isNotPublic(Field field) {
+        return !Modifier.isPublic(field.getModifiers());
     }
 
     /**
