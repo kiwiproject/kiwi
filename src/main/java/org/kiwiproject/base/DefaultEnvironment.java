@@ -14,6 +14,7 @@ import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 import java.util.Date;
 import java.util.Map;
+import java.util.Optional;
 import java.util.OptionalLong;
 import java.util.Properties;
 import java.util.concurrent.TimeUnit;
@@ -141,6 +142,11 @@ public class DefaultEnvironment implements KiwiEnvironment {
     @Override
     public ProcessHandle currentProcessHandle() {
         return ProcessHandle.current();
+    }
+
+    @Override
+    public Optional<ProcessHandle> processHandleOfPid(long pid) {
+        return ProcessHandle.of(pid);
     }
 
     @Override
