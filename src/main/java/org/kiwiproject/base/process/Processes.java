@@ -676,4 +676,17 @@ public class Processes {
                     format("Process %s was not killed before 1 second timeout expired", processId));
         }
     }
+
+    /**
+     * Locate a program in the user's path.
+     *
+     * @param program the program to locate
+     * @return an Optional containing the full path to the program, or an empty Optional if not found
+     * @implNote If there is more than program found, only the first one is returned
+     */
+    public static Optional<String> which(String program) {
+        var whichProc = launch("which", program);
+        var stdOut = readLinesFromInputStreamOf(whichProc);
+        return stdOut.stream().findFirst();
+    }
 }

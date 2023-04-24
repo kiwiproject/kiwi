@@ -250,4 +250,21 @@ class ProcessesTest {
                     .isThrownBy(() -> Processes.getPidOrThrow(pidString));
         }
     }
+
+    @Nested
+    class Which {
+
+        @ParameterizedTest
+        @ValueSource(strings = {"cp", "ls", "mv"})
+        void shouldFindProgramThatExists(String program) {
+            assertThat(Processes.which(program)).hasValueSatisfying(value -> assertThat(value).endsWith(program));
+        }
+
+        @ParameterizedTest
+        @ValueSource(strings = {"foobar", "abc-xyz", "clunkerate"})
+        void shouldReturnEmptyOptional_WhenProgramDoesNotExistInPath(String program) {
+            assertThat(Processes.which(program)).isEmpty();
+        }
+    }
+
 }
