@@ -24,7 +24,8 @@ import java.lang.annotation.Target;
  * <p>
  * Use {@link #min()} and {@link #max()} to specify the minimum and maximum values allowed in the range. These
  * are <em>inclusive</em> values, e.g. for a range with a minimum of 5 and maximum of 10, the values 5 and 10 are
- * considered as part of the range.
+ * considered as part of the range. A valid range must contain a minimum, a maximum, or both. See the implementation
+ * note below for why this can only be checked at runtime.
  * <p>
  * Use the {@link #minLabel()} and {@link #maxLabel()} to specify custom labels to use in place of the min and max
  * values. This is useful in cases where the min and max are large numbers or when validating date/time values where
@@ -43,6 +44,14 @@ import java.lang.annotation.Target;
  * </ul>
  * While {@code float} and {@code double} are supported, be aware of the possibility for rounding errors when values
  * are near the range bounds. The comparisons use {@link Float#compareTo(Float)} and {@link Double#compareTo(Double)}.
+ *
+ * @implNote A {@link Range} must contain a minimum or a maximum (or both). If no minimum or maximum is supplied, a
+ * {@link IllegalStateException} is thrown at runtime during construction of the {@link RangeValidator}. This is
+ * because this constraint supports various types and not just a single type like Hibernate Validator's {@code Range}
+ * constraint annotation; that annotation supports only numeric types and therefore can set default values for
+ * {@code min} and {@code max}. In contrast, there are no logical defaults which this constraint can provide so the
+ * default must be an empty string for code to compile. The only place to verify a minimum or maximum exists is
+ * therefore when the {@link RangeValidator} is instantiated.
  */
 @Documented
 @Constraint(validatedBy = {RangeValidator.class})
@@ -50,7 +59,7 @@ import java.lang.annotation.Target;
 @Retention(RUNTIME)
 public @interface Range {
 
-    String message() default "{org.kiwiproject.validation.Range.between.message}";
+    String message() default "{org.kiwiproject.validation.Range.between.message.minMaxValues}";
 
     Class<?>[] groups() default {};
 

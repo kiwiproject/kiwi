@@ -29,6 +29,7 @@ public class FieldRangeValidator implements ConstraintValidator<FieldRange, Obje
     private static final String TEMPLATE_AFTER_EXCLUSIVE_MIN_MAX_LABELS = "{org.kiwiproject.validation.FieldRange.afterExclusive.message.minMaxLabels}";
     private static final String TEMPLATE_AFTER_INCLUSIVE_MIN_MAX_VALUES = "{org.kiwiproject.validation.FieldRange.afterInclusive.message.minMaxValues}";
     private static final String TEMPLATE_AFTER_INCLUSIVE_MIN_MAX_LABELS = "{org.kiwiproject.validation.FieldRange.afterInclusive.message.minMaxLabels}";
+    private static final String TEMPLATE_UNKNOWN_ERROR = "{org.kiwiproject.validation.FieldRange.unknownError.message}";
 
     private FieldRange fieldRange;
     private String templateBetween;
@@ -49,6 +50,8 @@ public class FieldRangeValidator implements ConstraintValidator<FieldRange, Obje
         this.fieldRange = constraintAnnotation;
 
         var useLabels = isNotBlank(constraintAnnotation.minLabel()) || isNotBlank(constraintAnnotation.maxLabel());
+        LOG.trace("minLabel and/or maxLabel exist, so label-based messages will be used");
+
         this.templateBetween = useLabels ? TEMPLATE_BETWEEN_MIN_MAX_LABELS : TEMPLATE_BETWEEN_MIN_MAX_VALUES;
         this.templateMinOnly = useLabels ? TEMPLATE_MIN_ONLY_MIN_MAX_LABELS : TEMPLATE_MIN_ONLY_MIN_MAX_VALUES;
         this.templateMaxOnly = useLabels ? TEMPLATE_MAX_ONLY_MIN_MAX_LABELS : TEMPLATE_MAX_ONLY_MIN_MAX_VALUES;
@@ -161,7 +164,7 @@ public class FieldRangeValidator implements ConstraintValidator<FieldRange, Obje
     }
 
     private static void addUnknownErrorConstraintViolation(ConstraintValidatorContext context, FieldRange fieldRange) {
-        KiwiValidations.addError(context, "unknown validation error", fieldRange.startField());
+        KiwiValidations.addError(context, TEMPLATE_UNKNOWN_ERROR, fieldRange.startField());
     }
 
     private static void logWarning(Object value, FieldRange fieldRange, Exception e) {

@@ -1,5 +1,6 @@
 package org.kiwiproject.validation;
 
+import static com.google.common.base.Preconditions.checkState;
 import static com.google.common.base.Verify.verify;
 import static java.util.Objects.isNull;
 import static java.util.Objects.nonNull;
@@ -24,6 +25,7 @@ public class RangeValidator implements ConstraintValidator<Range, Object> {
     private static final String TEMPLATE_LESS_THAN_OR_EQ_MIN_MAX_LABELS = "{org.kiwiproject.validation.Range.lessThanOrEq.message.minMaxLabels}";
     private static final String TEMPLATE_GREATER_THAN_OR_EQ_MIN_MAX_VALUES = "{org.kiwiproject.validation.Range.greaterThanOrEq.message.minMaxValues}";
     private static final String TEMPLATE_GREATER_THAN_OR_EQ_MIN_MAX_LABELS = "{org.kiwiproject.validation.Range.greaterThanOrEq.message.minMaxLabels}";
+    private static final String TEMPLATE_UNKNOWN_ERROR = "{org.kiwiproject.validation.FieldRange.unknownError.message}";
 
     private Range range;
     private String templateBetween;
@@ -39,12 +41,20 @@ public class RangeValidator implements ConstraintValidator<Range, Object> {
      */
     @Override
     public void initialize(Range constraintAnnotation) {
+        checkState(hasMinOrMax(constraintAnnotation), "@Range must specify at least one of 'min' or 'max'");
+
         this.range = constraintAnnotation;
 
         var useLabels = isNotBlank(constraintAnnotation.minLabel()) || isNotBlank(constraintAnnotation.maxLabel());
+        LOG.trace("minLabel and/or maxLabel exist, so label-based messages will be used");
+
         this.templateBetween = useLabels ? TEMPLATE_BETWEEN_MIN_MAX_LABELS : TEMPLATE_BETWEEN_MIN_MAX_VALUES;
         this.templateLessThanOrEq = useLabels ? TEMPLATE_LESS_THAN_OR_EQ_MIN_MAX_LABELS : TEMPLATE_LESS_THAN_OR_EQ_MIN_MAX_VALUES;
         this.templateGreaterThanOrEq = useLabels ? TEMPLATE_GREATER_THAN_OR_EQ_MIN_MAX_LABELS : TEMPLATE_GREATER_THAN_OR_EQ_MIN_MAX_VALUES;
+    }
+
+    private static boolean hasMinOrMax(Range constraintAnnotation) {
+        return isNotBlank(constraintAnnotation.min()) || isNotBlank(constraintAnnotation.max());
     }
 
     @Override
@@ -54,11 +64,11 @@ public class RangeValidator implements ConstraintValidator<Range, Object> {
             validity = checkNull(value, context);
 
             if (validity == Validity.CONTINUE) {
-                // noinspection unchecked,rawtypes
-                validity = checkMinMax((Comparable) value, context);
+                // noinspection unchecked
+                validity = checkMinMax((Comparable<Object>) value, context);
             }
         } catch (Exception e) {
-            KiwiValidations.addError(context, "unknown validation error");
+            KiwiValidations.addError(context, TEMPLATE_UNKNOWN_ERROR);
             logWarning(value, e);
             validity = Validity.INVALID;
         }
