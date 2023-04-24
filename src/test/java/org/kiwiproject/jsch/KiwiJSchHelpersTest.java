@@ -47,6 +47,7 @@ class KiwiJSchHelpersTest {
                 " server.test, server.test",
                 " 'server.test,192.168.1.150', server.test ",
                 " 'server.test,192.168.1.150', 192.168.1.150",
+                " 192.168.1.142, 192.168.1.142"
         })
         void shouldFindMatch(String knownHostEntry, String searchValue) throws JSchException {
             var hostKey = new HostKey(knownHostEntry, HostKey.ECDSA256, new byte[0]);
