@@ -11,6 +11,7 @@ import static org.kiwiproject.logging.LazyLogParameterSupplier.lazy;
 import com.google.common.annotations.VisibleForTesting;
 import lombok.extern.slf4j.Slf4j;
 import org.kiwiproject.base.process.ProcessHelper;
+import org.kiwiproject.base.process.Processes;
 import org.kiwiproject.io.KiwiIO;
 
 import java.io.IOException;
@@ -19,6 +20,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -97,6 +99,29 @@ public class VaultEncryptionHelper {
         } else if (isNotExistingPath(filePath)) {
             errors.add(propertyDescription + " does not exist: " + filePath);
         }
+    }
+
+    /**
+     * Locate the {@code ansible-vault} program in the user's path.
+     *
+     * @return an Optional containing the full path to {@code ansible-vault}, or an empty Optional if not found
+     * @see #whichAnsibleVaultAsPath()
+     */
+    public static Optional<String> whichAnsibleVault() {
+        return whichAnsibleVaultAsPath().map(Path::toString);
+    }
+
+    /**
+     * Locate the {@code ansible-vault} program in the user's path, returning the result as a {@link Path}.
+     *
+     * @return an Optional containing the full {@link Path} to {@code ansible-vault}, or an empty Optional if not found
+     * @implNote This is a convenience wrapper around {@link Processes#whichAsPath(String)} specifically for
+     * the ansible-vault program
+     * @see #whichAnsibleVault()
+     * @see Processes#whichAsPath(String)
+     */
+    public static Optional<Path> whichAnsibleVaultAsPath() {
+        return Processes.whichAsPath("ansible-vault");
     }
 
     /**

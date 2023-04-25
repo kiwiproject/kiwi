@@ -24,6 +24,7 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
 import org.junit.jupiter.params.provider.NullAndEmptySource;
 import org.kiwiproject.base.process.ProcessHelper;
+import org.kiwiproject.base.process.Processes;
 import org.kiwiproject.collect.KiwiLists;
 import org.kiwiproject.internal.Fixtures;
 import org.mockito.ArgumentMatcher;
@@ -559,4 +560,31 @@ class VaultEncryptionHelperTest {
         return new ByteArrayInputStream(value.getBytes(StandardCharsets.UTF_8));
     }
 
+    @Nested
+    class WhichAnsibleVault {
+
+        /**
+         * @implNote We can't assume ansible-vault will exist, so just verify that the result we get
+         * is the same as using {@link Processes#which(String)}.
+         */
+        @Test
+        void shouldReturnAnsibleVaultPath_AsString_IfExists() {
+            var expectedPath = Processes.which("ansible-vault");
+            assertThat(VaultEncryptionHelper.whichAnsibleVault()).isEqualTo(expectedPath);
+        }
+    }
+
+    @Nested
+    class WhichAnsibleVaultAsPath {
+
+        /**
+         * @implNote We can't assume ansible-vault will exist, so just verify that the result we get
+         * is the same as using {@link Processes#whichAsPath(String)}
+         */
+        @Test
+        void shouldReturnAnsibleVaultPath_AsPathObject_IfExists() {
+            var expectedPath = Processes.whichAsPath("ansible-vault");
+            assertThat(VaultEncryptionHelper.whichAnsibleVaultAsPath()).isEqualTo(expectedPath);
+        }
+    }
 }
