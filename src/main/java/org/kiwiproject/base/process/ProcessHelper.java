@@ -11,6 +11,7 @@ import org.apache.commons.lang3.tuple.Pair;
 import javax.annotation.Nullable;
 import java.io.File;
 import java.io.UncheckedIOException;
+import java.nio.file.Path;
 import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
@@ -335,6 +336,18 @@ public class ProcessHelper {
      */
     private Process launchPgrepWithParentPidFlag(long parentProcessId, ProcessHelper processHelper) {
         return processHelper.launch("pgrep", "-P", String.valueOf(parentProcessId));
+    }
+
+    /**
+     * Locate a program in the user's path, returning the result as a {@link Path}.
+     *
+     * @param program the program to locate
+     * @return an Optional containing the full {@link Path} to the program, or an empty Optional if not found
+     * @implNote If there is more than program found, only the first one is returned
+     * @see Processes#whichAsPath(String)
+     */
+    public Optional<Path> whichAsPath(String program) {
+        return Processes.whichAsPath(program);
     }
 
     /**
