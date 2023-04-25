@@ -562,4 +562,23 @@ class ProcessHelperTest {
             assertThat(processes.which("killify")).isEmpty();
         }
     }
+
+    @Nested
+    class WhichAsPath {
+
+        /**
+         * @implNote This test assumes {@link Processes#whichAsPath(String)} works. This is a trade-off to make this
+         * test much simpler than having to replicate its logic in this test.
+         */
+        @Test
+        void shouldFindProgramThatExists() {
+            var lsPath = Processes.whichAsPath("ls").orElseThrow();
+            assertThat(processes.whichAsPath("ls")).contains(lsPath);
+        }
+
+        @Test
+        void shouldReturnEmptyOptional_WhenProgramDoesNotExistInPath() {
+            assertThat(processes.whichAsPath("killify")).isEmpty();
+        }
+    }
 }

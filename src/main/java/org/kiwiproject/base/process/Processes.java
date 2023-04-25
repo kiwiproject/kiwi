@@ -27,6 +27,7 @@ import javax.annotation.Nullable;
 import java.io.File;
 import java.io.IOException;
 import java.io.UncheckedIOException;
+import java.nio.file.Path;
 import java.util.List;
 import java.util.Optional;
 import java.util.OptionalLong;
@@ -675,6 +676,17 @@ public class Processes {
             throw new IllegalStateException(
                     format("Process %s was not killed before 1 second timeout expired", processId));
         }
+    }
+
+    /**
+     * Locate a program in the user's path, returning the result as a {@link Path}.
+     *
+     * @param program the program to locate
+     * @return an Optional containing the full {@link Path} to the program, or an empty Optional if not found
+     * @implNote If there is more than program found, only the first one is returned
+     */
+    public static Optional<Path> whichAsPath(String program) {
+        return which(program).map(Path::of);
     }
 
     /**

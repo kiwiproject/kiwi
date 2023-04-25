@@ -19,6 +19,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 
+import java.nio.file.Path;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
@@ -264,6 +265,23 @@ class ProcessesTest {
         @ValueSource(strings = {"foobar", "abc-xyz", "clunkerate"})
         void shouldReturnEmptyOptional_WhenProgramDoesNotExistInPath(String program) {
             assertThat(Processes.which(program)).isEmpty();
+        }
+    }
+
+    @Nested
+    class WhichAsPath {
+
+        @ParameterizedTest
+        @ValueSource(strings = {"cp", "ls", "mv"})
+        void shouldFindProgramThatExists(String program) {
+            assertThat(Processes.whichAsPath(program))
+                    .hasValueSatisfying(value -> assertThat(value).endsWith(Path.of(program)));
+        }
+
+        @ParameterizedTest
+        @ValueSource(strings = {"foobar", "abc-xyz", "clunkerate"})
+        void shouldReturnEmptyOptional_WhenProgramDoesNotExistInPath(String program) {
+            assertThat(Processes.whichAsPath(program)).isEmpty();
         }
     }
 
