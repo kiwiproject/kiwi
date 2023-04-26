@@ -403,7 +403,7 @@ class TlsContextConfigurationTest {
             }
 
             @Test
-            void shouldNotCurrentlySupportDifferentTrustStoreType() {
+            void shouldSupportDifferentTrustStoreType() {
                 var tlsContextConfig = TlsContextConfiguration.builder()
                         .protocol(SSLContextProtocol.TLS_1_3.value)
                         .verifyHostname(false)
@@ -419,9 +419,8 @@ class TlsContextConfigurationTest {
                 var sslConfig = tlsContextConfig.toSslContextConfiguration();
 
                 assertThat(sslConfig.getTrustStoreType())
-                        .describedAs("If this test has failed, it means we have added support for different" +
-                                " trust store type in SSLContextConfiguration and this test needs to be updated!")
-                        .isEqualTo(KeyStoreType.JKS.value);
+                        .describedAs("We should now support setting trust store type in SSLContextConfiguration")
+                        .isEqualTo(KeyStoreType.PKCS12.value);
             }
         }
     }

@@ -168,12 +168,7 @@ public class TlsContextConfiguration implements KeyAndTrustStoreConfigProvider {
     /**
      * Convert this configuration into a {@link SSLContextConfiguration}.
      * <p>
-     * Note that the conversion is "lossy" since {@link SSLContextConfiguration} does not currently have a separate
-     * {@code trustStoreType} property. As a result the key store type in this instance is used to set the
-     * {@code keyStoreType} on the returned instance, which is used as both the key and trust store type. Usually this
-     * won't be an issue, as (at least in our experience) people normally use the same type of key and trust stores.
-     * <p>
-     * The {@link SSLContextConfiguration} also does not have {@code supportedProtocols}, so that information is lost
+     * Note that {@link SSLContextConfiguration} does not have {@code supportedProtocols}, so that information is lost
      * in the conversion.
      *
      * @return the new SSLContextConfiguration instance
@@ -185,6 +180,7 @@ public class TlsContextConfiguration implements KeyAndTrustStoreConfigProvider {
                 .keyStoreType(keyStoreType)
                 .trustStorePath(trustStorePath)
                 .trustStorePassword(trustStorePassword)
+                .trustStoreType(trustStoreType)
                 .protocol(protocol)
                 .verifyHostname(verifyHostname)
                 .build();

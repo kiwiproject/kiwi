@@ -3,6 +3,7 @@ package org.kiwiproject.security;
 import static java.util.Objects.isNull;
 import static org.kiwiproject.base.KiwiStrings.f;
 
+import com.google.common.annotations.VisibleForTesting;
 import lombok.Getter;
 import lombok.Synchronized;
 import org.kiwiproject.collect.KiwiMaps;
@@ -25,8 +26,10 @@ public class SimpleSSLContextFactory {
 
     private static final String KEY_STORE_PATH_PROPERTY = "keyStorePath";
     private static final String KEY_STORE_PASSWORD_PROPERTY = "keyStorePassword";
+    private static final String KEY_STORE_TYPE_PROPERTY = "keyStoreType";
     private static final String TRUST_STORE_PATH_PROPERTY = "trustStorePath";
     private static final String TRUST_STORE_PASSWORD_PROPERTY = "trustStorePassword";
+    private static final String TRUST_STORE_TYPE_PROPERTY = "trustStoreType";
     private static final String PROTOCOL_PROPERTY = "protocol";
     private static final String VERIFY_HOSTNAME_PROPERTY = "verifyHostname";
 
@@ -36,8 +39,10 @@ public class SimpleSSLContextFactory {
 
     private final String keyStorePath;
     private final String keyStorePassword;
+    private final String keyStoreType;
     private final String trustStorePath;
     private final String trustStorePassword;
+    private final String trustStoreType;
     private final String protocol;
     private SSLContext sslContext;
 
@@ -51,7 +56,8 @@ public class SimpleSSLContextFactory {
     private final boolean verifyHostname;
 
     /**
-     * Create a new {@link SimpleSSLContextFactory} with {@code verifyHostname} set to {@code true}.
+     * Create a new {@link SimpleSSLContextFactory} with {@code verifyHostname} set to {@code true} and "JKS" as
+     * the key and trust store type.
      *
      * @param keyStorePath       path to the key store
      * @param keyStorePassword   password of the key store
@@ -68,7 +74,7 @@ public class SimpleSSLContextFactory {
     }
 
     /**
-     * Create a new {@link SimpleSSLContextFactory}.
+     * Create a new {@link SimpleSSLContextFactory} with "JKS" as the key and trust store type.
      *
      * @param keyStorePath       path to the key store
      * @param keyStorePassword   password of the key store
@@ -83,16 +89,44 @@ public class SimpleSSLContextFactory {
                                    String trustStorePassword,
                                    String protocol,
                                    boolean verifyHostname) {
+        this(keyStorePath, keyStorePassword, KeyStoreType.JKS.value, trustStorePath, trustStorePassword, KeyStoreType.JKS.value, protocol, verifyHostname);
+    }
+
+    /**
+     * Create a new {@link SimpleSSLContextFactory}.
+     *
+     * @param keyStorePath       path to the key store
+     * @param keyStorePassword   password of the key store
+     * @param keyStoreType       the keystore type
+     * @param trustStorePath     path to the trust store
+     * @param trustStorePassword password of the trust store
+     * @param trustStoreType     the trust store type
+     * @param protocol           the protocol to use
+     * @param verifyHostname     whether to verify host names or not
+     */
+    @SuppressWarnings("java:S107")
+    public SimpleSSLContextFactory(String keyStorePath,
+                                   String keyStorePassword,
+                                   String keyStoreType,
+                                   String trustStorePath,
+                                   String trustStorePassword,
+                                   String trustStoreType,
+                                   String protocol,
+                                   boolean verifyHostname) {
         this.keyStorePath = keyStorePath;
         this.keyStorePassword = keyStorePassword;
+        this.keyStoreType = keyStoreType;
         this.trustStorePath = trustStorePath;
         this.trustStorePassword = trustStorePassword;
+        this.trustStoreType = trustStoreType;
         this.protocol = protocol;
         this.verifyHostname = verifyHostname;
     }
 
     /**
      * A builder class for {@link SimpleSSLContextFactory}.
+     * <p>
+     * If not specified, key and trust store type default to "JKS", and {@code verifyHostname} defaults to {@code true}.
      *
      * @implNote This was implemented well before we started using Lombok, so is manual builder code, though
      * we have added both the Lombok-style xxx() as well as keeping the original setXxx() methods.
@@ -106,10 +140,12 @@ public class SimpleSSLContextFactory {
             entries = KiwiMaps.newHashMap(
                     KEY_STORE_PATH_PROPERTY, Optional.empty(),
                     KEY_STORE_PASSWORD_PROPERTY, Optional.empty(),
+                    KEY_STORE_TYPE_PROPERTY, Optional.of(KeyStoreType.JKS.value),
                     TRUST_STORE_PATH_PROPERTY, Optional.empty(),
                     TRUST_STORE_PASSWORD_PROPERTY, Optional.empty(),
+                    TRUST_STORE_TYPE_PROPERTY, Optional.of(KeyStoreType.JKS.value),
                     PROTOCOL_PROPERTY, Optional.empty(),
-                    VERIFY_HOSTNAME_PROPERTY, Optional.empty()
+                    VERIFY_HOSTNAME_PROPERTY, Optional.of("true")
             );
         }
 
@@ -131,6 +167,15 @@ public class SimpleSSLContextFactory {
             return this;
         }
 
+        public Builder keyStoreType(String keyStoreType) {
+            return setKeyStoreType(keyStoreType);
+        }
+
+        public Builder setKeyStoreType(String keyStoreType) {
+            entries.put(KEY_STORE_TYPE_PROPERTY, Optional.of(keyStoreType));
+            return this;
+        }
+
         public Builder trustStorePath(String trustStorePath) {
             return setTrustStorePath(trustStorePath);
         }
@@ -146,6 +191,15 @@ public class SimpleSSLContextFactory {
 
         public Builder setTrustStorePassword(String trustStorePassword) {
             entries.put(TRUST_STORE_PASSWORD_PROPERTY, Optional.of(trustStorePassword));
+            return this;
+        }
+
+        public Builder trustStoreType(String trustStoreType) {
+            return setTrustStoreType(trustStoreType);
+        }
+
+        public Builder setTrustStoreType(String trustStoreType) {
+            entries.put(TRUST_STORE_TYPE_PROPERTY, Optional.of(trustStoreType));
             return this;
         }
 
@@ -173,10 +227,12 @@ public class SimpleSSLContextFactory {
             return new SimpleSSLContextFactory(
                     entries.get(KEY_STORE_PATH_PROPERTY).orElse(null),
                     entries.get(KEY_STORE_PASSWORD_PROPERTY).orElse(null),
+                    entries.get(KEY_STORE_TYPE_PROPERTY).orElseThrow(IllegalStateException::new),
                     entries.get(TRUST_STORE_PATH_PROPERTY).orElseThrow(IllegalStateException::new),
                     entries.get(TRUST_STORE_PASSWORD_PROPERTY).orElseThrow(IllegalStateException::new),
+                    entries.get(TRUST_STORE_TYPE_PROPERTY).orElseThrow(IllegalStateException::new),
                     entries.get(PROTOCOL_PROPERTY).orElseThrow(IllegalStateException::new),
-                    Boolean.parseBoolean(entries.get(VERIFY_HOSTNAME_PROPERTY).orElse("true"))
+                    Boolean.parseBoolean(entries.get(VERIFY_HOSTNAME_PROPERTY).orElseThrow(IllegalStateException::new))
             );
         }
 
@@ -209,15 +265,37 @@ public class SimpleSSLContextFactory {
      * {@link SimpleSSLContextFactory} instance was built with.
      *
      * @return a new {@link SSLContext} instance when first called; all subsequent calls return the same cached instance
-     * @implNote This is intended to be called infrequently, e.g. once when a service/app starts. Thus, making it
-     * synchronized was the easiest way to ensure thread-safety.
+     * @implNote This is intended to be called infrequently, e.g. once when a service/app starts. It is internally
+     * synchronized to ensure thread-safety when creating the {@link SSLContext}.
      */
     @Synchronized
     public SSLContext getSslContext() {
         if (isNull(sslContext)) {
             sslContext = KiwiSecurity.createSslContext(
-                    keyStorePath, keyStorePassword, trustStorePath, trustStorePassword, protocol);
+                    keyStorePath, keyStorePassword, keyStoreType, trustStorePath, trustStorePassword, trustStoreType, protocol);
         }
         return sslContext;
+    }
+
+    /**
+     * Get the properties this factory was configured with, <strong>including passwords</strong>.
+     *
+     * @return a map containing the configuration of this factory
+     * @apiNote Currently this is not publicly exposed, as it should not generally be needed except in tests.
+     * @implNote Uses {@link KiwiMaps#newHashMap(Object...)} because some values may be {@code null}, e.g. the key
+     * store path
+     */
+    @VisibleForTesting
+    Map<String, Object> configuration() {
+        return KiwiMaps.newHashMap(
+            KEY_STORE_PATH_PROPERTY, keyStorePath,
+            KEY_STORE_PASSWORD_PROPERTY, keyStorePassword,
+            KEY_STORE_TYPE_PROPERTY, keyStoreType,
+            TRUST_STORE_PATH_PROPERTY, trustStorePath,
+            TRUST_STORE_PASSWORD_PROPERTY, trustStorePassword,
+            TRUST_STORE_TYPE_PROPERTY, trustStoreType,
+            PROTOCOL_PROPERTY, protocol,
+            VERIFY_HOSTNAME_PROPERTY, verifyHostname
+        );
     }
 }
