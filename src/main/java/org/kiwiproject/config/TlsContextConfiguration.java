@@ -47,6 +47,15 @@ public class TlsContextConfiguration implements KeyAndTrustStoreConfigProvider {
     private String protocol = SSLContextProtocol.TLS_1_2.value;
 
     /**
+     * The name of the JCE (Java Cryptography Extension) provider to use on client side for cryptographic
+     * support (for example, SunJCE, Conscrypt, BC, etc).
+     * <p>
+     * For more details, see the Java Cryptography Architecture (JCA) Reference Guide" section of the Java
+     * <a href="https://docs.oracle.com/en/java/javase/20/security/java-security-overview1.html">Security Developer’s Guide</a>.
+     */
+    private String provider;
+
+    /**
      * Absolute path to the key store.
      */
     private String keyStorePath;
@@ -66,7 +75,18 @@ public class TlsContextConfiguration implements KeyAndTrustStoreConfigProvider {
     private String keyStoreType = KeyStoreType.JKS.value;
 
     /**
-     * Absolute path tot the trust store.
+     * The name of the provider for the key store, i.e. the value of {@code provider} to use when getting the
+     * {@link java.security.KeyStore} instance for the key store.
+     * <p>
+     * For more details, see the Java Cryptography Architecture (JCA) Reference Guide" section of the Java
+     * <a href="https://docs.oracle.com/en/java/javase/20/security/java-security-overview1.html">Security Developer’s Guide</a>.
+     *
+     * @see java.security.KeyStore#getInstance(String, String)
+     */
+    private String keyStoreProvider;
+
+    /**
+     * Absolute path to the trust store.
      */
     @NotBlank
     private String trustStorePath;
@@ -85,6 +105,22 @@ public class TlsContextConfiguration implements KeyAndTrustStoreConfigProvider {
     @NotBlank
     @Builder.Default
     private String trustStoreType = KeyStoreType.JKS.value;
+
+    /**
+     * The name of the provider for the trust store, i.e. the value of {@code provider} to use when getting the
+     * {@link java.security.KeyStore} instance for the trust store.
+     * <p>
+     * For more details, see the Java Cryptography Architecture (JCA) Reference Guide" section of the Java
+     * <a href="https://docs.oracle.com/en/java/javase/20/security/java-security-overview1.html">Security Developer’s Guide</a>.
+     *
+     * @see java.security.KeyStore#getInstance(String, String)
+     */
+    private String trustStoreProvider;
+
+    /**
+     * Whether self-signed certificates should be trusted. Default is {@code false}.
+     */
+    private boolean trustSelfSignedCertificates;
 
     /**
      * Should host names be verified when establishing secure connections? Default is {@code true}.
@@ -108,11 +144,26 @@ public class TlsContextConfiguration implements KeyAndTrustStoreConfigProvider {
     private List<String> supportedProtocols;
 
     /**
+     * A list of cipher suites (e.g., TLS_ECDHE_ECDSA_WITH_AES_128_CBC_SHA256) which are supported.
+     * All other cipher suites will be refused.
+     * <p>
+     * Note that this can be {@code null} for similar reason as {@code supportedProtocols}. See the implementation
+     * note on {@code supportedProtocols}.
+     */
+    private List<String> supportedCiphers;
+
+    /**
+     * The alias of a specific client certificate to present when authenticating. Use this when the specified
+     * keystore has multiple certificates to force use of a non-default certificate.
+     */
+    private String certAlias;
+
+    /**
      * Given a Dropwizard {@link TlsConfiguration}, create a new {@link TlsContextConfiguration}.
      * <p>
      * Even though {@link TlsContextConfiguration} does not permit null trust store properties (per the validation
      * annotations), the {@link TlsConfiguration} does. If we encounter this sitation, we will be lenient; even though
-     * this could possibly cause downstream problems, we will jsut assume the caller knows what it is doing.
+     * this could possibly cause downstream problems, we will just assume the caller knows what it is doing.
      *
      * @param tlsConfig the Dropwizard TlsConfiguration from which to pull information
      * @return a new TlsContextConfiguration instance
@@ -123,14 +174,20 @@ public class TlsContextConfiguration implements KeyAndTrustStoreConfigProvider {
 
         return TlsContextConfiguration.builder()
                 .protocol(tlsConfig.getProtocol())
+                .provider(tlsConfig.getProvider())
                 .keyStorePath(absolutePathOrNull(tlsConfig.getKeyStorePath()))
                 .keyStorePassword(tlsConfig.getKeyStorePassword())
                 .keyStoreType(tlsConfig.getKeyStoreType())
+                .keyStoreProvider(tlsConfig.getKeyStoreProvider())
                 .trustStorePath(absolutePathOrNull(tlsConfig.getTrustStorePath()))
                 .trustStorePassword(tlsConfig.getTrustStorePassword())
                 .trustStoreType(tlsConfig.getTrustStoreType())
+                .trustStoreProvider(tlsConfig.getTrustStoreProvider())
+                .trustSelfSignedCertificates(tlsConfig.isTrustSelfSignedCertificates())
                 .verifyHostname(tlsConfig.isVerifyHostname())
                 .supportedProtocols(tlsConfig.getSupportedProtocols())
+                .supportedCiphers(tlsConfig.getSupportedCiphers())
+                .certAlias(tlsConfig.getCertAlias())
                 .build();
     }
 
@@ -149,18 +206,24 @@ public class TlsContextConfiguration implements KeyAndTrustStoreConfigProvider {
         var tlsConfig = new TlsConfiguration();
 
         tlsConfig.setProtocol(protocol);
+        tlsConfig.setProvider(provider);
 
         var keyStoreFile = Optional.ofNullable(keyStorePath).map(File::new).orElse(null);
         tlsConfig.setKeyStorePath(keyStoreFile);
         tlsConfig.setKeyStorePassword(keyStorePassword);
         tlsConfig.setKeyStoreType(keyStoreType);
+        tlsConfig.setKeyStoreProvider(keyStoreProvider);
 
         tlsConfig.setTrustStorePath(new File(trustStorePath));
         tlsConfig.setTrustStorePassword(trustStorePassword);
         tlsConfig.setTrustStoreType(trustStoreType);
+        tlsConfig.setTrustStoreProvider(trustStoreProvider);
 
+        tlsConfig.setTrustSelfSignedCertificates(trustSelfSignedCertificates);
         tlsConfig.setVerifyHostname(verifyHostname);
         tlsConfig.setSupportedProtocols(supportedProtocols);
+        tlsConfig.setSupportedCiphers(supportedCiphers);
+        tlsConfig.setCertAlias(certAlias);
 
         return tlsConfig;
     }
@@ -168,8 +231,10 @@ public class TlsContextConfiguration implements KeyAndTrustStoreConfigProvider {
     /**
      * Convert this configuration into a {@link SSLContextConfiguration}.
      * <p>
-     * Note that {@link SSLContextConfiguration} does not have {@code supportedProtocols}, so that information is lost
-     * in the conversion.
+     * Note that {@link SSLContextConfiguration} does not have {@code provider}, {@code keyStoreProvider},
+     * {@code trustStoreProvider}, {@code trustSelfSignedCertificates}, {@code supportedProtocols},
+     * {@code supportedCiphers}, or {@code certAlias}. As a result, this is a "lossy" conversion since it loses
+     * these values.
      *
      * @return the new SSLContextConfiguration instance
      */
