@@ -15,6 +15,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
+import org.kiwiproject.security.KeyStoreType;
 import org.kiwiproject.util.YamlTestHelper;
 
 import java.util.stream.IntStream;
@@ -112,6 +113,9 @@ class SecureEndpointsConfigurationTest {
                     .isEqualTo(STORE_TYPE);
             assertThat(secureEndpointsConfig.getTrustStorePath()).isEqualTo(JKS_FILE_PATH);
             assertThat(secureEndpointsConfig.getTrustStorePassword()).isEqualTo(JKS_PASSWORD);
+            assertThat(secureEndpointsConfig.getTrustStoreType())
+                    .describedAs("should use default from SSLContextConfiguration")
+                    .isEqualTo(STORE_TYPE);
 
             assertThat(secureEndpointsConfig.getEndpoints())
                     .extracting("domain")
@@ -122,6 +126,46 @@ class SecureEndpointsConfigurationTest {
 
             var awesomeEndpoint = secureEndpointsConfig.getEndpointByTag("awesome-endpoint");
             assertThat(awesomeEndpoint.getURI()).isEqualTo("https://bar.com:6666/path2");
+
+            assertThat(secureEndpointsConfig.anyEndpointSecure()).isTrue();
+            assertThat(secureEndpointsConfig.allEndpointsSecure()).isTrue();
+        }
+
+        @Test
+        void shouldAddEndpointsWithCustomKeyAndTrustStoreType() {
+            var secureEndpointsConfig = SecureEndpointsConfiguration.builder()
+                    .keyStorePath("/data/certs/ks.pkcs12")
+                    .keyStorePassword("ksPass123")
+                    .keyStoreType(KeyStoreType.PKCS12.value)
+                    .trustStorePath("/data/certs/ts.pkcs12")
+                    .trustStorePassword("tsPass456")
+                    .trustStoreType(KeyStoreType.PKCS12.value)
+                    .protocol(TLS_PROTOCOL)
+                    .verifyHostname(true)
+                    .addEndpoint()
+                    .tag("endpoint-1")
+                    .scheme(HTTPS_SCHEME)
+                    .domain("acme.com")
+                    .path("path1")
+                    .port("8999")
+                    .buildEndpoint()
+                    .build();
+
+            assertThat(secureEndpointsConfig.getProtocol()).isEqualTo(TLS_PROTOCOL);
+            assertThat(secureEndpointsConfig.isVerifyHostname()).isTrue();
+            assertThat(secureEndpointsConfig.getKeyStorePath()).isEqualTo("/data/certs/ks.pkcs12");
+            assertThat(secureEndpointsConfig.getKeyStorePassword()).isEqualTo("ksPass123");
+            assertThat(secureEndpointsConfig.getKeyStoreType()).isEqualTo(KeyStoreType.PKCS12.value);
+            assertThat(secureEndpointsConfig.getTrustStorePath()).isEqualTo("/data/certs/ts.pkcs12");
+            assertThat(secureEndpointsConfig.getTrustStorePassword()).isEqualTo("tsPass456");
+            assertThat(secureEndpointsConfig.getTrustStoreType()).isEqualTo(KeyStoreType.PKCS12.value);
+
+            assertThat(secureEndpointsConfig.getEndpoints())
+                    .extracting("domain")
+                    .containsExactly("acme.com");
+
+            var coolEndpoint = secureEndpointsConfig.getEndpointByTag("endpoint-1");
+            assertThat(coolEndpoint.getURI()).isEqualTo("https://acme.com:8999/path1");
 
             assertThat(secureEndpointsConfig.anyEndpointSecure()).isTrue();
             assertThat(secureEndpointsConfig.allEndpointsSecure()).isTrue();

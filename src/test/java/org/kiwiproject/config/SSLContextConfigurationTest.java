@@ -41,8 +41,14 @@ class SSLContextConfigurationTest {
         }
 
         @Test
-        void shouldReturnTrustStoreTypeEqualToKeyStoreType() {
-            assertThat(baselineConfig.getTrustStoreType()).isEqualTo(baselineConfig.getKeyStoreType());
+        void shouldDefaultTrustStoreTypeToJKS() {
+            assertThat(baselineConfig.getTrustStoreType()).isEqualTo(KeyStoreType.JKS.value);
+        }
+
+        @Test
+        void shouldAllowDifferentTrustStoreType() {
+            baselineConfig.setTrustStoreType(KeyStoreType.PKCS12.value);
+            assertThat(baselineConfig.getTrustStoreType()).isEqualTo(KeyStoreType.PKCS12.value);
         }
     }
 
@@ -72,12 +78,15 @@ class SSLContextConfigurationTest {
     }
 
     @Test
+    @SuppressWarnings("deprecation")
     void shouldConvertToTlsContextConfiguration_WithDifferentTrustStoreType() {
         var sslConfig = SSLContextConfiguration.builder()
                 .keyStorePath("/pki/ks.jks")
                 .keyStorePassword("ks-pass")
+                .keyStoreType(KeyStoreType.JKS.value)
                 .trustStorePath("/pki/ts/pkcs12")
                 .setTrustStorePassword("ts-pass")
+                .trustStoreType(KeyStoreType.JKS.value)
                 .build();
 
         var tlsConfig = sslConfig.toTlsContextConfiguration(KeyStoreType.PKCS12.value);
@@ -100,6 +109,7 @@ class SSLContextConfigurationTest {
                 .keyStoreType(type)
                 .trustStorePath(path)
                 .trustStorePassword(password)
+                .trustStoreType(type)
                 .protocol(protocol)
                 .verifyHostname(false)
                 .build();

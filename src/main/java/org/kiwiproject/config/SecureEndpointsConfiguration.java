@@ -128,6 +128,17 @@ public class SecureEndpointsConfiguration extends SSLContextConfiguration {
         }
 
         @Override
+        public Builder trustStoreType(String trustStoreType) {
+            return setTrustStoreType(trustStoreType);
+        }
+
+        @Override
+        public Builder setTrustStoreType(String trustStoreType) {
+            configuration.setTrustStoreType(trustStoreType);
+            return this;
+        }
+
+        @Override
         public Builder verifyHostname(boolean verifyHostname) {
             return setVerifyHostname(verifyHostname);
         }

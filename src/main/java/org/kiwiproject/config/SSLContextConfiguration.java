@@ -4,6 +4,7 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.kiwiproject.base.KiwiDeprecated;
 import org.kiwiproject.security.KeyAndTrustStoreConfigProvider;
 import org.kiwiproject.security.KeyStoreType;
 import org.kiwiproject.security.SimpleSSLContextFactory;
@@ -23,6 +24,7 @@ public class SSLContextConfiguration implements KeyAndTrustStoreConfigProvider {
     private String trustStorePassword;
     private String protocol;
     private String keyStoreType = KeyStoreType.JKS.value;
+    private String trustStoreType = KeyStoreType.JKS.value;
     private boolean verifyHostname = true;
 
     /**
@@ -73,6 +75,15 @@ public class SSLContextConfiguration implements KeyAndTrustStoreConfigProvider {
             return this;
         }
 
+        public Builder trustStoreType(String trustStoreType) {
+            return setTrustStoreType(trustStoreType);
+        }
+
+        public Builder setTrustStoreType(String trustStoreType) {
+            configuration.setTrustStoreType(trustStoreType);
+            return this;
+        }
+
         public Builder protocol(String protocol) {
             return setProtocol(protocol);
         }
@@ -115,18 +126,6 @@ public class SSLContextConfiguration implements KeyAndTrustStoreConfigProvider {
     }
 
     /**
-     * Overrides and defines trust store type to be the same as {@code keyStoreType}, since this is
-     * the most common case.
-     * <p>
-     * This may be changed in the future by adding an explicit trust store type property, though we would
-     * keep the same default value.
-     */
-    @Override
-    public String getTrustStoreType() {
-        return keyStoreType;
-    }
-
-    /**
      * Convert this instance to a new {@link SSLContext}.
      * <p>
      * If you would rather not create a new instance every time, use {@link #toSimpleSSLContextFactory()}
@@ -148,31 +147,15 @@ public class SSLContextConfiguration implements KeyAndTrustStoreConfigProvider {
      */
     public SimpleSSLContextFactory toSimpleSSLContextFactory() {
         return new SimpleSSLContextFactory(
-                keyStorePath, keyStorePassword, trustStorePath, trustStorePassword, protocol, verifyHostname);
+                keyStorePath, keyStorePassword, keyStoreType, trustStorePath, trustStorePassword, trustStoreType, protocol, verifyHostname);
     }
 
     /**
-     * Convert this {@link SSLContextConfiguration} to a {@link TlsContextConfiguration}, using the
-     * {@code keyStoreType} for both the key and trust store type in the returned object.
-     * <p>
-     * Use {@link #toTlsContextConfiguration(String)} if you need to specify a different trust store type.
+     * Convert this {@link SSLContextConfiguration} to a {@link TlsContextConfiguration}.
      *
      * @return a new {@link TlsContextConfiguration} instance
-     * @see #toTlsContextConfiguration(String)
      */
     public TlsContextConfiguration toTlsContextConfiguration() {
-        return toTlsContextConfiguration(keyStoreType);
-    }
-
-    /**
-     * Convert this {@link SSLContextConfiguration} to a {@link TlsContextConfiguration}, using the
-     * {@code keyStoreType} for the key and the specified {@code trustStoreType} as the trust store type
-     * in the returned object.
-     *
-     * @param trustStoreType the type of trust store to use
-     * @return a new {@link TlsContextConfiguration} instance
-     */
-    public TlsContextConfiguration toTlsContextConfiguration(String trustStoreType) {
         return TlsContextConfiguration.builder()
                 .keyStorePath(keyStorePath)
                 .keyStorePassword(keyStorePassword)
@@ -180,6 +163,32 @@ public class SSLContextConfiguration implements KeyAndTrustStoreConfigProvider {
                 .trustStorePath(trustStorePath)
                 .trustStorePassword(trustStorePassword)
                 .trustStoreType(trustStoreType)
+                .protocol(protocol)
+                .verifyHostname(verifyHostname)
+                .build();
+    }
+
+    /**
+     * Convert this {@link SSLContextConfiguration} to a {@link TlsContextConfiguration}, using the
+     * {@code keyStoreType} for the key and the specified {@code trustStoreTypeOverride} as the trust store type
+     * in the returned object.
+     *
+     * @param trustStoreTypeOverride the type of trust store to use
+     * @return a new {@link TlsContextConfiguration} instance
+     * @deprecated use {@link #toTlsContextConfiguration()}
+     * @apiNote This originally existed because we did not provide support for having a different trust store type
+     * in this class. Now that we do, it is no longer needed and is deprecated.
+     */
+    @Deprecated(since = "2.6.0")
+    @KiwiDeprecated(replacedBy = "#toTlsContextConfiguration()")
+    public TlsContextConfiguration toTlsContextConfiguration(String trustStoreTypeOverride) {
+        return TlsContextConfiguration.builder()
+                .keyStorePath(keyStorePath)
+                .keyStorePassword(keyStorePassword)
+                .keyStoreType(keyStoreType)
+                .trustStorePath(trustStorePath)
+                .trustStorePassword(trustStorePassword)
+                .trustStoreType(trustStoreTypeOverride)
                 .protocol(protocol)
                 .verifyHostname(verifyHostname)
                 .build();

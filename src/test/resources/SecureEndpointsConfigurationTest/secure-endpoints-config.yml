@@ -4,6 +4,7 @@ secureEndpoints:
   keyStoreType: PKCS12
   trustStorePath: /path/to/truststore.pkcs12
   trustStorePassword: tsPass100
+  trustStoreType: PKCS12
   protocol: TLSv1.3
   verifyHostname: false
   endpoints:
