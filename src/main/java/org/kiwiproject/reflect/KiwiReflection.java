@@ -140,6 +140,10 @@ public class KiwiReflection {
 
     /**
      * Get the value of a specific field in an object.
+     * <p>
+     * Note that if the field is not public, this method uses {@link Field#setAccessible(boolean)}
+     * to make it accessible and thus is subject to a {@link SecurityException} or
+     * {@link java.lang.reflect.InaccessibleObjectException}.
      *
      * @param target    the target object
      * @param fieldName the field name
@@ -189,6 +193,10 @@ public class KiwiReflection {
      * Sets a value directly into the specified field in the target object.
      * <p>
      * Subject to the restrictions of and exceptions thrown by {@link Field#set(Object, Object)}.
+     * <p>
+     * Note that if the field is not public, this method uses {@link Field#setAccessible(boolean)}
+     * to make it accessible and thus is subject to a {@link SecurityException} or
+     * {@link java.lang.reflect.InaccessibleObjectException}.
      *
      * @param target    the target object in which the field resides
      * @param fieldName the field name
@@ -205,8 +213,6 @@ public class KiwiReflection {
      * Sets a value directly into the specified field in the target object.
      * <p>
      * Subject to the restrictions of and exceptions thrown by {@link Field#set(Object, Object)}.
-     * <p>
-     * Think
      *
      * @param target the target object in which the field resides
      * @param field  the field to set
