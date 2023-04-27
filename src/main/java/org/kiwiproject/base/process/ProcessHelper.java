@@ -7,8 +7,8 @@ import static org.kiwiproject.io.KiwiIO.streamLinesFromInputStreamOf;
 
 import com.google.common.annotations.VisibleForTesting;
 import org.apache.commons.lang3.tuple.Pair;
+import org.checkerframework.checker.nullness.qual.Nullable;
 
-import javax.annotation.Nullable;
 import java.io.File;
 import java.io.UncheckedIOException;
 import java.nio.file.Path;

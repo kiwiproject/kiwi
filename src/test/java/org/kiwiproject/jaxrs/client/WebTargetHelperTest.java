@@ -22,7 +22,6 @@ import org.junit.jupiter.params.provider.NullSource;
 import org.junit.jupiter.params.provider.ValueSource;
 import org.kiwiproject.collect.KiwiMaps;
 
-import javax.annotation.Priority;
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.ClientBuilder;
 import javax.ws.rs.client.ClientRequestContext;
@@ -1041,7 +1040,6 @@ class WebTargetHelperTest {
         }
     }
 
-    @Priority(USER)
     public static class NoOpClientLoggingFilter implements ClientRequestFilter, ClientResponseFilter {
 
         @Override

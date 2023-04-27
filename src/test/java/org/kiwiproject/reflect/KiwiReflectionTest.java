@@ -24,6 +24,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.assertj.core.api.SoftAssertions;
 import org.assertj.core.api.junit.jupiter.SoftAssertionsExtension;
+import org.checkerframework.checker.nullness.qual.NonNull;
+import org.checkerframework.checker.nullness.qual.Nullable;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -38,8 +40,6 @@ import org.kiwiproject.reflect.KiwiReflection.Accessor;
 import org.kiwiproject.reflect.sub.Box;
 import org.kiwiproject.reflect.sub.OtherPerson;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -827,7 +827,7 @@ class KiwiReflectionTest {
             this.target = target;
         }
 
-        private void assertGetterWithExpectedValue(String fieldName, @Nonnull Object expectedValue) {
+        private void assertGetterWithExpectedValue(String fieldName, @NonNull Object expectedValue) {
             assertGetterWithExpectedValue(Accessor.GET, fieldName, expectedValue);
         }
 
@@ -836,7 +836,7 @@ class KiwiReflectionTest {
             assertGetterWithExpectedValue(Accessor.IS, fieldName, expectedValue);
         }
 
-        private void assertGetterWithExpectedValue(Accessor accessor, String fieldName, @Nonnull Object expectedValue) {
+        private void assertGetterWithExpectedValue(Accessor accessor, String fieldName, @NonNull Object expectedValue) {
             checkArgumentNotNull(expectedValue);
 
             var getterMethod = KiwiReflection.findAccessor(accessor, fieldName, target);
@@ -847,7 +847,7 @@ class KiwiReflectionTest {
                     .isEqualTo(expectedValue);
         }
 
-        private void assertSetterWithNewValue(String fieldName, @Nonnull Object newValue) {
+        private void assertSetterWithNewValue(String fieldName, @NonNull Object newValue) {
             checkArgumentNotNull(newValue);
             Class<?> newValueClass = newValue.getClass();
             assertSetterWithNewValue(fieldName, newValueClass, newValue);

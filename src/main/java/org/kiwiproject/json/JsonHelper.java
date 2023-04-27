@@ -35,9 +35,9 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
+import org.checkerframework.checker.nullness.qual.NonNull;
+import org.checkerframework.checker.nullness.qual.Nullable;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import java.io.IOException;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
@@ -821,7 +821,7 @@ public class JsonHelper {
      * @param ignoredPaths the paths to ignore in the comparison
      * @return a map containing a list of differences
      */
-    public Map<String, List<String>> jsonDiff(@Nonnull List<Object> objectList, String... ignoredPaths) {
+    public Map<String, List<String>> jsonDiff(@NonNull List<Object> objectList, String... ignoredPaths) {
         var jsonList = requireNotNull(objectList)
                 .stream()
                 .map(obj -> toJsonIgnoringPaths(obj, ignoredPaths))
@@ -842,7 +842,7 @@ public class JsonHelper {
      * @param listOfJson the list of JSON objects to compare
      * @return map containing a list of differences
      */
-    public Map<String, List<String>> jsonDiff(@Nonnull List<String> listOfJson) {
+    public Map<String, List<String>> jsonDiff(@NonNull List<String> listOfJson) {
         var resultMap = new HashMap<String, List<String>>();
 
         requireNotNull(listOfJson)

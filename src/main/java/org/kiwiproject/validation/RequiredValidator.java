@@ -6,7 +6,7 @@ import static java.util.Objects.requireNonNull;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 
-import javax.annotation.Nonnull;
+import org.checkerframework.checker.nullness.qual.NonNull;
 import javax.validation.ConstraintValidator;
 import javax.validation.ConstraintValidatorContext;
 import java.lang.reflect.Method;
@@ -59,7 +59,7 @@ public class RequiredValidator implements ConstraintValidator<Required, Object> 
         return !allowEmpty && isEmpty(value);
     }
 
-    private static boolean isEmpty(@Nonnull Object value) {
+    private static boolean isEmpty(@NonNull Object value) {
         requireNonNull(value);
 
         if (value instanceof CharSequence) {

@@ -11,6 +11,7 @@ import static org.kiwiproject.base.KiwiStrings.f;
 
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.collect.Queues;
+import com.google.errorprone.annotations.Immutable;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -22,8 +23,6 @@ import org.apache.commons.lang3.time.DurationFormatUtils;
 import org.kiwiproject.collect.KiwiEvictingQueues;
 import org.slf4j.event.Level;
 
-import javax.annotation.concurrent.Immutable;
-import javax.annotation.concurrent.NotThreadSafe;
 import java.io.File;
 import java.time.Duration;
 import java.util.ArrayList;
@@ -45,7 +44,6 @@ import java.util.concurrent.atomic.AtomicLong;
  * class concurrently. Note also that accessing the delete error count, recent delete errors, etc. is thread-safe.
  */
 @Slf4j
-@NotThreadSafe
 public class TimeBasedDirectoryCleaner implements Runnable {
 
     private static final int MAX_RECENT_DELETE_ERRORS = 500;

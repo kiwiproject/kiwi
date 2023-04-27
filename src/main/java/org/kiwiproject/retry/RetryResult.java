@@ -7,9 +7,9 @@ import static org.kiwiproject.collect.KiwiLists.isNullOrEmpty;
 import static org.kiwiproject.collect.KiwiLists.last;
 
 import lombok.Getter;
+import org.checkerframework.checker.nullness.qual.Nullable;
 import org.kiwiproject.base.UUIDs;
 
-import javax.annotation.Nullable;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;

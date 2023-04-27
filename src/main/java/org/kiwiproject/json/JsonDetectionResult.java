@@ -4,8 +4,7 @@ import static java.util.Objects.nonNull;
 
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
-
-import javax.annotation.Nullable;
+import org.checkerframework.checker.nullness.qual.Nullable;
 
 /**
  * Represents the result of attempting to detect if content is JSON. Provides enough information to determine whether
