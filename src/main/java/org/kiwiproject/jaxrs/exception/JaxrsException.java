@@ -10,10 +10,10 @@ import static org.kiwiproject.collect.KiwiLists.hasOneElement;
 import static org.kiwiproject.collect.KiwiLists.isNotNullOrEmpty;
 import static org.kiwiproject.collect.KiwiLists.isNullOrEmpty;
 
+import org.checkerframework.checker.nullness.qual.Nullable;
 import org.kiwiproject.collect.KiwiMaps;
 import org.kiwiproject.collect.KiwiSets;
 
-import javax.annotation.Nullable;
 import javax.ws.rs.WebApplicationException;
 import java.util.ArrayList;
 import java.util.Collections;

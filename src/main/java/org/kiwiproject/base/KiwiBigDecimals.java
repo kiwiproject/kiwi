@@ -3,9 +3,9 @@ package org.kiwiproject.base;
 import static org.kiwiproject.base.KiwiPreconditions.checkArgumentNotNull;
 
 import lombok.experimental.UtilityClass;
+import org.checkerframework.checker.nullness.qual.NonNull;
+import org.checkerframework.checker.nullness.qual.Nullable;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import java.math.BigDecimal;
 import java.util.Optional;
 import java.util.OptionalDouble;
@@ -63,7 +63,7 @@ public class KiwiBigDecimals {
      * @return a primitive double
      * @throws IllegalArgumentException if the given value is null
      */
-    public static double requireDouble(@Nonnull BigDecimal value) {
+    public static double requireDouble(@NonNull BigDecimal value) {
         checkArgumentNotNull(value, "value cannot be null");
         return value.doubleValue();
     }

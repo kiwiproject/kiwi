@@ -4,11 +4,11 @@ import static java.util.Objects.nonNull;
 import static org.kiwiproject.base.KiwiStrings.f;
 
 import lombok.experimental.UtilityClass;
+import org.checkerframework.checker.nullness.qual.Nullable;
 import org.kiwiproject.jaxrs.exception.ErrorMessage;
 import org.kiwiproject.jaxrs.exception.JaxrsException;
 import org.kiwiproject.jaxrs.exception.JaxrsExceptionMapper;
 
-import javax.annotation.Nullable;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import java.net.URI;

@@ -8,7 +8,6 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
-import javax.annotation.concurrent.NotThreadSafe;
 import javax.net.ssl.SSLSocketFactory;
 import javax.xml.ws.Binding;
 import javax.xml.ws.BindingProvider;
@@ -121,7 +120,7 @@ class KiwiJaxWsTest {
         );
     }
 
-    @NotThreadSafe
+
     static class MockBindingProvider implements BindingProvider {
 
         Map<String, Object> requestContext = new HashMap<>();

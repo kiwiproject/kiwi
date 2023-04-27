@@ -9,6 +9,7 @@ import static org.kiwiproject.base.KiwiPreconditions.checkArgumentNotNull;
 import lombok.experimental.UtilityClass;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.BooleanUtils;
+import org.checkerframework.checker.nullness.qual.Nullable;
 import org.kiwiproject.base.KiwiStrings;
 import org.kiwiproject.util.function.KiwiBiConsumers;
 import org.springframework.data.domain.Page;
@@ -16,7 +17,6 @@ import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 
-import javax.annotation.Nullable;
 import java.util.Collection;
 import java.util.Date;
 import java.util.function.BiConsumer;
