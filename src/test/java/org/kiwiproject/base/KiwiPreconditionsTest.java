@@ -14,6 +14,7 @@ import static org.kiwiproject.base.KiwiPreconditions.requireNotNull;
 import static org.kiwiproject.base.KiwiPreconditions.requireNotNullElse;
 import static org.kiwiproject.base.KiwiPreconditions.requireNotNullElseGet;
 
+import org.apache.commons.lang3.RandomStringUtils;
 import org.assertj.core.api.SoftAssertions;
 import org.assertj.core.api.junit.jupiter.SoftAssertionsExtension;
 import org.junit.jupiter.api.DisplayName;
@@ -21,16 +22,25 @@ import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.ArgumentsSource;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.junit.jupiter.params.provider.NullAndEmptySource;
 import org.junit.jupiter.params.provider.ValueSource;
 import org.kiwiproject.util.BlankStringArgumentsProvider;
 
 import java.math.BigInteger;
+import java.time.Instant;
+import java.time.LocalDateTime;
+import java.time.ZonedDateTime;
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.ThreadLocalRandom;
+import java.util.stream.Stream;
 
 @DisplayName("KiwiPreconditions")
 @ExtendWith(SoftAssertionsExtension.class)
@@ -104,6 +114,7 @@ class KiwiPreconditionsTest {
                 KiwiPreconditions.checkArgument(true, SomeCheckedException.class)))
                 .isNull();
 
+        //noinspection DataFlowIssue
         softly.assertThat(catchThrowable(() ->
                 KiwiPreconditions.checkArgument(false, SomeCheckedException.class)))
                 .isExactlyInstanceOf(SomeCheckedException.class)
@@ -113,6 +124,7 @@ class KiwiPreconditionsTest {
                 KiwiPreconditions.checkArgument(true, SomeRuntimeException.class)))
                 .isNull();
 
+        //noinspection DataFlowIssue
         softly.assertThat(catchThrowable(() ->
                 KiwiPreconditions.checkArgument(false, SomeRuntimeException.class)))
                 .isExactlyInstanceOf(SomeRuntimeException.class)
@@ -127,6 +139,7 @@ class KiwiPreconditionsTest {
                 KiwiPreconditions.checkArgument(true, SomeCheckedException.class, message)))
                 .isNull();
 
+        //noinspection DataFlowIssue
         softly.assertThat(catchThrowable(() ->
                 KiwiPreconditions.checkArgument(false, SomeCheckedException.class, message)))
                 .isExactlyInstanceOf(SomeCheckedException.class)
@@ -136,6 +149,7 @@ class KiwiPreconditionsTest {
                 KiwiPreconditions.checkArgument(true, SomeRuntimeException.class, message)))
                 .isNull();
 
+        //noinspection DataFlowIssue
         softly.assertThat(catchThrowable(() ->
                 KiwiPreconditions.checkArgument(false, SomeRuntimeException.class, message)))
                 .isExactlyInstanceOf(SomeRuntimeException.class)
@@ -151,6 +165,7 @@ class KiwiPreconditionsTest {
                 KiwiPreconditions.checkArgument(true, SomeCheckedException.class, template, args)))
                 .isNull();
 
+        //noinspection DataFlowIssue
         softly.assertThat(catchThrowable(() ->
                 KiwiPreconditions.checkArgument(false, SomeCheckedException.class, template, args)))
                 .isExactlyInstanceOf(SomeCheckedException.class)
@@ -160,6 +175,7 @@ class KiwiPreconditionsTest {
                 KiwiPreconditions.checkArgument(true, SomeRuntimeException.class, template, args)))
                 .isNull();
 
+        //noinspection DataFlowIssue
         softly.assertThat(catchThrowable(() ->
                 KiwiPreconditions.checkArgument(false, SomeRuntimeException.class, template, args)))
                 .isExactlyInstanceOf(SomeRuntimeException.class)
@@ -1164,5 +1180,156 @@ class KiwiPreconditionsTest {
             assertThat(KiwiPreconditions.requireValidNonZeroPort(1, "custom error message %s", 42)).isOne();
         }
 
+    }
+
+    @Nested
+    class CheckArgumentInstanceOf {
+
+        @Nested
+        class WithNoMessage {
+
+            @ParameterizedTest
+            @MethodSource("org.kiwiproject.base.KiwiPreconditionsTest#instanceOfArguments")
+            void shouldNotThrow_WhenArgumentIsExpectedType(Object argument, Class<?> expectedType) {
+                assertThatCode(() -> KiwiPreconditions.checkArgumentInstanceOf(argument, expectedType))
+                        .doesNotThrowAnyException();
+            }
+
+            @ParameterizedTest
+            @MethodSource("org.kiwiproject.base.KiwiPreconditionsTest#notInstanceOfArguments")
+            void shouldThrow_WhenArgumentIsNotExpectedType(Object argument, Class<?> expectedType) {
+                assertThatIllegalArgumentException()
+                        .isThrownBy(() -> KiwiPreconditions.checkArgumentInstanceOf(argument, expectedType));
+            }
+        }
+
+        @Nested
+        class WithMessage {
+
+            @ParameterizedTest
+            @MethodSource("org.kiwiproject.base.KiwiPreconditionsTest#instanceOfArguments")
+            void shouldNotThrow_WhenArgumentIsExpectedType(Object argument, Class<?> expectedType) {
+                assertThatCode(() ->
+                        KiwiPreconditions.checkArgumentInstanceOf(argument, expectedType, "not expected type"))
+                        .doesNotThrowAnyException();
+            }
+
+            @ParameterizedTest
+            @MethodSource("org.kiwiproject.base.KiwiPreconditionsTest#notInstanceOfArguments")
+            void shouldThrow_WhenArgumentIsNotExpectedType(Object argument, Class<?> expectedType) {
+                assertThatIllegalArgumentException().isThrownBy(() ->
+                                KiwiPreconditions.checkArgumentInstanceOf(argument, expectedType, "not expected type"))
+                        .withMessage("not expected type");
+            }
+        }
+
+        @Nested
+        class WithMessageTemplateAndArguments {
+            @ParameterizedTest
+            @MethodSource("org.kiwiproject.base.KiwiPreconditionsTest#instanceOfArguments")
+            void shouldNotThrow_WhenArgumentIsExpectedType(Object argument, Class<?> expectedType) {
+                assertThatCode(() ->
+                        KiwiPreconditions.checkArgumentInstanceOf(argument, expectedType, "arg not expected type {}", expectedType))
+                        .doesNotThrowAnyException();
+            }
+
+            @ParameterizedTest
+            @MethodSource("org.kiwiproject.base.KiwiPreconditionsTest#notInstanceOfArguments")
+            void shouldThrow_WhenArgumentIsNotExpectedType(Object argument, Class<?> expectedType) {
+                assertThatIllegalArgumentException().isThrownBy(() ->
+                                KiwiPreconditions.checkArgumentInstanceOf(argument, expectedType, "arg not expected {}", expectedType))
+                        .withMessage("arg not expected %s", expectedType);
+            }
+        }
+    }
+
+    @Nested
+    class CheckArgumentNotInstanceOf {
+
+        @Nested
+        class WithNoMessage {
+
+            @ParameterizedTest
+            @MethodSource("org.kiwiproject.base.KiwiPreconditionsTest#notInstanceOfArguments")
+            void shouldNotThrow_WhenIsNotInstanceOfRestrictedType(Object argument, Class<?> restrictedType) {
+                assertThatCode(() -> KiwiPreconditions.checkArgumentNotInstanceOf(argument, restrictedType))
+                        .doesNotThrowAnyException();
+            }
+
+            @ParameterizedTest
+            @MethodSource("org.kiwiproject.base.KiwiPreconditionsTest#instanceOfArguments")
+            void shouldThrow_WhenArgumentIsInstanceOfRestrictedType(Object argument, Class<?> restrictedType) {
+                assertThatIllegalArgumentException()
+                        .isThrownBy(() -> KiwiPreconditions.checkArgumentNotInstanceOf(argument, restrictedType));
+            }
+        }
+
+        @Nested
+        class WithMessage {
+
+            @ParameterizedTest
+            @MethodSource("org.kiwiproject.base.KiwiPreconditionsTest#notInstanceOfArguments")
+            void shouldNotThrow_WhenIsNotInstanceOfRestrictedType(Object argument, Class<?> restrictedType) {
+                assertThatCode(() ->
+                        KiwiPreconditions.checkArgumentNotInstanceOf(argument, restrictedType, "has restricted type"))
+                        .doesNotThrowAnyException();
+            }
+
+            @ParameterizedTest
+            @MethodSource("org.kiwiproject.base.KiwiPreconditionsTest#instanceOfArguments")
+            void shouldThrow_WhenArgumentIsInstanceOfRestrictedType(Object argument, Class<?> restrictedType) {
+                assertThatIllegalArgumentException().isThrownBy(() ->
+                                KiwiPreconditions.checkArgumentNotInstanceOf(argument, restrictedType, "has restricted type"))
+                        .withMessage("has restricted type");
+            }
+        }
+
+        @Nested
+        class WithMessageTemplateAndArguments {
+
+            @ParameterizedTest
+            @MethodSource("org.kiwiproject.base.KiwiPreconditionsTest#notInstanceOfArguments")
+            void shouldNotThrow_WhenIsNotInstanceOfRestrictedType(Object argument, Class<?> restrictedType) {
+                assertThatCode(() ->
+                        KiwiPreconditions.checkArgumentNotInstanceOf(argument, restrictedType, "has restricted type {}", restrictedType))
+                        .doesNotThrowAnyException();
+            }
+
+            @ParameterizedTest
+            @MethodSource("org.kiwiproject.base.KiwiPreconditionsTest#instanceOfArguments")
+            void shouldThrow_WhenArgumentIsInstanceOfRestrictedType(Object argument, Class<?> restrictedType) {
+                assertThatIllegalArgumentException().isThrownBy(() ->
+                                KiwiPreconditions.checkArgumentNotInstanceOf(argument, restrictedType, "has restricted type {}", restrictedType))
+                        .withMessage("has restricted type %s", restrictedType);
+            }
+        }
+    }
+
+    static Stream<Arguments> instanceOfArguments() {
+        return Stream.of(
+                Arguments.of(RandomStringUtils.random(5), Object.class),
+                Arguments.of(RandomStringUtils.random(15), String.class),
+                Arguments.of(RandomStringUtils.random(10), CharSequence.class),
+                Arguments.of(random().nextLong(), Long.class),
+                Arguments.of(random().nextInt(), Integer.class),
+                Arguments.of(random().nextInt(), Number.class),
+                Arguments.of(new java.sql.Timestamp(System.currentTimeMillis()), Date.class),
+                Arguments.of(Instant.now(), Instant.class),
+                Arguments.of(LocalDateTime.now(), LocalDateTime.class)
+        );
+    }
+
+    static Stream<Arguments> notInstanceOfArguments() {
+        return Stream.of(
+                Arguments.of(RandomStringUtils.random(15), Long.class),
+                Arguments.of(random().nextLong(), String.class),
+                Arguments.of(random().nextInt(), Collection.class),
+                Arguments.of(Instant.now(), Date.class),
+                Arguments.of(LocalDateTime.now(), ZonedDateTime.class)
+        );
+    }
+
+    private static ThreadLocalRandom random() {
+        return ThreadLocalRandom.current();
     }
 }

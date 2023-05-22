@@ -29,8 +29,8 @@ import java.util.function.Supplier;
  * If you're looking for preconditions related to validating arguments using Jakarta Beans Validation, they
  * are in {@link org.kiwiproject.validation.KiwiValidations KiwiValidations}.
  *
- * @implNote Several methods in this class use Lombok's {@link lombok.SneakyThrows} so that they do not need to declare
- * that they throw exceptions of type T, <em>for the case that T is a checked exception</em>. Read more details about
+ * @implNote Several methods in this class use Lombok {@link lombok.SneakyThrows} so that they do not need to declare
+ * that they throw {@code Exception}s of type T, <em>for the case that T is a checked exception</em>. Read more details about
  * how this works in {@link lombok.SneakyThrows}. Most notably, this should give you more insight into how the JVM (versus
  * Java the language) actually work: <em>"The JVM does not check for the consistency of the checked exception system;
  * javac does, and this annotation lets you opt out of its mechanism."</em>
@@ -44,12 +44,12 @@ public class KiwiPreconditions {
     /**
      * Ensures the truth of an expression involving one or more parameters to the calling method.
      * <p>
-     * Throws an exception of type T if {@code expression} is false.
+     * Throws an {@code Exception} of type T if {@code expression} is false.
      *
      * @param expression    a boolean expression
      * @param exceptionType the type of exception to be thrown if {@code expression} is false
      * @param <T>           the type of exception
-     * @implNote This uses Lombok's {@link lombok.SneakyThrows} to throw any checked exceptions without declaring them.
+     * @implNote This uses Lombok {@link lombok.SneakyThrows} to throw any checked exceptions without declaring them.
      */
     @SneakyThrows(Throwable.class)
     public static <T extends Throwable> void checkArgument(boolean expression, Class<T> exceptionType) {
@@ -61,13 +61,13 @@ public class KiwiPreconditions {
     /**
      * Ensures the truth of an expression involving one or more parameters to the calling method.
      * <p>
-     * Throws an exception of type T if {@code expression} is false.
+     * Throws an {@code Exception} of type T if {@code expression} is false.
      *
      * @param expression    a boolean expression
      * @param exceptionType the type of exception to be thrown if {@code expression} is false
      * @param errorMessage  the exception message to use if the check fails
      * @param <T>           the type of exception
-     * @implNote This uses Lombok's {@link lombok.SneakyThrows} to throw any checked exceptions without declaring them.
+     * @implNote This uses Lombok {@link lombok.SneakyThrows} to throw any checked exceptions without declaring them.
      */
     @SneakyThrows(Throwable.class)
     public static <T extends Throwable> void checkArgument(boolean expression,
@@ -82,7 +82,7 @@ public class KiwiPreconditions {
     /**
      * Ensures the truth of an expression involving one or more parameters to the calling method.
      * <p>
-     * Throws an exception of type T if {@code expression} is false.
+     * Throws an {@code Exception} of type T if {@code expression} is false.
      *
      * @param expression           a boolean expression
      * @param exceptionType        the type of exception to be thrown if {@code expression} is false
@@ -93,7 +93,7 @@ public class KiwiPreconditions {
      * @param <T>                  the type of exception
      * @throws NullPointerException if the check fails and either {@code errorMessageTemplate} or
      *                              {@code errorMessageArgs} is null (don't let this happen)
-     * @implNote This uses Lombok's {@link lombok.SneakyThrows} to throw any checked exceptions without declaring them.
+     * @implNote This uses Lombok {@link lombok.SneakyThrows} to throw any checked exceptions without declaring them.
      */
     @SneakyThrows(Throwable.class)
     public static <T extends Throwable> void checkArgument(boolean expression,
@@ -152,7 +152,7 @@ public class KiwiPreconditions {
 
     /**
      * Ensures that an object reference passed as a parameter to the calling method is not null, throwing
-     * an {@link IllegalArgumentException} if null or returning the (non null) reference otherwise.
+     * an {@link IllegalArgumentException} if null or returning the (non-null) reference otherwise.
      *
      * @param reference an object reference
      * @param <T>       the type of object
@@ -165,7 +165,7 @@ public class KiwiPreconditions {
 
     /**
      * Ensures that an object reference passed as a parameter to the calling method is not null, throwing
-     * an {@link IllegalArgumentException} if null or returning the (non null) reference otherwise.
+     * an {@link IllegalArgumentException} if null or returning the (non-null) reference otherwise.
      *
      * @param reference            an object reference
      * @param errorMessageTemplate a template for the exception message should the check fail, according to how
@@ -419,12 +419,6 @@ public class KiwiPreconditions {
         if (isNullOrEmpty(map)) {
             throw newIllegalArgumentException(errorMessageTemplate, errorMessageArgs);
         }
-    }
-
-    private static IllegalArgumentException newIllegalArgumentException(String errorMessageTemplate,
-                                                                        Object... errorMessageArgs) {
-        var errorMessage = format(errorMessageTemplate, errorMessageArgs);
-        return new IllegalArgumentException(errorMessage);
     }
 
     /**
@@ -952,6 +946,107 @@ public class KiwiPreconditions {
     public static int requireValidNonZeroPort(int port, String errorMessageTemplate, Object... errorMessageArgs) {
         checkValidNonZeroPort(port, errorMessageTemplate, errorMessageArgs);
         return port;
+    }
+
+    /**
+     * Ensures the argument has the expected type.
+     *
+     * @param argument the argument to check
+     * @param requiredType the type that the argument is required to be
+     * @param <T> the class of the required type
+     */
+    public static <T> void checkArgumentInstanceOf(T argument, Class<?> requiredType) {
+        Preconditions.checkArgument(isInstanceOf(argument, requiredType));
+    }
+
+    /**
+     * Ensures the argument has the expected type.
+     *
+     * @param argument the argument to check
+     * @param requiredType the type that the argument is required to be
+     * @param errorMessage the error message to put in the exception if the argument is not the required type
+     * @param <T> the class of the required type
+     */
+    public static <T> void checkArgumentInstanceOf(T argument, Class<?> requiredType, String errorMessage) {
+        Preconditions.checkArgument(isInstanceOf(argument, requiredType), errorMessage);
+    }
+
+    /**
+     * Ensures the argument has the expected type.
+     *
+     * @param argument             the argument to check
+     * @param requiredType         the type that the argument is required to be
+     * @param errorMessageTemplate the error message template to use in the exception if the argument is not the
+     *                             required type, according to how {@link KiwiStrings#format(String, Object...)}
+     *                             handles placeholders
+     * @param errorMessageArgs     the arguments to populate into the error message template
+     * @param <T>                  the class of the required type
+     */
+    public static <T> void checkArgumentInstanceOf(T argument,
+                                                   Class<?> requiredType,
+                                                   String errorMessageTemplate,
+                                                   Object... errorMessageArgs) {
+
+        if (isNotInstanceOf(argument, requiredType)) {
+            throw newIllegalArgumentException(errorMessageTemplate, errorMessageArgs);
+        }
+    }
+
+    /**
+     * Ensures the argument type is not the restricted type.
+     *
+     * @param argument       the argument to check
+     * @param restrictedType the type that the argument must not be
+     * @param <T>            the class of the restricted type
+     */
+    public static <T> void checkArgumentNotInstanceOf(T argument, Class<?> restrictedType) {
+        Preconditions.checkArgument(isNotInstanceOf(argument, restrictedType));
+    }
+
+    /**
+     * Ensures the argument type is not the restricted type.
+     *
+     * @param argument       the argument to check
+     * @param restrictedType the type that the argument must not be
+     * @param errorMessage   the error message to put in the exception if the argument is of the restricted type
+     * @param <T>            the class of the restricted type
+     */
+    public static <T> void checkArgumentNotInstanceOf(T argument, Class<?> restrictedType, String errorMessage) {
+        Preconditions.checkArgument(isNotInstanceOf(argument, restrictedType), errorMessage);
+    }
+
+    /**
+     * Ensures the argument type is not the restricted type.
+     *
+     * @param argument             the argument to check
+     * @param restrictedType       the type that the argument must not be
+     * @param errorMessageTemplate the error message to use in the exception if the argument is of the restricted type,
+     *                             according to how {@link KiwiStrings#format(String, Object...)} handles placeholders
+     * @param errorMessageArgs     the arguments to populate into the error message template
+     * @param <T>                  the class of the restricted type
+     */
+    public static <T> void checkArgumentNotInstanceOf(T argument,
+                                                      Class<?> restrictedType,
+                                                      String errorMessageTemplate,
+                                                      Object... errorMessageArgs) {
+
+        if (isInstanceOf(argument, restrictedType)) {
+            throw newIllegalArgumentException(errorMessageTemplate, errorMessageArgs);
+        }
+    }
+
+    private static <T> boolean isInstanceOf(T argument, Class<?> requiredType) {
+        return nonNull(argument) && requiredType.isAssignableFrom(argument.getClass());
+    }
+
+    private static <T> boolean isNotInstanceOf(T argument, Class<?> restrictedType) {
+        return isNull(argument) || !restrictedType.isAssignableFrom(argument.getClass());
+    }
+
+    private static IllegalArgumentException newIllegalArgumentException(String errorMessageTemplate,
+                                                                        Object... errorMessageArgs) {
+        var errorMessage = format(errorMessageTemplate, errorMessageArgs);
+        return new IllegalArgumentException(errorMessage);
     }
 
 }
