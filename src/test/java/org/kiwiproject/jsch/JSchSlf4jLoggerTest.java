@@ -23,7 +23,7 @@ import java.nio.charset.StandardCharsets;
 
 /**
  * <em>IMPORTANT:</em>
- * In order to setup SLF4J loggers at the appropriate level, the {@code src/test/resources/logback.xml} contains five
+ * In order to setup SLF4J loggers at the appropriate level, the {@code src/test/resources/logback-test.xml} contains five
  * loggers for the five different SLF4J log levels (TRACE, DEBUG, INFO, WARN, ERROR).
  * <p>
  * The name format is: {@code jsch-logger-<level>} -- for example the DEBUG level logger is named
@@ -154,7 +154,7 @@ class JSchSlf4jLoggerTest {
                     .doesNotContain("test INFO message");
         }
 
-        // See logback.xml in src/test which configures org.kiwiproject.jsch.JSchSlf4jLogger at WARN level
+        // See logback-test.xml in src/test which configures org.kiwiproject.jsch.JSchSlf4jLogger at WARN level
         @Test
         void shouldLog_AtLogbackConfiguredLevel_WhenConstructUsingDefaultConstructor() {
             logger = new JSchSlf4jLogger();

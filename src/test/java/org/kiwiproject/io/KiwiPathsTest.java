@@ -13,10 +13,10 @@ class KiwiPathsTest {
 
     @Test
     void testPathFromFileName_WhenValidRelativeFileName() {
-        var path = KiwiPaths.pathFromResourceName("logback.xml");
+        var path = KiwiPaths.pathFromResourceName("logback-test.xml");
 
         assertThat(path.toFile()).exists();
-        assertThat(path.toString()).endsWith("/logback.xml");
+        assertThat(path.toString()).endsWith("/logback-test.xml");
     }
 
     @Test
