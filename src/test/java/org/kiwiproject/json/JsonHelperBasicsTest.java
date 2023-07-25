@@ -730,7 +730,7 @@ class JsonHelperBasicsTest {
     private Foo newFoo(Instant instant) {
         var date = Date.from(instant);
         var timestamp = Timestamp.from(instant);
-        var utcZoneId = ZoneId.of("UTC");
+        var utcZoneId = ZoneId.of("UTC").normalized();
         var localDT = LocalDateTime.ofInstant(instant, utcZoneId);
         var zonedDT = ZonedDateTime.from(instant.atOffset(ZoneOffset.of("Z")).atZoneSameInstant(utcZoneId));
         var duration = Duration.ofMinutes(1);
