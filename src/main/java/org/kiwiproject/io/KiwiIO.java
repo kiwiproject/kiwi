@@ -4,6 +4,7 @@ import static java.util.Objects.isNull;
 import static java.util.Objects.nonNull;
 import static java.util.stream.Collectors.joining;
 import static java.util.stream.Collectors.toList;
+import static org.kiwiproject.base.KiwiPreconditions.checkArgumentNotNull;
 
 import lombok.experimental.UtilityClass;
 import lombok.extern.slf4j.Slf4j;
@@ -198,6 +199,40 @@ public class KiwiIO {
         String joined = Arrays.stream(lines).collect(joining(System.lineSeparator()));
         byte[] buffer = joined.getBytes(StandardCharsets.UTF_8);
         return new ByteArrayInputStream(buffer);
+    }
+
+    /**
+     * Creates a new {@link ByteArrayInputStream} containing the bytes of the given string using the
+     * UTF-8 character set.
+     * <p>
+     * Note: The UTF-8 character set is widely used and supports a vast range of characters, making it
+     * suitable for most applications. However, if the string was encoded using a different character
+     * set, use the other version of this method that accepts a {@link Charset} to specify the character
+     * set that was used to encode the string.
+     *
+     * @param value the string from which to create the ByteArrayInputStream
+     * @return a new ByteArrayInputStream initialized with bytes from the provided string
+     * @throws IllegalArgumentException if the input string is null
+     */
+    public static ByteArrayInputStream newByteArrayInputStream(String value) {
+        return newByteArrayInputStream(value, StandardCharsets.UTF_8);
+    }
+
+    /**
+     * Creates a new {@link ByteArrayInputStream} containing the bytes of the given string using the
+     * specified character set.
+     *
+     * @param value   the string from which to create the ByteArrayInputStream
+     * @param charset the character set used to encode the string as bytes
+     * @return a new ByteArrayInputStream initialized with bytes from the provided string
+     * @throws IllegalArgumentException if the input string or charset is null
+     */
+    public static ByteArrayInputStream newByteArrayInputStream(String value, Charset charset) {
+        checkArgumentNotNull(value, "value must not be null");
+        checkArgumentNotNull(charset, "charset must not be null");
+
+        byte[] bytes = value.getBytes(charset);
+        return new ByteArrayInputStream(bytes);
     }
 
     /**
