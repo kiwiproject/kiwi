@@ -3,16 +3,20 @@ package org.kiwiproject.io;
 import static java.util.stream.Collectors.joining;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatCode;
+import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
+import org.joda.time.Instant;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 
 import javax.xml.stream.XMLInputFactory;
 import javax.xml.stream.XMLOutputFactory;
@@ -309,6 +313,70 @@ class KiwiIOTest {
 
         private void assertNoMoreLines(BufferedReader reader) throws IOException {
             assertThat(reader.readLine()).isNull();
+        }
+    }
+
+    @Nested
+    class NewByteArrayInputStream {
+
+        @Test
+        void shouldRequireNonNullInputString() {
+            assertThatIllegalArgumentException()
+                    .isThrownBy(() -> KiwiIO.newByteArrayInputStream(null))
+                    .withMessage("value must not be null");
+        }
+
+        @Test
+        void shouldAllowEmptyStrings() {
+            var inputStream = KiwiIO.newByteArrayInputStream("");
+
+            assertThat(inputStream).isEmpty();
+        }
+
+        @Test
+        void shouldEncodeStringsUsingUTF8() {
+            var value = "the quick brown fox jumped over the lazy brown dog at " + Instant.now();
+            var inputStream = KiwiIO.newByteArrayInputStream(value);
+
+            var expected = new ByteArrayInputStream(value.getBytes(StandardCharsets.UTF_8));
+
+            assertThat(inputStream).hasSameContentAs(expected);
+        }
+    }
+
+    @Nested
+    class NewByteArrayInputStreamWtihCharset {
+
+        @Test
+        void shouldRequireNonNullInputString() {
+            assertThatIllegalArgumentException()
+                    .isThrownBy(() -> KiwiIO.newByteArrayInputStream(null, StandardCharsets.UTF_8))
+                    .withMessage("value must not be null");
+        }
+
+        @Test
+        void shouldRequireNonNullCharset() {
+            assertThatIllegalArgumentException()
+                    .isThrownBy(() -> KiwiIO.newByteArrayInputStream("some string", null))
+                    .withMessage("charset must not be null");
+        }
+
+        @ParameterizedTest
+        @ValueSource(strings = {
+            "ISO-8859-1",
+            "US-ASCII",
+            "UTF-8",
+            "UTF-16",
+            "UTF-32",
+        })
+        void shouldEncodeStringsUsingDifferentCharsets(String charsetName) {
+            var charset = Charset.forName(charsetName);
+            var value = "the quick brown fox jumped over the lazy brown dog at " + Instant.now();
+            var inputStream = KiwiIO.newByteArrayInputStream(value, charset);
+
+            var expected = new ByteArrayInputStream(value.getBytes(charset));
+
+            assertThat(inputStream).hasSameContentAs(expected);
         }
     }
 
