@@ -186,10 +186,11 @@ public class KiwiIO {
 
     /**
      * Return a newly constructed {@link ByteArrayInputStream} containing the given {@code lines} separated by
-     * the {@link System#lineSeparator()}.
+     * the {@link System#lineSeparator()} and using UTF-8 as the {@link Charset} when converting the joined
+     * lines to bytes.
      *
      * @param lines the lines to convert
-     * @return a ByteArrayInputStream containing the given lines
+     * @return a ByteArrayInputStream containing the given lines, encoded using UTF-8
      */
     public static ByteArrayInputStream newByteArrayInputStreamOfLines(String... lines) {
         if (lines.length == 0) {
