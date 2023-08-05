@@ -32,7 +32,7 @@
         <kiwi-bom.version>1.1.1</kiwi-bom.version>
 
         <!-- Versions for provided dependencies -->
-        <retrying-again.version>1.0.17</retrying-again.version>
+        <retrying-again.version>1.0.18</retrying-again.version>
 
         <!-- Versions for test dependencies -->
         <test-containers.version>1.18.3</test-containers.version>
