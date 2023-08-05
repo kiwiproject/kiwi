@@ -523,13 +523,16 @@ public class KiwiPreconditions {
      * Ensures int {@code value} is a positive number (greater than zero).
      *
      * @param value                the value to check for positivity
-     * @param errorMessageTemplate the error message template to use in the exception if not positive
+     * @param errorMessageTemplate a template for the exception message if value is not positive, according to how
+     *                             {@link KiwiStrings#format(String, Object...)} handles placeholders
      * @param errorMessageArgs     the arguments to populate into the error message template
      * @throws IllegalStateException if the value is not positive (e.g. greater than zero)
      * @see Preconditions#checkState(boolean, Object)
      */
     public static void checkPositive(int value, String errorMessageTemplate, Object... errorMessageArgs) {
-        checkState(value > 0, errorMessageTemplate, errorMessageArgs);
+        if (value <= 0) {
+            throw newIllegalStateException(errorMessageTemplate, errorMessageArgs);
+        }
     }
 
     /**
@@ -559,13 +562,16 @@ public class KiwiPreconditions {
      * Ensures long {@code value} is a positive number (greater than zero).
      *
      * @param value                the value to check for positivity
-     * @param errorMessageTemplate the error message template to use in the exception if not positive
-     * @param errorMessageArgs     the arguments to populate into the error message template
+     * @param errorMessageTemplate a template for the exception message if value is not positive, according to how
+     *                             {@link KiwiStrings#format(String, Object...)} handles placeholders
+     * @param errorMessageArgs     the arguments to be substituted into the message template
      * @throws IllegalStateException if the value is not positive (e.g. greater than zero)
      * @see Preconditions#checkState(boolean, Object)
      */
     public static void checkPositive(long value, String errorMessageTemplate, Object... errorMessageArgs) {
-        checkState(value > 0, errorMessageTemplate, errorMessageArgs);
+        if (value <= 0) {
+            throw newIllegalStateException(errorMessageTemplate, errorMessageArgs);
+        }
     }
 
     /**
@@ -595,13 +601,16 @@ public class KiwiPreconditions {
      * Ensures int {@code value} is a positive number (greater than zero) or zero.
      *
      * @param value                the value to check for positivity
-     * @param errorMessageTemplate the error message template to use in the exception if not positive
+     * @param errorMessageTemplate a template for the exception message if value is not zero or positive, according to how
+     *                             {@link KiwiStrings#format(String, Object...)} handles placeholders
      * @param errorMessageArgs     the arguments to populate into the error message template
      * @throws IllegalStateException if the value is not positive (e.g. greater than zero)
      * @see Preconditions#checkState(boolean, Object)
      */
     public static void checkPositiveOrZero(int value, String errorMessageTemplate, Object... errorMessageArgs) {
-        checkState(value >= 0, errorMessageTemplate, errorMessageArgs);
+        if (value < 0) {
+            throw newIllegalStateException(errorMessageTemplate, errorMessageArgs);
+        }
     }
 
     /**
@@ -631,13 +640,16 @@ public class KiwiPreconditions {
      * Ensures long {@code value} is a positive number (greater than zero) or zero.
      *
      * @param value                the value to check for positivity
-     * @param errorMessageTemplate the error message template to use in the exception if not positive
+     * @param errorMessageTemplate a template for the exception message if value is not zero or positive, according to how
+     *                             {@link KiwiStrings#format(String, Object...)} handles placeholders
      * @param errorMessageArgs     the arguments to populate into the error message template
      * @throws IllegalStateException if the value is not positive (e.g. greater than zero)
      * @see Preconditions#checkState(boolean, Object)
      */
     public static void checkPositiveOrZero(long value, String errorMessageTemplate, Object... errorMessageArgs) {
-        checkState(value >= 0, errorMessageTemplate, errorMessageArgs);
+        if (value < 0) {
+            throw newIllegalStateException(errorMessageTemplate, errorMessageArgs);
+        }
     }
 
     /**
@@ -670,7 +682,8 @@ public class KiwiPreconditions {
      * Returns the int {@code value} if it is a positive number (greater than zero), throwing an {@link IllegalStateException} if not positive.
      *
      * @param value                the value to check for positivity
-     * @param errorMessageTemplate the error message template to use in the exception if not positive
+     * @param errorMessageTemplate a template for the exception message if value is not positive, according to how
+     *                             {@link KiwiStrings#format(String, Object...)} handles placeholders
      * @param errorMessageArgs     the arguments to populate into the error message template
      * @return the given value if positive
      * @throws IllegalStateException if the value is not positive (e.g. greater than zero)
@@ -711,7 +724,8 @@ public class KiwiPreconditions {
      * Returns the long {@code value} if it is a positive number (greater than zero), throwing an {@link IllegalStateException} if not positive.
      *
      * @param value                the value to check for positivity
-     * @param errorMessageTemplate the error message template to use in the exception if not positive
+     * @param errorMessageTemplate a template for the exception message if value is not positive, according to how
+     *                             {@link KiwiStrings#format(String, Object...)} handles placeholders
      * @param errorMessageArgs     the arguments to populate into the error message template
      * @return the given value if positive
      * @throws IllegalStateException if the value is not positive (e.g. greater than zero)
@@ -752,7 +766,8 @@ public class KiwiPreconditions {
      * Returns the int {@code value} if it is a positive number (greater than zero) or zero, throwing an {@link IllegalStateException} if not positive.
      *
      * @param value                the value to check for positivity
-     * @param errorMessageTemplate the error message template to use in the exception if not positive
+     * @param errorMessageTemplate a template for the exception message if value is not zero or positive, according to how
+     *                             {@link KiwiStrings#format(String, Object...)} handles placeholders
      * @param errorMessageArgs     the arguments to populate into the error message template
      * @return the given value if positive or zero
      * @throws IllegalStateException if the value is not positive (e.g. greater than zero)
@@ -793,7 +808,8 @@ public class KiwiPreconditions {
      * Returns the long {@code value} if it is a positive number (greater than zero) or zero, throwing an {@link IllegalStateException} if not positive.
      *
      * @param value                the value to check for positivity
-     * @param errorMessageTemplate the error message template to use in the exception if not positive
+     * @param errorMessageTemplate a template for the exception message if value is not zero or positive, according to how
+     *                             {@link KiwiStrings#format(String, Object...)} handles placeholders
      * @param errorMessageArgs     the arguments to populate into the error message template
      * @return the given value if positive or zero
      * @throws IllegalStateException if the value is not positive (e.g. greater than zero)
@@ -822,19 +838,26 @@ public class KiwiPreconditions {
      * @throws IllegalStateException if port is not valid
      */
     public static void checkValidPort(int port, String errorMessage) {
-        checkState(port >= 0 && port <= MAX_PORT_NUMBER, errorMessage);
+        checkState(isValidPort(port), errorMessage);
     }
 
     /**
      * Ensures given port is valid, between 0 and {@link #MAX_PORT_NUMBER}.
      *
      * @param port                 the port to check for validity
-     * @param errorMessageTemplate the error message template to use in the exception if port is not valid
+     * @param errorMessageTemplate a template for the exception message if port is not valid, according to how
+     *                             {@link KiwiStrings#format(String, Object...)} handles placeholders
      * @param errorMessageArgs     the arguments to populate into the error message template
      * @throws IllegalStateException if port is not valid
      */
     public static void checkValidPort(int port, String errorMessageTemplate, Object... errorMessageArgs) {
-        checkState(port >= 0 && port <= MAX_PORT_NUMBER, errorMessageTemplate, errorMessageArgs);
+        if (!isValidPort(port)) {
+            throw newIllegalStateException(errorMessageTemplate, errorMessageArgs);
+        }
+    }
+
+    private static boolean isValidPort(int port) {
+        return port >= 0 && lessThanOrEqualToMaxPort(port);
     }
 
     /**
@@ -866,7 +889,8 @@ public class KiwiPreconditions {
      * Returns the given port if it is valid
      *
      * @param port                 the port to check for validity
-     * @param errorMessageTemplate the error message template to use in the exception if port is not valid
+     * @param errorMessageTemplate a template for the exception message if port is not valid, according to how
+     *                             {@link KiwiStrings#format(String, Object...)} handles placeholders
      * @param errorMessageArgs     the arguments to populate into the error message template
      * @return the given port if valid
      * @throws IllegalStateException if port is not valid
@@ -894,19 +918,30 @@ public class KiwiPreconditions {
      * @throws IllegalStateException if port is not valid
      */
     public static void checkValidNonZeroPort(int port, String errorMessage) {
-        checkState(port > 0 && port <= MAX_PORT_NUMBER, errorMessage);
+        checkState(isValidPortAboveZero(port), errorMessage);
     }
 
     /**
      * Ensures given port is valid (excluding zero), between 1 and {@link #MAX_PORT_NUMBER}.
      *
      * @param port                 the port to check for validity
-     * @param errorMessageTemplate the error message template to use in the exception if port is not valid
+     * @param errorMessageTemplate a template for the exception message if port is not valid, according to how
+     *                             {@link KiwiStrings#format(String, Object...)} handles placeholders
      * @param errorMessageArgs     the arguments to populate into the error message template
      * @throws IllegalStateException if port is not valid
      */
     public static void checkValidNonZeroPort(int port, String errorMessageTemplate, Object... errorMessageArgs) {
-        checkState(port > 0 && port <= MAX_PORT_NUMBER, errorMessageTemplate, errorMessageArgs);
+        if (!isValidPortAboveZero(port)) {
+            throw newIllegalStateException(errorMessageTemplate, errorMessageArgs);
+        }
+    }
+
+    private static boolean isValidPortAboveZero(int port) {
+        return port > 0 && lessThanOrEqualToMaxPort(port);
+    }
+
+    private static boolean lessThanOrEqualToMaxPort(int port) {
+        return port <= MAX_PORT_NUMBER;
     }
 
     /**
@@ -938,7 +973,8 @@ public class KiwiPreconditions {
      * Returns the given port if it is valid (excluding zero)
      *
      * @param port                 the port to check for validity
-     * @param errorMessageTemplate the error message template to use in the exception if port is not valid
+     * @param errorMessageTemplate a template for the exception message if port is not valid, according to how
+     *                             {@link KiwiStrings#format(String, Object...)} handles placeholders
      * @param errorMessageArgs     the arguments to populate into the error message template
      * @return the given port if valid
      * @throws IllegalStateException if port is not valid
@@ -1049,4 +1085,9 @@ public class KiwiPreconditions {
         return new IllegalArgumentException(errorMessage);
     }
 
+    private static IllegalStateException newIllegalStateException(String errorMessageTemplate,
+                                                                        Object... errorMessageArgs) {
+        var errorMessage = format(errorMessageTemplate, errorMessageArgs);
+        return new IllegalStateException(errorMessage);
+    }
 }
