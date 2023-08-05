@@ -644,9 +644,13 @@ class KiwiPreconditionsTest {
                     .hasMessage("custom error message");
         }
 
-        @Test
-        void shouldThrowException_WithCustomMessageTemplate_WhenIntValue_IsNegative() {
-            assertThatThrownBy(() -> KiwiPreconditions.checkPositive(-1, "custom error message template %s", "42"))
+        @ParameterizedTest
+        @ValueSource(strings = {
+                "custom error message template %s",
+                "custom error message template {}"
+        })
+        void shouldThrowException_WithCustomMessageTemplate_WhenIntValue_IsNegative(String template) {
+            assertThatThrownBy(() -> KiwiPreconditions.checkPositive(-1, template, "42"))
                     .isInstanceOf(IllegalStateException.class)
                     .hasMessage("custom error message template 42");
         }
@@ -680,9 +684,13 @@ class KiwiPreconditionsTest {
                     .hasMessage("custom error message");
         }
 
-        @Test
-        void shouldThrowException_WithCustomMessageTemplate_WhenLongValue_IsNegative() {
-            assertThatThrownBy(() -> KiwiPreconditions.checkPositive(-1L, "custom error message template %s", "42"))
+        @ParameterizedTest
+        @ValueSource(strings = {
+                "custom error message template %s",
+                "custom error message template {}"
+        })
+        void shouldThrowException_WithCustomMessageTemplate_WhenLongValue_IsNegative(String template) {
+            assertThatThrownBy(() -> KiwiPreconditions.checkPositive(-1L, template, "42"))
                     .isInstanceOf(IllegalStateException.class)
                     .hasMessage("custom error message template 42");
         }
@@ -727,9 +735,13 @@ class KiwiPreconditionsTest {
                     .hasMessage("custom error message");
         }
 
-        @Test
-        void shouldThrowException_WithCustomMessageTemplate_WhenIntValue_IsNegative() {
-            assertThatThrownBy(() -> KiwiPreconditions.checkPositiveOrZero(-1, "custom error message template %s", "42"))
+        @ParameterizedTest
+        @ValueSource(strings = {
+                "custom error message template %s",
+                "custom error message template {}"
+        })
+        void shouldThrowException_WithCustomMessageTemplate_WhenIntValue_IsNegative(String template) {
+            assertThatThrownBy(() -> KiwiPreconditions.checkPositiveOrZero(-1, template, "42"))
                     .isInstanceOf(IllegalStateException.class)
                     .hasMessage("custom error message template 42");
         }
@@ -768,9 +780,13 @@ class KiwiPreconditionsTest {
                     .hasMessage("custom error message");
         }
 
-        @Test
-        void shouldThrowException_WithCustomMessageTemplate_WhenLongValue_IsNegative() {
-            assertThatThrownBy(() -> KiwiPreconditions.checkPositiveOrZero(-1L, "custom error message template %s", "42"))
+        @ParameterizedTest
+        @ValueSource(strings = {
+                "custom error message template %s",
+                "custom error message template {}"
+        })
+        void shouldThrowException_WithCustomMessageTemplate_WhenLongValue_IsNegative(String template) {
+            assertThatThrownBy(() -> KiwiPreconditions.checkPositiveOrZero(-1L, template, "42"))
                     .isInstanceOf(IllegalStateException.class)
                     .hasMessage("custom error message template 42");
         }
@@ -813,9 +829,13 @@ class KiwiPreconditionsTest {
                     .hasMessage("custom error message");
         }
 
-        @Test
-        void shouldThrowException_WithCustomMessageTemplate_WhenIntValue_IsNegative() {
-            assertThatThrownBy(() -> KiwiPreconditions.requirePositive(-1, "custom error message template %s", "42"))
+        @ParameterizedTest
+        @ValueSource(strings = {
+                "custom error message template %s",
+                "custom error message template {}"
+        })
+        void shouldThrowException_WithCustomMessageTemplate_WhenIntValue_IsNegative(String template) {
+            assertThatThrownBy(() -> KiwiPreconditions.requirePositive(-1, template, "42"))
                     .isInstanceOf(IllegalStateException.class)
                     .hasMessage("custom error message template 42");
         }
@@ -856,9 +876,13 @@ class KiwiPreconditionsTest {
                     .hasMessage("custom error message");
         }
 
-        @Test
-        void shouldThrowException_WithCustomMessageTemplate_WhenLongValue_IsNegative() {
-            assertThatThrownBy(() -> KiwiPreconditions.requirePositive(-1L, "custom error message template %s", "42"))
+        @ParameterizedTest
+        @ValueSource(strings = {
+                "custom error message template %s",
+                "custom error message template {}"
+        })
+        void shouldThrowException_WithCustomMessageTemplate_WhenLongValue_IsNegative(String template) {
+            assertThatThrownBy(() -> KiwiPreconditions.requirePositive(-1L, template, "42"))
                     .isInstanceOf(IllegalStateException.class)
                     .hasMessage("custom error message template 42");
         }
@@ -903,9 +927,13 @@ class KiwiPreconditionsTest {
                     .hasMessage("custom error message");
         }
 
-        @Test
-        void shouldThrowException_WithCustomMessageTemplate_WhenIntValue_IsNegative() {
-            assertThatThrownBy(() -> KiwiPreconditions.requirePositiveOrZero(-1, "custom error message template %s", "42"))
+        @ParameterizedTest
+        @ValueSource(strings = {
+                "custom error message template %s",
+                "custom error message template {}"
+        })
+        void shouldThrowException_WithCustomMessageTemplate_WhenIntValue_IsNegative(String template) {
+            assertThatThrownBy(() -> KiwiPreconditions.requirePositiveOrZero(-1, template, "42"))
                     .isInstanceOf(IllegalStateException.class)
                     .hasMessage("custom error message template 42");
         }
@@ -944,9 +972,13 @@ class KiwiPreconditionsTest {
                     .hasMessage("custom error message");
         }
 
-        @Test
-        void shouldThrowException_WithCustomMessageTemplate_WhenLongValue_IsNegative() {
-            assertThatThrownBy(() -> KiwiPreconditions.requirePositiveOrZero(-1L, "custom error message template %s", "42"))
+        @ParameterizedTest
+        @ValueSource(strings = {
+                "custom error message template %s",
+                "custom error message template {}"
+        })
+        void shouldThrowException_WithCustomMessageTemplate_WhenLongValue_IsNegative(String template) {
+            assertThatThrownBy(() -> KiwiPreconditions.requirePositiveOrZero(-1L, template, "42"))
                     .isInstanceOf(IllegalStateException.class)
                     .hasMessage("custom error message template 42");
         }
@@ -989,9 +1021,13 @@ class KiwiPreconditionsTest {
                     .hasMessage("custom message");
         }
 
-        @Test
-        void shouldThrowException_WithCustomMessageTemplate_WhenPort_IsNegative() {
-            assertThatThrownBy(() -> KiwiPreconditions.checkValidPort(-1, "custom message %s", 42))
+        @ParameterizedTest
+        @ValueSource(strings = {
+                "custom message %s",
+                "custom message {}"
+        })
+        void shouldThrowException_WithCustomMessageTemplate_WhenPort_IsNegative(String template) {
+            assertThatThrownBy(() -> KiwiPreconditions.checkValidPort(-1, template, 42))
                     .isInstanceOf(IllegalStateException.class)
                     .hasMessage("custom message 42");
         }
@@ -1038,9 +1074,13 @@ class KiwiPreconditionsTest {
                     .hasMessage("custom message");
         }
 
-        @Test
-        void shouldThrowException_WithCustomMessageTemplate_WhenPort_IsNegative() {
-            assertThatThrownBy(() -> KiwiPreconditions.requireValidPort(-1, "custom message %s", 42))
+        @ParameterizedTest
+        @ValueSource(strings = {
+                "custom message %s",
+                "custom message {}"
+        })
+        void shouldThrowException_WithCustomMessageTemplate_WhenPort_IsNegative(String template) {
+            assertThatThrownBy(() -> KiwiPreconditions.requireValidPort(-1, template, 42))
                     .isInstanceOf(IllegalStateException.class)
                     .hasMessage("custom message 42");
         }
@@ -1087,9 +1127,13 @@ class KiwiPreconditionsTest {
                     .hasMessage("custom message");
         }
 
-        @Test
-        void shouldThrowException_WithCustomMessageTemplate_WhenPort_IsNegative() {
-            assertThatThrownBy(() -> KiwiPreconditions.checkValidNonZeroPort(-1, "custom message %s", 42))
+        @ParameterizedTest
+        @ValueSource(strings = {
+                "custom message %s",
+                "custom message {}"
+        })
+        void shouldThrowException_WithCustomMessageTemplate_WhenPort_IsNegative(String template) {
+            assertThatThrownBy(() -> KiwiPreconditions.checkValidNonZeroPort(-1, template, 42))
                     .isInstanceOf(IllegalStateException.class)
                     .hasMessage("custom message 42");
         }
@@ -1143,9 +1187,13 @@ class KiwiPreconditionsTest {
                     .hasMessage("custom message");
         }
 
-        @Test
-        void shouldThrowException_WithCustomMessageTemplate_WhenPort_IsNegative() {
-            assertThatThrownBy(() -> KiwiPreconditions.requireValidNonZeroPort(-1, "custom message %s", 42))
+        @ParameterizedTest
+        @ValueSource(strings = {
+                "custom message %s",
+                "custom message {}"
+        })
+        void shouldThrowException_WithCustomMessageTemplate_WhenPort_IsNegative(String template) {
+            assertThatThrownBy(() -> KiwiPreconditions.requireValidNonZeroPort(-1, template, 42))
                     .isInstanceOf(IllegalStateException.class)
                     .hasMessage("custom message 42");
         }
