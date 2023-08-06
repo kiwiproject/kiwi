@@ -1,7 +1,6 @@
 package org.kiwiproject.net;
 
 import static com.google.common.base.Strings.nullToEmpty;
-import static java.util.stream.Collectors.toList;
 
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.net.HostAndPort;
@@ -285,7 +284,7 @@ public class KiwiInternetAddresses {
                 .map(CidrRange::new)
                 .map(cidr -> ipAddresses.stream().filter(cidr::isInRange).findFirst())
                 .flatMap(Optional::stream)
-                .collect(toList());
+                .toList();
     }
 
     @VisibleForTesting
@@ -296,7 +295,7 @@ public class KiwiInternetAddresses {
                     .stream()
                     .map(networkInterface -> getInterfaceIps(networkInterface, ipScheme))
                     .flatMap(List::stream)
-                    .collect(toList());
+                    .toList();
         } catch (SocketException e) {
             throw new UncheckedIOException("Error getting enumeration of network interfaces.", e);
         }
@@ -309,7 +308,7 @@ public class KiwiInternetAddresses {
                 .stream()
                 .filter(address -> ipScheme.getInetAddressClass().isAssignableFrom(address.getClass()))
                 .map(InetAddress::getHostAddress)
-                .collect(toList());
+                .toList();
     }
 
     /**

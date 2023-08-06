@@ -1,7 +1,6 @@
 package org.kiwiproject.validation;
 
 import static java.util.Objects.isNull;
-import static java.util.stream.Collectors.toList;
 import static org.apache.commons.lang3.StringUtils.isBlank;
 
 import com.google.common.annotations.VisibleForTesting;
@@ -52,7 +51,7 @@ public class Ipv4AddressValidator implements ConstraintValidator<Ipv4Address, St
     private Stream<String> segmentsOf(Matcher matcher) {
         return IntStream.rangeClosed(1, matcher.groupCount())
                 .mapToObj(matcher::group)
-                .collect(toList())
+                .toList()
                 .stream();
     }
 

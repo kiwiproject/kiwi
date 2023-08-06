@@ -3,7 +3,6 @@ package org.kiwiproject.collect;
 import static com.google.common.base.Preconditions.checkArgument;
 import static com.google.common.base.Preconditions.checkNotNull;
 import static java.util.Objects.nonNull;
-import static java.util.stream.Collectors.toList;
 
 import lombok.experimental.UtilityClass;
 
@@ -63,7 +62,7 @@ public class KiwiLists {
      */
     public static <T> List<T> sorted(List<T> items) {
         checkNonNullInputList(items);
-        return items.stream().sorted().collect(toList());
+        return items.stream().sorted().toList();
     }
 
     /**
@@ -77,7 +76,7 @@ public class KiwiLists {
     public static <T> List<T> sorted(List<T> items, Comparator<T> comparator) {
         checkNonNullInputList(items);
         checkNotNull(comparator, "Comparator cannot be null");
-        return items.stream().sorted(comparator).collect(toList());
+        return items.stream().sorted(comparator).toList();
     }
 
     /**
@@ -264,7 +263,7 @@ public class KiwiLists {
     }
 
     private static <T> List<T> distinctListFrom(Collection<T> collection) {
-        return collection.stream().distinct().collect(toList());
+        return collection.stream().distinct().toList();
     }
 
     /**
@@ -278,7 +277,7 @@ public class KiwiLists {
      */
     public static <T> List<T> newListStartingAtCircularOffset(List<T> input, long startOffset) {
         var size = input.size();
-        return IntStream.range(0, size).mapToObj(i -> input.get((int) (startOffset + i) % size)).collect(toList());
+        return IntStream.range(0, size).mapToObj(i -> input.get((int) (startOffset + i) % size)).toList();
     }
 
     /**

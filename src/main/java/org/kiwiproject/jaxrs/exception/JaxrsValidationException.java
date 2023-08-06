@@ -1,7 +1,6 @@
 package org.kiwiproject.jaxrs.exception;
 
 import static java.util.Objects.nonNull;
-import static java.util.stream.Collectors.toList;
 import static org.kiwiproject.base.KiwiPreconditions.checkArgumentNotNull;
 
 import com.google.common.annotations.VisibleForTesting;
@@ -45,7 +44,7 @@ public class JaxrsValidationException extends JaxrsException {
                     var fieldName = entry.get(ErrorMessage.KEY_FIELD_NAME);
                     var message = entry.get(ErrorMessage.KEY_MESSAGE);
                     return new ErrorMessage(itemId, CODE, message, fieldName);
-                }).collect(toList());
+                }).toList();
         setErrors(errorMessages);
     }
 
@@ -61,7 +60,7 @@ public class JaxrsValidationException extends JaxrsException {
         checkArgumentNotNull(violations);
         var errorMessages = violations.stream()
                 .map(violation -> buildErrorMessage(itemId, violation))
-                .collect(toList());
+                .toList();
         setErrors(errorMessages);
     }
 
@@ -90,7 +89,7 @@ public class JaxrsValidationException extends JaxrsException {
                     var propertyPath = violation.getPropertyPath().toString();
                     var fieldNameOrNull = propertyPathMappings.get(propertyPath);
                     return buildErrorMessage(itemId, violation, fieldNameOrNull);
-                }).collect(toList());
+                }).toList();
         setErrors(errorMessages);
     }
 

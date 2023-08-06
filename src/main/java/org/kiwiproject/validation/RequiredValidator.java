@@ -52,7 +52,7 @@ public class RequiredValidator implements ConstraintValidator<Required, Object> 
     }
 
     private static boolean isBlank(Object value) {
-        return value instanceof CharSequence && StringUtils.isBlank((CharSequence) value);
+        return value instanceof CharSequence cs && StringUtils.isBlank(cs);
     }
 
     private boolean notAllowingEmptyButIsEmpty(Object value) {
@@ -62,8 +62,8 @@ public class RequiredValidator implements ConstraintValidator<Required, Object> 
     private static boolean isEmpty(@NonNull Object value) {
         requireNonNull(value);
 
-        if (value instanceof CharSequence) {
-            return StringUtils.isEmpty((CharSequence) value);
+        if (value instanceof CharSequence cs) {
+            return StringUtils.isEmpty(cs);
         } else if (value instanceof Collection) {
             return ((Collection<?>) value).isEmpty();
         } else if (value instanceof Map) {

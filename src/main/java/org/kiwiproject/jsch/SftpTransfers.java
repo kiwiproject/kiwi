@@ -1,7 +1,5 @@
 package org.kiwiproject.jsch;
 
-import static java.util.stream.Collectors.toList;
-
 import com.jcraft.jsch.ChannelSftp;
 import com.jcraft.jsch.JSch;
 import com.jcraft.jsch.SftpException;
@@ -229,7 +227,7 @@ public class SftpTransfers {
     public List<String> listFiles(Path remotePath, Predicate<String> fileFilter) {
         return listFiles(remotePath).stream()
                 .filter(fileFilter)
-                .collect(toList());
+                .toList();
     }
 
     /**
@@ -253,7 +251,7 @@ public class SftpTransfers {
     public List<String> listDirectories(Path remotePath, Predicate<String> dirFilter) {
         return listDirectories(remotePath).stream()
                 .filter(dirFilter)
-                .collect(toList());
+                .toList();
     }
 
     private List<String> listRemoteItems(Path remotePath, Predicate<ChannelSftp.LsEntry> filterFunction) {
@@ -261,7 +259,7 @@ public class SftpTransfers {
                 .stream()
                 .filter(filterFunction)
                 .map(ChannelSftp.LsEntry::getFilename)
-                .collect(toList()));
+                .toList());
     }
 
     // Suppress Sonar warning about using Vectors. JSch returns a raw Vector which we cannot do anything

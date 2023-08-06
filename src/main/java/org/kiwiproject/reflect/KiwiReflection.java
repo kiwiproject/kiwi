@@ -3,7 +3,6 @@ package org.kiwiproject.reflect;
 import static com.google.common.base.Preconditions.checkArgument;
 import static java.util.Objects.nonNull;
 import static java.util.function.Predicate.not;
-import static java.util.stream.Collectors.toList;
 import static java.util.stream.Collectors.toUnmodifiableSet;
 import static org.kiwiproject.base.KiwiPreconditions.checkArgumentNotBlank;
 import static org.kiwiproject.base.KiwiPreconditions.checkArgumentNotNull;
@@ -245,7 +244,7 @@ public class KiwiReflection {
         while (nonNull(currentType)) {
             var nonStaticFields = Arrays.stream(currentType.getDeclaredFields())
                     .filter(not(KiwiReflection::isStatic))
-                    .collect(toList());
+                    .toList();
 
             fields.addAll(nonStaticFields);
 
@@ -369,7 +368,7 @@ public class KiwiReflection {
         var methods = clazz.getMethods();
         return Arrays.stream(methods)
                 .filter(predicate)
-                .collect(toList());
+                .toList();
     }
 
     /**
@@ -757,7 +756,7 @@ public class KiwiReflection {
 
     private static List<Class<?>> getTypesOrThrow(Object... objects) {
         try {
-            return Arrays.stream(objects).map(Object::getClass).collect(toList());
+            return Arrays.stream(objects).<Class<?>>map(Object::getClass).toList();
         } catch (NullPointerException npe) {
             throw new NullPointerException("Cannot infer types because one (or more) arguments is null");
         }

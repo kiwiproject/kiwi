@@ -3,7 +3,6 @@ package org.kiwiproject.io;
 import static java.util.Objects.isNull;
 import static java.util.Objects.nonNull;
 import static java.util.stream.Collectors.joining;
-import static java.util.stream.Collectors.toList;
 import static org.kiwiproject.base.KiwiPreconditions.checkArgumentNotNull;
 
 import lombok.experimental.UtilityClass;
@@ -300,7 +299,7 @@ public class KiwiIO {
      * @return a list of strings from the input stream, encoded using the specified charset
      */
     public static List<String> readLinesFrom(InputStream stream, Charset charset) {
-        return streamLinesFrom(stream, charset).collect(toList());
+        return streamLinesFrom(stream, charset).toList();
     }
 
     /**

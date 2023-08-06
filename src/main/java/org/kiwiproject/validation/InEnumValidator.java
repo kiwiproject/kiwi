@@ -2,7 +2,6 @@ package org.kiwiproject.validation;
 
 import static java.util.Objects.isNull;
 import static java.util.Objects.requireNonNull;
-import static java.util.stream.Collectors.toUnmodifiableList;
 import static org.apache.commons.lang3.StringUtils.isBlank;
 import static org.kiwiproject.base.KiwiStrings.f;
 import static org.kiwiproject.collect.KiwiLists.isNullOrEmpty;
@@ -36,7 +35,7 @@ public class InEnumValidator implements ConstraintValidator<InEnum, String> {
         this.allowableValues = constants.stream()
                 .map(anEnum -> enumConstantOrStringValue(inEnum, anEnum))
                 .map(stringValue -> uppercaseIfIgnoringCase(inEnum, stringValue))
-                .collect(toUnmodifiableList());
+                .toList();
         checkAllowableValuesExist();
 
         this.errorMessage = inEnum.message() + " " + allowableValues;

@@ -190,7 +190,7 @@ public class JaxrsException extends RuntimeException {
      * @return new JaxrsException instance
      */
     public static JaxrsException buildJaxrsException(Throwable throwable) {
-        return throwable instanceof JaxrsException ? (JaxrsException) throwable : new JaxrsException(throwable);
+        return throwable instanceof JaxrsException jaxrsException ? jaxrsException : new JaxrsException(throwable);
     }
 
     /**
@@ -311,12 +311,12 @@ public class JaxrsException extends RuntimeException {
             return 500;
         }
 
-        if (throwable instanceof JaxrsException) {
-            return ((JaxrsException) throwable).getStatusCode();
+        if (throwable instanceof JaxrsException jaxrsException) {
+            return jaxrsException.getStatusCode();
         }
 
-        if (throwable instanceof WebApplicationException) {
-            return ((WebApplicationException) throwable).getResponse().getStatus();
+        if (throwable instanceof WebApplicationException webApplicationException) {
+            return webApplicationException.getResponse().getStatus();
         }
 
         if (throwable instanceof IllegalArgumentException) {

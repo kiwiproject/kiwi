@@ -2,7 +2,6 @@ package org.kiwiproject.json;
 
 import static java.util.Objects.isNull;
 import static java.util.Objects.nonNull;
-import static java.util.stream.Collectors.toList;
 import static org.apache.commons.lang3.StringUtils.isBlank;
 import static org.apache.commons.lang3.StringUtils.isNotBlank;
 import static org.kiwiproject.base.KiwiPreconditions.checkArgumentNotNull;
@@ -284,8 +283,8 @@ public class JsonHelper {
             return null;
         }
 
-        if (object instanceof String && isJson((String) object)) {
-            return (String) object;
+        if (object instanceof String s && isJson(s)) {
+            return s;
         }
 
         var writer = objectMapper.writer();
@@ -825,7 +824,7 @@ public class JsonHelper {
         var jsonList = requireNotNull(objectList)
                 .stream()
                 .map(obj -> toJsonIgnoringPaths(obj, ignoredPaths))
-                .collect(toList());
+                .toList();
         return jsonDiff(jsonList);
     }
 
@@ -852,7 +851,7 @@ public class JsonHelper {
                 .forEach(path -> {
                     List<String> results = listOfJson.stream()
                             .map(json -> getPath(json, path, String.class))
-                            .collect(toList());
+                            .toList();
                     if (isNotNullOrEmpty(results)) {
                         var match = first(results);
                         if (!results.stream().allMatch(s -> StringUtils.equals(s, match))) {
@@ -874,7 +873,7 @@ public class JsonHelper {
         var jsonNodeList = Stream.of(objects)
                 .map(this::toJson)
                 .map(this::getRootNode)
-                .collect(toList());
+                .toList();
 
         return jsonNodeList.stream()
                 .allMatch(jsonNode -> Objects.equals(jsonNode, first(jsonNodeList)));
@@ -1118,7 +1117,7 @@ public class JsonHelper {
         paths.addAll(
                 childPaths.stream()
                         .map(path -> parentPrefix + path)
-                        .collect(toList())
+                        .toList()
         );
     }
 }

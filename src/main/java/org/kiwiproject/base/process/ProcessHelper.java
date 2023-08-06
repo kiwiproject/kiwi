@@ -1,6 +1,5 @@
 package org.kiwiproject.base.process;
 
-import static java.util.stream.Collectors.toList;
 import static org.kiwiproject.collect.KiwiLists.first;
 import static org.kiwiproject.io.KiwiIO.readLinesFromInputStreamOf;
 import static org.kiwiproject.io.KiwiIO.streamLinesFromInputStreamOf;
@@ -327,7 +326,7 @@ public class ProcessHelper {
         var process = launchPgrepWithParentPidFlag(parentProcessId, processHelper);
         Stream<String> stream = streamLinesFromInputStreamOf(process);
 
-        return stream.map(Processes::getPidOrThrow).collect(toList());
+        return stream.map(Processes::getPidOrThrow).toList();
     }
 
     /**

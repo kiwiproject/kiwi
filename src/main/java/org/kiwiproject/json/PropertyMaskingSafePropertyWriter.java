@@ -1,7 +1,5 @@
 package org.kiwiproject.json;
 
-import static java.util.stream.Collectors.toUnmodifiableList;
-
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.databind.SerializerProvider;
 import com.fasterxml.jackson.databind.ser.BeanPropertyWriter;
@@ -70,7 +68,7 @@ public class PropertyMaskingSafePropertyWriter extends BeanPropertyWriter {
         return maskedFieldRegexps.stream()
                 .filter(Objects::nonNull)
                 .map(regex -> Pattern.compile(regex, Pattern.CASE_INSENSITIVE))
-                .collect(toUnmodifiableList());
+                .toList();
     }
 
     @Override

@@ -4,7 +4,6 @@ import static com.google.common.base.Preconditions.checkState;
 import static com.google.common.collect.Lists.newArrayList;
 import static java.util.Objects.isNull;
 import static java.util.Objects.nonNull;
-import static java.util.stream.Collectors.toList;
 import static org.kiwiproject.base.KiwiPreconditions.checkArgumentNotNull;
 import static org.kiwiproject.collect.KiwiLists.isNotNullOrEmpty;
 
@@ -160,7 +159,7 @@ public class PagingQuery extends Query {
             var aggregationOpList = newArrayList(aggregationOps)
                     .stream()
                     .filter(Objects::nonNull)
-                    .collect(toList());
+                    .toList();
             aggregations.addAll(aggregationOpList);
         }
 

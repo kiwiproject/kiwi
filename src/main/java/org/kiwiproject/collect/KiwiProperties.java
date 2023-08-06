@@ -4,7 +4,6 @@ import static com.google.common.base.Preconditions.checkArgument;
 import static com.google.common.collect.Lists.newArrayList;
 import static com.google.common.collect.Lists.partition;
 import static java.util.Objects.requireNonNull;
-import static java.util.stream.Collectors.toList;
 import static org.kiwiproject.base.KiwiPreconditions.checkEvenItemCount;
 import static org.kiwiproject.collect.KiwiLists.first;
 import static org.kiwiproject.collect.KiwiLists.second;
@@ -36,7 +35,7 @@ public class KiwiProperties {
      */
     public static Properties newProperties(Object... items) {
         checkEvenItemCount(items);
-        var strings = newArrayList(items).stream().map(Object::toString).collect(toList());
+        var strings = newArrayList(items).stream().map(Object::toString).toList();
         var kvPairs = partition(strings, 2);
         return newPropertiesFromStringPairs(kvPairs);
     }
