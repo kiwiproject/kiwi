@@ -5,7 +5,6 @@ import static com.google.common.base.Preconditions.checkState;
 import static com.google.common.collect.Lists.newArrayList;
 import static java.util.Collections.emptyList;
 import static java.util.Objects.isNull;
-import static java.util.stream.Collectors.toUnmodifiableList;
 import static org.kiwiproject.base.KiwiPreconditions.checkArgumentNotNull;
 import static org.kiwiproject.collect.KiwiLists.isNotNullOrEmpty;
 import static org.kiwiproject.collect.KiwiLists.isNullOrEmpty;
@@ -146,7 +145,7 @@ public class KiwiJars {
                 urls = StreamSupport
                         .stream((urlIterable).spliterator(), false)
                         .filter(manifestFilter)
-                        .collect(toUnmodifiableList());
+                        .toList();
             }
 
             LOG.trace("Using manifest URL(s): {}", urls);

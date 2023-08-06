@@ -3,7 +3,6 @@ package org.kiwiproject.net;
 import static java.util.Objects.isNull;
 import static java.util.Objects.nonNull;
 import static java.util.stream.Collectors.joining;
-import static java.util.stream.Collectors.toList;
 import static java.util.stream.Collectors.toMap;
 import static org.apache.commons.lang3.StringUtils.isBlank;
 import static org.kiwiproject.base.KiwiPreconditions.checkArgumentNotBlank;
@@ -381,7 +380,7 @@ public class KiwiUrls {
      * @return a list of URLs matching the input URLs minus any trailing slash
      */
     public static List<String> stripTrailingSlashes(List<String> urls) {
-        return urls.stream().map(KiwiUrls::stripTrailingSlash).collect(toList());
+        return urls.stream().map(KiwiUrls::stripTrailingSlash).toList();
     }
 
     /**

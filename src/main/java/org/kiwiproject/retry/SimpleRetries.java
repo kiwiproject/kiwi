@@ -2,7 +2,6 @@ package org.kiwiproject.retry;
 
 import static java.util.Objects.isNull;
 import static java.util.Objects.nonNull;
-import static java.util.stream.Collectors.toList;
 import static org.slf4j.event.Level.TRACE;
 
 import lombok.experimental.UtilityClass;
@@ -291,7 +290,7 @@ public class SimpleRetries {
         var errors = results.stream()
                 .filter(pair -> nonNull(pair.getRight()))
                 .map(Pair::getRight)
-                .collect(toList());
+                .toList();
 
         return new RetryResult<>(numAttemptsMade, maxAttempts, object, errors);
     }

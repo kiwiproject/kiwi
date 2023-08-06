@@ -111,8 +111,8 @@ public class BeanConverter<T> {
 
     @SuppressWarnings({"unchecked", "rawtypes"})
     private static <T> Set<String> getPropertyNamesAsSet(T input, BeanWrapper inputWrapper) {
-        if (input instanceof Map) {
-            return ((Map) input).keySet();
+        if (input instanceof Map inputMap) {
+            return inputMap.keySet();
         }
 
         return Stream.of(inputWrapper.getPropertyDescriptors())
@@ -178,8 +178,8 @@ public class BeanConverter<T> {
             targetWrapper.setPropertyValue(propName, inputValue);
         } catch (NotWritablePropertyException e) {
             // try direct access if map
-            if (target instanceof Map) {
-                ((Map) target).put(propName, inputValue);
+            if (target instanceof Map targetMap) {
+                targetMap.put(propName, inputValue);
             } else {
                 // if no approach works
                 logOrFail("Exception trying to write value", propName, e);

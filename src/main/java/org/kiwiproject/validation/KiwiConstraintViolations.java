@@ -2,7 +2,6 @@ package org.kiwiproject.validation;
 
 import static com.google.common.base.Preconditions.checkArgument;
 import static java.util.stream.Collectors.joining;
-import static java.util.stream.Collectors.toList;
 import static java.util.stream.Collectors.toMap;
 import static org.kiwiproject.base.KiwiPreconditions.checkArgumentNotNull;
 import static org.kiwiproject.collect.KiwiSets.isNotNullOrEmpty;
@@ -227,7 +226,7 @@ public class KiwiConstraintViolations {
         return violations.stream()
                 .map(violation -> KiwiConstraintViolations.propertyAndErrorMessage(violation, pathTransformer))
                 .sorted()
-                .collect(toList());
+                .toList();
     }
 
     /**

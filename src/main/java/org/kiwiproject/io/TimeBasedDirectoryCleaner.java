@@ -5,7 +5,6 @@ import static com.google.common.base.Preconditions.checkState;
 import static java.util.Objects.isNull;
 import static java.util.Objects.nonNull;
 import static java.util.Objects.requireNonNull;
-import static java.util.stream.Collectors.toList;
 import static org.kiwiproject.base.KiwiPreconditions.checkArgumentNotNull;
 import static org.kiwiproject.base.KiwiStrings.f;
 
@@ -254,7 +253,7 @@ public class TimeBasedDirectoryCleaner implements Runnable {
         var attemptedDeletes = Arrays.stream(filesToClean)
                 .map(TimeBasedDirectoryCleaner::tryDeleteIfExists)
                 .filter(result -> result.deleteWasAttempted)
-                .collect(toList());
+                .toList();
 
         var numExpectedDeletes = attemptedDeletes.size();
 
@@ -262,7 +261,7 @@ public class TimeBasedDirectoryCleaner implements Runnable {
                 .stream()
                 .filter(FileDeleteResult::deleteAttemptedAndFailed)
                 .peek(this::logUnableToDelete)
-                .collect(toList());
+                .toList();
 
         updateFileDeletionMetadata(numExpectedDeletes, failedDeletes);
     }

@@ -3,7 +3,6 @@ package org.kiwiproject.spring.data;
 import static com.google.common.collect.Lists.newArrayList;
 import static com.google.common.collect.Lists.partition;
 import static java.util.Objects.nonNull;
-import static java.util.stream.Collectors.toList;
 import static org.kiwiproject.base.KiwiPreconditions.checkArgumentNotNull;
 import static org.kiwiproject.base.KiwiPreconditions.checkEvenItemCount;
 import static org.kiwiproject.base.KiwiPreconditions.checkPositiveOrZero;
@@ -103,7 +102,7 @@ public class KiwiPaging {
         return directionFieldPairs.stream()
                 .filter(KiwiPaging::containsDirectionAndProperty)
                 .map(KiwiPaging::sortFromDirectionAndProperty)
-                .collect(toList());
+                .toList();
     }
 
     private static boolean containsDirectionAndProperty(List<Object> directionFieldPair) {
@@ -144,7 +143,7 @@ public class KiwiPaging {
 
         var filteredSorts = sorts.stream()
                 .filter(Objects::nonNull)
-                .collect(toList());
+                .toList();
 
         var firstSort = first(filteredSorts);
         var restOfSorts = subListExcludingFirst(filteredSorts);

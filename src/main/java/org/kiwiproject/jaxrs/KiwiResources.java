@@ -2,7 +2,6 @@ package org.kiwiproject.jaxrs;
 
 import static java.util.Objects.isNull;
 import static java.util.Objects.nonNull;
-import static java.util.stream.Collectors.toUnmodifiableList;
 import static org.kiwiproject.base.KiwiPreconditions.checkArgumentNotBlank;
 import static org.kiwiproject.base.KiwiPreconditions.checkArgumentNotNull;
 import static org.kiwiproject.base.KiwiStrings.f;
@@ -469,12 +468,11 @@ public class KiwiResources {
 
         return values.stream()
                 .map(value -> parseIntOrThrowBadRequest(value, parameterName))
-                .collect(toUnmodifiableList());
+                .toList();
     }
 
     @VisibleForTesting
     static int parseIntOrThrowBadRequest(Object value, String parameterName) {
-        //noinspection UnstableApiUsage
         var result = Optional.ofNullable(value).map(Object::toString).map(Ints::tryParse);
 
         return result.orElseThrow(() -> newJaxrsBadRequestException("'{}' is not an integer", value, parameterName));
@@ -569,12 +567,11 @@ public class KiwiResources {
 
         return values.stream()
                 .map(value -> parseLongOrThrowBadRequest(value, parameterName))
-                .collect(toUnmodifiableList());
+                .toList();
     }
 
     @VisibleForTesting
     static long parseLongOrThrowBadRequest(Object value, String parameterName) {
-        //noinspection UnstableApiUsage
         var result = Optional.ofNullable(value).map(Object::toString).map(Longs::tryParse);
 
         return result.orElseThrow(() -> newJaxrsBadRequestException("'{}' is not a long", value, parameterName));

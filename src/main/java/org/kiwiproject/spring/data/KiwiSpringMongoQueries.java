@@ -2,7 +2,6 @@ package org.kiwiproject.spring.data;
 
 import static java.util.Objects.isNull;
 import static java.util.Objects.nonNull;
-import static java.util.stream.Collectors.toList;
 import static org.apache.commons.lang3.StringUtils.isBlank;
 import static org.kiwiproject.base.KiwiPreconditions.checkArgumentNotNull;
 
@@ -295,7 +294,7 @@ public class KiwiSpringMongoQueries {
         }
 
         var values = KiwiStrings.nullSafeSplitOnCommas(csv);
-        var convertedValues = values.stream().map(converter).collect(toList());
+        var convertedValues = values.stream().map(converter).toList();
         query.addCriteria(Criteria.where(propertyName).in(convertedValues));
     }
 

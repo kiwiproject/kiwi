@@ -4,7 +4,6 @@ import static com.google.common.base.Preconditions.checkArgument;
 import static com.google.common.base.Preconditions.checkState;
 import static java.util.Objects.isNull;
 import static java.util.Objects.nonNull;
-import static java.util.stream.Collectors.toList;
 import static org.kiwiproject.base.KiwiPreconditions.checkArgumentNotNull;
 import static org.kiwiproject.base.KiwiStrings.SPACE;
 import static org.kiwiproject.base.KiwiStrings.format;
@@ -394,7 +393,7 @@ public class Processes {
 
             return streamLinesFromInputStreamOf(process)
                     .map(Processes::getPidOrThrow)
-                    .collect(toList());
+                    .toList();
         } catch (IOException e) {
             throw new UncheckedIOException(
                     format("Error executing pgrep with user [%s] and command [%s]", user, commandLine), e);
@@ -495,7 +494,7 @@ public class Processes {
     public static List<Pair<Long, String>> pgrepParsedList(String user, String commandLine) {
         List<String> lines = pgrepList(user, commandLine);
 
-        return lines.stream().map(Processes::pairFromPgrepLine).collect(toList());
+        return lines.stream().map(Processes::pairFromPgrepLine).toList();
     }
 
     private static Pair<Long, String> pairFromPgrepLine(String line) {

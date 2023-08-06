@@ -2,7 +2,6 @@ package org.kiwiproject.jaxrs.exception;
 
 import static java.util.Collections.unmodifiableMap;
 import static java.util.Objects.isNull;
-import static java.util.stream.Collectors.toUnmodifiableList;
 import static org.apache.commons.lang3.StringUtils.isBlank;
 import static org.kiwiproject.collect.KiwiMaps.isNotNullOrEmpty;
 
@@ -188,7 +187,7 @@ public class JaxrsExceptionMapper implements ExceptionMapper<JaxrsException> {
             return errorObjects.stream()
                     .map(JaxrsExceptionMapper::toErrorMessageOrNull)
                     .filter(Objects::nonNull)
-                    .collect(toUnmodifiableList());
+                    .toList();
         }
 
         return List.of();
@@ -196,8 +195,8 @@ public class JaxrsExceptionMapper implements ExceptionMapper<JaxrsException> {
 
     @SuppressWarnings("unchecked")
     private static ErrorMessage toErrorMessageOrNull(Object obj) {
-        if (obj instanceof ErrorMessage) {
-            return (ErrorMessage) obj;
+        if (obj instanceof ErrorMessage errorMessage) {
+            return errorMessage;
         } else if (obj instanceof Map) {
             return ErrorMessage.valueOf((Map<String, Object>) obj);
         }

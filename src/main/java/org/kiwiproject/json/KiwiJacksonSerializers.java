@@ -1,7 +1,5 @@
 package org.kiwiproject.json;
 
-import static java.util.stream.Collectors.toList;
-
 import com.fasterxml.jackson.databind.BeanDescription;
 import com.fasterxml.jackson.databind.SerializationConfig;
 import com.fasterxml.jackson.databind.module.SimpleModule;
@@ -51,10 +49,12 @@ public class KiwiJacksonSerializers {
             public List<BeanPropertyWriter> changeProperties(SerializationConfig config,
                                                              BeanDescription beanDesc,
                                                              List<BeanPropertyWriter> beanProperties) {
-                return beanProperties.stream()
+                return beanProperties
+                        .stream()
                         .map(beanPropertyWriter ->
                                 new PropertyMaskingSafePropertyWriter(beanPropertyWriter, options))
-                        .collect(toList());
+                        .map(BeanPropertyWriter.class::cast)
+                        .toList();
             }
         };
 

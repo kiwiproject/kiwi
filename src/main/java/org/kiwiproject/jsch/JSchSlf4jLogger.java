@@ -43,22 +43,15 @@ public class JSchSlf4jLogger implements com.jcraft.jsch.Logger {
      */
     @Override
     public boolean isEnabled(int level) {
-        switch (level) {
-            case DEBUG:
-            case INFO:
-                return slf4jLogger.isDebugEnabled();
-
-            case WARN:
-                return slf4jLogger.isWarnEnabled();
-
-            case ERROR:
-            case FATAL:
-                return slf4jLogger.isErrorEnabled();
-
-            default:
+        return switch (level) {
+            case DEBUG, INFO -> slf4jLogger.isDebugEnabled();
+            case WARN -> slf4jLogger.isWarnEnabled();
+            case ERROR, FATAL -> slf4jLogger.isErrorEnabled();
+            default -> {
                 slf4jLogger.error("Was passed invalid level: {}", level);
-                return false;
-        }
+                yield false;
+            }
+        };
     }
 
     /**
@@ -80,38 +73,19 @@ public class JSchSlf4jLogger implements com.jcraft.jsch.Logger {
         }
 
         switch (level) {
-            case DEBUG:
-            case INFO:
-                slf4jLogger.debug(message);
-                break;
-
-            case WARN:
-                slf4jLogger.warn(message);
-                break;
-
-            case ERROR:
-            case FATAL:
-                slf4jLogger.error(message);
-                break;
-
-            default:
-                slf4jLogger.error("Was passed invalid level: {}. (Message the caller wanted to log: {})", level, message);
-                break;
+            case DEBUG, INFO -> slf4jLogger.debug(message);
+            case WARN -> slf4jLogger.warn(message);
+            case ERROR, FATAL -> slf4jLogger.error(message);
+            default ->
+                    slf4jLogger.error("Was passed invalid level: {}. (Message the caller wanted to log: {})", level, message);
         }
     }
 
     private boolean isValidLevel(int level) {
-        switch (level) {
-            case DEBUG:
-            case INFO:
-            case WARN:
-            case ERROR:
-            case FATAL:
-                return true;
-
-            default:
-                return false;
-        }
+        return switch (level) {
+            case DEBUG, INFO, WARN, ERROR, FATAL -> true;
+            default -> false;
+        };
     }
 
     private boolean isNotEnabled(int level) {
