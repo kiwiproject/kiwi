@@ -3,20 +3,19 @@ package org.kiwiproject.spring.data;
 import static java.util.Objects.isNull;
 import static org.kiwiproject.base.KiwiPreconditions.checkArgumentNotNull;
 
+import jakarta.ws.rs.DefaultValue;
+import jakarta.ws.rs.QueryParam;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
 import org.kiwiproject.search.KiwiSearching.PageNumberingScheme;
 import org.springframework.data.domain.Sort;
 
-import javax.ws.rs.DefaultValue;
-import javax.ws.rs.QueryParam;
-
 /**
  * JAX-RS based implementation of {@link PagingParams}.
  * <p>
- * Intended to be used in JAX-RS resource classes with HTTP {@link javax.ws.rs.GET} endpoint methods having an
- * argument annotated with {@link javax.ws.rs.BeanParam}.
+ * Intended to be used in JAX-RS resource classes with HTTP {@link jakarta.ws.rs.GET} endpoint methods having an
+ * argument annotated with {@link jakarta.ws.rs.BeanParam}.
  * <p>
  * Example:
  * <pre>

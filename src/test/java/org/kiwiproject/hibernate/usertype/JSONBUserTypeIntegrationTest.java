@@ -17,8 +17,6 @@ import org.junit.jupiter.api.extension.RegisterExtension;
 import org.kiwiproject.internal.Fixtures;
 import org.kiwiproject.json.JsonHelper;
 
-import java.io.Serializable;
-
 @DisplayName("JSONBUserType (Integration)")
 class JSONBUserTypeIntegrationTest {
 
@@ -79,7 +77,7 @@ class JSONBUserTypeIntegrationTest {
         assertThat(foundEntity.getJsonbCol()).isNull();
     }
 
-    private Serializable saveAndClearSession(SampleJsonbEntity entity) {
+    private Object saveAndClearSession(SampleJsonbEntity entity) {
         return UserTypeTestHelpers.saveAndClearSession(session, entity);
     }
 }

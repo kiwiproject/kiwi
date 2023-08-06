@@ -8,10 +8,12 @@ import static org.kiwiproject.validation.ValidationTestHelper.assertOnePropertyV
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
-import io.dropwizard.Configuration;
 import io.dropwizard.configuration.ResourceConfigurationSourceProvider;
 import io.dropwizard.configuration.YamlConfigurationFactory;
+import io.dropwizard.core.Configuration;
 import io.dropwizard.jackson.Jackson;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
 import lombok.Setter;
 import org.assertj.core.api.junit.jupiter.SoftAssertionsExtension;
@@ -26,8 +28,6 @@ import org.kiwiproject.internal.Fixtures;
 import org.opentest4j.AssertionFailedError;
 import org.slf4j.event.Level;
 
-import javax.validation.Valid;
-import javax.validation.constraints.NotNull;
 import java.nio.file.Paths;
 import java.util.concurrent.TimeUnit;
 

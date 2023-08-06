@@ -2,11 +2,10 @@ package org.kiwiproject.xml;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import jakarta.xml.bind.JAXBException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-
-import javax.xml.bind.JAXBException;
 
 @DisplayName("UncheckedJAXBException")
 class UncheckedJAXBExceptionTest {

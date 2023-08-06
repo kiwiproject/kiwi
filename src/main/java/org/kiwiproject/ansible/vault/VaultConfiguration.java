@@ -3,11 +3,10 @@ package org.kiwiproject.ansible.vault;
 import static org.apache.commons.lang3.StringUtils.isBlank;
 import static org.kiwiproject.base.KiwiPreconditions.requireNotBlank;
 
+import jakarta.validation.constraints.NotBlank;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
-
-import javax.validation.constraints.NotBlank;
 
 /**
  * Configuration class for creating ansible-vault commands. Can be constructed via the no-arg constructor, the all-args

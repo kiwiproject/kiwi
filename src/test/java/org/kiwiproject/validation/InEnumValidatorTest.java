@@ -8,6 +8,8 @@ import static org.kiwiproject.validation.ValidationTestHelper.assertNoPropertyVi
 import static org.kiwiproject.validation.ValidationTestHelper.assertNoViolations;
 import static org.kiwiproject.validation.ValidationTestHelper.assertPropertyViolations;
 
+import jakarta.validation.ValidationException;
+import jakarta.validation.Validator;
 import lombok.AllArgsConstructor;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -17,8 +19,6 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 import org.kiwiproject.base.KiwiThrowables;
 
-import javax.validation.ValidationException;
-import javax.validation.Validator;
 import java.util.Arrays;
 import java.util.List;
 

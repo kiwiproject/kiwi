@@ -2,12 +2,12 @@ package org.kiwiproject.validation.group;
 
 import static org.kiwiproject.base.KiwiPreconditions.checkArgumentNotNull;
 
+import jakarta.validation.ConstraintViolation;
+import jakarta.validation.Validator;
+import jakarta.validation.groups.Default;
 import lombok.experimental.UtilityClass;
 import org.kiwiproject.validation.KiwiValidations;
 
-import javax.validation.ConstraintViolation;
-import javax.validation.Validator;
-import javax.validation.groups.Default;
 import java.util.Arrays;
 import java.util.Set;
 
@@ -54,7 +54,7 @@ import java.util.Set;
  * </pre>
  * For even more convenience, you can just use the various {@code validateXxx} methods, assuming as mentioned earlier
  * that you have annotated your classes with Jakarta Beans Validator annotations. A typical example is using
- * annotations such as {@link javax.validation.constraints.NotNull} and {@link javax.validation.constraints.Null}
+ * annotations such as {@link jakarta.validation.constraints.NotNull} and {@link jakarta.validation.constraints.Null}
  * and setting {@link NewObject} and {@link ExistingObject} as the value of the {@code groups} property, as shown
  * in the above code example. To validate a new object, you would then simply do the following:
  * <pre>
@@ -64,7 +64,7 @@ import java.util.Set;
  * <pre>
  * var violations = KiwiValidationGroups.validateExistingObject(anExistingObject);
  * </pre>
- * Using this utility ensures objects are validated against all groups, unlike {@link javax.validation.GroupSequence}
+ * Using this utility ensures objects are validated against all groups, unlike {@link jakarta.validation.GroupSequence}
  * whose behavior is to stop validating any subsequent groups once a group fails validation. For example, if the
  * the sequence is {@code { Default.class, NewObject.class }} and a constraint fails for the {@code Default} group, then
  * the constraints for {@code NewObject} <em>will not be evaluated</em>. In general this is not the behavior we want or

@@ -4,10 +4,10 @@ import static java.util.Objects.nonNull;
 import static org.apache.commons.lang3.exception.ExceptionUtils.getRootCause;
 import static org.apache.commons.lang3.exception.ExceptionUtils.indexOfType;
 
+import jakarta.ws.rs.core.Response;
 import lombok.experimental.UtilityClass;
 
 import javax.net.ssl.SSLHandshakeException;
-import javax.ws.rs.core.Response;
 import java.net.ConnectException;
 import java.net.NoRouteToHostException;
 import java.net.SocketTimeoutException;

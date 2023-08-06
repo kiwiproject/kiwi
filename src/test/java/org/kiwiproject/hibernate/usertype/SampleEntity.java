@@ -1,21 +1,17 @@
 package org.kiwiproject.hibernate.usertype;
 
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
 import lombok.Getter;
 import lombok.Setter;
 import org.hibernate.annotations.Type;
-import org.hibernate.annotations.TypeDef;
-
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.Table;
 
 @Entity
 @Table(name = "sample_entity")
-@TypeDef(name = "textArray", typeClass = TextArrayUserType.class)
-@TypeDef(name = "bigintArray", typeClass = BigintArrayUserType.class)
 @Getter
 @Setter
 @SuppressWarnings("JpaDataSourceORMInspection")
@@ -28,15 +24,15 @@ class SampleEntity {
     @Column(name = "text_col")
     private String textCol;
 
-    @Type(type = "textArray")
+    @Type(TextArrayUserType.class)
     @Column(name = "varchar_array_col")
     private String[] varcharArrayCol;
 
-    @Type(type = "textArray")
+    @Type(TextArrayUserType.class)
     @Column(name = "text_array_col")
     private String[] textArrayCol;
 
-    @Type(type = "bigintArray")
+    @Type(BigintArrayUserType.class)
     @Column(name = "bigint_array_col")
     private Long[] bigintArrayCol;
 }

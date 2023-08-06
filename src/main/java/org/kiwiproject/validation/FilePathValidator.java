@@ -3,10 +3,10 @@ package org.kiwiproject.validation;
 import static java.util.Objects.isNull;
 import static org.kiwiproject.validation.InternalKiwiValidators.containsNulCharacter;
 
+import jakarta.validation.ConstraintValidator;
+import jakarta.validation.ConstraintValidatorContext;
 import lombok.extern.slf4j.Slf4j;
 
-import javax.validation.ConstraintValidator;
-import javax.validation.ConstraintValidatorContext;
 import java.nio.file.Path;
 
 /**

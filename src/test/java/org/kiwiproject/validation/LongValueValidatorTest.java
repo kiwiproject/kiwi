@@ -4,14 +4,13 @@ import static org.kiwiproject.validation.ValidationTestHelper.assertNoPropertyVi
 import static org.kiwiproject.validation.ValidationTestHelper.assertOnePropertyViolation;
 import static org.kiwiproject.validation.ValidationTestHelper.assertPropertyViolations;
 
+import jakarta.validation.constraints.NotNull;
 import lombok.Value;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
-
-import javax.validation.constraints.NotNull;
 
 @DisplayName("LongValueValidator")
 class LongValueValidatorTest {

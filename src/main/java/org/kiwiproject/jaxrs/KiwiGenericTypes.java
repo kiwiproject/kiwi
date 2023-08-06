@@ -1,8 +1,8 @@
 package org.kiwiproject.jaxrs;
 
+import jakarta.ws.rs.core.GenericType;
 import lombok.experimental.UtilityClass;
 
-import javax.ws.rs.core.GenericType;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;

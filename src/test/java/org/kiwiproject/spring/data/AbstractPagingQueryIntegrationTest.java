@@ -9,6 +9,7 @@ import static org.kiwiproject.spring.data.OrderTestData.ORDER_COLLECTION;
 import static org.kiwiproject.spring.data.OrderTestData.insertSampleOrders;
 
 import com.mongodb.client.MongoClients;
+import lombok.extern.slf4j.Slf4j;
 import org.assertj.core.api.SoftAssertions;
 import org.assertj.core.api.junit.jupiter.SoftAssertionsExtension;
 import org.junit.jupiter.api.AfterEach;
@@ -19,6 +20,7 @@ import org.kiwiproject.search.KiwiSearching;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.aggregation.Aggregation;
+import org.springframework.data.mongodb.core.aggregation.AggregationOperation;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.testcontainers.containers.MongoDBContainer;
 import org.testcontainers.containers.wait.strategy.HostPortWaitStrategy;
@@ -27,8 +29,6 @@ import org.testcontainers.utility.DockerImageName;
 
 import java.util.List;
 import java.util.function.Predicate;
-
-import lombok.extern.slf4j.Slf4j;
 
 /**
  * Base test class for PagingQuery tests. This permits subclasses to inherit all the actual tests; the only thing

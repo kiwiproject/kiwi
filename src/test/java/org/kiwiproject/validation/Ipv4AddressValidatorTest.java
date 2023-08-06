@@ -5,6 +5,7 @@ import static org.kiwiproject.validation.ValidationTestHelper.assertNoPropertyVi
 import static org.kiwiproject.validation.ValidationTestHelper.assertNoViolations;
 import static org.kiwiproject.validation.ValidationTestHelper.assertPropertyViolations;
 
+import jakarta.validation.Validator;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -17,8 +18,6 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
 import org.junit.jupiter.params.provider.NullAndEmptySource;
 import org.junit.jupiter.params.provider.ValueSource;
-
-import javax.validation.Validator;
 
 @DisplayName("Ipv4AddressValidator")
 class Ipv4AddressValidatorTest {

@@ -3,10 +3,10 @@ package org.kiwiproject.jaxrs.client;
 import static com.google.common.base.Preconditions.checkArgument;
 import static org.kiwiproject.base.KiwiPreconditions.checkArgumentNotNull;
 
+import jakarta.ws.rs.client.Client;
 import lombok.experimental.UtilityClass;
 import org.glassfish.jersey.client.ClientProperties;
 
-import javax.ws.rs.client.Client;
 import java.time.Duration;
 
 /**

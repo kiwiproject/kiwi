@@ -3,6 +3,8 @@ package org.kiwiproject.config;
 import static org.kiwiproject.base.KiwiPreconditions.checkArgumentNotNull;
 
 import io.dropwizard.client.ssl.TlsConfiguration;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -15,8 +17,6 @@ import org.kiwiproject.security.KeyAndTrustStoreConfigProvider;
 import org.kiwiproject.security.KeyStoreType;
 import org.kiwiproject.security.SSLContextProtocol;
 
-import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotNull;
 import java.io.File;
 import java.net.Socket;
 import java.util.List;
@@ -133,10 +133,10 @@ public class TlsContextConfiguration implements KeyAndTrustStoreConfigProvider {
      *
      * @implNote Yes, this is null by default. This is due to the Dropwizard {@link TlsConfiguration} which has this
      * same property null by default; I suspect this is ultimately due to the (unfortunate) way in which Apache
-     * HttpClient's {@link org.apache.http.conn.ssl.SSLConnectionSocketFactory} accepts {@code supportedProtocols}
+     * HttpClient's {@link org.apache.hc.client5.http.ssl.SSLConnectionSocketFactory} accepts {@code supportedProtocols}
      * in its constructors as arrays that are supposed to be null if you aren't specifying a specific list of them.
      * The HttpClient code does an explicit null check on the {@code supportedProtocols} in
-     * {@link org.apache.http.conn.ssl.SSLConnectionSocketFactory#createLayeredSocket(Socket, String, int, org.apache.http.protocol.HttpContext)}.
+     * {@link org.apache.hc.client5.http.ssl.SSLConnectionSocketFactory#createLayeredSocket(Socket, String, int, org.apache.hc.core5.http.protocol.HttpContext)}.
      * You will need to look at the source code, as the JavaDoc doesn't mention this tidbit, nor do the constructors
      * since they don't have any documentation regarding their arguments. If you don't like reading source code of the
      * open source tools you rely on, then please close this file, log out, and change careers.

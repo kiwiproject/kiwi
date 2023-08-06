@@ -3,14 +3,14 @@ package org.kiwiproject.jaxrs;
 import static java.util.Objects.nonNull;
 import static org.kiwiproject.base.KiwiStrings.f;
 
+import jakarta.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.Response;
 import lombok.experimental.UtilityClass;
 import org.checkerframework.checker.nullness.qual.Nullable;
 import org.kiwiproject.jaxrs.exception.ErrorMessage;
 import org.kiwiproject.jaxrs.exception.JaxrsException;
 import org.kiwiproject.jaxrs.exception.JaxrsExceptionMapper;
 
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
 import java.net.URI;
 import java.util.Optional;
 

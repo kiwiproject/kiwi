@@ -3,10 +3,10 @@ package org.kiwiproject.jaxrs.client;
 import static org.kiwiproject.base.KiwiPreconditions.requireNotNull;
 
 import com.google.common.annotations.Beta;
+import jakarta.ws.rs.client.Client;
+import jakarta.ws.rs.core.Link;
+import jakarta.ws.rs.core.UriBuilder;
 
-import javax.ws.rs.client.Client;
-import javax.ws.rs.core.Link;
-import javax.ws.rs.core.UriBuilder;
 import java.net.URI;
 
 /**

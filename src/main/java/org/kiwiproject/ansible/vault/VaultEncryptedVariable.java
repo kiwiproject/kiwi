@@ -37,7 +37,7 @@ class VaultEncryptedVariable {
     private static final String INVALID_VARIABLE_NAME_DECLARATION =
             "First line does not have a valid variable name declaration";
 
-    private static final String INVALID_ANSIBLE_VAULT_DECLARATION = "" +
+    private static final String INVALID_ANSIBLE_VAULT_DECLARATION =
             "Second line does not have a valid $ANSIBLE_VAULT declaration";
 
     private static final String INVALID_SPACING_IN_ENCRYPTED_CONTENT =

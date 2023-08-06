@@ -2,7 +2,7 @@ package org.kiwiproject.xml;
 
 import static org.kiwiproject.base.KiwiPreconditions.requireNotNull;
 
-import javax.xml.bind.JAXBException;
+import jakarta.xml.bind.JAXBException;
 
 /**
  * Wraps a {@link JAXBException} with an unchecked exception.

@@ -3,12 +3,12 @@ package org.kiwiproject.validation;
 import static java.util.Objects.isNull;
 import static java.util.Objects.requireNonNull;
 
+import jakarta.validation.ConstraintValidator;
+import jakarta.validation.ConstraintValidatorContext;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
-
 import org.checkerframework.checker.nullness.qual.NonNull;
-import javax.validation.ConstraintValidator;
-import javax.validation.ConstraintValidatorContext;
+
 import java.lang.reflect.Method;
 import java.util.Arrays;
 import java.util.Collection;

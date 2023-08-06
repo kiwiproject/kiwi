@@ -2,19 +2,14 @@ package org.kiwiproject.hibernate.usertype;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
-import lombok.Value;
 import org.assertj.core.api.SoftAssertions;
 import org.assertj.core.api.junit.jupiter.SoftAssertionsExtension;
-import org.hibernate.type.SerializationException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-
-import java.io.Serializable;
 
 @DisplayName("JSONBUserType (Unit)")
 class JSONBUserTypeUnitTest {
@@ -28,7 +23,7 @@ class JSONBUserTypeUnitTest {
 
     @Test
     void shouldReturnObjectAsExpectedClass() {
-        assertThat(jsonbUserType.returnedClass()).isEqualTo(Object.class);
+        assertThat(jsonbUserType.returnedClass()).isEqualTo(String.class);
     }
 
     @Nested
@@ -37,9 +32,9 @@ class JSONBUserTypeUnitTest {
 
         @Test
         void shouldCompareUsingObjectsEquals(SoftAssertions softly) {
-            var obj1 = new Bar("an object", 42);
-            var obj2 = new Bar("an object", 42);
-            var obj3 = new Bar("another object", 84);
+            var obj1 = "an object";
+            var obj2 = "an object";
+            var obj3 = "another object";
 
             softly.assertThat(jsonbUserType.equals(obj1, obj1)).isTrue();
             softly.assertThat(jsonbUserType.equals(obj1, obj2)).isTrue();
@@ -56,14 +51,8 @@ class JSONBUserTypeUnitTest {
 
         @Test
         void shouldReturnObjectHashCode_GivenNonNullObject() {
-            var obj = new Bar("object", 42);
+            var obj = "{}";
             assertThat(jsonbUserType.hashCode(obj)).hasSameHashCodeAs(obj);
-        }
-
-        @Value
-        class Bar {
-            String name;
-            int number;
         }
     }
 
@@ -72,15 +61,8 @@ class JSONBUserTypeUnitTest {
 
         @Test
         void shouldReturnSameInstance_WhenSerializable() {
-            var entity = new SerializableObject();
+            var entity = "{}";
             assertThat(jsonbUserType.disassemble(entity)).isSameAs(entity);
-        }
-
-        @Test
-        void shouldThrowSerializationException_GivenNonSerializableObject() {
-            var entity = new NotSerializableObject();
-            assertThatThrownBy(() -> jsonbUserType.disassemble(entity))
-                    .isExactlyInstanceOf(SerializationException.class);
         }
     }
 
@@ -89,7 +71,7 @@ class JSONBUserTypeUnitTest {
 
         @Test
         void shouldReturnSameInstance() {
-            var cached = new SerializableObject();
+            var cached = "{}";
             var owner = new Object();
             assertThat(jsonbUserType.assemble(cached, owner)).isSameAs(cached);
         }
@@ -100,14 +82,9 @@ class JSONBUserTypeUnitTest {
 
         @Test
         void shouldReturnSameInstance() {
-            var original = new Object();
+            var original = "{}";
             assertThat(jsonbUserType.replace(original, null, null)).isSameAs(original);
         }
     }
 
-    private static class SerializableObject implements Serializable {
-    }
-
-    private static class NotSerializableObject {
-    }
 }

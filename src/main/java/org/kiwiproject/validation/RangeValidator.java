@@ -8,10 +8,9 @@ import static org.apache.commons.lang3.StringUtils.isNotBlank;
 import static org.kiwiproject.validation.InternalKiwiValidators.TEMPLATE_REQUIRED;
 import static org.kiwiproject.validation.InternalKiwiValidators.toComparableOrNull;
 
+import jakarta.validation.ConstraintValidator;
+import jakarta.validation.ConstraintValidatorContext;
 import lombok.extern.slf4j.Slf4j;
-
-import javax.validation.ConstraintValidator;
-import javax.validation.ConstraintValidatorContext;
 
 /**
  * Validator for @{@link Range}.

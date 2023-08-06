@@ -1,10 +1,10 @@
 package org.kiwiproject.jaxws;
 
 import com.sun.xml.ws.developer.JAXWSProperties;
+import jakarta.xml.ws.BindingProvider;
 import lombok.experimental.UtilityClass;
 
 import javax.net.ssl.SSLSocketFactory;
-import javax.xml.ws.BindingProvider;
 import java.net.URI;
 
 /**

@@ -49,9 +49,9 @@ public class JsonDetectionResult {
     }
 
     /**
-     * Did an error occur during the detection process.
+     * If an error occurred during the detection process, return it, otherwise return null
      *
-     * @return true if there was exception thrown during the detection process
+     * @return the exception thrown during the detection process, or null if there was not error
      */
     @Nullable
     public Exception getErrorOrNull() {

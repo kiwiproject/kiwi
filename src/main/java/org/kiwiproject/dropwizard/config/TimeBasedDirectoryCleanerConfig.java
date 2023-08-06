@@ -3,8 +3,10 @@ package org.kiwiproject.dropwizard.config;
 import static org.kiwiproject.base.KiwiStrings.format;
 
 import com.google.common.base.CaseFormat;
-import io.dropwizard.setup.Environment;
+import io.dropwizard.core.setup.Environment;
 import io.dropwizard.util.Duration;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
@@ -12,8 +14,6 @@ import org.kiwiproject.dropwizard.metrics.health.TimeBasedDirectoryCleanerHealth
 import org.kiwiproject.io.TimeBasedDirectoryCleaner;
 import org.slf4j.event.Level;
 
-import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotNull;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
