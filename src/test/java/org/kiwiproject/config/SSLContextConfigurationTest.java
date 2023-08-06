@@ -77,31 +77,6 @@ class SSLContextConfigurationTest {
         assertThat(tlsConfig.getSupportedProtocols()).isNull();
     }
 
-    @Test
-    @SuppressWarnings("deprecation")
-    void shouldConvertToTlsContextConfiguration_WithDifferentTrustStoreType() {
-        var sslConfig = SSLContextConfiguration.builder()
-                .keyStorePath("/pki/ks.jks")
-                .keyStorePassword("ks-pass")
-                .keyStoreType(KeyStoreType.JKS.value)
-                .trustStorePath("/pki/ts/pkcs12")
-                .setTrustStorePassword("ts-pass")
-                .trustStoreType(KeyStoreType.JKS.value)
-                .build();
-
-        var tlsConfig = sslConfig.toTlsContextConfiguration(KeyStoreType.PKCS12.value);
-
-        assertThat(tlsConfig.getKeyStorePath()).isEqualTo(sslConfig.getKeyStorePath());
-        assertThat(tlsConfig.getKeyStorePassword()).isEqualTo(sslConfig.getKeyStorePassword());
-        assertThat(tlsConfig.getKeyStoreType()).isEqualTo(sslConfig.getKeyStoreType());
-        assertThat(tlsConfig.getTrustStorePath()).isEqualTo(sslConfig.getTrustStorePath());
-        assertThat(tlsConfig.getTrustStorePassword()).isEqualTo(sslConfig.getTrustStorePassword());
-        assertThat(tlsConfig.getTrustStoreType()).isEqualTo(KeyStoreType.PKCS12.value);
-        assertThat(tlsConfig.isVerifyHostname()).isEqualTo(sslConfig.isVerifyHostname());
-        assertThat(tlsConfig.getProtocol()).isEqualTo(sslConfig.getProtocol());
-        assertThat(tlsConfig.getSupportedProtocols()).isNull();
-    }
-
     private SSLContextConfiguration newSampleSslContextConfiguration() {
         return SSLContextConfiguration.builder()
                 .keyStorePath(path)

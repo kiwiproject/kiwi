@@ -4,7 +4,6 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.kiwiproject.base.KiwiDeprecated;
 import org.kiwiproject.security.KeyAndTrustStoreConfigProvider;
 import org.kiwiproject.security.KeyStoreType;
 import org.kiwiproject.security.SimpleSSLContextFactory;
@@ -168,29 +167,4 @@ public class SSLContextConfiguration implements KeyAndTrustStoreConfigProvider {
                 .build();
     }
 
-    /**
-     * Convert this {@link SSLContextConfiguration} to a {@link TlsContextConfiguration}, using the
-     * {@code keyStoreType} for the key and the specified {@code trustStoreTypeOverride} as the trust store type
-     * in the returned object.
-     *
-     * @param trustStoreTypeOverride the type of trust store to use
-     * @return a new {@link TlsContextConfiguration} instance
-     * @deprecated use {@link #toTlsContextConfiguration()}
-     * @apiNote This originally existed because we did not provide support for having a different trust store type
-     * in this class. Now that we do, it is no longer needed and is deprecated.
-     */
-    @Deprecated(since = "2.6.0")
-    @KiwiDeprecated(replacedBy = "#toTlsContextConfiguration()")
-    public TlsContextConfiguration toTlsContextConfiguration(String trustStoreTypeOverride) {
-        return TlsContextConfiguration.builder()
-                .keyStorePath(keyStorePath)
-                .keyStorePassword(keyStorePassword)
-                .keyStoreType(keyStoreType)
-                .trustStorePath(trustStorePath)
-                .trustStorePassword(trustStorePassword)
-                .trustStoreType(trustStoreTypeOverride)
-                .protocol(protocol)
-                .verifyHostname(verifyHostname)
-                .build();
-    }
 }
