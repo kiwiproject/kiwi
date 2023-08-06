@@ -6,6 +6,8 @@ import static org.kiwiproject.collect.KiwiSets.isNotNullOrEmpty;
 import static org.kiwiproject.logging.LazyLogParameterSupplier.lazy;
 
 import com.google.common.annotations.VisibleForTesting;
+import jakarta.validation.ConstraintViolation;
+import jakarta.validation.groups.Default;
 import lombok.experimental.UtilityClass;
 import lombok.extern.slf4j.Slf4j;
 import org.kiwiproject.jaxrs.exception.JaxrsBadRequestException;
@@ -13,8 +15,6 @@ import org.kiwiproject.jaxrs.exception.JaxrsValidationException;
 import org.kiwiproject.validation.KiwiConstraintViolations;
 import org.kiwiproject.validation.KiwiValidations;
 
-import javax.validation.ConstraintViolation;
-import javax.validation.groups.Default;
 import java.util.Map;
 import java.util.Set;
 

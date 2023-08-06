@@ -5,6 +5,14 @@ import static org.kiwiproject.jaxrs.JaxrsTestHelper.assertHasMapEntity;
 import static org.kiwiproject.jaxrs.JaxrsTestHelper.assertResponseStatusCode;
 import static org.kiwiproject.jaxrs.JaxrsTestHelper.assertResponseType;
 
+import jakarta.validation.ConstraintViolationException;
+import jakarta.validation.constraints.Max;
+import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.PastOrPresent;
+import jakarta.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.Response;
 import lombok.Builder;
 import lombok.Value;
 import org.junit.jupiter.api.BeforeEach;
@@ -13,14 +21,6 @@ import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.kiwiproject.validation.KiwiValidations;
 
-import javax.validation.ConstraintViolationException;
-import javax.validation.constraints.Max;
-import javax.validation.constraints.Min;
-import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotNull;
-import javax.validation.constraints.PastOrPresent;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
 import java.time.Year;
 import java.util.List;
 

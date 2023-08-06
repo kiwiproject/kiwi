@@ -16,8 +16,6 @@ import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
 
-import java.io.Serializable;
-
 @DisplayName("ArrayUserTypes (Integration)")
 class ArrayUserTypesIntegrationTest {
 
@@ -116,7 +114,7 @@ class ArrayUserTypesIntegrationTest {
         }
     }
 
-    private Serializable saveAndClearSession(SampleEntity entity) {
+    private Object saveAndClearSession(SampleEntity entity) {
         return UserTypeTestHelpers.saveAndClearSession(session, entity);
     }
 

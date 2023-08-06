@@ -5,6 +5,7 @@ import static org.kiwiproject.validation.ValidationTestHelper.assertNoViolations
 import static org.kiwiproject.validation.ValidationTestHelper.assertOnePropertyViolation;
 import static org.kiwiproject.validation.ValidationTestHelper.assertPropertyViolations;
 
+import jakarta.validation.Validator;
 import lombok.Getter;
 import lombok.Setter;
 import org.junit.jupiter.api.BeforeEach;
@@ -12,8 +13,6 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.kiwiproject.internal.Fixtures;
-
-import javax.validation.Validator;
 
 @DisplayName("FilePathValidator")
 class FilePathValidatorTest {

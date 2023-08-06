@@ -4,11 +4,10 @@ import static org.kiwiproject.jaxrs.JaxrsTestHelper.assertResponseEntityHasOneEr
 import static org.kiwiproject.jaxrs.JaxrsTestHelper.assertResponseStatusCode;
 import static org.kiwiproject.jaxrs.JaxrsTestHelper.assertResponseType;
 
+import jakarta.ws.rs.core.MediaType;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-
-import javax.ws.rs.core.MediaType;
 
 @DisplayName("IllegalArgumentExceptionMapper")
 class IllegalArgumentExceptionMapperTest {

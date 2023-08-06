@@ -563,7 +563,6 @@ class JsonHelperAdvancedFeaturesTest {
             assertThat(diffs).isEmpty();
         }
 
-        @SuppressWarnings("ConstantConditions")
         @Test
         void shouldCompare_WhenInputObjectIsNull(SoftAssertions softly) {
             var map1 = Map.of("a", "aaa", "b", "bbb", "c", "ccc");

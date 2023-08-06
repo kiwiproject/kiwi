@@ -6,6 +6,7 @@ import static org.kiwiproject.validation.ValidationTestHelper.assertNoViolations
 import static org.kiwiproject.validation.ValidationTestHelper.assertOnePropertyViolation;
 
 import com.google.common.collect.Iterables;
+import jakarta.validation.Validator;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.NoArgsConstructor;
@@ -17,7 +18,6 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.NullAndEmptySource;
 import org.junit.jupiter.params.provider.ValueSource;
 
-import javax.validation.Validator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;

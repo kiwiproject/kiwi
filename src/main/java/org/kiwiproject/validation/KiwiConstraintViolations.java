@@ -8,12 +8,12 @@ import static org.kiwiproject.base.KiwiPreconditions.checkArgumentNotNull;
 import static org.kiwiproject.collect.KiwiSets.isNotNullOrEmpty;
 import static org.kiwiproject.collect.KiwiSets.isNullOrEmpty;
 
+import jakarta.validation.ConstraintViolation;
+import jakarta.validation.Path;
 import lombok.experimental.UtilityClass;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.text.WordUtils;
 
-import javax.validation.ConstraintViolation;
-import javax.validation.Path;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
@@ -23,7 +23,7 @@ import java.util.Set;
 import java.util.function.Function;
 
 /**
- * Static utilities for working with {@link javax.validation.ConstraintViolation} objects, generally
+ * Static utilities for working with {@link jakarta.validation.ConstraintViolation} objects, generally
  * {@link java.util.Set}s of them.
  * <p>
  * <strong>Dependency requirements:</strong>

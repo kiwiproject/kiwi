@@ -5,6 +5,7 @@ import static org.kiwiproject.validation.ValidationTestHelper.assertNoViolations
 import static org.kiwiproject.validation.ValidationTestHelper.assertOnePropertyViolation;
 import static org.kiwiproject.validation.ValidationTestHelper.assertPropertyViolations;
 
+import jakarta.validation.Validator;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.EqualsAndHashCode;
@@ -17,7 +18,6 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
 
-import javax.validation.Validator;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.time.Instant;

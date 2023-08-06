@@ -11,15 +11,15 @@ import static org.kiwiproject.collect.KiwiMaps.isNullOrEmpty;
 
 import com.google.common.annotations.Beta;
 import com.google.common.annotations.VisibleForTesting;
+import jakarta.ws.rs.client.Client;
+import jakarta.ws.rs.client.Invocation;
+import jakarta.ws.rs.client.WebTarget;
+import jakarta.ws.rs.core.Configuration;
+import jakarta.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.MultivaluedMap;
+import jakarta.ws.rs.core.UriBuilder;
 import org.apache.commons.lang3.StringUtils;
 
-import javax.ws.rs.client.Client;
-import javax.ws.rs.client.Invocation;
-import javax.ws.rs.client.WebTarget;
-import javax.ws.rs.core.Configuration;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.MultivaluedMap;
-import javax.ws.rs.core.UriBuilder;
 import java.net.URI;
 import java.util.Arrays;
 import java.util.List;
@@ -278,7 +278,7 @@ public class WebTargetHelper implements WebTarget {
      * method will be called even when the argument is actually a {@link MultivaluedMap}. By having separate and
      * distinctly named methods, it unambiguously avoids this potential problem, at the expense of callers needing
      * to make a concrete decision on which method to call. However, in most situations that we have seen (in our own
-     * code) this is not an issue. For example, {@link javax.ws.rs.core.UriInfo#getQueryParameters()} returns a
+     * code) this is not an issue. For example, {@link jakarta.ws.rs.core.UriInfo#getQueryParameters()} returns a
      * MultivaluedMap, which makes it easy to select the appropriate method to call.
      */
     public <V> WebTargetHelper queryParamsFromMap(Map<String, V> parameters) {

@@ -8,6 +8,7 @@ import static org.kiwiproject.validation.ValidationTestHelper.assertOnePropertyV
 import static org.kiwiproject.validation.ValidationTestHelper.newValidator;
 
 import io.dropwizard.client.ssl.TlsConfiguration;
+import jakarta.validation.Validator;
 import lombok.Getter;
 import lombok.Setter;
 import org.junit.jupiter.api.BeforeEach;
@@ -18,7 +19,6 @@ import org.kiwiproject.security.KeyStoreType;
 import org.kiwiproject.security.SSLContextProtocol;
 import org.kiwiproject.security.SecureTestConstants;
 
-import javax.validation.Validator;
 import java.io.File;
 import java.util.List;
 

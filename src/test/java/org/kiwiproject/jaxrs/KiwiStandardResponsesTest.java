@@ -10,6 +10,7 @@ import static org.kiwiproject.jaxrs.JaxrsTestHelper.assertOkResponse;
 import static org.kiwiproject.jaxrs.JaxrsTestHelper.assertResponseEntity;
 import static org.kiwiproject.jaxrs.JaxrsTestHelper.assertResponseEntityHasOneErrorMessage;
 
+import jakarta.ws.rs.core.Response;
 import lombok.Value;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -17,7 +18,6 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 
-import javax.ws.rs.core.Response;
 import java.net.URI;
 import java.util.Optional;
 

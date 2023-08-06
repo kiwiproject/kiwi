@@ -4,6 +4,10 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatCode;
 import static org.assertj.core.api.Assertions.catchThrowable;
 
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Null;
 import lombok.Builder;
 import lombok.Value;
 import org.junit.jupiter.api.DisplayName;
@@ -19,10 +23,6 @@ import org.kiwiproject.validation.group.ExistingObject;
 import org.kiwiproject.validation.group.KiwiValidationGroups;
 import org.kiwiproject.validation.group.NewObject;
 
-import javax.validation.constraints.Email;
-import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Null;
 import java.util.Map;
 
 @DisplayName("KiwiJaxrsValidations")

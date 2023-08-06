@@ -19,8 +19,8 @@ import static org.mockito.Mockito.when;
 
 import com.codahale.metrics.MetricRegistry;
 import com.codahale.metrics.health.HealthCheckRegistry;
+import io.dropwizard.core.setup.Environment;
 import io.dropwizard.lifecycle.setup.LifecycleEnvironment;
-import io.dropwizard.setup.Environment;
 import io.dropwizard.util.Duration;
 import lombok.extern.slf4j.Slf4j;
 import org.assertj.core.api.SoftAssertions;

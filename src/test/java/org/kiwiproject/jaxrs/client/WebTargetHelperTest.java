@@ -1,13 +1,23 @@
 package org.kiwiproject.jaxrs.client;
 
 import static com.google.common.collect.Lists.newArrayList;
-import static javax.ws.rs.Priorities.AUTHORIZATION;
-import static javax.ws.rs.Priorities.ENTITY_CODER;
-import static javax.ws.rs.Priorities.USER;
+import static jakarta.ws.rs.Priorities.AUTHORIZATION;
+import static jakarta.ws.rs.Priorities.ENTITY_CODER;
+import static jakarta.ws.rs.Priorities.USER;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
 import static org.kiwiproject.jaxrs.client.WebTargetHelper.withWebTarget;
 
+import jakarta.ws.rs.client.Client;
+import jakarta.ws.rs.client.ClientBuilder;
+import jakarta.ws.rs.client.ClientRequestContext;
+import jakarta.ws.rs.client.ClientRequestFilter;
+import jakarta.ws.rs.client.ClientResponseContext;
+import jakarta.ws.rs.client.ClientResponseFilter;
+import jakarta.ws.rs.client.WebTarget;
+import jakarta.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.MultivaluedHashMap;
+import jakarta.ws.rs.core.MultivaluedMap;
 import org.glassfish.jersey.client.filter.CsrfProtectionFilter;
 import org.glassfish.jersey.client.filter.EncodingFeature;
 import org.junit.jupiter.api.AfterAll;
@@ -22,16 +32,6 @@ import org.junit.jupiter.params.provider.NullSource;
 import org.junit.jupiter.params.provider.ValueSource;
 import org.kiwiproject.collect.KiwiMaps;
 
-import javax.ws.rs.client.Client;
-import javax.ws.rs.client.ClientBuilder;
-import javax.ws.rs.client.ClientRequestContext;
-import javax.ws.rs.client.ClientRequestFilter;
-import javax.ws.rs.client.ClientResponseContext;
-import javax.ws.rs.client.ClientResponseFilter;
-import javax.ws.rs.client.WebTarget;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.MultivaluedHashMap;
-import javax.ws.rs.core.MultivaluedMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Stream;

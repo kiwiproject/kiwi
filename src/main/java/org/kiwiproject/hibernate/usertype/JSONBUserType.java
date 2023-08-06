@@ -1,11 +1,10 @@
 package org.kiwiproject.hibernate.usertype;
 
 import static org.kiwiproject.base.KiwiPreconditions.checkArgumentNotNull;
-import static org.kiwiproject.base.KiwiStrings.format;
 
 import org.hibernate.HibernateException;
 import org.hibernate.engine.spi.SharedSessionContractImplementor;
-import org.hibernate.type.SerializationException;
+import org.hibernate.type.SqlTypes;
 import org.hibernate.usertype.UserType;
 
 import java.io.Serializable;
@@ -19,41 +18,38 @@ import java.util.Objects;
  * A Hibernate user-defined type that maps to/from Postgres {@code jsonb} columns.
  */
 @SuppressWarnings("java:S1130")
-public class JSONBUserType implements UserType {
+public class JSONBUserType implements UserType<String> {
 
     @Override
-    public int[] sqlTypes() {
-        return new int[]{Types.JAVA_OBJECT};
-    }
-
-    // Suppress IntelliJ and Sonar "Raw types should not be used"; the UserType interface defines it as the raw type
-    @SuppressWarnings({"java:S3740", "rawtypes"})
-    @Override
-    public Class returnedClass() {
-        return Object.class;
+    public int getSqlType() {
+        return SqlTypes.JAVA_OBJECT;
     }
 
     @Override
-    public boolean equals(Object ol, Object o2) throws HibernateException {
+    public Class<String> returnedClass() {
+        return String.class;
+    }
+
+    @Override
+    public boolean equals(String ol, String o2) throws HibernateException {
         return Objects.equals(ol, o2);
     }
 
     @Override
-    public int hashCode(Object obj) throws HibernateException {
+    public int hashCode(String obj) throws HibernateException {
         checkArgumentNotNull(obj, "cannot compute hashCode on null object");
         return obj.hashCode();
     }
 
     @Override
-    public Object nullSafeGet(ResultSet rs, String[] names, SharedSessionContractImplementor session, Object owner)
+    public String nullSafeGet(ResultSet rs, int position, SharedSessionContractImplementor session, Object owner)
             throws HibernateException, SQLException {
 
-        var columnName = names[0]; // not a column-column type, so get first (and only) one
-        return rs.getString(columnName);
+        return rs.getString(position);
     }
 
     @Override
-    public void nullSafeSet(PreparedStatement st, Object value, int index, SharedSessionContractImplementor session)
+    public void nullSafeSet(PreparedStatement st, String value, int index, SharedSessionContractImplementor session)
             throws HibernateException, SQLException {
 
         if (value == null) {
@@ -64,7 +60,7 @@ public class JSONBUserType implements UserType {
     }
 
     @Override
-    public Object deepCopy(Object value) throws HibernateException {
+    public String deepCopy(String value) throws HibernateException {
         return value;
     }
 
@@ -74,21 +70,17 @@ public class JSONBUserType implements UserType {
     }
 
     @Override
-    public Serializable disassemble(Object value) throws HibernateException {
-        var deepCopy = deepCopy(value);
-        if (deepCopy instanceof Serializable) {
-            return (Serializable) deepCopy;
-        }
-        throw new SerializationException(format("deepCopy of %s is not serializable", value), null);
+    public Serializable disassemble(String value) throws HibernateException {
+        return deepCopy(value);
     }
 
     @Override
-    public Object assemble(Serializable cached, Object owner) throws HibernateException {
-        return deepCopy(cached);
+    public String assemble(Serializable cached, Object owner) throws HibernateException {
+        return deepCopy((String) cached);
     }
 
     @Override
-    public Object replace(Object original, Object target, Object owner) throws HibernateException {
+    public String replace(String original, String target, Object owner) throws HibernateException {
         return deepCopy(original);
     }
 }

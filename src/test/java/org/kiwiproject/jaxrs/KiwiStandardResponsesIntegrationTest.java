@@ -13,23 +13,24 @@ import static org.kiwiproject.jaxrs.JaxrsTestHelper.assertUnauthorizedFoundRespo
 
 import io.dropwizard.testing.junit5.DropwizardExtensionsSupport;
 import io.dropwizard.testing.junit5.ResourceExtension;
+import jakarta.ws.rs.Consumes;
+import jakarta.ws.rs.DELETE;
+import jakarta.ws.rs.GET;
+import jakarta.ws.rs.POST;
+import jakarta.ws.rs.PUT;
+import jakarta.ws.rs.Path;
+import jakarta.ws.rs.PathParam;
+import jakarta.ws.rs.Produces;
+import jakarta.ws.rs.client.Entity;
+import jakarta.ws.rs.core.GenericType;
+import jakarta.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.Response;
 import lombok.Value;
 import lombok.With;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 
-import javax.ws.rs.Consumes;
-import javax.ws.rs.DELETE;
-import javax.ws.rs.GET;
-import javax.ws.rs.POST;
-import javax.ws.rs.PUT;
-import javax.ws.rs.Path;
-import javax.ws.rs.Produces;
-import javax.ws.rs.client.Entity;
-import javax.ws.rs.core.GenericType;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
 import java.net.URI;
 import java.util.Map;
 
@@ -66,7 +67,7 @@ class KiwiStandardResponsesIntegrationTest {
         @POST
         @Path("/ask")
         public Response postWithAccept(String question) {
-            var entity = Map.of("answer", 42);
+            var entity = Map.of("answer", 42, "question", question);
             return KiwiStandardResponses.standardAcceptedResponse(entity);
         }
 
@@ -77,14 +78,14 @@ class KiwiStandardResponsesIntegrationTest {
 
         @DELETE
         @Path("/{id}")
-        public Response delete() {
+        public Response delete(@SuppressWarnings("unused") @PathParam("id") Long id) {
             return KiwiStandardResponses.standardDeleteResponse();
         }
 
         @DELETE
         @Path("/{id}/entity")
-        public Response deleteReturningEntity() {
-            var deletedEntity = new User(12345L, "alice", "alice@example.org");
+        public Response deleteReturningEntity(@PathParam("id") Long id) {
+            var deletedEntity = new User(id, "alice", "alice@example.org");
             return KiwiStandardResponses.standardDeleteResponse(deletedEntity);
         }
 
@@ -190,16 +191,18 @@ class KiwiStandardResponsesIntegrationTest {
 
     @Test
     void shouldAccept() {
+        var question = "What is the answer to the ultimate question?";
         var response = RESOURCES.client().target("/ask")
                 .request()
-                .post(Entity.json("What is the answer to the ultimate question?"));
+                .post(Entity.json(question));
 
         assertAcceptedResponse(response);
         assertJsonResponseType(response);
 
         var entity = response.readEntity(KiwiGenericTypes.MAP_OF_STRING_TO_OBJECT_GENERIC_TYPE);
         assertThat(entity).containsOnly(
-                entry("answer", 42)
+                entry("answer", 42),
+                entry("question", question)
         );
     }
 

@@ -3,6 +3,7 @@ package org.kiwiproject.jaxrs.exception;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.entry;
 
+import jakarta.ws.rs.core.Response;
 import org.assertj.core.api.SoftAssertions;
 import org.assertj.core.api.junit.jupiter.SoftAssertionsExtension;
 import org.junit.jupiter.api.BeforeEach;
@@ -17,7 +18,6 @@ import org.kiwiproject.internal.Fixtures;
 import org.kiwiproject.json.JsonHelper;
 import org.kiwiproject.util.BlankStringArgumentsProvider;
 
-import javax.ws.rs.core.Response;
 import java.util.HashMap;
 import java.util.Map;
 

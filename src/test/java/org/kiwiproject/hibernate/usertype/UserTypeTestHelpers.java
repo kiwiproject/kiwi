@@ -10,10 +10,9 @@ import io.zonky.test.db.postgres.junit5.PreparedDbExtension;
 import lombok.experimental.UtilityClass;
 import org.hibernate.Session;
 import org.hibernate.cfg.Configuration;
-import org.hibernate.dialect.PostgreSQL95Dialect;
+import org.hibernate.dialect.PostgreSQLDialect;
 import org.postgresql.Driver;
 
-import java.io.Serializable;
 import java.util.Arrays;
 
 @UtilityClass
@@ -32,14 +31,14 @@ class UserTypeTestHelpers {
         config.setProperty("hibernate.connection.url", url);
         config.setProperty("hibernate.connection.username", connectionInfo.getUser());
         config.setProperty("hibernate.connection.password", "");
-        config.setProperty("hibernate.dialect", PostgreSQL95Dialect.class.getName());
+        config.setProperty("hibernate.dialect", PostgreSQLDialect.class.getName());
 
         Arrays.stream(annotatedClasses).forEach(config::addAnnotatedClass);
 
         return config;
     }
 
-    static Serializable saveAndClearSession(Session session, Object entity) {
+    static Object saveAndClearSession(Session session, Object entity) {
         var id = session.save(entity);
         assertThat(id)
                 .describedAs("Entity should have been flushed to database and now have an assigned ID")

@@ -2,7 +2,6 @@ package org.kiwiproject.hibernate.usertype;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import lombok.Value;
 import org.assertj.core.api.SoftAssertions;
 import org.assertj.core.api.junit.jupiter.SoftAssertionsExtension;
 import org.junit.jupiter.api.BeforeEach;
@@ -16,7 +15,7 @@ import java.io.Serializable;
 @DisplayName("ArrayUserTypes (Unit)")
 class ArrayUserTypesUnitTest {
 
-    private AbstractArrayUserType arrayUserType;
+    private AbstractArrayUserType<String[]> arrayUserType;
 
     @BeforeEach
     void setUp() {
@@ -32,9 +31,9 @@ class ArrayUserTypesUnitTest {
 
             @Test
             void shouldCompareUsingObjectsEquals(SoftAssertions softly) {
-                var obj1 = new Foo("an object", 42);
-                var obj2 = new Foo("an object", 42);
-                var obj3 = new Foo("another object", 84);
+                var obj1 = new String[]{"1", "42"};
+                var obj2 = new String[]{"1", "42"};
+                var obj3 = new String[]{"1", "84"};
 
                 softly.assertThat(arrayUserType.equals(obj1, obj1)).isTrue();
                 softly.assertThat(arrayUserType.equals(obj1, obj2)).isTrue();
@@ -50,14 +49,8 @@ class ArrayUserTypesUnitTest {
 
             @Test
             void shouldReturnObjectHashCode_GivenNonNullObject() {
-                var obj = new Foo("object", 42);
+                var obj = new String[]{"1", "42"};
                 assertThat(arrayUserType.hashCode(obj)).hasSameHashCodeAs(obj);
-            }
-
-            @Value
-            class Foo {
-                String name;
-                int number;
             }
         }
 
@@ -76,7 +69,7 @@ class ArrayUserTypesUnitTest {
 
             @Test
             void shouldReturnSameInstance() {
-                var cached = new SerializableObject();
+                var cached = new String[]{"1", "42"};
                 var owner = new Object();
                 assertThat(arrayUserType.assemble(cached, owner)).isSameAs(cached);
             }
@@ -87,7 +80,7 @@ class ArrayUserTypesUnitTest {
 
             @Test
             void shouldReturnSameInstance() {
-                var original = new Object();
+                var original = new String[]{"1", "42"};
                 assertThat(arrayUserType.replace(original, null, null)).isSameAs(original);
             }
         }

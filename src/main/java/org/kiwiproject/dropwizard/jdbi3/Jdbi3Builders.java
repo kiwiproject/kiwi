@@ -3,10 +3,10 @@ package org.kiwiproject.dropwizard.jdbi3;
 import static java.util.function.Predicate.not;
 import static org.kiwiproject.base.KiwiPreconditions.checkArgumentNotNull;
 
+import io.dropwizard.core.setup.Environment;
 import io.dropwizard.db.ManagedDataSource;
 import io.dropwizard.db.PooledDataSourceFactory;
 import io.dropwizard.jdbi3.JdbiFactory;
-import io.dropwizard.setup.Environment;
 import lombok.experimental.UtilityClass;
 import lombok.extern.slf4j.Slf4j;
 import org.jdbi.v3.core.Jdbi;

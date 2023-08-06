@@ -6,13 +6,13 @@ import static java.util.Objects.nonNull;
 import static org.apache.commons.lang3.math.NumberUtils.isDigits;
 import static org.kiwiproject.config.EndpointUriBuilder.stripLeadingAndTrailingSlashes;
 
+import jakarta.ws.rs.core.UriBuilder;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.kiwiproject.base.KiwiStrings;
 
-import javax.ws.rs.core.UriBuilder;
 import java.net.URI;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;

@@ -5,9 +5,9 @@ import static java.util.stream.Collectors.toList;
 import static org.kiwiproject.base.KiwiPreconditions.checkArgumentNotNull;
 
 import com.google.common.annotations.VisibleForTesting;
+import jakarta.validation.ConstraintViolation;
+import jakarta.validation.constraints.NotNull;
 
-import javax.validation.ConstraintViolation;
-import javax.validation.constraints.NotNull;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;

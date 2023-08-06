@@ -9,10 +9,10 @@ import static org.kiwiproject.collect.KiwiLists.second;
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Multimap;
+import jakarta.ws.rs.core.MultivaluedHashMap;
+import jakarta.ws.rs.core.MultivaluedMap;
 import lombok.experimental.UtilityClass;
 
-import javax.ws.rs.core.MultivaluedHashMap;
-import javax.ws.rs.core.MultivaluedMap;
 import java.util.List;
 import java.util.Map;
 import java.util.function.BiConsumer;

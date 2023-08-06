@@ -6,14 +6,14 @@ import static java.util.stream.Collectors.toUnmodifiableList;
 import static org.apache.commons.lang3.StringUtils.isBlank;
 import static org.kiwiproject.collect.KiwiMaps.isNotNullOrEmpty;
 
+import jakarta.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.Response;
+import jakarta.ws.rs.ext.ExceptionMapper;
+import jakarta.ws.rs.ext.Provider;
 import lombok.extern.slf4j.Slf4j;
 import org.kiwiproject.collect.KiwiMaps;
 import org.kiwiproject.json.JsonHelper;
 
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
-import javax.ws.rs.ext.ExceptionMapper;
-import javax.ws.rs.ext.Provider;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;

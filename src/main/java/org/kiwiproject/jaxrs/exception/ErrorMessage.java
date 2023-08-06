@@ -3,12 +3,12 @@ package org.kiwiproject.jaxrs.exception;
 import static org.apache.commons.lang3.StringUtils.isBlank;
 
 import com.google.common.base.MoreObjects;
+import jakarta.ws.rs.core.Response;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.kiwiproject.collect.KiwiMaps;
 
-import javax.ws.rs.core.Response;
 import java.beans.ConstructorProperties;
 import java.util.Collections;
 import java.util.Map;

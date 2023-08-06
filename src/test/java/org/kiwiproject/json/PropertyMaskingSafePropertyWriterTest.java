@@ -154,18 +154,7 @@ class PropertyMaskingSafePropertyWriterTest {
     @Test
     void shouldUseDefaultTextReplacementOptions_WhenConstructedUsingOnlyList() {
         var maskedFields = List.of("secretNumber", "secretIdentities");
-
-        var modifier = new BeanSerializerModifier() {
-            @Override
-            public List<BeanPropertyWriter> changeProperties(SerializationConfig config,
-                                                             BeanDescription beanDesc,
-                                                             List<BeanPropertyWriter> beanProperties) {
-                return beanProperties.stream()
-                        .map(beanPropertyWriter ->
-                                new PropertyMaskingSafePropertyWriter(beanPropertyWriter, maskedFields))
-                        .collect(toList());
-            }
-        };
+        var modifier = newBeanSerializerModifier(maskedFields);
 
         var module = new SimpleModule().setSerializerModifier(modifier);
         var mapper = JsonHelper.newDropwizardObjectMapper().registerModule(module);
@@ -179,6 +168,20 @@ class PropertyMaskingSafePropertyWriterTest {
                 entry("secretNumber", maskText),
                 entry("secretIdentities", maskText)
         );
+    }
+
+    private static BeanSerializerModifier newBeanSerializerModifier(List<String> maskedFields) {
+        return new BeanSerializerModifier() {
+            @Override
+            public List<BeanPropertyWriter> changeProperties(SerializationConfig config,
+                                                             BeanDescription beanDesc,
+                                                             List<BeanPropertyWriter> beanProperties) {
+                return beanProperties.stream()
+                        .map(beanPropertyWriter ->
+                                new PropertyMaskingSafePropertyWriter(beanPropertyWriter, maskedFields))
+                        .collect(toList());
+            }
+        };
     }
 
     @ClearBoxTest

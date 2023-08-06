@@ -1654,10 +1654,12 @@ class KiwiReflectionTest {
             this.base = base;
         }
 
+        @SuppressWarnings("unused")
         static AddingFactory newAddingFactory(int base) {
-            return newAddingFactory(base);
+            return new AddingFactory(base);
         }
 
+        @SuppressWarnings("unused")
         int add(int other) {
             return base + other;
         }

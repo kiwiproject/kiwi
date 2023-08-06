@@ -3,6 +3,7 @@ package org.kiwiproject.validation;
 import static org.kiwiproject.validation.ValidationTestHelper.assertNoViolations;
 import static org.kiwiproject.validation.ValidationTestHelper.assertViolations;
 
+import jakarta.validation.Validator;
 import lombok.Builder;
 import lombok.Getter;
 import org.junit.jupiter.api.BeforeEach;
@@ -13,7 +14,6 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
 import org.junit.jupiter.params.provider.ValueSource;
 
-import javax.validation.Validator;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.time.Year;
