@@ -16,7 +16,7 @@ import org.hibernate.annotations.Type;
 @Getter
 @Setter
 @SuppressWarnings("JpaDataSourceORMInspection")
-class SampleJsonbEntity {
+class SampleJsonbEntity implements IdentifiableEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
