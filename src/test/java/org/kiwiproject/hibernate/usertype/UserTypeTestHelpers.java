@@ -39,6 +39,10 @@ class UserTypeTestHelpers {
     }
 
     static Object saveAndClearSession(Session session, IdentifiableEntity entity) {
+        assertThat(session.getTransaction())
+                .describedAs("A transaction must exist for this method to work properly")
+                .isNotNull();
+
         assertThat(entity.getId()).isNull();
         session.persist(entity);
 
