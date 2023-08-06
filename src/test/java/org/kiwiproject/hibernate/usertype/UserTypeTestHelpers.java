@@ -38,8 +38,15 @@ class UserTypeTestHelpers {
         return config;
     }
 
-    static Object saveAndClearSession(Session session, Object entity) {
-        var id = session.save(entity);
+    static Object saveAndClearSession(Session session, IdentifiableEntity entity) {
+        assertThat(session.getTransaction())
+                .describedAs("A transaction must exist for this method to work properly")
+                .isNotNull();
+
+        assertThat(entity.getId()).isNull();
+        session.persist(entity);
+
+        var id = entity.getId();
         assertThat(id)
                 .describedAs("Entity should have been flushed to database and now have an assigned ID")
                 .isNotNull();

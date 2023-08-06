@@ -7,6 +7,7 @@ import static org.kiwiproject.hibernate.usertype.UserTypeTestHelpers.preparedDbE
 import io.zonky.test.db.postgres.junit5.PreparedDbExtension;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
+import org.hibernate.Transaction;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
@@ -27,6 +28,7 @@ class JSONBUserTypeIntegrationTest {
     private static SessionFactory sessionFactory;
 
     private Session session;
+    private Transaction transaction;
 
     @BeforeAll
     static void beforeAll() {
@@ -37,10 +39,12 @@ class JSONBUserTypeIntegrationTest {
     @BeforeEach
     void setUp() {
         session = sessionFactory.openSession();
+        transaction = session.beginTransaction();
     }
 
     @AfterEach
     void tearDown() {
+        transaction.rollback();
         session.close();
     }
 
