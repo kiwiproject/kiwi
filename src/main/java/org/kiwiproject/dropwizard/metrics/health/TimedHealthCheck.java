@@ -12,7 +12,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
 /**
- * Health Check wrapper that will timeout after a set period of time.
+ * Health Check wrapper that will time out after a set period of time.
  * <p>
  * This is mainly to protect the health checks from blocking forever.
  */

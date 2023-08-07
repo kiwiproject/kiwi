@@ -23,11 +23,11 @@ import java.util.stream.Stream;
 
 /**
  * Simple way to convert one bean to another.  This utility uses spring-beans to attempt the conversion at first.
- * If attempting to maps, it will attempt to do simple copies of the key-value pairs.
+ * If attempting to convert maps, it will attempt to do simple copies of the key-value pairs.
  * <p>
  * Exclusion lists can be provided to ignore specific fields.
  * <p>
- * Also custom mappers can be provided per field for more control over how the fields are converted.
+ * Also, custom mappers can be provided per field for more control over how the fields are converted.
  * <p>
  * NOTE: This class requires spring-beans as a dependency.
  */
@@ -55,7 +55,7 @@ public class BeanConverter<T> {
     private boolean failOnError;
 
     /**
-     * This conversion method taks a single parameter and modifies the object in place.
+     * This conversion method takes a single parameter and modifies the object in place.
      *
      * @param input the object to perform the conversion on
      * @return the same object that was passed in
@@ -137,7 +137,7 @@ public class BeanConverter<T> {
      * {@link ClassCastException} will be thrown at runtime.
      *
      * @param propertyName the property name
-     * @param <R>          the result type of the the mapper for the given property
+     * @param <R>          the result type of the mapper for the given property
      * @return the Function that will be triggered
      */
     @SuppressWarnings("unchecked")

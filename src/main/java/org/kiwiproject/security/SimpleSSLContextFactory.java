@@ -14,7 +14,7 @@ import java.util.Map;
 import java.util.Optional;
 
 /**
- * A "simple" factory class that makes it simpler to to create {@link SSLContext} instances.
+ * A "simple" factory class that makes it simpler to create {@link SSLContext} instances.
  * <p>
  * Construct using one of the public constructors or via the {@link #builder()}.
  * <p>
@@ -129,8 +129,8 @@ public class SimpleSSLContextFactory {
      * If not specified, key and trust store type default to "JKS", and {@code verifyHostname} defaults to {@code true}.
      *
      * @implNote This was implemented well before we started using Lombok, so is manual builder code, though
-     * we have added both the Lombok-style xxx() as well as keeping the original setXxx() methods.
-     * Subject to change in future.
+     * we have added both the Lombok-style xxx() and keeping the original setXxx() methods.
+     * Subject to change in the future.
      */
     public static class Builder {
 

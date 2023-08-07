@@ -1136,10 +1136,12 @@ class KiwiReflectionTest {
             return "whatever";
         }
 
+        @SuppressWarnings("EmptyMethod")
         public void getNothing() {
             // "getter" with void return
         }
 
+        @SuppressWarnings("EmptyMethod")
         public void setNothing() {
             // "setter" with no argument
         }
@@ -1592,6 +1594,7 @@ class KiwiReflectionTest {
         private final String title;
     }
 
+    @SuppressWarnings("unused")
     @Getter
     static class User {
         private final String username;

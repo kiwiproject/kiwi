@@ -66,7 +66,7 @@ import java.util.Set;
  * </pre>
  * Using this utility ensures objects are validated against all groups, unlike {@link jakarta.validation.GroupSequence}
  * whose behavior is to stop validating any subsequent groups once a group fails validation. For example, if the
- * the sequence is {@code { Default.class, NewObject.class }} and a constraint fails for the {@code Default} group, then
+ * sequence is {@code { Default.class, NewObject.class }} and a constraint fails for the {@code Default} group, then
  * the constraints for {@code NewObject} <em>will not be evaluated</em>. In general this is not the behavior we want or
  * expect.
  * <p>

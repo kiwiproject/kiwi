@@ -19,7 +19,7 @@ import java.util.regex.Pattern;
  * asterisks instead of the true value.
  * <p>
  * NOTE: Generally masking should be used only on String fields, because otherwise the type in the resulting JSON will
- * be different than the source type. For example, if a class has a "secretNumber" of type "int" and it is masked, the
+ * be different from the source type. For example, if a class has a "secretNumber" of type "int" and it is masked, the
  * resulting JSON contains a String instead of an int, which will likely cause problems if a downstream system reads
  * the JSON expecting an int. For such cases, consider using {@link com.fasterxml.jackson.annotation.JsonView} instead.
  * <p>

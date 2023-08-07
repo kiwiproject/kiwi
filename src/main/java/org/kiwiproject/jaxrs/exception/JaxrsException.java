@@ -141,8 +141,8 @@ public class JaxrsException extends RuntimeException {
 
     /**
      * New "aggregate" instance with given list of ErrorMessage objects. The {@code statusCode} can be
-     * {@code null} if a "rolled up" overall status is desired, or an explicit code be be given to represent
-     * all the errors. The message of this exception is take from the first ErrorMessage.
+     * {@code null} if a "rolled up" overall status is desired, or an explicit code be given to represent
+     * all the errors. The message of this exception is taken from the first ErrorMessage.
      *
      * @param errors     a list containing multiple ErrorMessages as the underlying cause of this exception
      * @param statusCode the overall status code to use, or {@code null} (overall status will be rolled up as max
@@ -207,7 +207,7 @@ public class JaxrsException extends RuntimeException {
      * prevent clearing out all errors.
      *
      * @param errorMessages the new {@link ErrorMessage}s to set
-     * @implNote This is final because it is used in some sub-class constructors. It is a big no-no to call
+     * @implNote This is final because it is used in some subclass constructors. It is a big no-no to call
      * overridable methods in constructors. It <em>can</em> cause very strange behavior like NPEs. Also see
      * Effective Java (3rd Edition) Item #19 "Design and document for inheritance or else prohibit it" and
      * Sonar rule java:S1699 "Constructors should only call non-overridable methods".

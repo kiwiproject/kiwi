@@ -547,7 +547,7 @@ public class JsonHelper {
      * to an object of the given target class.
      *
      * @param object      the object to copy
-     * @param targetClass the target class (may be different than the original)
+     * @param targetClass the target class (it may be different from the original)
      * @param <T>         the type of object being copied
      * @param <R>         the type of object to copy into
      * @return the copied object of the target class
@@ -561,7 +561,7 @@ public class JsonHelper {
      * to an object of the given target class.
      *
      * @param object       the object to copy
-     * @param targetClass  the target class (may be different than the original)
+     * @param targetClass  the target class (it may be different from the original)
      * @param ignoredPaths the paths to ignore during the copy
      * @param <T>          the type of object being copied
      * @param <R>          the type of object to copy into

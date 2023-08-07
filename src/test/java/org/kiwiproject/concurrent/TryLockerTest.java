@@ -96,7 +96,6 @@ class TryLockerTest {
             assertThat(orElseCalled).isTrue();
         }
 
-        @SuppressWarnings("UnstableApiUsage")
         private void doTaskThatTakesSomeTime(TryLocker locker, AtomicBoolean hasLock, AtomicBoolean shouldReleaseLock) {
             locker.withLockOrElse(
                     () -> {

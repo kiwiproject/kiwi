@@ -39,7 +39,7 @@ import java.util.function.BiFunction;
 
 /**
  * @implNote This test has a lot more mocking than I would like, but I have not found an easy way yet to
- * setup an embedded SFTP server for use by tests.
+ * set up an embedded SFTP server for use by tests.
  */
 @DisplayName("SftpTransfers")
 class SftpTransfersTest {

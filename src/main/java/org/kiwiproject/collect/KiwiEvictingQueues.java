@@ -9,7 +9,6 @@ import java.util.Queue;
 /**
  * Utility methods for working with Guava {@link EvictingQueue} instances.
  */
-@SuppressWarnings("UnstableApiUsage")
 @UtilityClass
 public class KiwiEvictingQueues {
 

@@ -271,6 +271,15 @@ class KiwiInternetAddressesTest {
         }
 
         @Test
+        void shouldReturnFoundAddressThatMatchesAGivenIpv4CidrByLookingUpAddresses() {
+            var subnetCidrs = List.of("0.0.0.0/0");
+
+            var address = KiwiInternetAddresses.findFirstMatchingAddressOrNull(subnetCidrs, IpScheme.IPV4);
+
+            assertThat(address).isNotBlank();
+        }
+
+        @Test
         void shouldReturnOptionalWithFoundAddressThatMatchesAGivenIpv4CidrByLookingUpAddresses() {
             var subnetCidrs = List.of("0.0.0.0/0");
 
@@ -333,6 +342,12 @@ class KiwiInternetAddressesTest {
                 var address = KiwiInternetAddresses.findFirstMatchingAddressOrThrow(subnetCidrs, ipAddresses);
 
                 assertThat(address).isEqualTo("192.168.100.5");
+            }
+
+            @Test
+            void shouldReturnMatchingAddress() {
+                var address = KiwiInternetAddresses.findFirstMatchingAddressOrThrow(List.of("127.0.0.1/8"), IpScheme.IPV4);
+                assertThat(address).isEqualTo("127.0.0.1");
             }
 
             @Test

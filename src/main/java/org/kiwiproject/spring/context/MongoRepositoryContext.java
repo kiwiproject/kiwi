@@ -24,7 +24,7 @@ import java.util.stream.Stream;
  * {@link org.springframework.data.mongodb.repository.MongoRepository} interfaces.
  * <p>
  * This also provides a default map of repositories. For simple basic usages, simply call {@link #getRepository} with
- * the appropriate type and it will return (or create-and-return) the repository instance.
+ * the appropriate type, and it will return (or create-and-return) the repository instance.
  */
 @Slf4j
 public class MongoRepositoryContext {

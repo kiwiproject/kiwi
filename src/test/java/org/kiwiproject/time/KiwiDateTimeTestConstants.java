@@ -19,7 +19,7 @@ class KiwiDateTimeTestConstants {
     static final ZoneId US_EASTERN_TIME = ZoneId.of("US/Eastern");
     static final ZoneId TOKYO_TIME = ZoneId.of("Asia/Tokyo");
 
-    // Remember remember the 5th of November...now go watch "V for Vendetta"
+    // Remember, remember the 5th of November...now go watch "V for Vendetta"
     // November 5, 2005, 8PM GMT (400th anniversary of Guy Fawkes Day)
 
     static final Date GUY_FAWKES_AS_DATE =

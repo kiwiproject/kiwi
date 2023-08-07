@@ -17,7 +17,7 @@ import java.util.Set;
 public class KiwiSpringJavaConfigs {
 
     /**
-     * Determines entity packages using specified entity classes. Typically this will be used when configuring a
+     * Determines entity packages using specified entity classes. Typically, this will be used when configuring a
      * Hibernate SessionFactory using Spring's LocalSessionFactoryBean.
      *
      * @param classes one or more entity classes

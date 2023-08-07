@@ -652,21 +652,18 @@ public class Processes {
             throws InterruptedException {
 
         switch (action) {
-            case FORCE_KILL:
+            case FORCE_KILL -> {
                 boolean killedBeforeWaitTimeout = killForcibly(killProcess, 1L, TimeUnit.SECONDS);
                 validateKilledBeforeTimeout(processId, killedBeforeWaitTimeout);
                 return killProcess.exitValue();
-
-            case THROW_EXCEPTION:
-                throw new IllegalStateException(
-                        format("Process %s did not end before timeout (and exception was requested)", processId));
-
-            case NO_OP:
+            }
+            case THROW_EXCEPTION -> throw new IllegalStateException(
+                    format("Process %s did not end before timeout (and exception was requested)", processId));
+            case NO_OP -> {
                 LOG.warn("Process {} did not end before timeout and no-op action requested, so doing nothing", processId);
                 return -1;
-
-            default:
-                throw new IllegalStateException("Unaccounted for action: " + action);
+            }
+            default -> throw new IllegalStateException("Unaccounted for action: " + action);
         }
     }
 

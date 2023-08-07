@@ -568,6 +568,7 @@ class JsonHelperAdvancedFeaturesTest {
             var map1 = Map.of("a", "aaa", "b", "bbb", "c", "ccc");
             Map<String, Object> map2 = null;
 
+            //noinspection ConstantValue
             var diffs = jsonHelper.jsonDiff(map1, map2);
 
             softly.assertThat(diffs)
@@ -576,6 +577,7 @@ class JsonHelperAdvancedFeaturesTest {
                     .containsEntry("b", newArrayList("bbb", null))
                     .containsEntry("c", newArrayList("ccc", null));
 
+            //noinspection ConstantValue
             softly.assertThat(jsonHelper.jsonEquals(map1, map2)).isFalse();
         }
 

@@ -9,6 +9,7 @@ import org.junit.jupiter.api.Test;
 @DisplayName("PropertyMaskingOptions")
 class PropertyMaskingOptionsTest {
 
+    @SuppressWarnings("DataFlowIssue")
     @Test
     void shouldNotAllowNullMaskedFieldRegexps() {
         assertThatNullPointerException()

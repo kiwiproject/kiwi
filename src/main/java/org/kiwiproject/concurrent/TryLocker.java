@@ -88,7 +88,7 @@ public class TryLocker {
     }
 
     /**
-     * Run {@code withLockAction} if the lock is obtained within the lock timeout period. Otherwise
+     * Run {@code withLockAction} if the lock is obtained within the lock timeout period. Otherwise,
      * run {@code orElseAction}.
      *
      * @param withLockAction action to run if lock is obtained
@@ -121,7 +121,7 @@ public class TryLocker {
 
     /**
      * Execute the given {@code withLockSupplier} if the lock is obtained within the lock timeout period and return
-     * its value. Otherwise return null.
+     * its value. Otherwise, return null.
      *
      * @param withLockSupplier supplier to execute if lock is obtained
      * @param <T>              type of object returned
@@ -133,7 +133,7 @@ public class TryLocker {
 
     /**
      * Execute the given {@code withLockSupplier} if the lock is obtained within the lock timeout period and return
-     * its value. Otherwise return the {@code fallbackValue}.
+     * its value. Otherwise, return the {@code fallbackValue}.
      *
      * @param withLockSupplier supplier to execute if lock is obtained
      * @param fallbackValue    the value to use if the lock is not obtained
@@ -148,7 +148,7 @@ public class TryLocker {
 
     /**
      * Execute the given {@code withLockSupplier} if the lock is obtained within the lock timeout period and return
-     * its value. Otherwise return the valued supplied by {@code fallbackSupplier}.
+     * its value. Otherwise, return the valued supplied by {@code fallbackSupplier}.
      *
      * @param withLockSupplier supplier to execute if lock is obtained
      * @param fallbackSupplier the supplier to execute if the lock is not obtained

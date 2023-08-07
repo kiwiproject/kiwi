@@ -66,7 +66,7 @@ public @interface InEnum {
     boolean allowNull() default false;
 
     /**
-     * Whether to ignore case. By default, match is case sensitive.
+     * Whether to ignore case. By default, match is case-sensitive.
      *
      * @return true to ignore case, false to perform a case-sensitive match.
      */
@@ -85,7 +85,7 @@ public @interface InEnum {
      *  private String season;
      * </pre>
      *
-     * @return the name of the method that returns the String value to perform validation against. By default this is
+     * @return the name of the method that returns the String value to perform validation against. By default, this is
      * an empty String, which means the enum constant will be used.
      */
     String valueMethod() default "";

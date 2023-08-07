@@ -35,7 +35,7 @@ class KiwiArraysTest {
     @Nested
     class IsNullOrEmpty {
 
-        @SuppressWarnings("ConstantConditions")
+        @SuppressWarnings("ConstantValue")
         @Test
         void shouldBeTrue_WhenNullArg() {
             assertThat(KiwiArrays.isNullOrEmpty(null)).isTrue();
@@ -55,7 +55,7 @@ class KiwiArraysTest {
     @Nested
     class IsNotNullOrEmpty {
 
-        @SuppressWarnings("ConstantConditions")
+        @SuppressWarnings("ConstantValue")
         @Test
         void shouldBeFalse_WhenNull() {
             assertThat(KiwiArrays.isNotNullOrEmpty(null)).isFalse();

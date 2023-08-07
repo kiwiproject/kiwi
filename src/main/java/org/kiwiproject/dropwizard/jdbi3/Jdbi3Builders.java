@@ -46,7 +46,7 @@ public class Jdbi3Builders {
      * @param dataSourceFactory the {@link PooledDataSourceFactory}
      * @param jdbiPlugins       any other {@link JdbiPlugin} objects desired
      * @return the {@link Jdbi} instance
-     * @implNote With the exception of {@link SqlObjectPlugin}, this method will allow you to install multiple of the
+     * @implNote Except {@link SqlObjectPlugin}, this method will allow you to install multiple of the
      * same plugin. User beware.
      */
     public static Jdbi buildManagedJdbi(Environment environment,
@@ -64,7 +64,7 @@ public class Jdbi3Builders {
      * @param healthCheckName   the health check's name
      * @param jdbiPlugins       any other {@link JdbiPlugin} objects desired
      * @return the {@link Jdbi} instance
-     * @implNote With the exception of {@link SqlObjectPlugin}, this method will allow you to install multiple of the
+     * @implNote Except {@link SqlObjectPlugin}, this method will allow you to install multiple of the
      * same plugin. User beware.
      */
     public static Jdbi buildManagedJdbi(Environment environment,
@@ -89,7 +89,7 @@ public class Jdbi3Builders {
      * @param dataSource        the {@link ManagedDataSource}
      * @param jdbiPlugins       any other {@link JdbiPlugin} objects desired
      * @return the {@link Jdbi} instance
-     * @implNote With the exception of {@link SqlObjectPlugin}, this method will allow you to install multiple of the
+     * @implNote Except {@link SqlObjectPlugin}, this method will allow you to install multiple of the
      * same plugin. User beware.
      */
     public static Jdbi buildManagedJdbi(Environment environment,
@@ -110,7 +110,7 @@ public class Jdbi3Builders {
      * @param healthCheckName   the health check's name
      * @param jdbiPlugins       any other {@link JdbiPlugin} objects desired
      * @return the {@link Jdbi} instance
-     * @implNote With the exception of {@link SqlObjectPlugin}, this method will allow you to install multiple of the
+     * @implNote Except {@link SqlObjectPlugin}, this method will allow you to install multiple of the
      * same plugin. User beware.
      */
     public static Jdbi buildManagedJdbi(Environment environment,

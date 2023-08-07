@@ -16,7 +16,7 @@ import java.util.Date;
  * A collection of small utilities to parse strings into various types of Java date/time classes, both the legacy
  * {@link java.util.Date} and the Java 8 date/time API classes in {@code java.time}.
  * <p>
- * Please make sure you actually read the method documentation so you know the format(s) that are expected or
+ * Please make sure you actually read the method documentation, so you know the format(s) that are expected or
  * allowed.
  * <p>
  * While the JDK has decided to keep the formatting and parsing methods together in {@link DateTimeFormatter},

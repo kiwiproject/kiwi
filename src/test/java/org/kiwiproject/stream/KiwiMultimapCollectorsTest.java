@@ -11,6 +11,7 @@ import org.junit.jupiter.api.Test;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.stream.Collector;
 import java.util.stream.Stream;
 
@@ -166,8 +167,9 @@ class KiwiMultimapCollectorsTest {
         original.putAll("drinks", List.of("beer", "water"));
         original.put("cars", "Tesla");
 
-        var multimap = original.entries().stream()
-                .filter(entry -> !entry.getKey().equals("fruits"))
+        var multimap = original.entries()
+                .stream()
+                .filter(entry -> !Objects.equals(entry.getKey(), "fruits"))
                 .collect(collector);
 
         assertThat(multimap.keySet()).containsExactlyInAnyOrder("foods", "drinks", "cars");

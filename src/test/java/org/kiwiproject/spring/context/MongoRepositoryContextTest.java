@@ -156,7 +156,7 @@ class MongoRepositoryContextTest {
     @SuppressWarnings("NullableProblems")
     private static class MyAfterLoadEventListener extends AbstractMongoEventListener<Object> {
 
-        List<Object> loadedIds = new ArrayList<>();
+        final List<Object> loadedIds = new ArrayList<>();
 
         @Override
         public void onAfterLoad(AfterLoadEvent<Object> event) {
@@ -167,7 +167,7 @@ class MongoRepositoryContextTest {
     @SuppressWarnings("NullableProblems")
     private static class MyAfterSaveEventListener extends AbstractMongoEventListener<Object> {
 
-        List<Object> savedIds = new ArrayList<>();
+        final List<Object> savedIds = new ArrayList<>();
 
         @Override
         public void onAfterSave(AfterSaveEvent<Object> event) {
@@ -214,7 +214,7 @@ class MongoRepositoryContextTest {
         private String name;
 
         @NonNull
-        private int age;
+        private Integer age;
     }
 
     private interface SamplePersonDocRepository extends MongoRepository<SamplePersonDoc, String> {

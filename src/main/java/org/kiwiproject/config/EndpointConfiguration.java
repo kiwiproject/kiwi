@@ -236,7 +236,7 @@ public class EndpointConfiguration {
      * round-robin among the domains returned by {@link #getDomains()}.
      *
      * @return the URI as a {@link String}
-     * @implNote This currently builds URIs using simple string substitution, any any leading or trailing slashes
+     * @implNote This currently builds URIs using simple string substitution, any leading or trailing slashes
      * on the domain are stripped.
      */
     public String getURI() {

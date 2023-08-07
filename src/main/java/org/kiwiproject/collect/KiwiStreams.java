@@ -1,7 +1,6 @@
 package org.kiwiproject.collect;
 
 import static org.kiwiproject.base.KiwiPreconditions.checkArgumentNotNull;
-import static org.kiwiproject.base.KiwiStrings.f;
 
 import lombok.experimental.UtilityClass;
 
@@ -65,16 +64,10 @@ public final class KiwiStreams {
         checkArgumentNotNull(collection);
         checkArgumentNotNull(mode);
 
-        switch (mode) {
-            case SEQUENTIAL:
-                return collection.stream();
-
-            case PARALLEL:
-                return collection.parallelStream();
-
-            default:
-               throw new IllegalStateException(f("unexpected StreamMode: {}", mode));
-        }
+        return switch (mode) {
+            case SEQUENTIAL -> collection.stream();
+            case PARALLEL -> collection.parallelStream();
+        };
     }
 
     /**

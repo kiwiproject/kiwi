@@ -289,11 +289,13 @@ class KiwiThrowablesTest {
 
             @Test
             void whenNullThrowable() {
+                //noinspection ThrowableNotThrown
                 assertThatIllegalArgumentException().isThrownBy(() -> KiwiThrowables.unwrap(null, IOException.class));
             }
 
             @Test
             void whenNullWrapperClass() {
+                //noinspection ThrowableNotThrown
                 assertThatIllegalArgumentException().isThrownBy(() -> KiwiThrowables.unwrap(new IOException(), null));
             }
         }
@@ -328,6 +330,7 @@ class KiwiThrowablesTest {
             softly.assertThat(throwableInfo.stackTrace).isNull();
         }
 
+        @SuppressWarnings("EqualsWithItself")
         @RepeatedTest(5)
         void shouldReturnSingleton() {
             assertThat(KiwiThrowables.emptyThrowableInfo()).isSameAs(KiwiThrowables.emptyThrowableInfo());

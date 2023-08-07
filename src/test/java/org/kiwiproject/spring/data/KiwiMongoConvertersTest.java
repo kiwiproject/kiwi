@@ -31,7 +31,8 @@ class KiwiMongoConvertersTest {
         @Test
         void shouldAddConverters() {
             var converter = KiwiMongoConverters.newBsonUndefinedToNullObjectConverter();
-            KiwiMongoConverters.addCustomConverters(mongoTemplate, converter);
+            var mongoTemplate1 = KiwiMongoConverters.addCustomConverters(mongoTemplate, converter);
+            assertThat(mongoTemplate1).isSameAs(mongoTemplate);
 
             var bsonUndefined = new BsonUndefined();
             var result = mongoTemplate.getConverter().getConversionService().convert(bsonUndefined, String.class);

@@ -14,8 +14,8 @@ import java.util.Map;
  * named {@code extraFields}.
  * <p>
  * The general use case for this "extra fields" is when a service or application proxies data from a canonical source
- * where we don't want or need to know about every individual field, but where we still want to capture those fields
- * so we can store, display, etc. them. For example, a remote service that has a large number of properties and
+ * where we don't want or need to know about every individual field, but where we still want to capture those fields,
+ * so we can store, display, etc. them. For example, a remote service that has a large number of properties, and
  * we only care about a few of them, but we might want to store all of them for analytics, debugging, etc.
  * <p>
  * This implementation intentionally does not define {@code equals} or {@code hashCode} methods, which means the
@@ -27,7 +27,7 @@ import java.util.Map;
 @ToString
 public abstract class FlexibleJsonModel {
 
-    protected Map<String, Object> extraFields = new HashMap<>();
+    protected final Map<String, Object> extraFields = new HashMap<>();
 
     /**
      * Returns the "extra" fields that were not explicitly defined as properties when this object was de-serialized

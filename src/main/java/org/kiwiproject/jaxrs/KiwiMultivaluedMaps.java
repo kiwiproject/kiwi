@@ -75,10 +75,10 @@ public class KiwiMultivaluedMaps {
 
     /**
      * Converts the given {@link MultivaluedMap} to a single-valued JDK {@link Map} by getting <em>only</em>
-     * the <em>first</em> element for each key in the multi-valued map. This means that if there are keys
+     * the <em>first</em> element for each key in the multivalued map. This means that if there are keys
      * having multiple values, elements past the first one <em>are ignored</em>.
      *
-     * @param original the original multi-valued map to convert
+     * @param original the original multivalued map to convert
      * @return the <em>single</em>-valued JDK map
      */
     public static Map<String, String> toSingleValuedParameterMap(MultivaluedMap<String, String> original) {
@@ -94,7 +94,7 @@ public class KiwiMultivaluedMaps {
     /**
      * Convert the given {@link MultivaluedMap} into a Guava {@link Multimap}.
      *
-     * @param original the original multi-valued map to convert
+     * @param original the original multivalued map to convert
      * @return the Guava multimap
      */
     public static Multimap<String, String> toMultimap(MultivaluedMap<String, String> original) {

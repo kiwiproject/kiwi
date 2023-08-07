@@ -376,7 +376,7 @@ class TlsContextConfigurationTest {
         @Nested
         class ToDropwizardTlsConfiguration {
 
-            @SuppressWarnings("ConstantConditions")  // b/c IntelliJ sees Dropwizard [key|trust]StorePath are @Nullable
+            @SuppressWarnings("DataFlowIssue")  // b/c IntelliJ sees Dropwizard [key|trust]StorePath are @Nullable
             @Test
             void shouldReturnTlsConfiguration() {
                 var dwTlsConfig = tlsConfig.toDropwizardTlsConfiguration();
@@ -398,7 +398,7 @@ class TlsContextConfigurationTest {
                 assertThat(dwTlsConfig.getCertAlias()).isEqualTo("cert84");
             }
 
-            @SuppressWarnings("ConstantConditions")  // b/c IntelliJ sees Dropwizard [key|trust]StorePath are @Nullable
+            @SuppressWarnings("DataFlowIssue")  // b/c IntelliJ sees Dropwizard [key|trust]StorePath are @Nullable
             @Test
             void shouldCorrectlyHandleWhenOnlyTrustStoreIsPresent() {
                 tlsConfig = TlsContextConfiguration.builder()

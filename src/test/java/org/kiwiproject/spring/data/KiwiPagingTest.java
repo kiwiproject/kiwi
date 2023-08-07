@@ -337,7 +337,6 @@ class KiwiPagingTest {
     private static void assertSortChain(Sort sortChain) {
         assertThat(sortChain).isNotNull();
 
-        //noinspection UnstableApiUsage
         var sortOrders = Streams.stream(sortChain.iterator()).collect(toList());
 
         assertThat(sortOrders)

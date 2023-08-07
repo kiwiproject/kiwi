@@ -201,21 +201,21 @@ class Ipv4AddressValidatorTest {
         }
     }
 
+    @Getter
     @NoArgsConstructor
     @AllArgsConstructor
     private static class Config {
 
-        @Getter
         @Setter
         @Ipv4Address
         private String ipAddress;
     }
 
+    @Getter
     @NoArgsConstructor
     @AllArgsConstructor
     private static class ConfigAllowingNull {
 
-        @Getter
         @Setter
         @Ipv4Address(allowNull = true)
         private String ipAddress;

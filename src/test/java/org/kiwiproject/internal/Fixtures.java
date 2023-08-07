@@ -33,7 +33,7 @@ import java.nio.file.Paths;
 public class Fixtures {
 
     /**
-     * Reads the given fixture file from the classpath (e. g. {@code src/test/resources}) and returns its contents
+     * Reads the given fixture file from the classpath (e.g. {@code src/test/resources}) and returns its contents
      * as a UTF-8 string.
      *
      * @param resourceName the name/path of to the classpath resource

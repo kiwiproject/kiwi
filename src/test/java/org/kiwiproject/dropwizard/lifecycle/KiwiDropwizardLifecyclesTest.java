@@ -11,7 +11,6 @@ import org.junit.jupiter.api.Test;
 
 import java.util.concurrent.atomic.AtomicBoolean;
 
-@SuppressWarnings("UnstableApiUsage")
 @DisplayName("KiwiDropwizardLifecycles")
 class KiwiDropwizardLifecyclesTest {
 

@@ -143,7 +143,7 @@ class KiwiStringsTest {
                 var iterator = iterable.iterator();
 
                 assertThat(iterator.hasNext()).isFalse();
-                assertThatExceptionOfType(NoSuchElementException.class).isThrownBy(() -> iterator.next());
+                assertThatExceptionOfType(NoSuchElementException.class).isThrownBy(iterator::next);
             }
 
             @Test
@@ -365,8 +365,8 @@ class KiwiStringsTest {
                 assertThat(result).isEqualTo("This is a great template with 2 placeholders");
             }
 
+            @SuppressWarnings("ConstantValue")
             @Test
-            @SuppressWarnings("ConstantConditions")
             void shouldFormat_withSomeArguments_ContainingNullValues() {
                 String templateAdjective = null;
                 String numPlaceholders = null;
@@ -398,8 +398,8 @@ class KiwiStringsTest {
                 assertThat(result).isEqualTo("This is a great template with 2 placeholders");
             }
 
+            @SuppressWarnings("ConstantValue")
             @Test
-            @SuppressWarnings("ConstantConditions")
             void shouldFormat_withSomeArguments_ContainingNullValues() {
                 String templateAdjective = null;
                 String numPlaceholders = null;

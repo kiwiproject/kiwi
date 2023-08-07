@@ -45,7 +45,7 @@ import java.util.function.Predicate;
 @Slf4j
 abstract class AbstractPagingQueryIntegrationTest {
 
-    static int STANDARD_MONGODB_PORT = 27_017;
+    static final int STANDARD_MONGODB_PORT = 27_017;
 
     /**
      * Subclasses must set this in a {@code BeforeAll}.
