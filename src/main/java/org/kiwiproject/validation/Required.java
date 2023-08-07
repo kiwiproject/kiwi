@@ -47,7 +47,7 @@ public @interface Required {
      * Whether to allow an object that is a {@link CharSequence} to be blank, using
      * {@link org.apache.commons.lang3.StringUtils#isBlank(CharSequence)} to perform the check.
      * <p>
-     * This only applies to {@link CharSequence} objects. All other (non null) objects are always considered as
+     * This only applies to {@link CharSequence} objects. All other (non-null) objects are always considered as
      * not blank.
      *
      * @return true to allow a {@link CharSequence} to be blank, false to consider blank {@link CharSequence} as invalid

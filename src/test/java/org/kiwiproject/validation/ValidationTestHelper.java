@@ -1,6 +1,5 @@
 package org.kiwiproject.validation;
 
-import static java.util.stream.Collectors.toUnmodifiableList;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.fail;
 
@@ -37,7 +36,7 @@ public class ValidationTestHelper {
 
         var missingMessages = Arrays.stream(expectedCombinedMessages)
                 .filter(value -> !actualCombinedMessages.contains(value))
-                .collect(toUnmodifiableList());
+                .toList();
 
         if (!missingMessages.isEmpty()) {
             fail("Messages [%s] not found in actual messages %s",
@@ -84,11 +83,11 @@ public class ValidationTestHelper {
 
         var actualMessages = violations.stream()
                 .map(ConstraintViolation::getMessage)
-                .collect(toUnmodifiableList());
+                .toList();
 
         var missingMessages = Arrays.stream(expectedMessages)
                 .filter(value -> !actualMessages.contains(value))
-                .collect(toUnmodifiableList());
+                .toList();
 
         if (!missingMessages.isEmpty()) {
             fail("Messages [%s] not found in actual messages %s",

@@ -30,12 +30,11 @@ class KiwiBiConsumersTest {
         assertThat(scaffold.getText()).hasSize(2).isNotEqualTo(originalText);
     }
 
+    @Getter
     static class BiConsumerNoOpScaffold {
 
-        @Getter
         private final List<Integer> numbers = new ArrayList<>();
 
-        @Getter
         private final List<String> text = new ArrayList<>();
 
         public BiConsumerNoOpScaffold() {

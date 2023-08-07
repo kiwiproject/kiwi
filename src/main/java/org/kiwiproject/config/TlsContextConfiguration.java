@@ -48,9 +48,9 @@ public class TlsContextConfiguration implements KeyAndTrustStoreConfigProvider {
 
     /**
      * The name of the JCE (Java Cryptography Extension) provider to use on client side for cryptographic
-     * support (for example, SunJCE, Conscrypt, BC, etc).
+     * support (for example, SunJCE, Conscrypt, BC, etc.).
      * <p>
-     * For more details, see the Java Cryptography Architecture (JCA) Reference Guide" section of the Java
+     * For more details, see the "Java Cryptography Architecture (JCA) Reference Guide" section of the Java
      * <a href="https://docs.oracle.com/en/java/javase/20/security/java-security-overview1.html">Security Developer’s Guide</a>.
      */
     private String provider;
@@ -78,7 +78,7 @@ public class TlsContextConfiguration implements KeyAndTrustStoreConfigProvider {
      * The name of the provider for the key store, i.e. the value of {@code provider} to use when getting the
      * {@link java.security.KeyStore} instance for the key store.
      * <p>
-     * For more details, see the Java Cryptography Architecture (JCA) Reference Guide" section of the Java
+     * For more details, see the "Java Cryptography Architecture (JCA) Reference Guide" section of the Java
      * <a href="https://docs.oracle.com/en/java/javase/20/security/java-security-overview1.html">Security Developer’s Guide</a>.
      *
      * @see java.security.KeyStore#getInstance(String, String)
@@ -110,7 +110,7 @@ public class TlsContextConfiguration implements KeyAndTrustStoreConfigProvider {
      * The name of the provider for the trust store, i.e. the value of {@code provider} to use when getting the
      * {@link java.security.KeyStore} instance for the trust store.
      * <p>
-     * For more details, see the Java Cryptography Architecture (JCA) Reference Guide" section of the Java
+     * For more details, see the "Java Cryptography Architecture (JCA) Reference Guide" section of the Java
      * <a href="https://docs.oracle.com/en/java/javase/20/security/java-security-overview1.html">Security Developer’s Guide</a>.
      *
      * @see java.security.KeyStore#getInstance(String, String)

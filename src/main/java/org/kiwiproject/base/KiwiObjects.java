@@ -30,7 +30,7 @@ public class KiwiObjects {
     }
 
     /**
-     * Return the first supplied non-null object, or {@code null} if all all suppliers return null.
+     * Return the first supplied non-null object, or {@code null} if all suppliers return null.
      *
      * @param first  the first object supplier
      * @param second the second object supplier

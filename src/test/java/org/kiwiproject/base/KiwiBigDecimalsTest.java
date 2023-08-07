@@ -41,7 +41,7 @@ class KiwiBigDecimalsTest {
 
     @Test
     void shouldRequireDoublePrimitive(SoftAssertions softly) {
-        //noinspection ConstantConditions
+        //noinspection DataFlowIssue
         softly.assertThatThrownBy(() -> KiwiBigDecimals.requireDouble(null))
                 .isExactlyInstanceOf(IllegalArgumentException.class);
         softly.assertThat(KiwiBigDecimals.requireDouble(BigDecimal.ZERO)).isZero();

@@ -101,7 +101,7 @@ public class PagingQuery extends Query {
      * its own internal projection and faceting. Other types may work, for example {@link Aggregation#match(Criteria)}
      * works, as do lookup (i.e. "left join") aggregations.
      * <p>
-     * Note also that a sort must be specified in the {@link Pageable} given to {@link #with(Pageable)}. Otherwise
+     * Note also that a sort must be specified in the {@link Pageable} given to {@link #with(Pageable)}. Otherwise,
      * an {@link org.springframework.data.mongodb.UncategorizedMongoDbException UncategorizedMongoDbException} will be
      * thrown with the error: "{@code $sort stage must have at least one sort key}".
      * <h3>Recommendations for New Code</h3>

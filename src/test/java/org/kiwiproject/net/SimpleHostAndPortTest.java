@@ -43,7 +43,6 @@ class SimpleHostAndPortTest {
                 .hasMessage("192.168.1.101 is not in format host:port");
     }
 
-    @SuppressWarnings("ConstantConditions")
     @ParameterizedTest
     @ArgumentsSource(BlankStringArgumentsProvider.class)
     void testFromWithNoDefaults_WithBlankStrings(String input) {

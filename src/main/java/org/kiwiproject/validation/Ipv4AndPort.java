@@ -17,7 +17,7 @@ import java.lang.annotation.Target;
 
 /**
  * The annotated element must have the form {@code ipv4-address:port}. For example {@code 192.168.1.150:8888} is
- * valid while {@code 192.168.1.150} (without port) and {@code 1111.1111.1.150:8009} (two many digits in octets) are
+ * valid while {@code 192.168.1.150} (without port) and {@code 1111.1111.1.150:8009} (too many digits in octets) are
  * not. Also, as the name indicates, this only supports IPv4 addresses.
  *
  * @implNote Currently the validation only verifies that the IP is in "dotted-quad" syntax followed by a colon and

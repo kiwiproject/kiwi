@@ -32,6 +32,7 @@ import java.nio.charset.StandardCharsets;
 @DisplayName("JSchSlf4jLogger")
 class JSchSlf4jLoggerTest {
 
+    @SuppressWarnings("NonConstantLogger")
     private Logger slf4jLogger;
     private JSchSlf4jLogger logger;
     private PrintStream originalSystemOut;

@@ -123,9 +123,9 @@ class KiwiJaxWsTest {
 
     static class MockBindingProvider implements BindingProvider {
 
-        Map<String, Object> requestContext = new HashMap<>();
+        final Map<String, Object> requestContext = new HashMap<>();
 
-        Map<String, Object> responseContext = new HashMap<>();
+        final Map<String, Object> responseContext = new HashMap<>();
 
         @Override
         public Map<String, Object> getRequestContext() {

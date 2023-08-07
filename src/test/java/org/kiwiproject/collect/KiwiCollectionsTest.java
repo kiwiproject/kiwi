@@ -282,7 +282,7 @@ class KiwiCollectionsTest {
     @Nested
     class CheckNonNullCollection {
 
-        @SuppressWarnings("ConstantConditions")
+        @SuppressWarnings("DataFlowIssue")
         @Test
         void shouldThrowIllegalArgumentException_WhenGivenNullCollection() {
             assertThatNullPointerException()

@@ -9,7 +9,7 @@ import java.util.Optional;
 /**
  * This enum allows you to instantiate a {@link JdbiPlugin} for certain databases based on the JDBC database URL.
  * <p>
- * Currently supports only Postgres and H2.
+ * Currently, supports only Postgres and H2.
  */
 enum DatabaseType {
 
@@ -27,7 +27,7 @@ enum DatabaseType {
     /**
      * Given a JDBC database URL, attempt to find and instantiate a plugin.
      * <p>
-     * Currently supports only H2 and Postgres.
+     * Currently, supports only H2 and Postgres.
      *
      * @param databaseUrl the JDBC database URL
      * @return an Optional with a plugin instance or an empty Optional
@@ -40,7 +40,7 @@ enum DatabaseType {
     /**
      * Determine the database type from the given JDBC database URL.
      * <p>
-     * Currently supports only H2 and Postgres.
+     * Currently, supports only H2 and Postgres.
      *
      * @param databaseUrl the JDBC database URL
      * @return an Optional containing the database type if found, otherwise an empty Optional

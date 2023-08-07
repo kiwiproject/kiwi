@@ -407,7 +407,7 @@ public class KiwiReflection {
      * <p>
      * The {@code properties} vararg specifies the names of the <em>properties</em> to <em>ignore</em>. These names
      * will be translated into the corresponding "setter" method name. For example, if "dateOfBirth" is the property
-     * name to ignore, then the "setDateOfBirth" method is the corresponding setter method and it will be
+     * name to ignore, then the "setDateOfBirth" method is the corresponding setter method, and it will be
      * ignored (not called).
      * <p>
      * The effect is thus to nullify the values of (mutable) properties in {@code target} having a
@@ -428,7 +428,7 @@ public class KiwiReflection {
      * <p>
      * The {@code properties} vararg specifies the names of the <em>properties</em> to <em>include</em>. These names
      * will be translated into the corresponding "setter" method name. For example, if "dateOfBirth" is the property
-     * name to include, then the "setDateOfBirth" method is the corresponding setter method and it will be called
+     * name to include, then the "setDateOfBirth" method is the corresponding setter method, and it will be called
      * with a null argument.
      * <p>
      * The effect is thus to nullify the values of (mutable) properties in {@code target} having a
@@ -483,7 +483,7 @@ public class KiwiReflection {
      * @param targetClass the class in which to look for the method
      * @param methodName  the name of the method to find
      * @param params      the parameter types of the method's argument list, if any
-     * @return an {@link Optional} that will contain the {@link Method} if found. Otherwise returns an
+     * @return an {@link Optional} that will contain the {@link Method} if found. Otherwise, returns an
      * empty {@link Optional} in all other circumstances.
      * @see Class#getMethod(String, Class[])
      */
@@ -545,20 +545,11 @@ public class KiwiReflection {
         var capitalizedFieldName = StringUtils.capitalize(strippedFieldName);
         var methodName = KiwiStrings.format(methodType.template, capitalizedFieldName);
 
-        switch (methodType) {
-
-            case GET:
-                return findGetOrIsMethod(targetClass, capitalizedFieldName, methodName);
-
-            case IS:
-                return findMethod(targetClass, methodName);
-
-            case SET:
-                return findSetMethod(targetClass, methodName, params[0]);
-
-            default:
-                throw new IllegalStateException("Unaccounted for accessor type: " + methodType);
-        }
+        return switch (methodType) {
+            case GET -> findGetOrIsMethod(targetClass, capitalizedFieldName, methodName);
+            case IS -> findMethod(targetClass, methodName);
+            case SET -> findSetMethod(targetClass, methodName, params[0]);
+        };
     }
 
     private static Method findGetOrIsMethod(Class<?> targetClass, String capitalizedFieldName, String methodName) {

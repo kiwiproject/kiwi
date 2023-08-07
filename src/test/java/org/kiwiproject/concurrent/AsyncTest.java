@@ -171,9 +171,7 @@ class AsyncTest {
             var throwableFromTheFuture = new AtomicReference<Throwable>();
             assertThatCode(() -> {
                 var sameFuture = Async.waitIfAsyncDisabled(future);
-                sameFuture.whenComplete((result, throwable) -> {
-                    throwableFromTheFuture.set(throwable);
-                });
+                sameFuture.whenComplete((result, throwable) -> throwableFromTheFuture.set(throwable));
             }).doesNotThrowAnyException();
 
             assertThat(throwableFromTheFuture.get()).isSameAs(ex);

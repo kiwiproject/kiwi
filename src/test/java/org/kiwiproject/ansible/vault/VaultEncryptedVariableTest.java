@@ -1,6 +1,5 @@
 package org.kiwiproject.ansible.vault;
 
-import static java.util.stream.Collectors.toUnmodifiableList;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
 import static org.junit.jupiter.api.condition.OS.LINUX;
@@ -160,7 +159,7 @@ class VaultEncryptedVariableTest {
 
             var encryptedContent = Fixtures.fixture("ansible-vault/encrypt_string_" + formatVersion + "_encrypted_content_only.txt")
                     .lines()
-                    .collect(toUnmodifiableList());
+                    .toList();
             assertThat(vaultEncryptedVariable.getEncryptedContentLines()).isEqualTo(encryptedContent);
         }
     }

@@ -57,7 +57,7 @@ public class KiwiDurationFormatters {
      *
      * @param durationMillis the duration in milliseconds to format
      * @return the duration in words (e.g. 10 minutes)
-     * @implNote The only real reason for this method to exist is so we don't constantly have to pass the two
+     * @implNote The only real reason for this method to exist is, so we don't constantly have to pass the two
      * boolean arguments. Plus, boolean arguments are evil because what exactly does "true, false" tell you without
      * requiring you to look at the parameter documentation?
      * @see DurationFormatUtils#formatDurationWords(long, boolean, boolean)

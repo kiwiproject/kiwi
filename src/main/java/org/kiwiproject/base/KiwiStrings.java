@@ -111,18 +111,13 @@ public final class KiwiStrings {
      * @return an Iterable over the split strings
      */
     public static Iterable<String> splitWithTrimAndOmitEmpty(CharSequence sequence, char separator) {
-        switch (separator) {
-            case COMMA:
-                return TRIMMING_AND_EMPTY_OMITTING_COMMA_SPLITTER.split(sequence);
-            case SPACE:
-                return TRIMMING_AND_EMPTY_OMITTING_SPACE_SPLITTER.split(sequence);
-            case TAB:
-                return TRIMMING_AND_EMPTY_OMITTING_TAB_SPLITTER.split(sequence);
-            case NEWLINE:
-                return TRIMMING_AND_EMPTY_OMITTING_NEWLINE_SPLITTER.split(sequence);
-            default:
-                return Splitter.on(separator).omitEmptyStrings().trimResults().split(sequence);
-        }
+        return switch (separator) {
+            case COMMA -> TRIMMING_AND_EMPTY_OMITTING_COMMA_SPLITTER.split(sequence);
+            case SPACE -> TRIMMING_AND_EMPTY_OMITTING_SPACE_SPLITTER.split(sequence);
+            case TAB -> TRIMMING_AND_EMPTY_OMITTING_TAB_SPLITTER.split(sequence);
+            case NEWLINE -> TRIMMING_AND_EMPTY_OMITTING_NEWLINE_SPLITTER.split(sequence);
+            default -> Splitter.on(separator).omitEmptyStrings().trimResults().split(sequence);
+        };
     }
 
     /**
@@ -204,18 +199,13 @@ public final class KiwiStrings {
      * @see #splitWithTrimAndOmitEmpty(CharSequence, char)
      */
     public static List<String> splitToList(CharSequence sequence, char separator) {
-        switch (separator) {
-            case COMMA:
-                return TRIMMING_AND_EMPTY_OMITTING_COMMA_SPLITTER.splitToList(sequence);
-            case SPACE:
-                return TRIMMING_AND_EMPTY_OMITTING_SPACE_SPLITTER.splitToList(sequence);
-            case TAB:
-                return TRIMMING_AND_EMPTY_OMITTING_TAB_SPLITTER.splitToList(sequence);
-            case NEWLINE:
-                return TRIMMING_AND_EMPTY_OMITTING_NEWLINE_SPLITTER.splitToList(sequence);
-            default:
-                return Splitter.on(separator).omitEmptyStrings().trimResults().splitToList(sequence);
-        }
+        return switch (separator) {
+            case COMMA -> TRIMMING_AND_EMPTY_OMITTING_COMMA_SPLITTER.splitToList(sequence);
+            case SPACE -> TRIMMING_AND_EMPTY_OMITTING_SPACE_SPLITTER.splitToList(sequence);
+            case TAB -> TRIMMING_AND_EMPTY_OMITTING_TAB_SPLITTER.splitToList(sequence);
+            case NEWLINE -> TRIMMING_AND_EMPTY_OMITTING_NEWLINE_SPLITTER.splitToList(sequence);
+            default -> Splitter.on(separator).omitEmptyStrings().trimResults().splitToList(sequence);
+        };
     }
 
     /**

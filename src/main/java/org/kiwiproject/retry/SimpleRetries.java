@@ -298,7 +298,7 @@ public class SimpleRetries {
     /**
      * This method is specifically using imperative style because:
      * <p>
-     * (1) JDK 9 has a takeWhile(Predicate) method but it only includes the stream items that match the
+     * (1) JDK 9 has a takeWhile(Predicate) method, but it only includes the stream items that match the
      * predicate, which means we would lose the first non-matching item (the one with the actual result we need).
      * <p>
      * (2) Even though the lovely StreamEx library has a takeWhileInclusive(Predicate) that takes items while

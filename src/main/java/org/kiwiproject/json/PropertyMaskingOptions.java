@@ -19,7 +19,7 @@ public class PropertyMaskingOptions {
 
     /**
      * Regular expressions that define that field names to be masked, e.g. {@code .*password.*} (note the comparisons
-     * will be case insensitive). Must not be {@code null}, but can be empty. Default is empty.
+     * will be case-insensitive). Must not be {@code null}, but can be empty. Default is empty.
      */
     @NonNull
     @Builder.Default

@@ -242,15 +242,15 @@ class RequiredValidatorTest {
 
         @Builder.Default
         @Required
-        Preferences requiredPrefs = new Preferences();
+        final Preferences requiredPrefs = new Preferences();
 
         @Builder.Default
         @Required(allowEmpty = true)
-        Preferences requiredOrEmptyPrefs = new Preferences();
+        final Preferences requiredOrEmptyPrefs = new Preferences();
 
         @Builder.Default
         @Required
-        Customizations customizations = new Customizations();
+        final Customizations customizations = new Customizations();
     }
 
     @NoArgsConstructor

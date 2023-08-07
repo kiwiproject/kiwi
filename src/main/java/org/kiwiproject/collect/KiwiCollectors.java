@@ -59,7 +59,7 @@ public class KiwiCollectors {
     /**
      * Returns a {@link Collector} that collects into an {@link java.util.EnumMap}.
      * <p>
-     * If the mapped keys contain duplicates (according to {@link Object#equals(Object)}, an
+     * If the mapped keys contain duplicates (according to {@link Object#equals(Object)}), an
      * {@code IllegalStateException} is thrown when the collection operation is performed.
      *
      * @param enumClass   the key type for the returned map

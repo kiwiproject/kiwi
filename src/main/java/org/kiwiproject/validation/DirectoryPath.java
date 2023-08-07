@@ -20,7 +20,7 @@ import java.lang.annotation.Target;
  * intended usage of this annotation with respect to the potential for
  * <a href="https://owasp.org/www-community/attacks/Path_Traversal">Path Traversal</a> attacks.
  * <p>
- * By default does not permit null values. If the element being validated allows {@code null} values, you can
+ * By default, does not permit null values. If the element being validated allows {@code null} values, you can
  * set {@link #allowNull()} to {@code true}.
  * <p>
  * You can also use {@link #ensureReadable()} and {@link #ensureWritable()} to verify that the directory is readable

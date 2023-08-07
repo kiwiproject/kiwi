@@ -580,18 +580,13 @@ public class KiwiUrls {
     }
 
     private static int defaultPortForScheme(String scheme) {
-        switch (scheme) {
-            case HTTPS_PROTOCOL:
-                return 443;
-            case HTTP_PROTOCOL:
-                return 80;
-            case SFTP_PROTOCOL:
-                return 22;
-            case FTP_PROTOCOL:
-                return 21;
-            default:
-                return UNKNOWN_PORT;
-        }
+        return switch (scheme) {
+            case HTTPS_PROTOCOL -> 443;
+            case HTTP_PROTOCOL -> 80;
+            case SFTP_PROTOCOL -> 22;
+            case FTP_PROTOCOL -> 21;
+            default -> UNKNOWN_PORT;
+        };
     }
 
     /**
@@ -672,7 +667,7 @@ public class KiwiUrls {
 
     /**
      * Converts a query string into a {@link Map} whose keys are the parameter names and values are {@link List}
-     * containing one or more values. Use this (or {@link #queryStringToMultimap(String)} when parameters can have
+     * containing one or more values. Use this (or {@link #queryStringToMultimap(String)}) when parameters can have
      * multiple values.
      * <p>
      * Like {@link #queryStringToMap(String)} this method does <strong>not</strong> decode the query parameters, and
@@ -724,17 +719,16 @@ public class KiwiUrls {
         var splat = keyValue.split("=");
         var length = splat.length;
 
-        switch (length) {
-            case 1:
-                return new String[]{splat[0], ""};
-            case 2:
-                return splat;
-            default:
+        return switch (length) {
+            case 1 -> new String[]{splat[0], ""};
+            case 2 -> splat;
+            default -> {
                 var value = Arrays.stream(splat)
                         .skip(1)
                         .collect(joining("="));
-                return new String[]{splat[0], value};
-        }
+                yield new String[]{splat[0], value};
+            }
+        };
     }
 
     /**

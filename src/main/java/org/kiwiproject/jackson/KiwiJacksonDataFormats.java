@@ -14,7 +14,7 @@ import java.nio.charset.Charset;
 import java.util.Optional;
 
 /**
- * Static utilities for easily performing data format detection on String values. Currently this class supports
+ * Static utilities for easily performing data format detection on String values. Currently, this class supports
  * detection of JSON, XML, and YAML assuming the YAML begins with the explicit document start marker ("---").
  * <p>
  * NOTE: This relies entirely on jackson's data format detection!!! You will also need to ensure that the

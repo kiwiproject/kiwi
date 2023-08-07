@@ -49,7 +49,7 @@ class KiwiIOTest {
     @Nested
     class CloseQuietly {
 
-        @SuppressWarnings("ConstantConditions")
+        @SuppressWarnings("ConstantValue")
         @Test
         void shouldClose_NullReader() {
             Reader reader = null;
@@ -69,7 +69,7 @@ class KiwiIOTest {
             assertThatCode(() -> KiwiIO.closeQuietly(reader)).doesNotThrowAnyException();
         }
 
-        @SuppressWarnings("ConstantConditions")
+        @SuppressWarnings("ConstantValue")
         @Test
         void shouldClose_NullWriter() {
             Writer writer = null;
@@ -89,7 +89,7 @@ class KiwiIOTest {
             assertThatCode(() -> KiwiIO.closeQuietly(writer)).doesNotThrowAnyException();
         }
 
-        @SuppressWarnings("ConstantConditions")
+        @SuppressWarnings("ConstantValue")
         @Test
         void shouldClose_NullInputStream() {
             InputStream stream = null;
@@ -109,7 +109,7 @@ class KiwiIOTest {
             assertThatCode(() -> KiwiIO.closeQuietly(stream)).doesNotThrowAnyException();
         }
 
-        @SuppressWarnings("ConstantConditions")
+        @SuppressWarnings("ConstantValue")
         @Test
         void shouldClose_NullOutputStream() {
             OutputStream stream = null;
@@ -129,7 +129,7 @@ class KiwiIOTest {
             assertThatCode(() -> KiwiIO.closeQuietly(stream)).doesNotThrowAnyException();
         }
 
-        @SuppressWarnings("ConstantConditions")
+        @SuppressWarnings("ConstantValue")
         @Test
         void shouldClose_NullSocket() {
             Socket socket = null;
@@ -149,7 +149,7 @@ class KiwiIOTest {
             assertThatCode(() -> KiwiIO.closeQuietly(socket)).doesNotThrowAnyException();
         }
 
-        @SuppressWarnings("ConstantConditions")
+        @SuppressWarnings("ConstantValue")
         @Test
         void shouldClose_NullSelector() {
             Selector selector = null;
@@ -169,7 +169,7 @@ class KiwiIOTest {
             assertThatCode(() -> KiwiIO.closeQuietly(socket)).doesNotThrowAnyException();
         }
 
-        @SuppressWarnings("ConstantConditions")
+        @SuppressWarnings("ConstantValue")
         @Test
         void shouldClose_NullServerSocket() {
             ServerSocket socket = null;
@@ -189,7 +189,7 @@ class KiwiIOTest {
             assertThatCode(() -> KiwiIO.closeQuietly(serverSocket)).doesNotThrowAnyException();
         }
 
-        @SuppressWarnings("ConstantConditions")
+        @SuppressWarnings("ConstantValue")
         @Test
         void shouldClose_Closeables_Null() {
             Closeable[] closeables = null;
@@ -230,7 +230,7 @@ class KiwiIOTest {
             assertThatCode(() -> KiwiIO.closeQuietly(socket, selector, serverSocket)).doesNotThrowAnyException();
         }
 
-        @SuppressWarnings("ConstantConditions")
+        @SuppressWarnings("ConstantValue")
         @Test
         void shouldClose_NullXMLStreamReader() {
             XMLStreamReader xmlStreamReader = null;
@@ -250,7 +250,7 @@ class KiwiIOTest {
             assertThatCode(() -> KiwiIO.closeQuietly(xmlStreamReader)).doesNotThrowAnyException();
         }
 
-        @SuppressWarnings("ConstantConditions")
+        @SuppressWarnings("ConstantValue")
         @Test
         void shouldClose_NullXMLStreamWriter() {
             XMLStreamWriter xmlStreamWriter = null;

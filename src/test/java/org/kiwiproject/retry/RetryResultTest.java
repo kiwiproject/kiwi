@@ -105,6 +105,7 @@ class RetryResultTest {
 
         @Test
         void shouldThrowWhenAskedForLastError() {
+            //noinspection ThrowableNotThrown
             assertThatIllegalStateException()
                     .isThrownBy(() -> result.getLastError())
                     .withMessage("No errors exist in this result");

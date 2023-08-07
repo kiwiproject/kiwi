@@ -90,7 +90,7 @@ public class KiwiJdbc {
      * Returns an {@link Instant} from the given {@link Timestamp}.
      *
      * @param timestamp the timestamp to convert
-     * @return an Instant or or {@code null} if the timestamp is {@code null}
+     * @return an Instant or {@code null} if the timestamp is {@code null}
      */
     public static Instant instantFromTimestamp(Timestamp timestamp) {
         return isNull(timestamp) ? null : timestamp.toInstant();
@@ -112,7 +112,7 @@ public class KiwiJdbc {
      * Returns a {@link LocalDateTime} from the given {@link Timestamp}.
      *
      * @param timestamp the timestamp to convert
-     * @return a LocalDateTime or or {@code null} if the timestamp is {@code null}
+     * @return a LocalDateTime or {@code null} if the timestamp is {@code null}
      */
     public static LocalDateTime localDateTimeFromTimestamp(Timestamp timestamp) {
         return isNull(timestamp) ? null : timestamp.toLocalDateTime();

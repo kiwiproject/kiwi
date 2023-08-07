@@ -100,7 +100,7 @@ class CatchingRunnableTest {
 
     private static class SneakyThrowableThrowingRunnable implements CatchingRunnable {
 
-        AtomicInteger callCount = new AtomicInteger();
+        final AtomicInteger callCount = new AtomicInteger();
 
         @SneakyThrows
         @Override

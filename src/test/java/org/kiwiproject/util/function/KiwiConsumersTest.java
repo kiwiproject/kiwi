@@ -27,9 +27,9 @@ class KiwiConsumersTest {
         assertThat(scaffold.getText()).hasSize(2).isNotEqualTo(originalText);
     }
 
+    @Getter
     static class ConsumerNoOpScaffold {
 
-        @Getter
         private final List<String> text = new ArrayList<>();
 
         ConsumerNoOpScaffold() {

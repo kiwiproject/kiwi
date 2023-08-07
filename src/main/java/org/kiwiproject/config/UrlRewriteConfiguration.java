@@ -9,7 +9,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 /**
- * Specifies URL rewriting configuration used by {@link EndpointConfiguration}. Currently supports only a URL
+ * Specifies URL rewriting configuration used by {@link EndpointConfiguration}. Currently, supports only a URL
  * path prefix.
  * <p>
  * As this is a configuration class generally intended to be populated from external configuration, it is mutable and

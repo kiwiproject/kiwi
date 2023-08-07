@@ -23,7 +23,7 @@ import java.util.function.BiConsumer;
  * Note that jackson-core and jackson-databind must be available at runtime.
  *
  * @implNote Currently the in-memory map will continue to grow unbounded. In the expected scenario, unknown properties
- * will be relatively rare so we don't expect huge numbers of them. In addition, only unique unknown properties are
+ * will be relatively rare, so we don't expect huge numbers of them. In addition, only unique unknown properties are
  * stored. The {@link #clearUnexpectedPaths()} method is provided to allow clearing all unexpected paths, for example
  * read the unexpected paths for analytics and then clear them.
  */

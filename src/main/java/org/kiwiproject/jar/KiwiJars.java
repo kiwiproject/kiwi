@@ -179,7 +179,7 @@ public class KiwiJars {
     }
 
     /**
-     * Resolves all of the given entry names from the manifest (if found) from the current class loader.
+     * Resolves all the given entry names from the manifest (if found) from the current class loader.
      *
      * @param manifestEntryNames an array of names to resolve from the manifest
      * @return a {@code Map<String,String>} of resolved entries
@@ -189,7 +189,7 @@ public class KiwiJars {
     }
 
     /**
-     * Resolves all of the given entry names from the manifest (if found) from the given class loader.
+     * Resolves all the given entry names from the manifest (if found) from the given class loader.
      *
      * @param classLoader           the classloader to search for manifest files in
      * @param manifestEntryNames    an array of names to resolve from the manifest
@@ -200,7 +200,7 @@ public class KiwiJars {
     }
 
     /**
-     * Resolves all of the given entry names from the manifest (if found) from the given class loader.
+     * Resolves all the given entry names from the manifest (if found) from the given class loader.
      *
      * @param classLoader           the classloader to search for manifest files in
      * @param manifestFilter        a predicate filter used to limit which jar files to search for a manifest file
