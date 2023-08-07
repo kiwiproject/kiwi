@@ -94,7 +94,7 @@ public class PagingQuery extends Query {
     /**
      * Aggregates a page of results for the given type of object,  which is assumed to be mapped to a MongoDB
      * collection. <strong>Please make sure to read the caveats and possible problems sections below.</strong>
-     * <h3>Caveats and Possible Problems</h3>
+     * <p><strong>Caveats and Possible Problems</strong></p>
      * Not all types of {@link AggregationOperation} will actually work here, which is why it is marked as beta.
      * For example, using an {@link Aggregation#project(String...)} will fail because the internal implementation is
      * assuming the "shape" of the result is an {@link AggregateResult} with the given type {@code T} and it performs
@@ -104,7 +104,7 @@ public class PagingQuery extends Query {
      * Note also that a sort must be specified in the {@link Pageable} given to {@link #with(Pageable)}. Otherwise,
      * an {@link org.springframework.data.mongodb.UncategorizedMongoDbException UncategorizedMongoDbException} will be
      * thrown with the error: "{@code $sort stage must have at least one sort key}".
-     * <h3>Recommendations for New Code</h3>
+     * <p><strong>Recommendations for New Code</strong></p>
      * Based on the above restrictions and potential usage problems, <strong>we strongly recommend avoiding this
      * method for new code</strong>, as its original purpose was very limited in scope, mainly to perform lookup (join)
      * operations in order to return an "aggregate" page that contained model objects as well as their associated
