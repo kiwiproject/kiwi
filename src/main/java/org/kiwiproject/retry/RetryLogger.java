@@ -53,28 +53,14 @@ class RetryLogger {
      */
     static void logAttempt(Logger logger, Level level, String message, Object... args) {
         switch (level) {
-            case DEBUG:
-                logger.debug(message, args);
-                break;
-
-            case INFO:
-                logger.info(message, args);
-                break;
-
-            case WARN:
-                logger.warn(message, args);
-                break;
-
-            case ERROR:
-                logger.error(message, args);
-                break;
-
-            case TRACE:
-            default:
+            case DEBUG -> logger.debug(message, args);
+            case INFO -> logger.info(message, args);
+            case WARN -> logger.warn(message, args);
+            case ERROR -> logger.error(message, args);
+            default ->
                 // NOTE: Intentional fall-through from TRACE. Whenever move to JDK 14+ can use enhanced switch
                 //  when we won't need default since we'll be exhaustive on all Level values
-                logger.trace(message, args);
-                break;
+                    logger.trace(message, args);
         }
     }
 }

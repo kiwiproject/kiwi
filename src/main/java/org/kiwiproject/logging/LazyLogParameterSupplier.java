@@ -42,7 +42,7 @@ import java.util.function.Supplier;
  *         thing.getId(), fetchMillis, lazy(this::thingToJson));
  * </pre>
  *
- * @implNote adapted from from my
+ * @implNote adapted from my
  * <a href="https://github.com/sleberknight/slf4j-lazy-params">slf4j-lazy-params</a> repository
  */
 @UtilityClass

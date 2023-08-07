@@ -234,7 +234,7 @@ public class KiwiArrays {
     }
 
     /**
-     * Returns a array of the collection elements with duplicates stripped out.
+     * Returns an array of the collection elements with duplicates stripped out.
      *
      * @param collection the collection of values
      * @param arrayType   the type of the items in the array. Needed to ensure the new array is not {@code Object[]}
@@ -248,7 +248,7 @@ public class KiwiArrays {
     }
 
     /**
-     * Returns a array of the collection elements with duplicates stripped out or `null` if a null value is passed in.
+     * Returns an array of the collection elements with duplicates stripped out or `null` if a null value is passed in.
      *
      * @param collection the collection of values
      * @param arrayType   the type of the items in the array. Needed to ensure the new array is not {@code Object[]}

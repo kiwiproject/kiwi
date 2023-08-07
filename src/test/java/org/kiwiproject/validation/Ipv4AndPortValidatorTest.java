@@ -88,16 +88,16 @@ class Ipv4AndPortValidatorTest {
         assertPropertyViolations(validator, config, "hostIp", NOT_VALID_IP_AND_PORT_MESSAGE);
     }
 
+    @Getter
     @AllArgsConstructor
     static class ServerConfig {
-        @Getter
         @Ipv4AndPort
         private final String hostIp;
     }
 
+    @Getter
     @AllArgsConstructor
     static class ServerConfigAllowingNull {
-        @Getter
         @Ipv4AndPort(allowNull = true)
         private final String hostIp;
     }

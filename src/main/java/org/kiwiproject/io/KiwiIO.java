@@ -29,8 +29,8 @@ import java.util.stream.Stream;
  * <p>
  * The {@code closeQuietly} methods that accept {@link Closeable} were copied directly from Apache Commons I/O and
  * the deprecation warnings and annotations removed. While they should not be used often, sometimes they might come in
- * handy so we want to keep them around for posterity. Slight style modifications were made (e.g. replace {@code obj != null}
- * checks with {@code nonNull(obj}, etc. as well as adding logging. Did not bother copying all the {@code closeQuietly}
+ * handy, so we want to keep them around for posterity. Slight style modifications were made (e.g. replace {@code obj != null}
+ * checks with {@code nonNull(obj}, etc.) as well as adding logging. Did not bother copying all the {@code closeQuietly}
  * methods that took a specific class such as {@link java.io.Reader}, {@link java.io.Writer}, {@link java.net.Socket}, etc.
  * They all implement {@link Closeable} and were probably only there because those specific classes pre-dated Java 5 when
  * {@link Closeable} was added to the JDK, and we assume early (pre-Java 5) versions of {@code IOUtils} provided them.
@@ -375,7 +375,7 @@ public class KiwiIO {
     }
 
     /**
-     * Read the input stream of the give {@link Process} as a String using the the specified {@link Charset} for the
+     * Read the input stream of the give {@link Process} as a String using the specified {@link Charset} for the
      * string encoding.
      * <p>
      * Note that process output may contain one or more lines, which will therefore include line termination
@@ -405,7 +405,7 @@ public class KiwiIO {
     }
 
     /**
-     * Read the error stream of the give {@link Process} as a String using the the specified {@link Charset} for the
+     * Read the error stream of the give {@link Process} as a String using the specified {@link Charset} for the
      * string encoding.
      * <p>
      * Note that process output may contain one or more lines, which will therefore include line termination

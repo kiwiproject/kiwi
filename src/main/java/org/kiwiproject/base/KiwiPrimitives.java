@@ -78,7 +78,7 @@ public class KiwiPrimitives {
      * Attempt to parse the given {@link CharSequence} to an {@code int}.
      *
      * @param cs the value to parse
-     * @return the parsed {@code int} value if successful; if it cannot be parsed this method always throws an exception
+     * @return the parsed {@code int} value if successful; otherwise if it cannot be parsed, this method always throws an exception
      * @throws IllegalStateException if the value cannot be parsed
      */
     public static int tryParseIntOrThrow(CharSequence cs) {
@@ -121,7 +121,7 @@ public class KiwiPrimitives {
      * Attempt to parse the given {@link CharSequence} to an {@code long}.
      *
      * @param cs the value to parse
-     * @return the parsed {@code long} value if successful; if it cannot be parsed this method always throws an exception
+     * @return the parsed {@code long} value if successful; otherwise if it cannot be parsed this method always throws an exception
      * @throws IllegalStateException if the value cannot be parsed
      */
     public static long tryParseLongOrThrow(CharSequence cs) {
@@ -164,7 +164,7 @@ public class KiwiPrimitives {
      * Attempt to parse the given {@link CharSequence} to an {@code double}.
      *
      * @param cs the value to parse
-     * @return the parsed {@code double} value if successful; if it cannot be parsed this method always throws an exception
+     * @return the parsed {@code double} value if successful; otherwise if it cannot be parsed this method always throws an exception
      * @throws IllegalStateException if the value cannot be parsed
      */
     public static double tryParseDoubleOrThrow(CharSequence cs) {

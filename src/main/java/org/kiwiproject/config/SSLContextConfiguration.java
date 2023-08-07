@@ -30,8 +30,8 @@ public class SSLContextConfiguration implements KeyAndTrustStoreConfigProvider {
      * A builder class for {@link SSLContextConfiguration}.
      *
      * @implNote This was implemented well before we started using Lombok, so is manual builder code, though
-     * we have added both the Lombok-style xxx() as well as keeping the original setXxx() methods.
-     * Subject to change in future.
+     * we have added both the Lombok-style xxx() and keeping the original setXxx() methods.
+     * Subject to change in the future.
      */
     @NoArgsConstructor(access = AccessLevel.PACKAGE)
     public static class Builder {

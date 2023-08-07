@@ -1,6 +1,5 @@
 package org.kiwiproject.validation.group;
 
-import static java.util.stream.Collectors.toUnmodifiableList;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import jakarta.validation.ConstraintViolation;
@@ -125,7 +124,7 @@ class KiwiValidationGroupsTest {
         return violations
                 .stream()
                 .map(violation -> violation.getPropertyPath().toString())
-                .collect(toUnmodifiableList());
+                .toList();
     }
 
     @Value

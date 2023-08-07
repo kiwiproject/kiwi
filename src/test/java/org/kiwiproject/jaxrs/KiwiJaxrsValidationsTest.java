@@ -206,7 +206,7 @@ class KiwiJaxrsValidationsTest {
 
         @Test
         void shouldThrow_WhenValueIsFalse() {
-            //noinspection ConstantConditions
+            //noinspection DataFlowIssue
             var thrown = catchThrowable(() ->
                     KiwiJaxrsValidations.assertTrue(false, "It must be true"));
 

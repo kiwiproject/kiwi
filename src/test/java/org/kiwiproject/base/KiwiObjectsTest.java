@@ -27,7 +27,7 @@ class KiwiObjectsTest {
             @Test
             void whenThreeArgs_AreNull() {
                 String third = null;
-                //noinspection ConstantConditions
+                //noinspection ConstantValue
                 String str = KiwiObjects.firstNonNullOrNull(null, null, third);
                 assertThat(str).isNull();
             }

@@ -30,7 +30,7 @@ public class MatchSpliterator extends Spliterators.AbstractSpliterator<MatchResu
     private final Matcher matcher;
 
     /**
-     * Create a new instance from the given {@link Matcher}. Usually you won't use this directly. Instead use the
+     * Create a new instance from the given {@link Matcher}. Usually you won't use this directly. Instead, use the
      * {@code stream} methods.
      *
      * @param matcher the Matcher to split
@@ -65,7 +65,7 @@ public class MatchSpliterator extends Spliterators.AbstractSpliterator<MatchResu
      * <p>
      * <em>This method will compile a new {@link Pattern} every time it is called, even if the same regular
      * expression is supplied.</em> Compiling regular expressions is considered an "expensive" operation.
-     * Therefore you should generally prefer {@link #stream(Pattern, String)} since you can precompile a
+     * Therefore, you should generally prefer {@link #stream(Pattern, String)} since you can precompile a
      * {@link Pattern} and re-use it many times.
      *
      * @param regex the regular expression as a String

@@ -11,10 +11,10 @@ import org.testcontainers.junit.jupiter.Testcontainers;
 class PagingQueryMongo3IntegrationTest extends AbstractPagingQueryIntegrationTest {
 
     @Container
-    static MongoDBContainer MONGODB = newMongoDBContainer("mongo:3");
+    static final MongoDBContainer MONGODB = newMongoDBContainer("mongo:3");
 
     @BeforeAll
-    static void beforeAll() throws Exception {
+    static void beforeAll() {
         mongoTemplate = newMongoTemplate(MONGODB);
     }
 }

@@ -12,7 +12,7 @@ import java.util.Set;
 @DisplayName("KiwiSets")
 class KiwiSetsTest {
 
-    @SuppressWarnings("ConstantConditions")
+    @SuppressWarnings("ConstantValue")
     @Test
     void testIsNullOrEmpty_WhenNull() {
         assertThat(KiwiSets.isNullOrEmpty(null)).isTrue();
@@ -29,7 +29,7 @@ class KiwiSetsTest {
         assertThat(KiwiSets.isNullOrEmpty(fruits)).isFalse();
     }
 
-    @SuppressWarnings("ConstantConditions")
+    @SuppressWarnings("ConstantValue")
     @Test
     void testIsNotNullOrEmpty_WhenNull() {
         assertThat(KiwiSets.isNotNullOrEmpty(null)).isFalse();

@@ -43,7 +43,7 @@ class KiwiListsTest {
     @Nested
     class IsNullOrEmpty {
 
-        @SuppressWarnings("ConstantConditions")
+        @SuppressWarnings("ConstantValue")
         @Test
         void shouldBeTrue_WhenNullArg() {
             assertThat(KiwiLists.isNullOrEmpty(null)).isTrue();
@@ -63,7 +63,7 @@ class KiwiListsTest {
     @Nested
     class IsNotNullOrEmpty {
 
-        @SuppressWarnings("ConstantConditions")
+        @SuppressWarnings("ConstantValue")
         @Test
         void shouldBeFalse_WhenNull() {
             assertThat(KiwiLists.isNotNullOrEmpty(null)).isFalse();
@@ -649,11 +649,11 @@ class KiwiListsTest {
                     .isNotEqualTo(List.of(letters));
         }
 
+        @SuppressWarnings("DataFlowIssue")
         @Test
         void shouldCreateUnmodifiableList() {
             var letters = KiwiLists.shuffledListOf("a", "b", "c", "d");
 
-            //noinspection ConstantConditions
             assertThatThrownBy(() -> letters.add("e"))
                     .isExactlyInstanceOf(UnsupportedOperationException.class);
         }

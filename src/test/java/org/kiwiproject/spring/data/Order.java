@@ -23,7 +23,7 @@ class Order {
     private String customerId;
 
     @NonNull
-    private double amount;
+    private Double amount;
 
     @NonNull
     private String status;

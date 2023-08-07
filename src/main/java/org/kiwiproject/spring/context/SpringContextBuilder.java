@@ -20,7 +20,7 @@ import java.util.Map;
  * in either XML or annotation configurations.
  * <p>
  * The methods return an instance of this class, so they can be changed together. Once the configuration is
- * setup, call {@link #build()} to create the ApplicationContext.
+ * set up, call {@link #build()} to create the ApplicationContext.
  */
 public class SpringContextBuilder {
 

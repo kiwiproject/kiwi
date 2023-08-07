@@ -68,10 +68,10 @@ class SocketCheckerTest {
                 .orElseThrow(() -> new IllegalStateException("Did not find any closed ports"));
     }
 
+    @Getter
     private static class StupidSimpleServer {
 
-        @Getter
-        AtomicBoolean runningFlag = new AtomicBoolean(false);
+        final AtomicBoolean runningFlag = new AtomicBoolean(false);
 
         void runAcceptOnlyOnceServer(int port) throws InterruptedException {
             var server = new Thread(() -> {

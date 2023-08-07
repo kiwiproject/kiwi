@@ -171,7 +171,7 @@ class TimeBasedDirectoryCleanerTest {
     private void assertFilesExist(String fileNamePrefix, int firstExpectedFileNumber, int lastExpectedFileNumber) throws IOException {
         var filesExpectedToExist = IntStream.rangeClosed(firstExpectedFileNumber, lastExpectedFileNumber)
                 .mapToObj(value -> temporaryPath.resolve(fileNamePrefix + value).toFile())
-                .collect(toList());
+                .toList();
 
         assertThat(testHelper.filesInTempFolder()).containsOnly(filesExpectedToExist.toArray(new File[]{}));
     }
@@ -310,7 +310,7 @@ class TimeBasedDirectoryCleanerTest {
             softly.assertThat(cleaner.getNumberOfRecentDeleteErrors()).isEqualTo(3);
 
             softly.assertThat(cleaner.getRecentDeleteErrors().stream().map(DeleteError::getFileName))
-                    .containsOnly(filesNotDeleted.stream().map(FileDeleteResult::getAbsolutePath).collect(toList()).toArray(new String[]{}));
+                    .containsOnly(filesNotDeleted.stream().map(FileDeleteResult::getAbsolutePath).toList().toArray(new String[]{}));
 
             softly.assertThat(cleaner.getRecentDeleteErrors().stream().map(DeleteError::isFileDeleteError))
                     .containsOnly(true);
@@ -344,7 +344,7 @@ class TimeBasedDirectoryCleanerTest {
 
             var last500 = filesNotDeleted.stream()
                     .map(FileDeleteResult::getAbsolutePath)
-                    .collect(toList())
+                    .toList()
                     .subList(1, filesNotDeleted.size());
 
             softly.assertThat(cleaner.getRecentDeleteErrors().stream().map(DeleteError::getFileName))

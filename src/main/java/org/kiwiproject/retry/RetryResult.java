@@ -88,7 +88,7 @@ public class RetryResult<T> {
     }
 
     /**
-     * Assumes there is an object an returns it, otherwise throws an exception.
+     * Assumes there is an object and returns it, otherwise throws an exception.
      * <p>
      * You should check if an object exists before calling this. Or, consider using {@link #getObjectIfPresent()}.
      *

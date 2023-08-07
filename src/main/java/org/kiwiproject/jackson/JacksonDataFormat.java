@@ -6,7 +6,7 @@ import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
 import lombok.Getter;
 
 /**
- * Represents the detected type of a {@link String}.
+ * Represents the detected type of the given {@link String}.
  * <p>
  * Currently only supports JSON, XML, and YAML formats.
  *

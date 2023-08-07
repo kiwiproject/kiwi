@@ -121,12 +121,12 @@ public class KiwiEnums {
     }
 
     /**
-     * Checks whether the given value matches the {@link Enum#name() name} of any of the given enums.
+     * Checks whether the given value matches the {@link Enum#name() name} of the given enums.
      *
      * @param <E> the enum type
      * @param value the value to use for the comparison, may be null
      * @param enumValues the enums to use for the comparison
-     * @return true if the value equals the name of any of the enums, false otherwise
+     * @return true if the value equals the name of the enums, false otherwise
      */
     @SafeVarargs
     public static <E extends Enum<E>> boolean equalsAny(@Nullable CharSequence value, Enum<E>... enumValues) {
@@ -135,13 +135,13 @@ public class KiwiEnums {
     }
 
     /**
-     * Checks whether the given value matches the {@link Enum#name() name} of any of the given
+     * Checks whether the given value matches the {@link Enum#name() name} of the given
      * enums, ignoring case.
      *
      * @param <E> the enum type
      * @param value the value to use for the comparison, may be null
      * @param enumValues the enums to use for the comparison
-     * @return true if the value equals the name of any of the enums in case-insensitive manner, false otherwise
+     * @return true if the value equals the name of the enums in case-insensitive manner, false otherwise
      */
     @SafeVarargs
     public static <E extends Enum<E>> boolean equalsAnyIgnoreCase(@Nullable CharSequence value,

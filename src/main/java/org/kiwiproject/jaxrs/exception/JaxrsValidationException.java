@@ -97,7 +97,7 @@ public class JaxrsValidationException extends JaxrsException {
      * New instance with given {@link ErrorMessage} objects.
      * <p>
      * It is assumed but not checked that the {@link ErrorMessage} objects are due to 422 errors.
-     * Therefore it is possible to instantiate an instance with errors that have some other status
+     * Therefore, it is possible to instantiate an instance with errors that have some other status
      * code.
      *
      * @param errorMessages non-null list of error messages

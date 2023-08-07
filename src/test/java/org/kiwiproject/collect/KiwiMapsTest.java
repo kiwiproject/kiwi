@@ -29,7 +29,7 @@ import java.util.concurrent.ConcurrentMap;
 @DisplayName("KiwiMaps")
 class KiwiMapsTest {
 
-    @SuppressWarnings("ConstantConditions")
+    @SuppressWarnings("ConstantValue")
     @Test
     void testIsNullOrEmpty_WhenNull() {
         assertThat(KiwiMaps.isNullOrEmpty(null)).isTrue();
@@ -46,7 +46,7 @@ class KiwiMapsTest {
         assertThat(KiwiMaps.isNullOrEmpty(wordsToNumbers)).isFalse();
     }
 
-    @SuppressWarnings("ConstantConditions")
+    @SuppressWarnings("ConstantValue")
     @Test
     void testIsNotNullOrEmpty_WhenNull() {
         assertThat(KiwiMaps.isNotNullOrEmpty(null)).isFalse();
@@ -281,7 +281,7 @@ class KiwiMapsTest {
         Map<String, Integer> unmodifiableHashMap = KiwiMaps.newUnmodifiableHashMap(items);
         assertThat(unmodifiableHashMap).containsAllEntriesOf(newWordNumberMap());
 
-        // noinspection ConstantConditions
+        //noinspection DataFlowIssue
         assertThatThrownBy(() -> unmodifiableHashMap.put("six", 6))
                 .isInstanceOf(UnsupportedOperationException.class);
     }
@@ -310,7 +310,7 @@ class KiwiMapsTest {
                 .collect(toList());
         assertThat(unmodifiableLinkedHashMap.keySet()).containsExactlyElementsOf(expectedKeys);
 
-        // noinspection ConstantConditions
+        //noinspection DataFlowIssue
         assertThatThrownBy(() -> unmodifiableLinkedHashMap.put("seven", 7))
                 .isInstanceOf(UnsupportedOperationException.class);
     }
@@ -340,7 +340,7 @@ class KiwiMapsTest {
                 .collect(toList());
         assertThat(unmodifiableTreeMap.keySet()).containsExactlyElementsOf(expectedKeys);
 
-        // noinspection ConstantConditions
+        //noinspection DataFlowIssue
         assertThatThrownBy(() -> unmodifiableTreeMap.put("eight", 8))
                 .isInstanceOf(UnsupportedOperationException.class);
     }
@@ -351,7 +351,7 @@ class KiwiMapsTest {
         Map<String, Integer> unmodifiableConcurrentHashMap = KiwiMaps.newUnmodifiableConcurrentHashMap(items);
         assertThat(unmodifiableConcurrentHashMap).containsAllEntriesOf(newWordNumberMap());
 
-        // noinspection ConstantConditions
+        //noinspection DataFlowIssue
         assertThatThrownBy(() -> unmodifiableConcurrentHashMap.put("nine", 9))
                 .isInstanceOf(UnsupportedOperationException.class);
     }

@@ -17,7 +17,7 @@ public class JsonDetectionResult {
     private final Exception error;
 
     /**
-     * Whether or not format detection succeeded in determining a positive or negative result.
+     * Whether format detection succeeded in determining a positive or negative result.
      *
      * @return true if the format detection produced a result, otherwise false
      */
@@ -26,7 +26,7 @@ public class JsonDetectionResult {
     }
 
     /**
-     * Whether or not format detection caught an exception during the detection process.
+     * Whether format detection caught an exception during the detection process.
      *
      * @return true if there was an exception thrown during the detection process, otherwise false
      */
@@ -51,7 +51,7 @@ public class JsonDetectionResult {
     /**
      * If an error occurred during the detection process, return it, otherwise return null
      *
-     * @return the exception thrown during the detection process, or null if there was not error
+     * @return the exception thrown during the detection process, or null if there was no error
      */
     @Nullable
     public Exception getErrorOrNull() {

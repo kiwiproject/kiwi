@@ -20,7 +20,6 @@ import java.util.function.Supplier;
  * @see Striped
  * @see ReadWriteLock
  */
-@SuppressWarnings("UnstableApiUsage")  // Guava's Striped is marked @Beta (but has been in Guava since 13, a long time)
 @Slf4j
 public class StripedLock {
 

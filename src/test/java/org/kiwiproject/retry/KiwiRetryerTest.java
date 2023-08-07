@@ -283,20 +283,11 @@ class KiwiRetryerTest {
                     int seed = ThreadLocalRandom.current().nextInt(4);
 
                     switch (seed) {
-                        case 0:
-                            throw new ConnectException("connect error");
-
-                        case 1:
-                            throw new UnknownHostException("unknown host");
-
-                        case 2:
-                            throw new SocketTimeoutException("socket timeout");
-
-                        case 3:
-                            throw new NoRouteToHostException("no route to host");
-
-                        default:
-                            throw new Exception("should NEVER get here!");
+                        case 0 -> throw new ConnectException("connect error");
+                        case 1 -> throw new UnknownHostException("unknown host");
+                        case 2 -> throw new SocketTimeoutException("socket timeout");
+                        case 3 -> throw new NoRouteToHostException("no route to host");
+                        default -> throw new Exception("should NEVER get here!");
                     }
                 };
 
@@ -533,30 +524,19 @@ class KiwiRetryerTest {
         public Response call() throws Exception {
             ++attempt;
 
-            switch (attempt) {
-                case 1:
-                    throw new ConnectException("connect error");
-
-                case 2:
-                    throw new UnknownHostException("unknown host");
-
-                case 3:
-                    throw new SocketTimeoutException("socket timeout");
-
-                case 4:
-                    throw new NoRouteToHostException("no route to host");
-
-                case 5:
-                    throw new RuntimeException("plain runtime exception");
-
-                case 6:
-                    throw new Exception("plain exception");
-
-                default:
+            return switch (attempt) {
+                case 1 -> throw new ConnectException("connect error");
+                case 2 -> throw new UnknownHostException("unknown host");
+                case 3 -> throw new SocketTimeoutException("socket timeout");
+                case 4 -> throw new NoRouteToHostException("no route to host");
+                case 5 -> throw new RuntimeException("plain runtime exception");
+                case 6 -> throw new Exception("plain exception");
+                default -> {
                     verify(attempt == SUCCESS_ATTEMPT_NUMBER,
                             "success expected at attempt %", SUCCESS_ATTEMPT_NUMBER);
-                    return Response.ok().entity(attempt).build();
-            }
+                    yield Response.ok().entity(attempt).build();
+                }
+            };
         }
     }
 }

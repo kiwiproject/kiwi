@@ -280,14 +280,14 @@ class SecureEndpointsConfigurationTest {
 
             var someHttpEndpoints = newTagStream(1, 5)
                     .mapToObj(SecureEndpointsConfigurationTest.this::newHttpEndpointConfiguration)
-                    .collect(toList());
+                    .toList();
             secureEndpointsConfig.getEndpoints().addAll(someHttpEndpoints);
 
             secureEndpointsConfig.getEndpoints().add(newHttpsEndpointConfiguration(6));
 
             var moreHttpEndpoints = newTagStream(7, 10)
                     .mapToObj(SecureEndpointsConfigurationTest.this::newHttpEndpointConfiguration)
-                    .collect(toList());
+                    .toList();
             secureEndpointsConfig.getEndpoints().addAll(moreHttpEndpoints);
 
             assertThat(secureEndpointsConfig.anyEndpointSecure()).isTrue();
@@ -304,7 +304,7 @@ class SecureEndpointsConfigurationTest {
 
             var someHttpsEndpoints = newTagStream(1, 5)
                     .mapToObj(SecureEndpointsConfigurationTest.this::newHttpsEndpointConfiguration)
-                    .collect(toList());
+                    .toList();
             secureEndpointsConfig.getEndpoints().addAll(someHttpsEndpoints);
 
             secureEndpointsConfig.getEndpoints().add(newHttpEndpointConfiguration(6));
@@ -318,7 +318,7 @@ class SecureEndpointsConfigurationTest {
 
             var someHttpsEndpoints = newTagStream(1, 8)
                     .mapToObj(SecureEndpointsConfigurationTest.this::newHttpsEndpointConfiguration)
-                    .collect(toList());
+                    .toList();
             secureEndpointsConfig.getEndpoints().addAll(someHttpsEndpoints);
 
             assertThat(secureEndpointsConfig.allEndpointsSecure()).isTrue();

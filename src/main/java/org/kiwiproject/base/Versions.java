@@ -19,7 +19,7 @@ public class Versions {
      *
      * @param left  the first version to compare
      * @param right the second version to compare
-     * @return the higher of the given versions
+     * @return the highest of the given versions
      */
     public static String higherVersion(String left, String right) {
         return versionCompare(left, right) >= 0 ? left : right;
@@ -100,9 +100,9 @@ public class Versions {
      * such as 1.0.0 vs 1.0.0.42 (the latter is higher). It also handles most normal cases when the last segments are
      * different and are non-numeric, e.g. 1.0.0 should be considered a higher version than 1.0.0-SNAPSHOT or
      * 1.0.0-alpha. There are various edge cases that might report results that might not be what you expect; for
-     * example, should 2.0.0-beta.1 be a higher or lower version than 2.0.0-beta? Currently 2.0.0-beta is reported as
+     * example, should 2.0.0-beta.1 be a higher or lower version than 2.0.0-beta? Currently, 2.0.0-beta is reported as
      * the higher version due to the simple implementation. However, note that 2.0.0-beta1 would be reported as higher
-     * than 2.0.0-beta (because the String "beta" is "greater than" the String "beta" using (Java) string comparison.
+     * than 2.0.0-beta (because the String "beta" is "greater than" the String "beta" using (Java) string comparison).
      * @see Integer#signum(int)
      */
     public static int versionCompare(String left, String right) {

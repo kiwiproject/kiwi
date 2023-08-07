@@ -360,7 +360,7 @@ class KiwiResourcesTest {
     @Slf4j
     public static class FromResponseTestResource {
 
-        static Map<String, Object> ENTITY = Map.of("name", "Alice", "age", 42);
+        static final Map<String, Object> ENTITY = Map.of("name", "Alice", "age", 42);
 
         @GET
         @Path("/with-entity")

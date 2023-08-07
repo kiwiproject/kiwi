@@ -17,7 +17,7 @@ import java.nio.file.Path;
  * Optionally, this validator will verify that the directory is readable and/or writable.
  * <p>
  * As mentioned in the documentation for {@link DirectoryPath}, this may also attempt to create the directory
- * if it does not already exist, which may be an unexpected side-effect.
+ * if it does not already exist, which may be an unexpected side effect.
  *
  * @implNote Please read the implementation note in {@link DirectoryPath} regarding the possibility of
  * <a href="https://owasp.org/www-community/attacks/Path_Traversal">Path Traversal</a> attacks.

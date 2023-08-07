@@ -36,7 +36,7 @@ import java.util.function.Supplier;
  * the {@link InetAddress} class has no public constructors and can only be instantiated by its static factory
  * methods. As a result, if you want to specify your own custom host name and/or IP address as the default value, for
  * example to use a different host alias or subnet IP, then you must use the methods that work with {@link SimpleHostInfo}.
- * Otherwise when working with {@link InetAddress} instances, using {@link InetAddress#getLoopbackAddress()} is about the
+ * Otherwise, when working with {@link InetAddress} instances, using {@link InetAddress#getLoopbackAddress()} is about the
  * only other default value you could use.
  * <p>
  * Last, note that {@link SimpleHostInfo} <em>only contains the host name and host address as a string</em>.
