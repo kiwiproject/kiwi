@@ -4,11 +4,8 @@ import static com.google.common.base.Preconditions.checkState;
 import static java.util.concurrent.TimeUnit.SECONDS;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatCode;
-import static org.awaitility.Awaitility.await;
-import static org.awaitility.Durations.FIVE_HUNDRED_MILLISECONDS;
 import static org.kiwiproject.net.LocalPortChecker.MAX_PORT;
 
-import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.tuple.Pair;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -70,7 +67,6 @@ class SocketCheckerTest {
     }
 
 
-    @Slf4j
     private static class StupidSimpleServer {
 
         final CountDownLatch countDownLatch = new CountDownLatch(1);
@@ -86,14 +82,9 @@ class SocketCheckerTest {
             });
 
             server.setName("stupid-simple-server-thread");
-            server.setUncaughtExceptionHandler((thread, throwable) -> {
-                LOG.warn("Uncaught exception in thread {}", thread.getName(), throwable);
-            });
             server.start();
 
             var countedDown = countDownLatch.await(5, SECONDS);
-            LOG.info("CountDownLatch reached zero before timeout: {}", countedDown);
-
             checkState(countedDown, "Timed out before latch count reached zero");
         }
     }
