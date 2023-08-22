@@ -79,8 +79,8 @@ class SocketCheckerTest {
 
         void runAcceptOnlyOnceServer(int port) throws InterruptedException {
             var server = new Thread(() -> {
-                countDownLatch.countDown();
                 try (var serverSocket = new ServerSocket(port)) {
+                    countDownLatch.countDown();
                     serverSocket.accept();
                 } catch (IOException e) {
                     throw new UncheckedIOException(e);
