@@ -4,6 +4,8 @@ import static com.google.common.base.Preconditions.checkState;
 import static java.util.concurrent.TimeUnit.SECONDS;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatCode;
+import static org.awaitility.Awaitility.await;
+import static org.awaitility.Durations.FIVE_HUNDRED_MILLISECONDS;
 import static org.kiwiproject.net.LocalPortChecker.MAX_PORT;
 
 import lombok.extern.slf4j.Slf4j;
@@ -39,7 +41,8 @@ class SocketCheckerTest {
         var server = new StupidSimpleServer();
         server.runAcceptOnlyOnceServer(port);
 
-        assertThat(socketChecker.canConnectViaSocket("localhost", port)).isTrue();
+        await().atMost(FIVE_HUNDRED_MILLISECONDS)
+                .until(() -> socketChecker.canConnectViaSocket("localhost", port));
     }
 
     @Test
