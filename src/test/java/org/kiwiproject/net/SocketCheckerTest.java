@@ -41,8 +41,9 @@ class SocketCheckerTest {
         var server = new StupidSimpleServer();
         server.runAcceptOnlyOnceServer(port);
 
-        await().atMost(FIVE_HUNDRED_MILLISECONDS)
-                .until(() -> socketChecker.canConnectViaSocket("localhost", port));
+        // await().atMost(FIVE_HUNDRED_MILLISECONDS)
+                // .until(() -> socketChecker.canConnectViaSocket("localhost", port));
+        assertThat(socketChecker.canConnectViaSocket("localhost", port)).isTrue();  // TODO Temporary...for debug
     }
 
     @Test
