@@ -1,9 +1,9 @@
 package org.kiwiproject.net;
 
-import static java.util.concurrent.TimeUnit.MILLISECONDS;
+import static com.google.common.base.Preconditions.checkState;
+import static java.util.concurrent.TimeUnit.SECONDS;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatCode;
-import static org.awaitility.Awaitility.await;
 import static org.kiwiproject.net.LocalPortChecker.MAX_PORT;
 
 import lombok.Getter;
@@ -16,7 +16,7 @@ import java.io.IOException;
 import java.io.UncheckedIOException;
 import java.net.ServerSocket;
 import java.time.Duration;
-import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.CountDownLatch;
 import java.util.stream.IntStream;
 
 @DisplayName("SocketChecker")
@@ -38,7 +38,6 @@ class SocketCheckerTest {
 
         var server = new StupidSimpleServer();
         server.runAcceptOnlyOnceServer(port);
-        await().atMost(200, MILLISECONDS).until(() -> server.getRunningFlag().get());
 
         assertThat(socketChecker.canConnectViaSocket("localhost", port)).isTrue();
     }
@@ -71,11 +70,11 @@ class SocketCheckerTest {
     @Getter
     private static class StupidSimpleServer {
 
-        final AtomicBoolean runningFlag = new AtomicBoolean(false);
+        final CountDownLatch countDownLatch = new CountDownLatch(1);
 
         void runAcceptOnlyOnceServer(int port) throws InterruptedException {
             var server = new Thread(() -> {
-                runningFlag.set(true);
+                countDownLatch.countDown();
                 try (var serverSocket = new ServerSocket(port)) {
                     serverSocket.accept();
                 } catch (IOException e) {
@@ -86,9 +85,8 @@ class SocketCheckerTest {
             server.setName("stupid-simple-server-thread");
             server.start();
 
-            while (!runningFlag.get()) {
-                MILLISECONDS.sleep(10);
-            }
+            var countedDown = countDownLatch.await(5, SECONDS);
+            checkState(countedDown, "Timed out before count reached zero");
         }
     }
 }
