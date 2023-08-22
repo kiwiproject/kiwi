@@ -6,7 +6,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatCode;
 import static org.kiwiproject.net.LocalPortChecker.MAX_PORT;
 
-import lombok.Getter;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.tuple.Pair;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -67,7 +67,8 @@ class SocketCheckerTest {
                 .orElseThrow(() -> new IllegalStateException("Did not find any closed ports"));
     }
 
-    @Getter
+
+    @Slf4j
     private static class StupidSimpleServer {
 
         final CountDownLatch countDownLatch = new CountDownLatch(1);
@@ -83,10 +84,15 @@ class SocketCheckerTest {
             });
 
             server.setName("stupid-simple-server-thread");
+            server.setUncaughtExceptionHandler((thread, throwable) -> {
+                LOG.warn("Uncaught exception in thread {}", thread.getName(), throwable);
+            });
             server.start();
 
             var countedDown = countDownLatch.await(5, SECONDS);
-            checkState(countedDown, "Timed out before count reached zero");
+            LOG.info("CountDownLatch reached zero before timeout: {}", countedDown);
+
+            checkState(countedDown, "Timed out before latch count reached zero");
         }
     }
 }
