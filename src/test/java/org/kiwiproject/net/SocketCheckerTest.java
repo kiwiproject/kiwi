@@ -1,12 +1,11 @@
 package org.kiwiproject.net;
 
-import static java.util.concurrent.TimeUnit.MILLISECONDS;
+import static com.google.common.base.Preconditions.checkState;
+import static java.util.concurrent.TimeUnit.SECONDS;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatCode;
-import static org.awaitility.Awaitility.await;
 import static org.kiwiproject.net.LocalPortChecker.MAX_PORT;
 
-import lombok.Getter;
 import org.apache.commons.lang3.tuple.Pair;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -16,7 +15,7 @@ import java.io.IOException;
 import java.io.UncheckedIOException;
 import java.net.ServerSocket;
 import java.time.Duration;
-import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.CountDownLatch;
 import java.util.stream.IntStream;
 
 @DisplayName("SocketChecker")
@@ -38,7 +37,6 @@ class SocketCheckerTest {
 
         var server = new StupidSimpleServer();
         server.runAcceptOnlyOnceServer(port);
-        await().atMost(200, MILLISECONDS).until(() -> server.getRunningFlag().get());
 
         assertThat(socketChecker.canConnectViaSocket("localhost", port)).isTrue();
     }
@@ -68,15 +66,15 @@ class SocketCheckerTest {
                 .orElseThrow(() -> new IllegalStateException("Did not find any closed ports"));
     }
 
-    @Getter
+
     private static class StupidSimpleServer {
 
-        final AtomicBoolean runningFlag = new AtomicBoolean(false);
+        final CountDownLatch countDownLatch = new CountDownLatch(1);
 
         void runAcceptOnlyOnceServer(int port) throws InterruptedException {
             var server = new Thread(() -> {
-                runningFlag.set(true);
                 try (var serverSocket = new ServerSocket(port)) {
+                    countDownLatch.countDown();
                     serverSocket.accept();
                 } catch (IOException e) {
                     throw new UncheckedIOException(e);
@@ -86,9 +84,8 @@ class SocketCheckerTest {
             server.setName("stupid-simple-server-thread");
             server.start();
 
-            while (!runningFlag.get()) {
-                MILLISECONDS.sleep(10);
-            }
+            var countedDown = countDownLatch.await(5, SECONDS);
+            checkState(countedDown, "Timed out before latch count reached zero");
         }
     }
 }
