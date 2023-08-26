@@ -14,6 +14,8 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
+import org.kiwiproject.base.DefaultEnvironment;
+import org.kiwiproject.base.KiwiEnvironment;
 import org.kiwiproject.concurrent.Async.Mode;
 
 import java.time.Duration;
@@ -28,6 +30,8 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
 
 class AsyncTest {
+
+    private static final KiwiEnvironment ENV = new DefaultEnvironment();
 
     @AfterEach
     void tearDown() {
@@ -276,9 +280,9 @@ class AsyncTest {
             var task = new ConcurrentTask();
             CompletableFuture<Integer> future = Async.doAsync(task::supply);
 
-            assertThatThrownBy(() -> Async.waitFor(future, 5, TimeUnit.MILLISECONDS))
+            assertThatThrownBy(() -> Async.waitFor(future, 1, TimeUnit.MILLISECONDS))
                     .isExactlyInstanceOf(AsyncException.class)
-                    .hasMessage("TimeoutException occurred (maximum wait was specified as 5 MILLISECONDS)")
+                    .hasMessage("TimeoutException occurred (maximum wait was specified as 1 MILLISECONDS)")
                     .hasCauseInstanceOf(TimeoutException.class);
 
             assertThat(task.getCurrentCount()).isZero();
@@ -323,9 +327,9 @@ class AsyncTest {
             CompletableFuture<Integer> future3 = Async.doAsync(task3::supply);
 
             var futures = List.of(future1, future2, future3);
-            assertThatThrownBy(() -> Async.waitForAll(futures, 5, TimeUnit.MILLISECONDS))
+            assertThatThrownBy(() -> Async.waitForAll(futures,  1, TimeUnit.MILLISECONDS))
                     .isExactlyInstanceOf(AsyncException.class)
-                    .hasMessage("TimeoutException occurred (maximum wait was specified as 5 MILLISECONDS)")
+                    .hasMessage("TimeoutException occurred (maximum wait was specified as 1 MILLISECONDS)")
                     .hasCauseInstanceOf(TimeoutException.class);
 
             assertThat(task1.getCurrentCount()).isZero();
@@ -374,9 +378,9 @@ class AsyncTest {
             CompletableFuture future3 = Async.doAsync(task3::supply);
 
             var futures = List.of(future1, future2, future3);
-            assertThatThrownBy(() -> Async.waitForAllIgnoringType(futures, 5, TimeUnit.MILLISECONDS))
+            assertThatThrownBy(() -> Async.waitForAllIgnoringType(futures, 1, TimeUnit.MILLISECONDS))
                     .isExactlyInstanceOf(AsyncException.class)
-                    .hasMessage("TimeoutException occurred (maximum wait was specified as 5 MILLISECONDS)")
+                    .hasMessage("TimeoutException occurred (maximum wait was specified as 1 MILLISECONDS)")
                     .hasCauseInstanceOf(TimeoutException.class);
 
             assertThat(task1.getCurrentCount()).isZero();
@@ -437,7 +441,7 @@ class AsyncTest {
         private RuntimeException exceptionToThrow;
 
         ConcurrentTask() {
-            this(Duration.ofMillis(100));
+            this(Duration.ofMillis(10));
         }
 
         ConcurrentTask(Duration delay) {
@@ -485,7 +489,7 @@ class AsyncTest {
         }
 
         private void performWait() throws InterruptedException {
-            TimeUnit.MILLISECONDS.sleep(delayMillis);
+            ENV.sleep(delayMillis);
         }
     }
 }
