@@ -1,12 +1,20 @@
 package org.kiwiproject.ansible.vault;
 
-import java.util.List;
+import org.kiwiproject.base.KiwiDeprecated;
 
-// TODO Should this be moved to the base.process package?
+import java.util.List;
 
 /**
  * Interface that describes a simple contract for an operating system command.
+ *
+ * @deprecated replaced by {@link org.kiwiproject.base.process.OsCommand}
  */
+@Deprecated(since = "3.1.0", forRemoval = true)
+@KiwiDeprecated(
+        replacedBy = "org.kiwiproject.base.process.OsCommand",
+        reference = "https://github.com/kiwiproject/kiwi/issues/1026",
+        removeAt = "4.0.0"
+)
 public interface OsCommand {
 
     /**
