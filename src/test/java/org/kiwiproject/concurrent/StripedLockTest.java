@@ -11,6 +11,8 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.NullAndEmptySource;
+import org.kiwiproject.base.DefaultEnvironment;
+import org.kiwiproject.base.KiwiEnvironment;
 
 import java.time.Instant;
 import java.util.List;
@@ -22,6 +24,8 @@ import java.util.function.Supplier;
 @DisplayName("StripedLock")
 @Slf4j
 class StripedLockTest {
+
+    private static final KiwiEnvironment ENV = new DefaultEnvironment();
 
     @ParameterizedTest
     @NullAndEmptySource
@@ -197,19 +201,19 @@ class StripedLockTest {
     }
 
     private Runnable createRunnableTask() {
-        return this::sleep100ms;
+        return this::sleep10ms;
     }
 
     private Supplier<Long> createSupplierTask(Long result) {
         return () -> {
-            sleep100ms();
+            sleep10ms();
             return result;
         };
     }
 
-    private void sleep100ms() {
+    private void sleep10ms() {
         try {
-            TimeUnit.MILLISECONDS.sleep(100);
+            ENV.sleep(10, TimeUnit.MILLISECONDS);
         } catch (InterruptedException e) {
             LOG.error("Unexpected InterruptedException", e);
             fail("Failed due to InterruptedException");
