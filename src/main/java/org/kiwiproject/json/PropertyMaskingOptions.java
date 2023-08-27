@@ -23,17 +23,17 @@ public class PropertyMaskingOptions {
      */
     @NonNull
     @Builder.Default
-    List<String> maskedFieldRegexps = new ArrayList<>();
+    final List<String> maskedFieldRegexps = new ArrayList<>();
 
     /**
      * The replacement text for masked field values. Can be {@code null}.
      */
     @Builder.Default
-    String maskedFieldReplacementText = DEFAULT_MASK_TEXT_REPLACEMENT;
+    final String maskedFieldReplacementText = DEFAULT_MASK_TEXT_REPLACEMENT;
 
     /**
      * The replacement text for serialization errors. Can be {@code null}.
      */
     @Builder.Default
-    String serializationErrorReplacementText = DEFAULT_FAILED_TEXT_REPLACEMENT;
+    final String serializationErrorReplacementText = DEFAULT_FAILED_TEXT_REPLACEMENT;
 }

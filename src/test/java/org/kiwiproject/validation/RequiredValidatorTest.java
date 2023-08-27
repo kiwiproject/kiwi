@@ -145,6 +145,12 @@ class RequiredValidatorTest {
                 var user = User.builder().requiredOrEmptyPrefs(new Preferences()).build();
                 assertNoPropertyViolations(validator, user, "requiredOrEmptyPrefs");
             }
+
+            @Test
+            void shouldNotFlagNonEmptyAsViolation() {
+                var user = User.builder().requiredPrefs(new Preferences(Map.of("theme", "dark"))).build();
+                assertNoPropertyViolations(validator, user, "requiredPrefs");
+            }
         }
 
         @Nested
@@ -257,6 +263,7 @@ class RequiredValidatorTest {
     @AllArgsConstructor
     static class Preferences {
 
+        @SuppressWarnings("CanBeFinal")
         Map<String, String> values = new HashMap<>();
 
         public boolean isEmpty() {
