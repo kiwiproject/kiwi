@@ -25,7 +25,7 @@ class VaultEncryptStringCommandTest {
         var variableName = "MySecret";
         var command = VaultEncryptStringCommand.from(configuration, plainText, variableName);
 
-        assertThat(command.getCommandParts()).containsExactly(
+        assertThat(command.parts()).containsExactly(
                 configuration.getAnsibleVaultPath(),
                 "encrypt_string",
                 "--vault-password-file",
@@ -34,6 +34,9 @@ class VaultEncryptStringCommandTest {
                 variableName,
                 plainText
         );
+
+        //noinspection removal
+        assertThat(command.getCommandParts()).isEqualTo(command.parts());
     }
 
     @Test
@@ -43,7 +46,7 @@ class VaultEncryptStringCommandTest {
         var variableName = "MySecret";
         var command = VaultEncryptStringCommand.from(configuration, vaultIdLabel, plainText, variableName);
 
-        assertThat(command.getCommandParts()).containsExactly(
+        assertThat(command.parts()).containsExactly(
                 configuration.getAnsibleVaultPath(),
                 "encrypt_string",
                 "--vault-id",
@@ -52,5 +55,8 @@ class VaultEncryptStringCommandTest {
                 variableName,
                 plainText
         );
+
+        //noinspection removal
+        assertThat(command.getCommandParts()).isEqualTo(command.parts());
     }
 }

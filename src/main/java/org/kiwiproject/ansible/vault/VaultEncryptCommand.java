@@ -7,6 +7,7 @@ import static org.kiwiproject.base.KiwiStrings.f;
 
 import lombok.Builder;
 import org.checkerframework.checker.nullness.qual.Nullable;
+import org.kiwiproject.base.KiwiDeprecated;
 
 import java.util.List;
 
@@ -14,7 +15,7 @@ import java.util.List;
  * Generates {@code ansible-vault encrypt} commands.
  */
 @Builder
-public class VaultEncryptCommand implements OsCommand {
+public class VaultEncryptCommand implements org.kiwiproject.base.process.OsCommand {
 
     private final String ansibleVaultPath;
     private final String vaultIdLabel;
@@ -54,8 +55,22 @@ public class VaultEncryptCommand implements OsCommand {
                 .build();
     }
 
-    @Override
+    /**
+     * @return a list containing the command and its arguments
+     * @deprecated replaced by {@link #parts()}
+     */
+    @Deprecated(since = "3.1.0", forRemoval = true)
+    @KiwiDeprecated(
+            removeAt = "4.0.0",
+            reference = "https://github.com/kiwiproject/kiwi/issues/1026",
+            replacedBy = "#parts"
+    )
     public List<String> getCommandParts() {
+        return parts();
+    }
+
+    @Override
+    public List<String> parts() {
         if (isNull(vaultIdLabel)) {
             return List.of(
                     ansibleVaultPath,
