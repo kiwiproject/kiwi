@@ -92,42 +92,42 @@ public class SimpleRetryer {
      */
     @VisibleForTesting
     @Builder.Default
-    KiwiEnvironment environment = new DefaultEnvironment();
+    final KiwiEnvironment environment = new DefaultEnvironment();
 
     /**
      * The maximum number of attempts before giving up.
      */
     @VisibleForTesting
     @Builder.Default
-    int maxAttempts = DEFAULT_MAX_ATTEMPTS;
+    final int maxAttempts = DEFAULT_MAX_ATTEMPTS;
 
     /**
      * The time to sleep between retry attempts.
      */
     @VisibleForTesting
     @Builder.Default
-    long retryDelayTime = DEFAULT_RETRY_DELAY_TIME;
+    final long retryDelayTime = DEFAULT_RETRY_DELAY_TIME;
 
     /**
      * The time unit for the time to sleep between retry attempts.
      */
     @VisibleForTesting
     @Builder.Default
-    TimeUnit retryDelayUnit = DEFAULT_RETRY_DELAY_UNIT;
+    final TimeUnit retryDelayUnit = DEFAULT_RETRY_DELAY_UNIT;
 
     /**
      * The common type/description to include in log messages for each attempt.
      */
     @VisibleForTesting
     @Builder.Default
-    String commonType = DEFAULT_TYPE;
+    final String commonType = DEFAULT_TYPE;
 
     /**
      * The SLF4J log level to use when logging retry attempts. The first attempt is always logged at TRACE level.
      */
     @VisibleForTesting
     @Builder.Default
-    Level logLevelForSubsequentAttempts = DEFAULT_RETRY_LOG_LEVEL;
+    final Level logLevelForSubsequentAttempts = DEFAULT_RETRY_LOG_LEVEL;
 
     /**
      * Try to get an object.
