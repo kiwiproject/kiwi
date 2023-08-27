@@ -27,7 +27,7 @@ import java.util.concurrent.TimeUnit;
  * The main class in this package for executing {@code ansible-vault} commands.
  * <p>
  * While it is possible to use the various command classes directly to build the operating system command,
- * create a {@link ProcessBuilder} and finally a {@link Process}, this class wraps all that and makes it realtively
+ * create a {@link ProcessBuilder} and finally a {@link Process}, this class wraps all that and makes it relatively
  * easy to make {@code ansible-vault} calls in the operating system.
  */
 @SuppressWarnings("WeakerAccess")
@@ -47,7 +47,7 @@ public class VaultEncryptionHelper {
      * Create an instance with the given vault configuration. Makes a copy of the given configuration, such that
      * changes to the supplied object are not seen by this instance.
      * <p>
-     * If the configuration needs to change, for example after a rekey operation, then simply construct a new
+     * If the configuration needs to change, for example after a re-key operation, then simply construct a new
      * instance passing in the new {@link VaultConfiguration} object.
      *
      * @param configuration the vault configuration
@@ -251,11 +251,11 @@ public class VaultEncryptionHelper {
     }
 
     /**
-     * Wraps ansible-vault rekey command. Returns the path of the rekeyed file.
+     * Wraps ansible-vault rekey command. Returns the path of the re-keyed file.
      *
      * @param encryptedFilePath        the path to the file to view
      * @param newVaultPasswordFilePath path to the file containing the new password
-     * @return the {@link Path} to the rekeyed file
+     * @return the {@link Path} to the re-keyed file
      */
     public Path rekeyFile(Path encryptedFilePath, Path newVaultPasswordFilePath) {
         checkArgumentNotNull(encryptedFilePath, ENCRYPTED_FILE_PATH_CANNOT_BE_NULL);
@@ -264,11 +264,11 @@ public class VaultEncryptionHelper {
     }
 
     /**
-     * Wraps ansible-vault rekey command. Returns the path of the rekeyed file.
+     * Wraps ansible-vault rekey command. Returns the path of the re-keyed file.
      *
      * @param encryptedFilePath        the path to the file to view
      * @param newVaultPasswordFilePath path to the file containing the new password
-     * @return the {@link Path} to the rekeyed file
+     * @return the {@link Path} to the re-keyed file
      */
     public Path rekeyFile(String encryptedFilePath, String newVaultPasswordFilePath) {
         checkArgumentNotBlank(encryptedFilePath, "encryptedFilePath cannot be blank");
@@ -280,7 +280,7 @@ public class VaultEncryptionHelper {
         return executeVaultCommandWithoutOutput(osCommand, encryptedFilePath);
     }
 
-    private Path executeVaultCommandWithoutOutput(OsCommand osCommand, String filePath) {
+    private Path executeVaultCommandWithoutOutput(org.kiwiproject.base.process.OsCommand osCommand, String filePath) {
         executeVaultCommand(osCommand);
         return Path.of(filePath);
     }
@@ -378,15 +378,15 @@ public class VaultEncryptionHelper {
         }
     }
 
-    private String executeVaultCommandReturningStdout(OsCommand osCommand) {
+    private String executeVaultCommandReturningStdout(org.kiwiproject.base.process.OsCommand osCommand) {
         var vaultProcess = executeVaultCommand(osCommand);
         return KiwiIO.readInputStreamOf(vaultProcess);
     }
 
-    private Process executeVaultCommand(OsCommand osCommand) {
-        LOG.debug("Ansible command: {}", lazy(osCommand::getCommandParts));
+    private Process executeVaultCommand(org.kiwiproject.base.process.OsCommand osCommand) {
+        LOG.debug("Ansible command: {}", lazy(osCommand::parts));
 
-        var vaultProcess = processHelper.launch(osCommand.getCommandParts());
+        var vaultProcess = processHelper.launch(osCommand.parts());
         var exitCode = processHelper.waitForExit(vaultProcess, DEFAULT_TIMEOUT, DEFAULT_TIMEOUT_UNIT)
                 .orElseThrow(() -> new VaultEncryptionException("ansible-vault did not exit before timeout"));
         LOG.debug("ansible-vault exit code: {}", exitCode);

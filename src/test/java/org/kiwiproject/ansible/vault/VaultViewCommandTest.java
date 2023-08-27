@@ -25,12 +25,15 @@ class VaultViewCommandTest {
 
         var command = VaultViewCommand.from(configuration, encryptedFileName);
 
-        assertThat(command.getCommandParts()).containsExactly(
+        assertThat(command.parts()).containsExactly(
                 configuration.getAnsibleVaultPath(),
                 "view",
                 "--vault-password-file",
                 configuration.getVaultPasswordFilePath(),
                 encryptedFileName
         );
+
+        //noinspection removal
+        assertThat(command.getCommandParts()).isEqualTo(command.parts());
     }
 }

@@ -26,7 +26,7 @@ class VaultRekeyCommandTest {
 
         var command = VaultRekeyCommand.from(configuration, encryptedFileName, newVaultPasswordFilePath);
 
-        assertThat(command.getCommandParts()).containsExactly(
+        assertThat(command.parts()).containsExactly(
                 configuration.getAnsibleVaultPath(),
                 "rekey",
                 "--vault-password-file",
@@ -35,5 +35,8 @@ class VaultRekeyCommandTest {
                 newVaultPasswordFilePath,
                 encryptedFileName
         );
+
+        //noinspection removal
+        assertThat(command.getCommandParts()).isEqualTo(command.parts());
     }
 }

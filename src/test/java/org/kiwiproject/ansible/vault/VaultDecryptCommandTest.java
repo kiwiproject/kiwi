@@ -29,13 +29,16 @@ class VaultDecryptCommandTest {
             var encryptedFilePath = "/data/secret/MySecret.txt";
             var command = VaultDecryptCommand.from(configuration, encryptedFilePath);
 
-            assertThat(command.getCommandParts()).containsExactly(
+            assertThat(command.parts()).containsExactly(
                     configuration.getAnsibleVaultPath(),
                     "decrypt",
                     "--vault-password-file",
                     configuration.getVaultPasswordFilePath(),
                     encryptedFilePath
             );
+
+            //noinspection removal
+            assertThat(command.getCommandParts()).isEqualTo(command.parts());
         }
 
         @Test
@@ -44,7 +47,7 @@ class VaultDecryptCommandTest {
             var outputFilePath = "/data/temp/Plain.txt";
             var command = VaultDecryptCommand.from(configuration, encryptedFilePath, outputFilePath);
 
-            assertThat(command.getCommandParts()).containsExactly(
+            assertThat(command.parts()).containsExactly(
                     configuration.getAnsibleVaultPath(),
                     "decrypt",
                     "--vault-password-file",
@@ -53,6 +56,9 @@ class VaultDecryptCommandTest {
                     outputFilePath,
                     encryptedFilePath
             );
+
+            //noinspection removal
+            assertThat(command.getCommandParts()).isEqualTo(command.parts());
         }
 
         @Test
@@ -60,7 +66,7 @@ class VaultDecryptCommandTest {
             var encryptedFilePath = "/data/secret/MySecret.txt";
             var command = VaultDecryptCommand.toStdoutFrom(configuration, encryptedFilePath);
 
-            assertThat(command.getCommandParts()).containsExactly(
+            assertThat(command.parts()).containsExactly(
                     configuration.getAnsibleVaultPath(),
                     "decrypt",
                     "--vault-password-file",
@@ -69,6 +75,9 @@ class VaultDecryptCommandTest {
                     "-",
                     encryptedFilePath
             );
+
+            //noinspection removal
+            assertThat(command.getCommandParts()).isEqualTo(command.parts());
         }
     }
 }

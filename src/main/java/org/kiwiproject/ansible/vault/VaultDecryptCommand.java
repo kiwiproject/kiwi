@@ -6,6 +6,7 @@ import static org.kiwiproject.base.KiwiPreconditions.checkArgumentNotNull;
 
 import lombok.Builder;
 import org.checkerframework.checker.nullness.qual.Nullable;
+import org.kiwiproject.base.KiwiDeprecated;
 
 import java.nio.file.Paths;
 import java.util.List;
@@ -14,7 +15,7 @@ import java.util.List;
  * Generates {@code ansible-vault decrypt} commands.
  */
 @Builder
-public class VaultDecryptCommand implements OsCommand {
+public class VaultDecryptCommand implements org.kiwiproject.base.process.OsCommand {
 
     public static final String OUTPUT_FILE_STDOUT = "-";
 
@@ -65,8 +66,22 @@ public class VaultDecryptCommand implements OsCommand {
                 .build();
     }
 
-    @Override
+    /**
+     * @return a list containing the command and its arguments
+     * @deprecated replaced by {@link #parts()}
+     */
+    @Deprecated(since = "3.1.0", forRemoval = true)
+    @KiwiDeprecated(
+            removeAt = "4.0.0",
+            reference = "https://github.com/kiwiproject/kiwi/issues/1026",
+            replacedBy = "#parts"
+    )
     public List<String> getCommandParts() {
+        return parts();
+    }
+
+    @Override
+    public List<String> parts() {
         if (nonNull(outputFilePath)) {
             return getCommandPartsWithOutputFile();
         }

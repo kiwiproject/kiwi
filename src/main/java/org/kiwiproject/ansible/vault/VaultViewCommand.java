@@ -4,6 +4,7 @@ import static org.kiwiproject.base.KiwiPreconditions.checkArgumentNotBlank;
 import static org.kiwiproject.base.KiwiPreconditions.checkArgumentNotNull;
 
 import lombok.Builder;
+import org.kiwiproject.base.KiwiDeprecated;
 
 import java.nio.file.Paths;
 import java.util.List;
@@ -12,7 +13,7 @@ import java.util.List;
  * Generates {@code ansible-vault view} commands.
  */
 @Builder
-public class VaultViewCommand implements OsCommand {
+public class VaultViewCommand implements org.kiwiproject.base.process.OsCommand {
 
     private final String ansibleVaultPath;
     private final String vaultPasswordFilePath;
@@ -36,8 +37,22 @@ public class VaultViewCommand implements OsCommand {
                 .build();
     }
 
-    @Override
+    /**
+     * @return a list containing the command and its arguments
+     * @deprecated replaced by {@link #parts()}
+     */
+    @Deprecated(since = "3.1.0", forRemoval = true)
+    @KiwiDeprecated(
+            removeAt = "4.0.0",
+            reference = "https://github.com/kiwiproject/kiwi/issues/1026",
+            replacedBy = "#parts"
+    )
     public List<String> getCommandParts() {
+        return parts();
+    }
+
+    @Override
+    public List<String> parts() {
         return List.of(
                 ansibleVaultPath,
                 "view",

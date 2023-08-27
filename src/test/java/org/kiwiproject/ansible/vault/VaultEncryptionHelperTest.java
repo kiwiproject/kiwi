@@ -168,7 +168,7 @@ class VaultEncryptionHelperTest {
             assertThat(encryptedFile).isEqualTo(Path.of(plainTextFile));
 
             var command = VaultEncryptCommand.from(configuration, plainTextFile);
-            verify(processHelper).launch(command.getCommandParts());
+            verify(processHelper).launch(command.parts());
         }
 
         @Test
@@ -183,7 +183,7 @@ class VaultEncryptionHelperTest {
                     .hasMessage("ansible-vault returned non-zero exit code 1. Stderr: %s", errorOutput);
 
             var command = VaultEncryptCommand.from(configuration, plainTextFile);
-            verify(processHelper).launch(command.getCommandParts());
+            verify(processHelper).launch(command.parts());
         }
     }
 
@@ -202,7 +202,7 @@ class VaultEncryptionHelperTest {
             assertThat(encryptedFile).isEqualTo(Path.of(plainTextFile));
 
             var command = VaultEncryptCommand.from(configuration, vaultIdLabel, plainTextFile);
-            verify(processHelper).launch(command.getCommandParts());
+            verify(processHelper).launch(command.parts());
         }
 
         @Test
@@ -218,7 +218,7 @@ class VaultEncryptionHelperTest {
                     .hasMessage("ansible-vault returned non-zero exit code 1. Stderr: %s", errorOutput);
 
             var command = VaultEncryptCommand.from(configuration, vaultIdLabel, plainTextFile);
-            verify(processHelper).launch(command.getCommandParts());
+            verify(processHelper).launch(command.parts());
         }
     }
 
@@ -239,7 +239,7 @@ class VaultEncryptionHelperTest {
                 assertThat(decryptedFile).isEqualTo(Path.of(encryptedFile));
 
                 var command = VaultDecryptCommand.from(configuration, encryptedFile);
-                verify(processHelper).launch(command.getCommandParts());
+                verify(processHelper).launch(command.parts());
             }
 
             @Test
@@ -254,7 +254,7 @@ class VaultEncryptionHelperTest {
                         .hasMessage("ansible-vault returned non-zero exit code 1. Stderr: %s", errorOutput);
 
                 var command = VaultDecryptCommand.from(configuration, encryptedFilePath);
-                verify(processHelper).launch(command.getCommandParts());
+                verify(processHelper).launch(command.parts());
             }
         }
 
@@ -273,7 +273,7 @@ class VaultEncryptionHelperTest {
                 assertThat(decryptedFile).isEqualTo(Path.of(outputFile));
 
                 var command = VaultDecryptCommand.from(configuration, encryptedFile, outputFile);
-                verify(processHelper).launch(command.getCommandParts());
+                verify(processHelper).launch(command.parts());
             }
 
             @ParameterizedTest
@@ -303,7 +303,7 @@ class VaultEncryptionHelperTest {
                         .hasMessage("ansible-vault returned non-zero exit code 1. Stderr: %s", errorOutput);
 
                 var command = VaultDecryptCommand.from(configuration, encryptedFile, outputFile);
-                verify(processHelper).launch(command.getCommandParts());
+                verify(processHelper).launch(command.parts());
             }
         }
     }
@@ -323,7 +323,7 @@ class VaultEncryptionHelperTest {
             assertThat(decryptedContents).isEqualTo(plainText);
 
             var command = VaultViewCommand.from(configuration, encryptedFile);
-            verify(processHelper).launch(command.getCommandParts());
+            verify(processHelper).launch(command.parts());
         }
 
         @Test
@@ -338,7 +338,7 @@ class VaultEncryptionHelperTest {
                     .hasMessage("ansible-vault returned non-zero exit code 1. Stderr: %s", errorOutput);
 
             var command = VaultViewCommand.from(configuration, encryptedFilePath);
-            verify(processHelper).launch(command.getCommandParts());
+            verify(processHelper).launch(command.parts());
         }
     }
 
@@ -357,7 +357,7 @@ class VaultEncryptionHelperTest {
             assertThat(rekeyedFile).isEqualTo(Path.of(encryptedFile));
 
             var command = VaultRekeyCommand.from(configuration, encryptedFile, newVaultPasswordFilePath);
-            verify(processHelper).launch(command.getCommandParts());
+            verify(processHelper).launch(command.parts());
         }
 
         @Test
@@ -385,7 +385,7 @@ class VaultEncryptionHelperTest {
                     .hasMessage("ansible-vault returned non-zero exit code 1. Stderr: %s", errorOutput);
 
             var command = VaultRekeyCommand.from(configuration, encryptedFilePath, newVaultPasswordFilePath);
-            verify(processHelper).launch(command.getCommandParts());
+            verify(processHelper).launch(command.parts());
         }
     }
 
@@ -405,7 +405,7 @@ class VaultEncryptionHelperTest {
             assertThat(result).isEqualTo(encryptedContent);
 
             var command = VaultEncryptStringCommand.from(configuration, plainText, variableName);
-            verify(processHelper).launch(command.getCommandParts());
+            verify(processHelper).launch(command.parts());
         }
 
         @Test
@@ -421,7 +421,7 @@ class VaultEncryptionHelperTest {
                     .hasMessage("ansible-vault returned non-zero exit code 1. Stderr: %s", errorOutput);
 
             var command = VaultEncryptStringCommand.from(configuration, plainText, variableName);
-            verify(processHelper).launch(command.getCommandParts());
+            verify(processHelper).launch(command.parts());
         }
     }
 
@@ -442,7 +442,7 @@ class VaultEncryptionHelperTest {
             assertThat(result).isEqualTo(encryptedContent);
 
             var command = VaultEncryptStringCommand.from(configuration, vaultIdLabel, plainText, variableName);
-            verify(processHelper).launch(command.getCommandParts());
+            verify(processHelper).launch(command.parts());
         }
 
         @Test
@@ -459,7 +459,7 @@ class VaultEncryptionHelperTest {
                     .hasMessage("ansible-vault returned non-zero exit code 1. Stderr: %s", errorOutput);
 
             var command = VaultEncryptStringCommand.from(configuration, vaultIdLabel, plainText, variableName);
-            verify(processHelper).launch(command.getCommandParts());
+            verify(processHelper).launch(command.parts());
         }
     }
 
@@ -490,7 +490,7 @@ class VaultEncryptionHelperTest {
             return commandParts -> {
                 // Check command up until last argument (file name, which has a random component)
                 var vaultDecryptCommand = VaultDecryptCommand.toStdoutFrom(configuration, encryptedFilePath.toString());
-                var vaultDecryptCommandParts = vaultDecryptCommand.getCommandParts();
+                var vaultDecryptCommandParts = vaultDecryptCommand.parts();
                 var expectedPartsExcludingLast = subListExcludingLast(vaultDecryptCommandParts);
 
                 var commandPartsExcludingLast = subListExcludingLast(commandParts);
