@@ -15,7 +15,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        java_version: ['17', '21-ea']
+        java_version: ['17', '21']
     steps:
       # Check out the project
       - uses: actions/checkout@v4
@@ -27,7 +27,7 @@ jobs:
         uses: actions/setup-java@v3
         with:
           java-version: ${{ matrix.java_version }}
-          distribution: 'temurin'
+          distribution: 'zulu'
           check-latest: true
 
       # Cache all the things
