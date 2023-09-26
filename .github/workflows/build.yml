@@ -15,7 +15,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        java_version: ['17', '20']
+        java_version: ['17', '21-ea']
     steps:
       # Check out the project
       - uses: actions/checkout@v4
