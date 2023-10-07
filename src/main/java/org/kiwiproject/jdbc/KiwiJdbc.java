@@ -334,6 +334,36 @@ public class KiwiJdbc {
     }
 
     /**
+     * Converts an int value in the specified column to a boolean. The database value must be zero, one
+     * or NULL.
+     *
+     * @param rs         the ResultSet
+     * @param columnName the column name
+     * @return true if the database value is one, or false if it is zero or NULL
+     * @throws IllegalArgumentException if the value in the column is not zero, one, or NULL
+     * @throws SQLException             if there is any error getting the value from the database
+     * @see #booleanFromInt(ResultSet, String, BooleanConversionOption)
+     */
+    public static boolean booleanFromInt(ResultSet rs, String columnName) throws SQLException {
+        return booleanFromInt(rs, columnName, BooleanConversionOption.ZERO_OR_ONE);
+    }
+
+    /**
+     * Converts an int value in the specified column to a boolean using the given {@link BooleanConversionOption}.
+     *
+     * @param rs         the ResultSet
+     * @param columnName the column name
+     * @param option     how to convert the int value into a boolean
+     * @return the converted value, determined using the conversion option
+     * @throws SQLException if there is any error getting the value from the database
+     */
+    public static boolean booleanFromInt(ResultSet rs, String columnName, BooleanConversionOption option)
+            throws SQLException {
+
+        return KiwiPrimitives.booleanFromInt(rs.getInt(columnName), option);
+    }
+
+    /**
      * Sets the {@link Timestamp} value in a null-safe manner by using the {@link PreparedStatement#setNull(int, int)}
      * method for {@code null} values. Uses {@link Types#TIMESTAMP} as the SQL type.
      *
