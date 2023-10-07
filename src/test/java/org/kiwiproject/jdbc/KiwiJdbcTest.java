@@ -2,6 +2,7 @@ package org.kiwiproject.jdbc;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
@@ -19,7 +20,9 @@ import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.sql.Types;
 import java.time.Instant;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.Month;
 import java.time.ZoneId;
 import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
@@ -191,6 +194,49 @@ class KiwiJdbcTest {
             assertThat(KiwiJdbc.localDateTimeFromTimestamp(resultSet, "received_at")).isNull();
 
             verify(resultSet).getTimestamp("received_at");
+        }
+    }
+
+    @Nested
+    class LocalDateFromJavaSqlDate {
+
+        @Test
+        void shouldConvertFromDate() {
+            var originalDate = LocalDate.of(2023, Month.APRIL, 1);
+            var date = java.sql.Date.valueOf(originalDate);
+
+            assertThat(KiwiJdbc.localDateOrNullFromDate(date)).isEqualTo(originalDate);
+        }
+
+        @Test
+        void shouldReturnNull_WhenGivenNullDate() {
+            assertThat(KiwiJdbc.localDateOrNullFromDate(null)).isNull();
+        }
+
+        @Test
+        void shouldConvertFromResultSet() throws SQLException {
+            var originalDate = LocalDate.of(2023, Month.SEPTEMBER, 8);
+            var date = java.sql.Date.valueOf(originalDate);
+
+            var resultSet = newMockResultSet();
+            when(resultSet.getDate(anyString())).thenReturn(date);
+
+            assertThat(KiwiJdbc.localDateOrNullFromDate(resultSet, "date_of_birth"))
+                    .isEqualTo(originalDate);
+
+            verify(resultSet).getDate("date_of_birth");
+            verifyNoMoreInteractions(resultSet);
+        }
+
+        @Test
+        void shouldReturnNull_WhenResultSet_ReturnsNullDate() throws SQLException {
+            var resultSet = newMockResultSet();
+            when(resultSet.getDate(anyString())).thenReturn(null);
+
+            assertThat(KiwiJdbc.localDateOrNullFromDate(resultSet, "expiration_date")).isNull();
+
+            verify(resultSet).getDate("expiration_date");
+            verifyNoMoreInteractions(resultSet);
         }
     }
 

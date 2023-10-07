@@ -4,6 +4,7 @@ import static java.util.Objects.isNull;
 import static org.kiwiproject.base.KiwiPreconditions.checkArgumentNotNull;
 
 import lombok.experimental.UtilityClass;
+import org.checkerframework.checker.nullness.qual.Nullable;
 
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -11,6 +12,7 @@ import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.sql.Types;
 import java.time.Instant;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.ZoneOffset;
@@ -116,6 +118,30 @@ public class KiwiJdbc {
      */
     public static LocalDateTime localDateTimeFromTimestamp(Timestamp timestamp) {
         return isNull(timestamp) ? null : timestamp.toLocalDateTime();
+    }
+
+    /**
+     * Returns a {@link LocalDate} from the specified {@link java.sql.Date} column in the given {@link ResultSet}.
+     *
+     * @param rs         the ResultSet
+     * @param columnName the date column name
+     * @return the converted LocalDate or {@code null} if the column was {@code NULL}
+     * @throws SQLException if there is problem getting the date
+     */
+    @Nullable
+    public static LocalDate localDateOrNullFromDate(ResultSet rs, String columnName) throws SQLException {
+        return localDateOrNullFromDate(rs.getDate(columnName));
+    }
+
+    /**
+     * Returns a {@link LocalDateTime} from the given {@link java.sql.Date}.
+     *
+     * @param date the date to convert
+     * @return the converted LocalDate or {@code null} if the date is {@code null}
+     */
+    @Nullable
+    public static LocalDate localDateOrNullFromDate(java.sql.@Nullable Date date) {
+        return isNull(date) ? null : date.toLocalDate();
     }
 
     /**
