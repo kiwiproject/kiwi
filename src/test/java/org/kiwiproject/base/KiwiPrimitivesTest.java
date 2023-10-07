@@ -14,6 +14,7 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
 import org.junit.jupiter.params.provider.NullAndEmptySource;
 import org.junit.jupiter.params.provider.ValueSource;
+import org.kiwiproject.base.KiwiPrimitives.BooleanConversionOption;
 
 @DisplayName("KiwiPrimitives")
 @ExtendWith(SoftAssertionsExtension.class)
@@ -272,9 +273,46 @@ class KiwiPrimitivesTest {
                 0, NON_ZERO_AS_TRUE, false
                 """)
         void shouldConvertLong_UsingBooleanConversionOption(long value,
-                                                            KiwiPrimitives.BooleanConversionOption option,
+                                                            BooleanConversionOption option,
                                                             boolean expectedResult) {
             assertThat(KiwiPrimitives.booleanFromLong(value, option)).isEqualTo(expectedResult);
+        }
+    }
+
+    @Nested
+    class BooleanFromInt {
+
+        @ParameterizedTest
+        @CsvSource(textBlock = """
+                1, true,
+                0, false
+                """)
+        void shouldConvertInt_WithZeroOrOneConversionOption(int value, boolean expectedResult) {
+            assertThat(KiwiPrimitives.booleanFromInt(value)).isEqualTo(expectedResult);
+        }
+
+        @ParameterizedTest
+        @ValueSource(ints = { -10, -5, -1, 2, 10, 42 })
+        void shouldThrowIllegalArgument_WithZeroOrOneConversionOption_WhenValueIsNotZeroOrOne(int value) {
+            assertThatIllegalArgumentException()
+                    .isThrownBy(() -> KiwiPrimitives.booleanFromInt(value))
+                    .withMessage("value must be 0 or 1, but found %d", value);
+        }
+
+        @ParameterizedTest
+        @CsvSource(textBlock = """
+                1, ZERO_OR_ONE, true,
+                1, NON_ZERO_AS_TRUE, true,
+                -1, NON_ZERO_AS_TRUE, true,
+                2, NON_ZERO_AS_TRUE, true,
+                1000, NON_ZERO_AS_TRUE, true,
+                0, ZERO_OR_ONE, false
+                0, NON_ZERO_AS_TRUE, false
+                """)
+        void shouldConvertInt_UsingBooleanConversionOption(int value,
+                                                            BooleanConversionOption option,
+                                                            boolean expectedResult) {
+            assertThat(KiwiPrimitives.booleanFromInt(value, option)).isEqualTo(expectedResult);
         }
     }
 }
