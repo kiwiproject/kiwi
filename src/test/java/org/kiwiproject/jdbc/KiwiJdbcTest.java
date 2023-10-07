@@ -589,6 +589,65 @@ class KiwiJdbcTest {
     }
 
     @Nested
+    class BooleanFromInt {
+
+        @ParameterizedTest
+        @CsvSource(textBlock = """
+                1, true,
+                0, false
+                """)
+        void shouldConvert_WithZeroOrOneConversionOption(int value, boolean expectedResult) throws SQLException {
+            var resultSet = newMockResultSet();
+            when(resultSet.getInt(anyString())).thenReturn(value);
+
+            assertThat(KiwiJdbc.booleanFromInt(resultSet, "is_admin"))
+                    .isEqualTo(expectedResult);
+
+            verify(resultSet).getInt("is_admin");
+            verifyNoMoreInteractions(resultSet);
+        }
+
+        @ParameterizedTest
+        @ValueSource(ints = { -1, 2, 4, 42 })
+        void shouldThrowIllegalArgument_WhenValueFromResultSet_IsNotZeroOrOne_WithZeroOrOneConversionOption(int value)
+                throws SQLException {
+
+            var resultSet = newMockResultSet();
+            when(resultSet.getInt(anyString())).thenReturn(value);
+
+            assertThatIllegalArgumentException()
+                    .isThrownBy(() -> KiwiJdbc.booleanFromInt(resultSet, "is_active"))
+                    .withMessage("value must be 0 or 1, but found %d", value);
+
+            verify(resultSet).getInt("is_active");
+            verifyNoMoreInteractions(resultSet);
+        }
+
+        @ParameterizedTest
+        @CsvSource(textBlock = """
+                1, ZERO_OR_ONE, true,
+                1, NON_ZERO_AS_TRUE, true,
+                -1, NON_ZERO_AS_TRUE, true,
+                2, NON_ZERO_AS_TRUE, true,
+                1000, NON_ZERO_AS_TRUE, true,
+                0, ZERO_OR_ONE, false,
+                0, NON_ZERO_AS_TRUE, false
+                """)
+        void shouldConvert_WithBooleanConversionOption(int value,
+                                                       BooleanConversionOption option,
+                                                       boolean expectedResult) throws SQLException {
+            var resultSet = newMockResultSet();
+            when(resultSet.getInt(anyString())).thenReturn(value);
+
+            assertThat(KiwiJdbc.booleanFromInt(resultSet, "is_admin", option))
+                    .isEqualTo(expectedResult);
+
+            verify(resultSet).getInt("is_admin");
+            verifyNoMoreInteractions(resultSet);
+        }
+    }
+
+    @Nested
     class NullSafeSetInt {
 
         @Test
