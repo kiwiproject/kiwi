@@ -1,6 +1,7 @@
 package org.kiwiproject.base;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
 import static org.assertj.core.api.Assertions.assertThatIllegalStateException;
 
 import org.assertj.core.api.SoftAssertions;
@@ -10,6 +11,7 @@ import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.CsvSource;
 import org.junit.jupiter.params.provider.NullAndEmptySource;
 import org.junit.jupiter.params.provider.ValueSource;
 
@@ -81,7 +83,7 @@ class KiwiPrimitivesTest {
     class TryParseIntOrThrow {
 
         @Test
-        void shouldReturInt_WhenArgumentIsParseableToInt() {
+        void shouldReturnInt_WhenArgumentIsParseableToInt() {
             assertThat(KiwiPrimitives.tryParseIntOrThrow("126")).isEqualTo(126);
         }
 
@@ -149,7 +151,7 @@ class KiwiPrimitivesTest {
     class TryParseLongOrThrow {
 
         @Test
-        void shouldReturLong_WhenArgumentIsParseableToLong() {
+        void shouldReturnLong_WhenArgumentIsParseableToLong() {
             assertThat(KiwiPrimitives.tryParseLongOrThrow("1260000")).isEqualTo(1_260_000L);
         }
 
@@ -217,7 +219,7 @@ class KiwiPrimitivesTest {
     class TryParseDoubleOrThrow {
 
         @Test
-        void shouldReturDouble_WhenArgumentIsParseableToDouble() {
+        void shouldReturnDouble_WhenArgumentIsParseableToDouble() {
             assertThat(KiwiPrimitives.tryParseDoubleOrThrow("1260000.042")).isEqualTo(1_260_000.042);
         }
 
@@ -236,6 +238,43 @@ class KiwiPrimitivesTest {
                     .isThrownBy(() -> KiwiPrimitives.tryParseDoubleOrThrow(string))
                     .withMessageContaining(string)
                     .withCauseExactlyInstanceOf(NumberFormatException.class);
+        }
+    }
+
+    @Nested
+    class BooleanFromLong {
+
+        @ParameterizedTest
+        @CsvSource(textBlock = """
+                1, true,
+                0, false
+                """)
+        void shouldConvertLong_WithZeroOrOneConversionOption(long value, boolean expectedResult) {
+            assertThat(KiwiPrimitives.booleanFromLong(value)).isEqualTo(expectedResult);
+        }
+
+        @ParameterizedTest
+        @ValueSource(longs = { -10, -5, -1, 2, 10, 42 })
+        void shouldThrowIllegalArgument_WithZeroOrOneConversionOption_WhenValueIsNotZeroOrOne(long value) {
+            assertThatIllegalArgumentException()
+                    .isThrownBy(() -> KiwiPrimitives.booleanFromLong(value))
+                    .withMessage("value must be 0 or 1, but found %d", value);
+        }
+
+        @ParameterizedTest
+        @CsvSource(textBlock = """
+                1, ZERO_OR_ONE, true,
+                1, NON_ZERO_AS_TRUE, true,
+                -1, NON_ZERO_AS_TRUE, true,
+                2, NON_ZERO_AS_TRUE, true,
+                1000, NON_ZERO_AS_TRUE, true,
+                0, ZERO_OR_ONE, false
+                0, NON_ZERO_AS_TRUE, false
+                """)
+        void shouldConvertLong_UsingBooleanConversionOption(long value,
+                                                            KiwiPrimitives.BooleanConversionOption option,
+                                                            boolean expectedResult) {
+            assertThat(KiwiPrimitives.booleanFromLong(value, option)).isEqualTo(expectedResult);
         }
     }
 }
