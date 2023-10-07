@@ -221,4 +221,33 @@ public class KiwiPrimitives {
             case NON_ZERO_AS_TRUE -> value != 0;
         };
     }
+
+    /**
+     * Converts the given int value to a boolean. The value must be zero or one.
+     *
+     * @param value the value to convert
+     * @return true if the value is one, or false if zero
+     * @throws IllegalArgumentException if the value in the column is not zero, one, or NULL
+     * @see #booleanFromInt(int, BooleanConversionOption)
+     */
+    public static boolean booleanFromInt(int value) {
+        return booleanFromInt(value, BooleanConversionOption.ZERO_OR_ONE);
+    }
+
+    /**
+     * Converts the given int value to a boolean using the specified {@link BooleanConversionOption}.
+     *
+     * @param value  the value to convert
+     * @param option how to convert the int value into a boolean
+     * @return true if the value is non-zero, otherwise false
+     */
+    public static boolean booleanFromInt(int value, BooleanConversionOption option) {
+        return switch (option) {
+            case ZERO_OR_ONE -> {
+                checkArgument(value == 0 || value == 1, "value must be 0 or 1, but found %s", value);
+                yield value == 1;
+            }
+            case NON_ZERO_AS_TRUE -> value != 0;
+        };
+    }
 }
