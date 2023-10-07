@@ -12,7 +12,10 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.CsvSource;
 import org.junit.jupiter.params.provider.EnumSource;
+import org.junit.jupiter.params.provider.ValueSource;
+import org.kiwiproject.base.KiwiPrimitives.BooleanConversionOption;
 
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -524,6 +527,65 @@ class KiwiJdbcTest {
 
     enum Season {
         WINTER, SPRING, SUMMER, FALL
+    }
+
+    @Nested
+    class BooleanFromLong {
+
+        @ParameterizedTest
+        @CsvSource(textBlock = """
+                1, true,
+                0, false
+                """)
+        void shouldConvert_WithZeroOrOneConversionOption(long value, boolean expectedResult) throws SQLException {
+            var resultSet = newMockResultSet();
+            when(resultSet.getLong(anyString())).thenReturn(value);
+
+            assertThat(KiwiJdbc.booleanFromLong(resultSet, "is_admin"))
+                    .isEqualTo(expectedResult);
+
+            verify(resultSet).getLong("is_admin");
+            verifyNoMoreInteractions(resultSet);
+        }
+
+        @ParameterizedTest
+        @ValueSource(longs = { -1, 2, 4, 42 })
+        void shouldThrowIllegalArgument_WhenValueFromResultSet_IsNotZeroOrOne_WithZeroOrOneConversionOption(long value)
+                throws SQLException {
+
+            var resultSet = newMockResultSet();
+            when(resultSet.getLong(anyString())).thenReturn(value);
+
+            assertThatIllegalArgumentException()
+                    .isThrownBy(() -> KiwiJdbc.booleanFromLong(resultSet, "is_active"))
+                    .withMessage("value must be 0 or 1, but found %d", value);
+
+            verify(resultSet).getLong("is_active");
+            verifyNoMoreInteractions(resultSet);
+        }
+
+        @ParameterizedTest
+        @CsvSource(textBlock = """
+                1, ZERO_OR_ONE, true,
+                1, NON_ZERO_AS_TRUE, true,
+                -1, NON_ZERO_AS_TRUE, true,
+                2, NON_ZERO_AS_TRUE, true,
+                1000, NON_ZERO_AS_TRUE, true,
+                0, ZERO_OR_ONE, false,
+                0, NON_ZERO_AS_TRUE, false
+                """)
+        void shouldConvert_WithBooleanConversionOption(long value,
+                                                       BooleanConversionOption option,
+                                                       boolean expectedResult) throws SQLException {
+            var resultSet = newMockResultSet();
+            when(resultSet.getLong(anyString())).thenReturn(value);
+
+            assertThat(KiwiJdbc.booleanFromLong(resultSet, "is_admin", option))
+                    .isEqualTo(expectedResult);
+
+            verify(resultSet).getLong("is_admin");
+            verifyNoMoreInteractions(resultSet);
+        }
     }
 
     @Nested
