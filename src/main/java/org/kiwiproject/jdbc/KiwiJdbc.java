@@ -5,6 +5,8 @@ import static org.kiwiproject.base.KiwiPreconditions.checkArgumentNotNull;
 
 import lombok.experimental.UtilityClass;
 import org.checkerframework.checker.nullness.qual.Nullable;
+import org.kiwiproject.base.KiwiPrimitives;
+import org.kiwiproject.base.KiwiPrimitives.BooleanConversionOption;
 
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -299,6 +301,36 @@ public class KiwiJdbc {
             throws SQLException {
         var enumName = rs.getString(columnName);
         return isNull(enumName) ? Optional.empty() : Optional.of(Enum.valueOf(enumType, enumName));
+    }
+
+    /**
+     * Converts a long value in the specified column to a boolean. The database value must be zero, one
+     * or NULL.
+     *
+     * @param rs         the ResultSet
+     * @param columnName the column name
+     * @return true if the database value is one, or false if it is zero or NULL
+     * @throws IllegalArgumentException if the value in the column is not zero, one, or NULL
+     * @throws SQLException             if there is any error getting the value from the database
+     * @see #booleanFromLong(ResultSet, String, BooleanConversionOption)
+     */
+    public static boolean booleanFromLong(ResultSet rs, String columnName) throws SQLException {
+        return booleanFromLong(rs, columnName, BooleanConversionOption.ZERO_OR_ONE);
+    }
+
+    /**
+     * Converts a long value in the specified column to a boolean using the given {@link BooleanConversionOption}.
+     *
+     * @param rs         the ResultSet
+     * @param columnName the column name
+     * @param option     how to convert the long value into a boolean
+     * @return the converted value, determined using the conversion option
+     * @throws SQLException if there is any error getting the value from the database
+     */
+    public static boolean booleanFromLong(ResultSet rs, String columnName, BooleanConversionOption option)
+            throws SQLException {
+
+        return KiwiPrimitives.booleanFromLong(rs.getLong(columnName), option);
     }
 
     /**
