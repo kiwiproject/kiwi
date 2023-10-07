@@ -129,8 +129,8 @@ public class KiwiJdbc {
      * @throws SQLException if there is problem getting the date
      */
     @Nullable
-    public static LocalDate localDateOrNullFromDate(ResultSet rs, String columnName) throws SQLException {
-        return localDateOrNullFromDate(rs.getDate(columnName));
+    public static LocalDate localDateFromDateOrNull(ResultSet rs, String columnName) throws SQLException {
+        return localDateFromDateOrNull(rs.getDate(columnName));
     }
 
     /**
@@ -140,7 +140,7 @@ public class KiwiJdbc {
      * @return the converted LocalDate or {@code null} if the date is {@code null}
      */
     @Nullable
-    public static LocalDate localDateOrNullFromDate(java.sql.@Nullable Date date) {
+    public static LocalDate localDateFromDateOrNull(java.sql.@Nullable Date date) {
         return isNull(date) ? null : date.toLocalDate();
     }
 

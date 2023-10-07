@@ -198,19 +198,19 @@ class KiwiJdbcTest {
     }
 
     @Nested
-    class LocalDateFromJavaSqlDate {
+    class LocalDateFromDateOrNull {
 
         @Test
         void shouldConvertFromDate() {
             var originalDate = LocalDate.of(2023, Month.APRIL, 1);
             var date = java.sql.Date.valueOf(originalDate);
 
-            assertThat(KiwiJdbc.localDateOrNullFromDate(date)).isEqualTo(originalDate);
+            assertThat(KiwiJdbc.localDateFromDateOrNull(date)).isEqualTo(originalDate);
         }
 
         @Test
         void shouldReturnNull_WhenGivenNullDate() {
-            assertThat(KiwiJdbc.localDateOrNullFromDate(null)).isNull();
+            assertThat(KiwiJdbc.localDateFromDateOrNull(null)).isNull();
         }
 
         @Test
@@ -221,7 +221,7 @@ class KiwiJdbcTest {
             var resultSet = newMockResultSet();
             when(resultSet.getDate(anyString())).thenReturn(date);
 
-            assertThat(KiwiJdbc.localDateOrNullFromDate(resultSet, "date_of_birth"))
+            assertThat(KiwiJdbc.localDateFromDateOrNull(resultSet, "date_of_birth"))
                     .isEqualTo(originalDate);
 
             verify(resultSet).getDate("date_of_birth");
@@ -233,7 +233,7 @@ class KiwiJdbcTest {
             var resultSet = newMockResultSet();
             when(resultSet.getDate(anyString())).thenReturn(null);
 
-            assertThat(KiwiJdbc.localDateOrNullFromDate(resultSet, "expiration_date")).isNull();
+            assertThat(KiwiJdbc.localDateFromDateOrNull(resultSet, "expiration_date")).isNull();
 
             verify(resultSet).getDate("expiration_date");
             verifyNoMoreInteractions(resultSet);
