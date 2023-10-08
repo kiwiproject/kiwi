@@ -1,6 +1,7 @@
 package org.kiwiproject.jdbc;
 
 import static java.util.Objects.isNull;
+import static org.apache.commons.lang3.StringUtils.isBlank;
 import static org.kiwiproject.base.KiwiPreconditions.checkArgumentNotNull;
 
 import lombok.experimental.UtilityClass;
@@ -128,7 +129,7 @@ public class KiwiJdbc {
      * @param rs         the ResultSet
      * @param columnName the date column name
      * @return the converted LocalDate or {@code null} if the column was {@code NULL}
-     * @throws SQLException if there is problem getting the date
+     * @throws SQLException if there is any error getting the date value from the database
      */
     @Nullable
     public static LocalDate localDateFromDateOrNull(ResultSet rs, String columnName) throws SQLException {
@@ -361,6 +362,44 @@ public class KiwiJdbc {
             throws SQLException {
 
         return KiwiPrimitives.booleanFromInt(rs.getInt(columnName), option);
+    }
+
+    /**
+     * Enum representing options for trimming strings.
+     */
+    public enum StringTrimOption {
+
+        /**
+         * Preserves leading and trailing whitespace.
+         */
+        PRESERVE,
+
+        /**
+         * Removes any leading and trailing whitespace.
+         */
+        REMOVE
+    }
+
+    /**
+     * Returns a String from the specified column in the {@link ResultSet} using the given {@link StringTrimOption}.
+     * When the database value is {@code NULL} or contains only whitespace, returns {@code null}.
+     *
+     * @param rs         the ResultSet
+     * @param columnName the date column name
+     * @param option     how to handle leading and trailing whitespace
+     * @return the String with the specified trim option applied, or {@code null} if the column was blank or {@code NULL}
+     * @throws SQLException if there is any error getting the value from the database
+     */
+    @Nullable
+    public static String stringOrNullIfBlank(ResultSet rs,
+                                             String columnName,
+                                             StringTrimOption option) throws SQLException {
+
+        var s = rs.getString(columnName);
+        return isBlank(s) ? null : switch (option) {
+            case PRESERVE -> s;
+            case REMOVE -> s.strip();
+        };
     }
 
     /**

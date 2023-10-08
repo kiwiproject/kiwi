@@ -2,6 +2,7 @@ package org.kiwiproject.jdbc;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
+import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
@@ -16,6 +17,8 @@ import org.junit.jupiter.params.provider.CsvSource;
 import org.junit.jupiter.params.provider.EnumSource;
 import org.junit.jupiter.params.provider.ValueSource;
 import org.kiwiproject.base.KiwiPrimitives.BooleanConversionOption;
+import org.kiwiproject.jdbc.KiwiJdbc.StringTrimOption;
+import org.kiwiproject.util.BlankStringSource;
 
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -643,6 +646,66 @@ class KiwiJdbcTest {
                     .isEqualTo(expectedResult);
 
             verify(resultSet).getInt("is_admin");
+            verifyNoMoreInteractions(resultSet);
+        }
+    }
+
+    @Nested
+    class StringOrNullIfBlankWithTrimOption {
+
+        @ParameterizedTest
+        @BlankStringSource
+        void shouldReturnNull_WhenValue_IsBlank(String value) throws SQLException {
+            var resultSet = newMockResultSet();
+            when(resultSet.getString(anyString())).thenReturn(value);
+
+            assertAll(
+                    () -> assertThat(KiwiJdbc.stringOrNullIfBlank(resultSet, "comment", StringTrimOption.PRESERVE))
+                            .isNull(),
+                    () -> assertThat(KiwiJdbc.stringOrNullIfBlank(resultSet, "note", StringTrimOption.REMOVE))
+                            .isNull()
+            );
+
+            verify(resultSet).getString("comment");
+            verify(resultSet).getString("note");
+            verifyNoMoreInteractions(resultSet);
+        }
+
+        @ParameterizedTest
+        @ValueSource(strings = {
+                "The quick",
+                "  brown fox",
+                "jumps\nover  ",
+                "\t\tthe lazy\t\r\n",
+                "   \tdog\r\n\r\n  "
+        })
+        void shouldReturn_ExactString_WhenStringTrimOption_Is_PRESERVE(String phrase) throws SQLException {
+            var resultSet = newMockResultSet();
+            when(resultSet.getString(anyString())).thenReturn(phrase);
+
+            assertThat(KiwiJdbc.stringOrNullIfBlank(resultSet, "phrase", StringTrimOption.PRESERVE))
+                    .isEqualTo(phrase);
+
+            verify(resultSet).getString("phrase");
+            verifyNoMoreInteractions(resultSet);
+        }
+
+        @ParameterizedTest
+        @ValueSource(strings = {
+                "The quick",
+                "  brown fox",
+                "jumps\nover  ",
+                "\t\tthe lazy\t\r\n",
+                "   \tdog\r\n\r\n  "
+        })
+        void shouldReturn_StrippedString_WhenStringTrimOption_Is_REMOVE(String phrase) throws SQLException {
+            var resultSet = newMockResultSet();
+            when(resultSet.getString(anyString())).thenReturn(phrase);
+
+            assertThat(KiwiJdbc.stringOrNullIfBlank(resultSet, "expression", StringTrimOption.REMOVE))
+                    .isEqualTo(phrase.strip());
+
+            verify(resultSet).getString("expression");
             verifyNoMoreInteractions(resultSet);
         }
     }
