@@ -687,6 +687,43 @@ class KiwiJdbcTest {
     }
 
     @Nested
+    class TrimmedStringOrNullIfBlank {
+
+        @ParameterizedTest
+        @BlankStringSource
+        void shouldReturnNull_WhenValue_IsBlank(String value) throws SQLException {
+            var resultSet = newMockResultSet();
+            when(resultSet.getString(anyString())).thenReturn(value);
+
+            assertThat(KiwiJdbc.trimmedStringOrNullIfBlank(resultSet, "comment")).isNull();
+
+            verify(resultSet).getString("comment");
+            verifyNoMoreInteractions(resultSet);
+        }
+
+        @ParameterizedTest
+        @ValueSource(strings = {
+                "alice",
+                "Sphinx of black quartz, judge my vow",
+                "  that was a pangram",
+                "and so is this...   ",
+                "  The five boxing\r\nwizards jump quickly  ",
+                "  and also this one \r\n ",
+                "Pack my box\r\nwith five dozen\r\nliquor jugs"
+        })
+        void shouldReturn_TrimmedStringValue_FromResultSet(String phrase) throws SQLException {
+            var resultSet = newMockResultSet();
+            when(resultSet.getString(anyString())).thenReturn(phrase);
+
+            var trimmed = phrase.strip();
+            assertThat(KiwiJdbc.trimmedStringOrNullIfBlank(resultSet, "phrase")).isEqualTo(trimmed);
+
+            verify(resultSet).getString("phrase");
+            verifyNoMoreInteractions(resultSet);
+        }
+    }
+
+    @Nested
     class StringOrNullIfBlankWithTrimOption {
 
         @ParameterizedTest
