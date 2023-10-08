@@ -372,6 +372,8 @@ public class KiwiJdbc {
      * @param columnName the date column name
      * @return the String value, or {@code null} if the column was blank or {@code NULL}
      * @throws SQLException if there is any error getting the value from the database
+     * @see #trimmedStringOrNullIfBlank(ResultSet, String)
+     * @see #stringOrNullIfBlank(ResultSet, String, StringTrimOption)
      */
     @Nullable
     public static String stringOrNullIfBlank(ResultSet rs, String columnName) throws SQLException {
@@ -387,6 +389,8 @@ public class KiwiJdbc {
      * @return the String with leading and trailing whitespace removed, or {@code null} if the
      * column was blank or {@code NULL}
      * @throws SQLException if there is any error getting the value from the database
+     * @see #stringOrNullIfBlank(ResultSet, String)
+     * @see #stringOrNullIfBlank(ResultSet, String, StringTrimOption)
      */
     @Nullable
     public static String trimmedStringOrNullIfBlank(ResultSet rs, String columnName) throws SQLException {
@@ -418,6 +422,8 @@ public class KiwiJdbc {
      * @param option     how to handle leading and trailing whitespace
      * @return the String with the specified trim option applied, or {@code null} if the column was blank or {@code NULL}
      * @throws SQLException if there is any error getting the value from the database
+     * @see #stringOrNullIfBlank(ResultSet, String)
+     * @see #trimmedStringOrNullIfBlank(ResultSet, String)
      */
     @Nullable
     public static String stringOrNullIfBlank(ResultSet rs,
