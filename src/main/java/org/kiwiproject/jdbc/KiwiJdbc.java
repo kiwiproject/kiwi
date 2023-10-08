@@ -379,6 +379,21 @@ public class KiwiJdbc {
     }
 
     /**
+     * Returns a String from the specified column in the {@link ResultSet}, trimming leading and trailing
+     * whitespace. When the database value is {@code NULL} or contains only whitespace, returns {@code null}.
+     *
+     * @param rs         the ResultSet
+     * @param columnName the date column name
+     * @return the String with leading and trailing whitespace removed, or {@code null} if the
+     * column was blank or {@code NULL}
+     * @throws SQLException if there is any error getting the value from the database
+     */
+    @Nullable
+    public static String trimmedStringOrNullIfBlank(ResultSet rs, String columnName) throws SQLException {
+        return stringOrNullIfBlank(rs, columnName, StringTrimOption.REMOVE);
+    }
+
+    /**
      * Enum representing options for trimming strings.
      */
     public enum StringTrimOption {
