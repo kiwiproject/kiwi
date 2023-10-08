@@ -8,12 +8,11 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.ArgumentsSource;
 import org.junit.jupiter.params.provider.CsvSource;
 import org.junit.jupiter.params.provider.EnumSource;
 import org.junit.jupiter.params.provider.NullAndEmptySource;
 import org.junit.jupiter.params.provider.ValueSource;
-import org.kiwiproject.util.BlankStringArgumentsProvider;
+import org.kiwiproject.util.BlankStringSource;
 
 @DisplayName("KiwiEnums")
 class KiwiEnumsTest {
@@ -28,7 +27,7 @@ class KiwiEnumsTest {
         }
 
         @ParameterizedTest
-        @ArgumentsSource(BlankStringArgumentsProvider.class)
+        @BlankStringSource
         void shouldReturnEmptyOptionalWhenGivenBlankInput(String input) {
             assertThat(KiwiEnums.getIfPresent(Season.class, input)).isEmpty();
         }
@@ -65,7 +64,7 @@ class KiwiEnumsTest {
         }
 
         @ParameterizedTest
-        @ArgumentsSource(BlankStringArgumentsProvider.class)
+        @BlankStringSource
         void shouldReturnEmptyOptionalWhenGivenBlankInput(String input) {
             assertThat(KiwiEnums.getIfPresent(Season.class, input)).isEmpty();
         }

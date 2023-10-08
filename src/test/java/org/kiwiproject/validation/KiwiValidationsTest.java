@@ -34,9 +34,8 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.ArgumentsSource;
 import org.junit.jupiter.params.provider.NullAndEmptySource;
-import org.kiwiproject.util.BlankStringArgumentsProvider;
+import org.kiwiproject.util.BlankStringSource;
 
 import java.lang.annotation.Documented;
 import java.lang.annotation.Retention;
@@ -695,7 +694,7 @@ class KiwiValidationsTest {
         }
 
         @ParameterizedTest
-        @ArgumentsSource(BlankStringArgumentsProvider.class)
+        @BlankStringSource
         void shouldReturnNull_WhenFieldNameIsBlank(String input) {
             var contactDetails = new SampleContactDetails("bob@gmail.com", "703-555-1212");
 

@@ -23,11 +23,10 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
-import org.junit.jupiter.params.provider.ArgumentsSource;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.junit.jupiter.params.provider.NullAndEmptySource;
 import org.junit.jupiter.params.provider.ValueSource;
-import org.kiwiproject.util.BlankStringArgumentsProvider;
+import org.kiwiproject.util.BlankStringSource;
 
 import java.math.BigInteger;
 import java.time.Instant;
@@ -278,7 +277,7 @@ class KiwiPreconditionsTest {
         class WithNoMessage {
 
             @ParameterizedTest
-            @ArgumentsSource(BlankStringArgumentsProvider.class)
+            @BlankStringSource
             void shouldNotThrow_WhenArgumentIsBlank(String string) {
                 assertThatCode(() -> KiwiPreconditions.checkArgumentIsBlank(string))
                         .doesNotThrowAnyException();
@@ -295,7 +294,7 @@ class KiwiPreconditionsTest {
         class WithMessage {
 
             @ParameterizedTest
-            @ArgumentsSource(BlankStringArgumentsProvider.class)
+            @BlankStringSource
             void shouldNotThrow_WhenArgumentIsBlank(String string) {
                 assertThatCode(() -> KiwiPreconditions.checkArgumentIsBlank(string, "the argument cannot be blank"))
                         .doesNotThrowAnyException();
@@ -315,7 +314,7 @@ class KiwiPreconditionsTest {
         class WithTemplateMessage {
 
             @ParameterizedTest
-            @ArgumentsSource(BlankStringArgumentsProvider.class)
+            @BlankStringSource
             void shouldNotThrow_WhenArgumentIsBlank(String string) {
                 assertThatCode(() ->
                         KiwiPreconditions.checkArgumentIsBlank(string, "{} cannot be blank", "foo"))
@@ -574,14 +573,14 @@ class KiwiPreconditionsTest {
     }
 
     @ParameterizedTest
-    @ArgumentsSource(BlankStringArgumentsProvider.class)
+    @BlankStringSource
     void testRequireNotBlank_NoMessage(String value, SoftAssertions softly) {
         softly.assertThatThrownBy(() -> requireNotBlank(value))
                 .isExactlyInstanceOf(IllegalArgumentException.class);
     }
 
     @ParameterizedTest
-    @ArgumentsSource(BlankStringArgumentsProvider.class)
+    @BlankStringSource
     void testRequireNotBlank_StaticMessage(String value, SoftAssertions softly) {
         var errorMessage = "foo cannot be null";
 
@@ -592,7 +591,7 @@ class KiwiPreconditionsTest {
     }
 
     @ParameterizedTest
-    @ArgumentsSource(BlankStringArgumentsProvider.class)
+    @BlankStringSource
     void testRequireNotBlank_MessageWithTemplate(String value, SoftAssertions softly) {
         var errorMessageTemplate = "{} cannot be null (code: {})";
         Object[] args = { "foo", 42 };

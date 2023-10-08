@@ -21,9 +21,8 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.ArgumentsSource;
 import org.kiwiproject.internal.Fixtures;
-import org.kiwiproject.util.BlankStringArgumentsProvider;
+import org.kiwiproject.util.BlankStringSource;
 
 import java.util.List;
 import java.util.Map;
@@ -158,7 +157,7 @@ class YamlHelperTest {
         }
 
         @ParameterizedTest
-        @ArgumentsSource(BlankStringArgumentsProvider.class)
+        @BlankStringSource
         void shouldThrow_GivenBlankArgument(String value) {
             assertThatIllegalArgumentException()
                     .isThrownBy(() -> yamlHelper.toObject(value, Person.class));
@@ -187,7 +186,7 @@ class YamlHelperTest {
         }
 
         @ParameterizedTest
-        @ArgumentsSource(BlankStringArgumentsProvider.class)
+        @BlankStringSource
         void shouldThrow_GivenBlankArgument(String value) {
             assertThatIllegalArgumentException()
                     .isThrownBy(() -> yamlHelper.toObject(value, PERSON_TYPE_REFERENCE));
@@ -219,7 +218,7 @@ class YamlHelperTest {
         }
 
         @ParameterizedTest
-        @ArgumentsSource(BlankStringArgumentsProvider.class)
+        @BlankStringSource
         void shouldThrow_GivenBlankArgument(String value) {
             assertThatIllegalArgumentException()
                     .isThrownBy(() -> yamlHelper.toObjectList(value, PERSON_LIST_TYPE_REFERENCE));
@@ -246,7 +245,7 @@ class YamlHelperTest {
         }
 
         @ParameterizedTest
-        @ArgumentsSource(BlankStringArgumentsProvider.class)
+        @BlankStringSource
         void shouldThrow_GivenBlankArgument(String value) {
             assertThatIllegalArgumentException()
                     .isThrownBy(() -> yamlHelper.toMap(value));

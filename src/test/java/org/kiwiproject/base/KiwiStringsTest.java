@@ -24,9 +24,8 @@ import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.ArgumentsSource;
 import org.junit.jupiter.params.provider.ValueSource;
-import org.kiwiproject.util.BlankStringArgumentsProvider;
+import org.kiwiproject.util.BlankStringSource;
 
 import java.util.List;
 import java.util.NoSuchElementException;
@@ -117,21 +116,21 @@ class KiwiStringsTest {
         class NullSafeWithTrimAndOmitEmpty {
 
             @ParameterizedTest
-            @ArgumentsSource(BlankStringArgumentsProvider.class)
+            @BlankStringSource
             void shouldReturnEmptyIterable_WithBlankArgument(String string) {
                 var iterable = nullSafeSplitWithTrimAndOmitEmpty(string);
                 assertThat(iterable).isEmpty();
             }
 
             @ParameterizedTest
-            @ArgumentsSource(BlankStringArgumentsProvider.class)
+            @BlankStringSource
             void shouldReturnEmptyIterable_WithBlankArgument_AndCharSeparator(String string) {
                 var iterable = nullSafeSplitWithTrimAndOmitEmpty(string, COMMA);
                 assertThat(iterable).isEmpty();
             }
 
             @ParameterizedTest
-            @ArgumentsSource(BlankStringArgumentsProvider.class)
+            @BlankStringSource
             void shouldReturnEmptyIterable_WithBlankArgument_AndStringSeparator(String string) {
                 var iterable = nullSafeSplitWithTrimAndOmitEmpty(string, String.valueOf(COMMA));
                 assertThat(iterable).isEmpty();
@@ -231,32 +230,32 @@ class KiwiStringsTest {
         class NullSafeToList {
 
             @ParameterizedTest
-            @ArgumentsSource(BlankStringArgumentsProvider.class)
+            @BlankStringSource
             void shouldReturnEmptyList_WithBlankArgument(String string) {
                 assertThat(nullSafeSplitToList(string)).isEmpty();
             }
 
             @ParameterizedTest
-            @ArgumentsSource(BlankStringArgumentsProvider.class)
+            @BlankStringSource
             void shouldReturnEmptyList_WithBlankArgument_AndCharSeparator(String string) {
                 assertThat(nullSafeSplitToList(string, COMMA)).isEmpty();
             }
 
             @ParameterizedTest
-            @ArgumentsSource(BlankStringArgumentsProvider.class)
+            @BlankStringSource
             void shouldReturnEmptyList_WithBlankArgument_AndStringSeparator(String string) {
                 assertThat(nullSafeSplitToList(string, String.valueOf(COMMA))).isEmpty();
             }
 
             @ParameterizedTest
-            @ArgumentsSource(BlankStringArgumentsProvider.class)
+            @BlankStringSource
             void shouldReturnEmptyList_WithBlankArgument_AndCharSeparator_AndMaxGroups(String string) {
                 assertThat(nullSafeSplitToList(string, NEWLINE, 5)).isEmpty();
             }
 
 
             @ParameterizedTest
-            @ArgumentsSource(BlankStringArgumentsProvider.class)
+            @BlankStringSource
             void shouldReturnEmptyList_WithBlankArgument_AndStringSeparator_AndMaxGroups(String string) {
                 assertThat(nullSafeSplitToList(string, String.valueOf(COMMA), 10)).isEmpty();
             }
@@ -434,7 +433,7 @@ class KiwiStringsTest {
     class BlankToNull {
 
         @ParameterizedTest
-        @ArgumentsSource(BlankStringArgumentsProvider.class)
+        @BlankStringSource
         void shouldBeNull_WithBlankStrings(String argument) {
             var result = blankToNull(argument);
             assertThat(result).isNull();

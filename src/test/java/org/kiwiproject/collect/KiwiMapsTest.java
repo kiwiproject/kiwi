@@ -9,8 +9,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.ArgumentsSource;
-import org.kiwiproject.util.BlankStringArgumentsProvider;
+import org.kiwiproject.util.BlankStringSource;
 
 import java.nio.file.Path;
 import java.time.LocalDate;
@@ -250,7 +249,7 @@ class KiwiMapsTest {
             }
 
             @ParameterizedTest
-            @ArgumentsSource(BlankStringArgumentsProvider.class)
+            @BlankStringSource
             void whenKeyIsBlank(String value) {
                 assertThat(KiwiMaps.keyExistsWithNullValue(Map.of(), value)).isFalse();
             }

@@ -12,14 +12,13 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
-import org.junit.jupiter.params.provider.ArgumentsSource;
 import org.junit.jupiter.params.provider.CsvSource;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.junit.jupiter.params.provider.ValueSource;
 import org.kiwiproject.json.JsonHelper;
 import org.kiwiproject.json.JsonHelper.OutputFormat;
 import org.kiwiproject.spring.data.KiwiSort.Direction;
-import org.kiwiproject.util.BlankStringArgumentsProvider;
+import org.kiwiproject.util.BlankStringSource;
 
 import java.util.stream.Stream;
 
@@ -89,7 +88,7 @@ class KiwiSortTest {
     }
 
     @ParameterizedTest
-    @ArgumentsSource(BlankStringArgumentsProvider.class)
+    @BlankStringSource
     void shouldNotPermitBlankPropertyForAscendingSort(String value) {
         assertThatIllegalArgumentException()
                 .isThrownBy(() -> KiwiSort.ofAscending(value));
@@ -108,7 +107,7 @@ class KiwiSortTest {
     }
 
     @ParameterizedTest
-    @ArgumentsSource(BlankStringArgumentsProvider.class)
+    @BlankStringSource
     void shouldNotPermitBlankPropertyForDescendingSort(String value) {
         assertThatIllegalArgumentException()
                 .isThrownBy(() -> KiwiSort.ofDescending(value));
@@ -138,7 +137,7 @@ class KiwiSortTest {
     class DirectionFromString {
 
         @ParameterizedTest
-        @ArgumentsSource(BlankStringArgumentsProvider.class)
+        @BlankStringSource
         void shouldRequireNonBlankValue(String value) {
             assertThatIllegalArgumentException()
                     .isThrownBy(() -> Direction.fromString(value))

@@ -6,14 +6,13 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.ArgumentsSource;
-import org.kiwiproject.util.BlankStringArgumentsProvider;
+import org.kiwiproject.util.BlankStringSource;
 
 @DisplayName("SimpleHostAndPort")
 class SimpleHostAndPortTest {
 
     @ParameterizedTest
-    @ArgumentsSource(BlankStringArgumentsProvider.class)
+    @BlankStringSource
     void testFromWithDefaults_WithBlankStrings(String input) {
         var hostAndPort = SimpleHostAndPort.from(input, "192.168.1.101", 8900);
 
@@ -44,7 +43,7 @@ class SimpleHostAndPortTest {
     }
 
     @ParameterizedTest
-    @ArgumentsSource(BlankStringArgumentsProvider.class)
+    @BlankStringSource
     void testFromWithNoDefaults_WithBlankStrings(String input) {
         assertThatThrownBy(() -> SimpleHostAndPort.from(input))
                 .isExactlyInstanceOf(IllegalArgumentException.class)

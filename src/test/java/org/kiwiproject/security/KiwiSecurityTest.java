@@ -9,10 +9,9 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.ArgumentsSource;
 import org.junit.jupiter.params.provider.CsvSource;
 import org.junit.jupiter.params.provider.EnumSource;
-import org.kiwiproject.util.BlankStringArgumentsProvider;
+import org.kiwiproject.util.BlankStringSource;
 
 import javax.net.ssl.KeyManagerFactory;
 import javax.net.ssl.TrustManagerFactory;
@@ -150,7 +149,7 @@ class KiwiSecurityTest {
                 }
 
                 @ParameterizedTest
-                @ArgumentsSource(BlankStringArgumentsProvider.class)
+                @BlankStringSource
                 void andKeyStoreTypeIsBlank(String blankKeyStoreType) {
                     assertThatIllegalArgumentException()
                             .isThrownBy(() ->
@@ -162,7 +161,7 @@ class KiwiSecurityTest {
                 }
 
                 @ParameterizedTest
-                @ArgumentsSource(BlankStringArgumentsProvider.class)
+                @BlankStringSource
                 void andKeyManagerAlgorithmIsBlank(String blankKeyManagerAlgorithm) {
                     assertThatIllegalArgumentException()
                             .isThrownBy(() ->
@@ -176,7 +175,7 @@ class KiwiSecurityTest {
             }
 
             @ParameterizedTest
-            @ArgumentsSource(BlankStringArgumentsProvider.class)
+            @BlankStringSource
             void whenBlankTrustStorePath(String blankTrustStorePath) {
                 assertThatIllegalArgumentException()
                         .isThrownBy(() ->
@@ -201,7 +200,7 @@ class KiwiSecurityTest {
             }
 
             @ParameterizedTest
-            @ArgumentsSource(BlankStringArgumentsProvider.class)
+            @BlankStringSource
             void whenBlankTrustStoreType(String blankTrustStoreType) {
                 assertThatIllegalArgumentException()
                         .isThrownBy(() ->
@@ -213,7 +212,7 @@ class KiwiSecurityTest {
             }
 
             @ParameterizedTest
-            @ArgumentsSource(BlankStringArgumentsProvider.class)
+            @BlankStringSource
             void whenBlankTrustManagerAlgorithm(String blankTrustManagerAlgorithm) {
                 assertThatIllegalArgumentException()
                         .isThrownBy(() ->
@@ -225,7 +224,7 @@ class KiwiSecurityTest {
             }
 
             @ParameterizedTest
-            @ArgumentsSource(BlankStringArgumentsProvider.class)
+            @BlankStringSource
             void whenBlankProtocol(String blankProtocol) {
                 assertThatIllegalArgumentException()
                         .isThrownBy(() ->
