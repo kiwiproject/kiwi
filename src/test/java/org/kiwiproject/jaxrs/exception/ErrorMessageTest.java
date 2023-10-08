@@ -12,11 +12,10 @@ import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.ArgumentsSource;
 import org.kiwiproject.collect.KiwiMaps;
 import org.kiwiproject.internal.Fixtures;
 import org.kiwiproject.json.JsonHelper;
-import org.kiwiproject.util.BlankStringArgumentsProvider;
+import org.kiwiproject.util.BlankStringSource;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -42,7 +41,7 @@ class ErrorMessageTest {
     class ShouldConstruct {
 
         @ParameterizedTest
-        @ArgumentsSource(BlankStringArgumentsProvider.class)
+        @BlankStringSource
         void withBlankString(String blankString) {
             var errorMessage = new ErrorMessage(blankString);
 
@@ -211,7 +210,7 @@ class ErrorMessageTest {
         }
 
         @ParameterizedTest
-        @ArgumentsSource(BlankStringArgumentsProvider.class)
+        @BlankStringSource
         void whenMapContainsBlankMessage(String blankMessage) {
             // Map.of does not permit null values; use KiwiMaps instead
             Map<String, Object> props = KiwiMaps.newHashMap(

@@ -14,11 +14,10 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.ArgumentsSource;
 import org.kiwiproject.jaxrs.exception.ErrorMessage;
 import org.kiwiproject.jaxrs.exception.JaxrsBadRequestException;
 import org.kiwiproject.jaxrs.exception.JaxrsValidationException;
-import org.kiwiproject.util.BlankStringArgumentsProvider;
+import org.kiwiproject.util.BlankStringSource;
 import org.kiwiproject.validation.group.ExistingObject;
 import org.kiwiproject.validation.group.KiwiValidationGroups;
 import org.kiwiproject.validation.group.NewObject;
@@ -152,7 +151,7 @@ class KiwiJaxrsValidationsTest {
         }
 
         @ParameterizedTest
-        @ArgumentsSource(BlankStringArgumentsProvider.class)
+        @BlankStringSource
         void shouldThrow_WhenStringIsBlank(String input) {
             var thrown = catchThrowable(() ->
                     KiwiJaxrsValidations.assertNotBlank("mobileNumber", input));
