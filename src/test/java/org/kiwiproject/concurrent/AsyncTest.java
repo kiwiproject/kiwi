@@ -10,10 +10,12 @@ import static org.awaitility.Awaitility.await;
 import static org.awaitility.Durations.FIVE_HUNDRED_MILLISECONDS;
 
 import lombok.extern.slf4j.Slf4j;
+import org.awaitility.core.ConditionFactory;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
+import org.junitpioneer.jupiter.RetryingTest;
 import org.kiwiproject.base.DefaultEnvironment;
 import org.kiwiproject.base.KiwiEnvironment;
 import org.kiwiproject.concurrent.Async.Mode;
@@ -275,9 +277,14 @@ class AsyncTest {
             assertThat(future).isCompleted();
         }
 
-        @Test
+        /*
+         * @implNote This is a "retrying" test with a higher task duration because we have seen this test
+         * fail (see issue #1065) when run individually, i.e. in an IDE.
+         */
+        @RetryingTest(3)
         void shouldThrowAsyncException_WhenTimesOut_BeforeTheFutureCompletes() {
-            var task = new ConcurrentTask();
+            var duration = Duration.ofMillis(100);
+            var task = new ConcurrentTask(duration);
             CompletableFuture<Integer> future = Async.doAsync(task::supply);
 
             assertThatThrownBy(() -> Async.waitFor(future, 1, TimeUnit.MILLISECONDS))
@@ -315,15 +322,20 @@ class AsyncTest {
             assertThat(future3).isCompleted();
         }
 
-        @Test
+        /*
+         * @implNote This is a "retrying" test with a higher task duration because we have seen this test
+         * fail (see issue #1065) when run individually, i.e. in an IDE.
+         */
+        @RetryingTest(3)
         void shouldThrowAsyncException_WhenTimesOut_BeforeAllFuturesComplete() {
-            var task1 = new ConcurrentTask();
+            var duration = Duration.ofMillis(200);
+            var task1 = new ConcurrentTask(duration);
             CompletableFuture<Integer> future1 = Async.doAsync(task1::supply);
 
-            var task2 = new ConcurrentTask();
+            var task2 = new ConcurrentTask(duration);
             CompletableFuture<Integer> future2 = Async.doAsync(task2::supply);
 
-            var task3 = new ConcurrentTask();
+            var task3 = new ConcurrentTask(duration);
             CompletableFuture<Integer> future3 = Async.doAsync(task3::supply);
 
             var futures = List.of(future1, future2, future3);
@@ -365,16 +377,21 @@ class AsyncTest {
             assertThat(future3).isCompleted();
         }
 
+        /*
+         * @implNote This is a "retrying" test with a higher task duration because we have seen this test
+         * fail (see issue #1065) when run individually, i.e. in an IDE.
+         */
         @SuppressWarnings("rawtypes")
-        @Test
+        @RetryingTest(3)
         void shouldThrowAsyncException_WhenTimesOut_BeforeAllFuturesComplete() {
-            var task1 = new ConcurrentTask();
+            var duration = Duration.ofMillis(200);
+            var task1 = new ConcurrentTask(duration);
             CompletableFuture future1 = Async.doAsync(task1::supply);
 
-            var task2 = new ConcurrentTask();
+            var task2 = new ConcurrentTask(duration);
             CompletableFuture future2 = Async.doAsync(task2::supply);
 
-            var task3 = new ConcurrentTask();
+            var task3 = new ConcurrentTask(duration);
             CompletableFuture future3 = Async.doAsync(task3::supply);
 
             var futures = List.of(future1, future2, future3);
@@ -402,7 +419,7 @@ class AsyncTest {
                     .describedAs("immediately after triggering run, the count should still be 0")
                     .isZero();
 
-            await().atMost(FIVE_HUNDRED_MILLISECONDS).until(futureWithTimeout::isCompletedExceptionally);
+            awaitAtMost500msWith25MsPoll().until(futureWithTimeout::isCompletedExceptionally);
 
             assertThat(task.getCurrentCount())
                     .describedAs("the count should still be 0, since we expect to have timed out before the counter is incremented")
@@ -425,18 +442,24 @@ class AsyncTest {
     }
 
     private void confirmCompletion(ConcurrentTask task) {
-        await().atMost(FIVE_HUNDRED_MILLISECONDS).until(() -> task.getCurrentCount() == 1);
+        awaitAtMost500msWith25MsPoll().until(() -> task.getCurrentCount() == 1);
+    }
+
+    private static ConditionFactory awaitAtMost500msWith25MsPoll() {
+        return await()
+                .atMost(FIVE_HUNDRED_MILLISECONDS)
+                .pollDelay(Duration.ofMillis(25));
     }
 
     /**
      * Simple task implementation that provides a runnable and supplier interface method and a counter that can
-     * be checked for number of completed executions.
+     * be checked for number of completed executions. It simulates a task that takes some time to complete.
      */
     @Slf4j
     static class ConcurrentTask {
 
         private final AtomicInteger counter;
-        private final long delayMillis;
+        private final long durationMillis;
 
         private RuntimeException exceptionToThrow;
 
@@ -444,9 +467,9 @@ class AsyncTest {
             this(Duration.ofMillis(10));
         }
 
-        ConcurrentTask(Duration delay) {
+        ConcurrentTask(Duration duration) {
             this.counter = new AtomicInteger();
-            this.delayMillis = delay.toMillis();
+            this.durationMillis = duration.toMillis();
         }
 
         ConcurrentTask withException(RuntimeException exceptionToThrow) {
@@ -459,7 +482,7 @@ class AsyncTest {
         }
 
         Integer supply() {
-            LOG.debug("executing concurrent task with delay of: {}ms", delayMillis);
+            LOG.debug("executing concurrent task with duration of: {}ms", durationMillis);
             try {
                 var startTime = System.nanoTime();
                 performWait();
@@ -489,7 +512,7 @@ class AsyncTest {
         }
 
         private void performWait() throws InterruptedException {
-            ENV.sleep(delayMillis);
+            ENV.sleep(durationMillis);
         }
     }
 }
