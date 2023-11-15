@@ -265,7 +265,11 @@ class AsyncTest {
     @Nested
     class WaitFor {
 
-        @Test
+        /**
+         * @implNote This test has been failing intermittently running in GitHub actions, mainly on JDK 21 but
+         * sometimes on JDK 17. For now, making it a "retrying test". Also, see issue #1070.
+         */
+        @RetryingTest(3)
         void shouldSucceed_WhenTheFutureCompletes_BeforeTimeout() {
             var task = new ConcurrentTask();
             CompletableFuture<Integer> future = Async.doAsync(task::supply);
