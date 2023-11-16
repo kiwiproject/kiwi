@@ -47,13 +47,19 @@ class AsyncTest {
         // System.out.printf("BeforeAll: Took %d nanos ( %d millis ) to init the common pool%n", elapsed, millis);
 
         var task = new ConcurrentTask();
+        System.out.printf("Task duration millis: %d%n", task.durationMillis);
         var future = Async.doAsync(task::supply);
 
-        var start = System.nanoTime();
-        Async.waitFor(future, 250, TimeUnit.MILLISECONDS);
-        var elapsed = System.nanoTime() - start;
-        var millis = TimeUnit.NANOSECONDS.toMillis(elapsed);
-        System.out.printf(":BeforeAll: Took %d nanos ( %d millis ) for waitFor to return with 1 second timeout%n", elapsed, millis);
+        try {
+            var start = System.nanoTime();
+            Async.waitFor(future, 250, TimeUnit.MILLISECONDS);
+            var elapsed = System.nanoTime() - start;
+            var millis = TimeUnit.NANOSECONDS.toMillis(elapsed);
+            System.out.printf(":BeforeAll: Took %d nanos ( %d millis ) for waitFor to return with 1 second timeout%n", elapsed, millis);
+        } catch (Exception e) {
+            System.out.println("EXCEPTION IN beforeAll");
+            e.printStackTrace(System.out);
+        }
     }
 
     @BeforeEach
@@ -65,13 +71,19 @@ class AsyncTest {
         // System.out.printf("BeforeEach: Took %d nanos ( %d millis ) to init the common pool%n", elapsed, millis);
 
         var task = new ConcurrentTask();
+        System.out.printf("Task duration millis: %d%n", task.durationMillis);
         var future = Async.doAsync(task::supply);
 
-        var start = System.nanoTime();
-        Async.waitFor(future, 250, TimeUnit.MILLISECONDS);
-        var elapsed = System.nanoTime() - start;
-        var millis = TimeUnit.NANOSECONDS.toMillis(elapsed);
-        System.out.printf(":BeforeEach: Took %d nanos ( %d millis ) for waitFor to return with 1 second timeout%n", elapsed, millis);
+        try {
+            var start = System.nanoTime();
+            Async.waitFor(future, 250, TimeUnit.MILLISECONDS);
+            var elapsed = System.nanoTime() - start;
+            var millis = TimeUnit.NANOSECONDS.toMillis(elapsed);
+            System.out.printf(":BeforeEach: Took %d nanos ( %d millis ) for waitFor to return with 1 second timeout%n", elapsed, millis);
+        } catch (Exception e) {
+            System.out.println("EXCEPTION IN setUp");
+            e.printStackTrace(System.out);
+        }
     }
 
     @AfterEach
