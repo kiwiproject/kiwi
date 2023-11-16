@@ -501,7 +501,22 @@ class AsyncTest {
                     .hasMessage("TimeoutException occurred (maximum wait was specified as 5 MILLISECONDS)")
                     .hasCauseExactlyInstanceOf(TimeoutException.class);
 
-            cancel(futureWithTimeout);
+            LOG.info("futureWithTimeout.isDone: {}", futureWithTimeout.isDone());
+            LOG.info("futureWithTimeout.isCancelled: {}", futureWithTimeout.isCancelled());
+            LOG.info("futureWithTimeout.isCompletedExceptionally: {}", futureWithTimeout.isCompletedExceptionally());
+
+            LOG.info("future.isDone: {}", future.isDone());
+            LOG.info("future.isCancelled: {}", future.isCancelled());
+            LOG.info("future.isCompletedExceptionally: {}", future.isCompletedExceptionally());
+
+            LOG.info("Cancel the future!");
+
+            cancel(future);
+
+            LOG.info("future.isDone: {}", future.isDone());
+            LOG.info("future.isCancelled: {}", future.isCancelled());
+            LOG.info("future.isCompletedExceptionally: {}", future.isCompletedExceptionally());
+
         }
     }
 
