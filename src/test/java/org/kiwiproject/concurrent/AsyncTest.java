@@ -27,6 +27,7 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.ForkJoinPool;
 // import java.util.concurrent.ForkJoinPool;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
@@ -49,7 +50,7 @@ class AsyncTest {
         var future = Async.doAsync(task::supply);
 
         var start = System.nanoTime();
-        Async.waitFor(future, 1, TimeUnit.SECONDS);
+        Async.waitFor(future, 250, TimeUnit.MILLISECONDS);
         var elapsed = System.nanoTime() - start;
         var millis = TimeUnit.NANOSECONDS.toMillis(elapsed);
         System.out.printf(":BeforeAll: Took %d nanos ( %d millis ) for waitFor to return with 1 second timeout%n", elapsed, millis);
@@ -67,7 +68,7 @@ class AsyncTest {
         var future = Async.doAsync(task::supply);
 
         var start = System.nanoTime();
-        Async.waitFor(future, 1, TimeUnit.SECONDS);
+        Async.waitFor(future, 250, TimeUnit.MILLISECONDS);
         var elapsed = System.nanoTime() - start;
         var millis = TimeUnit.NANOSECONDS.toMillis(elapsed);
         System.out.printf(":BeforeEach: Took %d nanos ( %d millis ) for waitFor to return with 1 second timeout%n", elapsed, millis);
