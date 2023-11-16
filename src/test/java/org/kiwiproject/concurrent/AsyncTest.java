@@ -39,45 +39,45 @@ class AsyncTest {
 
     private static final KiwiEnvironment ENV = new DefaultEnvironment();
 
-    @BeforeAll
-    static void beforeAll() {
-        LOG.info("-------------------- beforeAll --------------------");
+    // @BeforeAll
+    // static void beforeAll() {
+    //     LOG.info("-------------------- beforeAll --------------------");
 
-        var task = new ConcurrentTask("beforeAll");
-        LOG.info("Task duration millis: {}", task.durationMillis);
-        var future = Async.doAsync(task::supply);
+    //     var task = new ConcurrentTask("beforeAll");
+    //     LOG.info("Task duration millis: {}", task.durationMillis);
+    //     var future = Async.doAsync(task::supply);
 
-        try {
-            LOG.info("About to wait");
-            var start = System.nanoTime();
-            Async.waitFor(future, 250, TimeUnit.MILLISECONDS);
-            var elapsed = System.nanoTime() - start;
-            var millis = TimeUnit.NANOSECONDS.toMillis(elapsed);
-            LOG.info(":BeforeAll: Took {} nanos ( {} millis ) for waitFor to return with 250ms timeout%n", elapsed, millis);
-        } catch (Exception e) {
-            LOG.error("EXCEPTION IN beforeAll", e);
-        }
-    }
+    //     try {
+    //         LOG.info("About to wait");
+    //         var start = System.nanoTime();
+    //         Async.waitFor(future, 250, TimeUnit.MILLISECONDS);
+    //         var elapsed = System.nanoTime() - start;
+    //         var millis = TimeUnit.NANOSECONDS.toMillis(elapsed);
+    //         LOG.info(":BeforeAll: Took {} nanos ( {} millis ) for waitFor to return with 250ms timeout%n", elapsed, millis);
+    //     } catch (Exception e) {
+    //         LOG.error("EXCEPTION IN beforeAll", e);
+    //     }
+    // }
 
-    @BeforeEach
-    void setUp() {
-        System.out.println("-------------------- setUp --------------------");
+    // @BeforeEach
+    // void setUp() {
+    //     System.out.println("-------------------- setUp --------------------");
 
-        var task = new ConcurrentTask("setUp");
-        LOG.info("Task duration millis: {}", task.durationMillis);
-        var future = Async.doAsync(task::supply);
+    //     var task = new ConcurrentTask("setUp");
+    //     LOG.info("Task duration millis: {}", task.durationMillis);
+    //     var future = Async.doAsync(task::supply);
 
-        try {
-            LOG.info("About to wait");
-            var start = System.nanoTime();
-            Async.waitFor(future, 250, TimeUnit.MILLISECONDS);
-            var elapsed = System.nanoTime() - start;
-            var millis = TimeUnit.NANOSECONDS.toMillis(elapsed);
-            LOG.info(":BeforeEach: Took {} nanos ( {} millis ) for waitFor to return with 250ms timeout%n", elapsed, millis);
-        } catch (Exception e) {
-            LOG.error("EXCEPTION IN setUp", e);
-        }
-    }
+    //     try {
+    //         LOG.info("About to wait");
+    //         var start = System.nanoTime();
+    //         Async.waitFor(future, 250, TimeUnit.MILLISECONDS);
+    //         var elapsed = System.nanoTime() - start;
+    //         var millis = TimeUnit.NANOSECONDS.toMillis(elapsed);
+    //         LOG.info(":BeforeEach: Took {} nanos ( {} millis ) for waitFor to return with 250ms timeout%n", elapsed, millis);
+    //     } catch (Exception e) {
+    //         LOG.error("EXCEPTION IN setUp", e);
+    //     }
+    // }
 
     @AfterEach
     void tearDown() {
@@ -343,6 +343,8 @@ class AsyncTest {
                     .hasCauseInstanceOf(TimeoutException.class);
 
             assertThat(task.getCurrentCount()).isZero();
+
+            cancel(future);
         }
     }
 
@@ -398,6 +400,10 @@ class AsyncTest {
             assertThat(task1.getCurrentCount()).isZero();
             assertThat(task2.getCurrentCount()).isZero();
             assertThat(task3.getCurrentCount()).isZero();
+
+           cancel(future1);
+           cancel(future2);
+           cancel(future3);
         }
     }
 
@@ -432,7 +438,7 @@ class AsyncTest {
          * @implNote This is a "retrying" test with a higher task duration because we have seen this test
          * fail (see issue #1065) when run individually, i.e. in an IDE.
          */
-        @SuppressWarnings("rawtypes")
+        @SuppressWarnings({"rawtypes", "unchecked"})
         // @RetryingTest(3)
         @Test
         void shouldThrowAsyncException_WhenTimesOut_BeforeAllFuturesComplete() {
@@ -455,6 +461,10 @@ class AsyncTest {
             assertThat(task1.getCurrentCount()).isZero();
             assertThat(task2.getCurrentCount()).isZero();
             assertThat(task3.getCurrentCount()).isZero();
+
+            cancel(future1);
+            cancel(future2);
+            cancel(future3);
         }
     }
 
@@ -490,10 +500,17 @@ class AsyncTest {
             assertThat(asyncException)
                     .hasMessage("TimeoutException occurred (maximum wait was specified as 5 MILLISECONDS)")
                     .hasCauseExactlyInstanceOf(TimeoutException.class);
+
+            cancel(futureWithTimeout);
         }
     }
 
-    private void confirmCompletion(ConcurrentTask task) {
+    private static <T> void cancel(CompletableFuture<T> future) {
+        var wasCancelled = future.cancel(true);
+        assertThat(wasCancelled).isTrue();
+    }
+
+    private static void confirmCompletion(ConcurrentTask task) {
         awaitAtMost500msWith25MsPoll().until(() -> task.getCurrentCount() == 1);
     }
 
