@@ -40,6 +40,8 @@ class AsyncTest {
 
     @BeforeAll
     static void beforeAll() {
+        System.out.println("-------------------- beforeAll --------------------");
+
         // var start = System.nanoTime();
         // ForkJoinPool.commonPool();
         // var elapsed = System.nanoTime() - start;
@@ -51,6 +53,7 @@ class AsyncTest {
         var future = Async.doAsync(task::supply);
 
         try {
+            System.out.println("About to wait");
             var start = System.nanoTime();
             Async.waitFor(future, 250, TimeUnit.MILLISECONDS);
             var elapsed = System.nanoTime() - start;
@@ -64,6 +67,8 @@ class AsyncTest {
 
     @BeforeEach
     void setUp() {
+        System.out.println("-------------------- setUp --------------------");
+
         // var start = System.nanoTime();
         // ForkJoinPool.commonPool();
         // var elapsed = System.nanoTime() - start;
@@ -75,6 +80,7 @@ class AsyncTest {
         var future = Async.doAsync(task::supply);
 
         try {
+            System.out.println("About to wait");
             var start = System.nanoTime();
             Async.waitFor(future, 250, TimeUnit.MILLISECONDS);
             var elapsed = System.nanoTime() - start;
