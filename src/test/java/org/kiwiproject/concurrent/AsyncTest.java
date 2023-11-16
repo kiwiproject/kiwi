@@ -27,7 +27,7 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.concurrent.ForkJoinPool;
+// import java.util.concurrent.ForkJoinPool;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -39,20 +39,38 @@ class AsyncTest {
 
     @BeforeAll
     static void beforeAll() {
+        // var start = System.nanoTime();
+        // ForkJoinPool.commonPool();
+        // var elapsed = System.nanoTime() - start;
+        // var millis = TimeUnit.NANOSECONDS.toMillis(elapsed);
+        // System.out.printf("BeforeAll: Took %d nanos ( %d millis ) to init the common pool%n", elapsed, millis);
+
+        var task = new ConcurrentTask();
+        var future = Async.doAsync(task::supply);
+
         var start = System.nanoTime();
-        ForkJoinPool.commonPool();
+        Async.waitFor(future, 1, TimeUnit.SECONDS);
         var elapsed = System.nanoTime() - start;
         var millis = TimeUnit.NANOSECONDS.toMillis(elapsed);
-        System.out.printf("BeforeAll: Took %d nanos ( %d millis ) to init the common pool%n", elapsed, millis);
+        System.out.printf(":BeforeAll: Took %d nanos ( %d millis ) for waitFor to return with 1 second timeout%n", elapsed, millis);
     }
 
     @BeforeEach
     void setUp() {
+        // var start = System.nanoTime();
+        // ForkJoinPool.commonPool();
+        // var elapsed = System.nanoTime() - start;
+        // var millis = TimeUnit.NANOSECONDS.toMillis(elapsed);
+        // System.out.printf("BeforeEach: Took %d nanos ( %d millis ) to init the common pool%n", elapsed, millis);
+
+        var task = new ConcurrentTask();
+        var future = Async.doAsync(task::supply);
+
         var start = System.nanoTime();
-        ForkJoinPool.commonPool();
+        Async.waitFor(future, 1, TimeUnit.SECONDS);
         var elapsed = System.nanoTime() - start;
         var millis = TimeUnit.NANOSECONDS.toMillis(elapsed);
-        System.out.printf("BeforeEach: Took %d nanos ( %d millis ) to init the common pool%n", elapsed, millis);
+        System.out.printf(":BeforeEach: Took %d nanos ( %d millis ) for waitFor to return with 1 second timeout%n", elapsed, millis);
     }
 
     @AfterEach
