@@ -509,6 +509,10 @@ class AsyncTest {
             LOG.info("future.isCancelled: {}", future.isCancelled());
             LOG.info("future.isCompletedExceptionally: {}", future.isCompletedExceptionally());
 
+            LOG.info("Wait a bit before cancelling the future...");
+
+            ENV.sleepQuietly(5_000);  // TODO - temporary b/c both sets of future.isXxx were the same, unexpectedly...
+
             LOG.info("Cancel the future!");
 
             cancel(future);
