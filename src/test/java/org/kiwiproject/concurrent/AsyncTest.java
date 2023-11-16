@@ -43,7 +43,7 @@ class AsyncTest {
     static void beforeAll() {
         LOG.info("-------------------- beforeAll --------------------");
 
-        var task = new ConcurrentTask();
+        var task = new ConcurrentTask("beforeAll");
         LOG.info("Task duration millis: {}", task.durationMillis);
         var future = Async.doAsync(task::supply);
 
@@ -63,7 +63,7 @@ class AsyncTest {
     void setUp() {
         System.out.println("-------------------- setUp --------------------");
 
-        var task = new ConcurrentTask();
+        var task = new ConcurrentTask("setUp");
         LOG.info("Task duration millis: {}", task.durationMillis);
         var future = Async.doAsync(task::supply);
 
@@ -102,7 +102,7 @@ class AsyncTest {
 
         @Test
         void shouldNotBlock_WhenAsyncModeIsEnabled() {
-            var task = new ConcurrentTask();
+            var task = new ConcurrentTask("DoAsyncWithRunnable#shouldNotBlock_WhenAsyncModeIsEnabled");
             CompletableFuture<Void> future = Async.runAsync(task::run);
 
             // verify that immediately after triggering run, the count is still 0
@@ -118,7 +118,7 @@ class AsyncTest {
         @Test
         void shouldNotThrowExceptionWhenCompletesExceptionally() {
             var ex = new RuntimeException("oops");
-            var task = new ConcurrentTask().withException(ex);
+            var task = new ConcurrentTask("DoAsyncWithRunnable#shouldNotThrowExceptionWhenCompletesExceptionally").withException(ex);
             CompletableFuture<Void> future = Async.runAsync(task::run);
 
             // verify that immediately after triggering run, the count is still 0
@@ -134,7 +134,7 @@ class AsyncTest {
         @Test
         void shouldBlock_WhenAsyncModeIsDisabled() {
             Async.setUnitTestAsyncMode(Mode.DISABLED);
-            var task = new ConcurrentTask();
+            var task = new ConcurrentTask("DoAsyncWithRunnable#shouldBlock_WhenAsyncModeIsDisabled");
             CompletableFuture<Void> future = Async.runAsync(task::run);
 
             // verify that immediately after triggering run with mode=DISABLED, the count is 1
@@ -167,7 +167,7 @@ class AsyncTest {
 
         @Test
         void shouldNotBlock_WhenAsyncModeIsEnabled() {
-            var task = new ConcurrentTask();
+            var task = new ConcurrentTask("DoAsyncWithRunnableAndExecutor#shouldNotBlock_WhenAsyncModeIsEnabled");
             CompletableFuture<Void> future = Async.runAsync(task::run, executor);
 
             // verify that immediately after triggering run, the count is still 0
@@ -180,7 +180,7 @@ class AsyncTest {
         @Test
         void shouldBlock_WhenAsyncModeIsDisabled() {
             Async.setUnitTestAsyncMode(Mode.DISABLED);
-            var task = new ConcurrentTask();
+            var task = new ConcurrentTask("DoAsyncWithRunnableAndExecutor#shouldBlock_WhenAsyncModeIsDisabled");
             CompletableFuture<Void> future = Async.runAsync(task::run, executor);
 
             // verify that immediately after triggering run with mode=DISABLED, the count is 1
@@ -236,7 +236,7 @@ class AsyncTest {
 
         @Test
         void shouldNotBlock_WhenAsyncModeIsEnabled() {
-            var task = new ConcurrentTask();
+            var task = new ConcurrentTask("DoAsyncWithSupplier#shouldNotBlock_WhenAsyncModeIsEnabled");
             CompletableFuture<Integer> future = Async.supplyAsync(task::supply);
 
             // verify that immediately after triggering run, the count is still 0
@@ -250,7 +250,7 @@ class AsyncTest {
         @Test
         void shouldBlock_WhenAsyncModeIsDisabled() {
             Async.setUnitTestAsyncMode(Mode.DISABLED);
-            var task = new ConcurrentTask();
+            var task = new ConcurrentTask("DoAsyncWithSupplier#shouldBlock_WhenAsyncModeIsDisabled");
             CompletableFuture<Integer> future = Async.supplyAsync(task::supply);
 
             // verify that immediately after triggering run with mode=DISABLED, the count is 1
@@ -281,7 +281,7 @@ class AsyncTest {
 
         @Test
         void shouldNotBlock_WhenAsyncModeIsEnabled() {
-            var task = new ConcurrentTask();
+            var task = new ConcurrentTask("DoAsyncWithSupplierAndExecutor#shouldNotBlock_WhenAsyncModeIsEnabled");
             CompletableFuture<Integer> future = Async.supplyAsync(task::supply, executor);
 
             // verify that immediately after triggering run, the count is still 0
@@ -295,7 +295,7 @@ class AsyncTest {
         @Test
         void shouldBlock_WhenAsyncModeIsDisabled() {
             Async.setUnitTestAsyncMode(Mode.DISABLED);
-            var task = new ConcurrentTask();
+            var task = new ConcurrentTask("DoAsyncWithSupplierAndExecutor#shouldBlock_WhenAsyncModeIsDisabled");
             CompletableFuture<Integer> future = Async.supplyAsync(task::supply, executor);
 
             // verify that immediately after triggering run with mode=DISABLED, the count is 1
@@ -316,7 +316,7 @@ class AsyncTest {
         // @RetryingTest(3)
         @Test
         void shouldSucceed_WhenTheFutureCompletes_BeforeTimeout() {
-            var task = new ConcurrentTask();
+            var task = new ConcurrentTask("WaitFor#shouldSucceed_WhenTheFutureCompletes_BeforeTimeout");
             CompletableFuture<Integer> future = Async.doAsync(task::supply);
 
             Async.waitFor(future, 250, TimeUnit.MILLISECONDS);
@@ -334,7 +334,7 @@ class AsyncTest {
         @Test
         void shouldThrowAsyncException_WhenTimesOut_BeforeTheFutureCompletes() {
             var duration = Duration.ofMillis(100);
-            var task = new ConcurrentTask(duration);
+            var task = new ConcurrentTask("WaitFor#shouldThrowAsyncException_WhenTimesOut_BeforeTheFutureCompletes", duration);
             CompletableFuture<Integer> future = Async.doAsync(task::supply);
 
             assertThatThrownBy(() -> Async.waitFor(future, 1, TimeUnit.MILLISECONDS))
@@ -351,13 +351,13 @@ class AsyncTest {
 
         @Test
         void shouldSucceed_WhenAllTheFuturesComplete_BeforeTimeout() {
-            var task1 = new ConcurrentTask();
+            var task1 = new ConcurrentTask("WaitForAll#shouldSucceed_WhenAllTheFuturesComplete_BeforeTimeout#task1");
             CompletableFuture<Integer> future1 = Async.doAsync(task1::supply);
 
-            var task2 = new ConcurrentTask();
+            var task2 = new ConcurrentTask("WaitForAll#shouldSucceed_WhenAllTheFuturesComplete_BeforeTimeout#task2");
             CompletableFuture<Integer> future2 = Async.doAsync(task2::supply);
 
-            var task3 = new ConcurrentTask();
+            var task3 = new ConcurrentTask("WaitForAll#shouldSucceed_WhenAllTheFuturesComplete_BeforeTimeout#task3");
             CompletableFuture<Integer> future3 = Async.doAsync(task3::supply);
 
             var futures = List.of(future1, future2, future3);
@@ -380,13 +380,13 @@ class AsyncTest {
         @Test
         void shouldThrowAsyncException_WhenTimesOut_BeforeAllFuturesComplete() {
             var duration = Duration.ofMillis(200);
-            var task1 = new ConcurrentTask(duration);
+            var task1 = new ConcurrentTask("WaitForAll#shouldThrowAsyncException_WhenTimesOut_BeforeAllFuturesComplete#task1", duration);
             CompletableFuture<Integer> future1 = Async.doAsync(task1::supply);
 
-            var task2 = new ConcurrentTask(duration);
+            var task2 = new ConcurrentTask("WaitForAll#shouldThrowAsyncException_WhenTimesOut_BeforeAllFuturesComplete#task2", duration);
             CompletableFuture<Integer> future2 = Async.doAsync(task2::supply);
 
-            var task3 = new ConcurrentTask(duration);
+            var task3 = new ConcurrentTask("WaitForAll#shouldThrowAsyncException_WhenTimesOut_BeforeAllFuturesComplete#task3", duration);
             CompletableFuture<Integer> future3 = Async.doAsync(task3::supply);
 
             var futures = List.of(future1, future2, future3);
@@ -407,13 +407,13 @@ class AsyncTest {
         @SuppressWarnings({"rawtypes", "unchecked"})
         @Test
         void shouldSucceed_WhenAllTheFuturesComplete_BeforeTimeout() {
-            var task1 = new ConcurrentTask();
+            var task1 = new ConcurrentTask("WaitForAllIgnoringType#shouldSucceed_WhenAllTheFuturesComplete_BeforeTimeout#task1");
             CompletableFuture future1 = Async.doAsync(task1::supply);
 
-            var task2 = new ConcurrentTask();
+            var task2 = new ConcurrentTask("WaitForAllIgnoringType#shouldSucceed_WhenAllTheFuturesComplete_BeforeTimeout#task2");
             CompletableFuture future2 = Async.doAsync(task2::supply);
 
-            var task3 = new ConcurrentTask();
+            var task3 = new ConcurrentTask("WaitForAllIgnoringType#shouldSucceed_WhenAllTheFuturesComplete_BeforeTimeout#task3");
             CompletableFuture future3 = Async.doAsync(task3::supply);
 
             var futures = List.of(future1, future2, future3);
@@ -437,13 +437,13 @@ class AsyncTest {
         @Test
         void shouldThrowAsyncException_WhenTimesOut_BeforeAllFuturesComplete() {
             var duration = Duration.ofMillis(200);
-            var task1 = new ConcurrentTask(duration);
+            var task1 = new ConcurrentTask("WaitForAllIgnoringType#shouldThrowAsyncException_WhenTimesOut_BeforeAllFuturesComplete#task1", duration);
             CompletableFuture future1 = Async.doAsync(task1::supply);
 
-            var task2 = new ConcurrentTask(duration);
+            var task2 = new ConcurrentTask("WaitForAllIgnoringType#shouldThrowAsyncException_WhenTimesOut_BeforeAllFuturesComplete#task2", duration);
             CompletableFuture future2 = Async.doAsync(task2::supply);
 
-            var task3 = new ConcurrentTask(duration);
+            var task3 = new ConcurrentTask("WaitForAllIgnoringType#shouldThrowAsyncException_WhenTimesOut_BeforeAllFuturesComplete#task3", duration);
             CompletableFuture future3 = Async.doAsync(task3::supply);
 
             var futures = List.of(future1, future2, future3);
@@ -463,7 +463,7 @@ class AsyncTest {
 
         @Test
         void shouldTimeout_WhenTaskTakesLongerThan_MaxTimeout() {
-            var task = new ConcurrentTask(Duration.ofSeconds(10));
+            var task = new ConcurrentTask("WithMaxTimeout#shouldTimeout_WhenTaskTakesLongerThan_MaxTimeout", Duration.ofSeconds(10));
             CompletableFuture<Integer> future = Async.doAsync(task::supply);
             CompletableFuture<Integer> futureWithTimeout = Async.withMaxTimeout(future, 5, TimeUnit.MILLISECONDS);
 
@@ -510,16 +510,18 @@ class AsyncTest {
     @Slf4j
     static class ConcurrentTask {
 
+        private final String name;
         private final AtomicInteger counter;
         private final long durationMillis;
 
         private RuntimeException exceptionToThrow;
 
-        ConcurrentTask() {
-            this(Duration.ofMillis(10));
+        ConcurrentTask(String name) {
+            this(name, Duration.ofMillis(10));
         }
 
-        ConcurrentTask(Duration duration) {
+        ConcurrentTask(String name, Duration duration) {
+            this.name = name;
             this.counter = new AtomicInteger();
             this.durationMillis = duration.toMillis();
         }
@@ -534,7 +536,7 @@ class AsyncTest {
         }
 
         Integer supply() {
-            LOG.debug("executing concurrent task with duration of: {}ms", durationMillis);
+            LOG.debug("executing concurrent task {} with duration of: {}ms", name, durationMillis);
             try {
                 var startTime = System.nanoTime();
                 performWait();
@@ -542,7 +544,7 @@ class AsyncTest {
                 long elapsed = TimeUnit.NANOSECONDS.toMillis(endTime - startTime);
 
                 var completionStatus = isNull(exceptionToThrow) ? "successfully" : "exceptionally";
-                LOG.debug("performed task {} in: {}ms", completionStatus, elapsed);
+                LOG.debug("performed task {} {} in: {}ms", name, completionStatus, elapsed);
 
                 var updatedCount = counter.incrementAndGet();
 
@@ -553,7 +555,7 @@ class AsyncTest {
                 return updatedCount;
             } catch (InterruptedException e) {
                 Thread.currentThread().interrupt();
-                LOG.debug("Wait interrupted", e);
+                LOG.debug("Wait interrupted for task {}", name, e);
             }
 
             return counter.get();
