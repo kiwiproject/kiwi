@@ -34,34 +34,28 @@ import java.util.concurrent.TimeoutException;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
 
+@Slf4j
 class AsyncTest {
 
     private static final KiwiEnvironment ENV = new DefaultEnvironment();
 
     @BeforeAll
     static void beforeAll() {
-        System.out.println("-------------------- beforeAll --------------------");
-
-        // var start = System.nanoTime();
-        // ForkJoinPool.commonPool();
-        // var elapsed = System.nanoTime() - start;
-        // var millis = TimeUnit.NANOSECONDS.toMillis(elapsed);
-        // System.out.printf("BeforeAll: Took %d nanos ( %d millis ) to init the common pool%n", elapsed, millis);
+        LOG.info("-------------------- beforeAll --------------------");
 
         var task = new ConcurrentTask();
-        System.out.printf("Task duration millis: %d%n", task.durationMillis);
+        LOG.info("Task duration millis: {}", task.durationMillis);
         var future = Async.doAsync(task::supply);
 
         try {
-            System.out.println("About to wait");
+            LOG.info("About to wait");
             var start = System.nanoTime();
             Async.waitFor(future, 250, TimeUnit.MILLISECONDS);
             var elapsed = System.nanoTime() - start;
             var millis = TimeUnit.NANOSECONDS.toMillis(elapsed);
-            System.out.printf(":BeforeAll: Took %d nanos ( %d millis ) for waitFor to return with 1 second timeout%n", elapsed, millis);
+            LOG.info(":BeforeAll: Took {} nanos ( {} millis ) for waitFor to return with 250ms timeout%n", elapsed, millis);
         } catch (Exception e) {
-            System.out.println("EXCEPTION IN beforeAll");
-            e.printStackTrace(System.out);
+            LOG.error("EXCEPTION IN beforeAll", e);
         }
     }
 
@@ -69,26 +63,19 @@ class AsyncTest {
     void setUp() {
         System.out.println("-------------------- setUp --------------------");
 
-        // var start = System.nanoTime();
-        // ForkJoinPool.commonPool();
-        // var elapsed = System.nanoTime() - start;
-        // var millis = TimeUnit.NANOSECONDS.toMillis(elapsed);
-        // System.out.printf("BeforeEach: Took %d nanos ( %d millis ) to init the common pool%n", elapsed, millis);
-
         var task = new ConcurrentTask();
-        System.out.printf("Task duration millis: %d%n", task.durationMillis);
+        LOG.info("Task duration millis: {}", task.durationMillis);
         var future = Async.doAsync(task::supply);
 
         try {
-            System.out.println("About to wait");
+            LOG.info("About to wait");
             var start = System.nanoTime();
             Async.waitFor(future, 250, TimeUnit.MILLISECONDS);
             var elapsed = System.nanoTime() - start;
             var millis = TimeUnit.NANOSECONDS.toMillis(elapsed);
-            System.out.printf(":BeforeEach: Took %d nanos ( %d millis ) for waitFor to return with 1 second timeout%n", elapsed, millis);
+            LOG.info(":BeforeEach: Took {} nanos ( {} millis ) for waitFor to return with 250ms timeout%n", elapsed, millis);
         } catch (Exception e) {
-            System.out.println("EXCEPTION IN setUp");
-            e.printStackTrace(System.out);
+            LOG.error("EXCEPTION IN setUp", e);
         }
     }
 
