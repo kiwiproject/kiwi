@@ -12,10 +12,11 @@ import static org.awaitility.Durations.FIVE_HUNDRED_MILLISECONDS;
 import lombok.extern.slf4j.Slf4j;
 import org.awaitility.core.ConditionFactory;
 import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
-import org.junitpioneer.jupiter.RetryingTest;
+// import org.junitpioneer.jupiter.RetryingTest;
 import org.kiwiproject.base.DefaultEnvironment;
 import org.kiwiproject.base.KiwiEnvironment;
 import org.kiwiproject.concurrent.Async.Mode;
@@ -26,6 +27,7 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.ForkJoinPool;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -34,6 +36,24 @@ import java.util.concurrent.atomic.AtomicReference;
 class AsyncTest {
 
     private static final KiwiEnvironment ENV = new DefaultEnvironment();
+
+    @BeforeAll
+    static void beforeAll() {
+        var start = System.nanoTime();
+        ForkJoinPool.commonPool();
+        var elapsed = System.nanoTime() - start;
+        var millis = TimeUnit.NANOSECONDS.toMillis(elapsed);
+        System.out.printf("BeforeAll: Took %d nanos ( %d millis ) to init the common pool%n", elapsed, millis);
+    }
+
+    @BeforeEach
+    void setUp() {
+        var start = System.nanoTime();
+        ForkJoinPool.commonPool();
+        var elapsed = System.nanoTime() - start;
+        var millis = TimeUnit.NANOSECONDS.toMillis(elapsed);
+        System.out.printf("BeforeEach: Took %d nanos ( %d millis ) to init the common pool%n", elapsed, millis);
+    }
 
     @AfterEach
     void tearDown() {
@@ -269,7 +289,8 @@ class AsyncTest {
          * @implNote This test has been failing intermittently running in GitHub actions, mainly on JDK 21 but
          * sometimes on JDK 17. For now, making it a "retrying test". Also, see issue #1070.
          */
-        @RetryingTest(3)
+        // @RetryingTest(3)
+        @Test
         void shouldSucceed_WhenTheFutureCompletes_BeforeTimeout() {
             var task = new ConcurrentTask();
             CompletableFuture<Integer> future = Async.doAsync(task::supply);
@@ -285,7 +306,8 @@ class AsyncTest {
          * @implNote This is a "retrying" test with a higher task duration because we have seen this test
          * fail (see issue #1065) when run individually, i.e. in an IDE.
          */
-        @RetryingTest(3)
+        // @RetryingTest(3)
+        @Test
         void shouldThrowAsyncException_WhenTimesOut_BeforeTheFutureCompletes() {
             var duration = Duration.ofMillis(100);
             var task = new ConcurrentTask(duration);
@@ -330,7 +352,8 @@ class AsyncTest {
          * @implNote This is a "retrying" test with a higher task duration because we have seen this test
          * fail (see issue #1065) when run individually, i.e. in an IDE.
          */
-        @RetryingTest(3)
+        // @RetryingTest(3)
+        @Test
         void shouldThrowAsyncException_WhenTimesOut_BeforeAllFuturesComplete() {
             var duration = Duration.ofMillis(200);
             var task1 = new ConcurrentTask(duration);
@@ -386,7 +409,8 @@ class AsyncTest {
          * fail (see issue #1065) when run individually, i.e. in an IDE.
          */
         @SuppressWarnings("rawtypes")
-        @RetryingTest(3)
+        // @RetryingTest(3)
+        @Test
         void shouldThrowAsyncException_WhenTimesOut_BeforeAllFuturesComplete() {
             var duration = Duration.ofMillis(200);
             var task1 = new ConcurrentTask(duration);
