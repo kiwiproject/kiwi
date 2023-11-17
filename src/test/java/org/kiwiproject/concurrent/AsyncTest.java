@@ -303,14 +303,16 @@ class AsyncTest {
             var task = new ConcurrentTask(testName, duration);
             CompletableFuture<Integer> future = Async.doAsync(task::supply);
 
-            assertThatThrownBy(() -> Async.waitFor(future, 1, TimeUnit.MILLISECONDS))
-                    .isExactlyInstanceOf(AsyncException.class)
-                    .hasMessage("TimeoutException occurred (maximum wait was specified as 1 MILLISECONDS)")
-                    .hasCauseInstanceOf(TimeoutException.class);
+            try {
+                assertThatThrownBy(() -> Async.waitFor(future, 1, TimeUnit.MILLISECONDS))
+                        .isExactlyInstanceOf(AsyncException.class)
+                        .hasMessage("TimeoutException occurred (maximum wait was specified as 1 MILLISECONDS)")
+                        .hasCauseInstanceOf(TimeoutException.class);
 
-            assertThat(task.getCurrentCount()).isZero();
-
-            cancel(future);
+                assertThat(task.getCurrentCount()).isZero();
+            } finally {
+                cancel(future);
+            }
         }
     }
 
@@ -357,19 +359,21 @@ class AsyncTest {
             var task3 = new ConcurrentTask(testName + "#task3", duration);
             CompletableFuture<Integer> future3 = Async.doAsync(task3::supply);
 
-            var futures = List.of(future1, future2, future3);
-            assertThatThrownBy(() -> Async.waitForAll(futures, 1, TimeUnit.MILLISECONDS))
-                    .isExactlyInstanceOf(AsyncException.class)
-                    .hasMessage("TimeoutException occurred (maximum wait was specified as 1 MILLISECONDS)")
-                    .hasCauseInstanceOf(TimeoutException.class);
+            try {
+                var futures = List.of(future1, future2, future3);
+                assertThatThrownBy(() -> Async.waitForAll(futures, 1, TimeUnit.MILLISECONDS))
+                        .isExactlyInstanceOf(AsyncException.class)
+                        .hasMessage("TimeoutException occurred (maximum wait was specified as 1 MILLISECONDS)")
+                        .hasCauseInstanceOf(TimeoutException.class);
 
-            assertThat(task1.getCurrentCount()).isZero();
-            assertThat(task2.getCurrentCount()).isZero();
-            assertThat(task3.getCurrentCount()).isZero();
-
-            cancel(future1);
-            cancel(future2);
-            cancel(future3);
+                assertThat(task1.getCurrentCount()).isZero();
+                assertThat(task2.getCurrentCount()).isZero();
+                assertThat(task3.getCurrentCount()).isZero();
+            } finally {
+                cancel(future1);
+                cancel(future2);
+                cancel(future3);
+            }
         }
     }
 
@@ -418,19 +422,21 @@ class AsyncTest {
             var task3 = new ConcurrentTask(testName + "#task3", duration);
             CompletableFuture future3 = Async.doAsync(task3::supply);
 
-            var futures = List.of(future1, future2, future3);
-            assertThatThrownBy(() -> Async.waitForAllIgnoringType(futures, 1, TimeUnit.MILLISECONDS))
-                    .isExactlyInstanceOf(AsyncException.class)
-                    .hasMessage("TimeoutException occurred (maximum wait was specified as 1 MILLISECONDS)")
-                    .hasCauseInstanceOf(TimeoutException.class);
+            try {
+                var futures = List.of(future1, future2, future3);
+                assertThatThrownBy(() -> Async.waitForAllIgnoringType(futures, 1, TimeUnit.MILLISECONDS))
+                        .isExactlyInstanceOf(AsyncException.class)
+                        .hasMessage("TimeoutException occurred (maximum wait was specified as 1 MILLISECONDS)")
+                        .hasCauseInstanceOf(TimeoutException.class);
 
-            assertThat(task1.getCurrentCount()).isZero();
-            assertThat(task2.getCurrentCount()).isZero();
-            assertThat(task3.getCurrentCount()).isZero();
-
-            cancel(future1);
-            cancel(future2);
-            cancel(future3);
+                assertThat(task1.getCurrentCount()).isZero();
+                assertThat(task2.getCurrentCount()).isZero();
+                assertThat(task3.getCurrentCount()).isZero();
+            } finally {
+                cancel(future1);
+                cancel(future2);
+                cancel(future3);
+            }
         }
     }
 
