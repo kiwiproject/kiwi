@@ -275,11 +275,6 @@ class AsyncTest {
     @Nested
     class WaitFor {
 
-        /**
-         * @implNote This test has been failing intermittently running in GitHub actions, mainly on JDK 21 but
-         * sometimes on JDK 17. For now, making it a "retrying test". Also, see issue #1070.
-         */
-        // @RetryingTest(3)
         @Test
         void shouldSucceed_WhenTheFutureCompletes_BeforeTimeout() {
             var task = new ConcurrentTask(testName);
@@ -292,11 +287,6 @@ class AsyncTest {
             assertThat(future).isCompleted();
         }
 
-        /*
-         * @implNote This is a "retrying" test with a higher task duration because we have seen this test
-         * fail (see issue #1065) when run individually, i.e. in an IDE.
-         */
-        // @RetryingTest(3)
         @Test
         void shouldThrowAsyncException_WhenTimesOut_BeforeTheFutureCompletes() {
             var duration = Duration.ofMillis(100);
@@ -342,11 +332,6 @@ class AsyncTest {
             assertThat(future3).isCompleted();
         }
 
-        /*
-         * @implNote This is a "retrying" test with a higher task duration because we have seen this test
-         * fail (see issue #1065) when run individually, i.e. in an IDE.
-         */
-        // @RetryingTest(3)
         @Test
         void shouldThrowAsyncException_WhenTimesOut_BeforeAllFuturesComplete() {
             var duration = Duration.ofMillis(200);
@@ -404,12 +389,7 @@ class AsyncTest {
             assertThat(future3).isCompleted();
         }
 
-        /*
-         * @implNote This is a "retrying" test with a higher task duration because we have seen this test
-         * fail (see issue #1065) when run individually, i.e. in an IDE.
-         */
         @SuppressWarnings({ "rawtypes", "unchecked" })
-        // @RetryingTest(3)
         @Test
         void shouldThrowAsyncException_WhenTimesOut_BeforeAllFuturesComplete() {
             var duration = Duration.ofMillis(200);
