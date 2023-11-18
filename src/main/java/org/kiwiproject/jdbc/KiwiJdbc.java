@@ -1,13 +1,16 @@
 package org.kiwiproject.jdbc;
 
+import static com.google.common.base.Preconditions.checkState;
 import static java.util.Objects.isNull;
 import static org.apache.commons.lang3.StringUtils.isBlank;
 import static org.kiwiproject.base.KiwiPreconditions.checkArgumentNotNull;
+import static org.kiwiproject.base.KiwiStrings.format;
 
 import lombok.experimental.UtilityClass;
 import org.checkerframework.checker.nullness.qual.Nullable;
 import org.kiwiproject.base.KiwiPrimitives;
 import org.kiwiproject.base.KiwiPrimitives.BooleanConversionOption;
+import org.kiwiproject.base.KiwiStrings;
 
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -28,6 +31,51 @@ import java.util.Optional;
  */
 @UtilityClass
 public class KiwiJdbc {
+
+    /**
+     * Attempt to call {@link ResultSet#next()} on the given ResultSet, and throw an {@link IllegalStateException}
+     * if the result set was not advanced.
+     *
+     * @param rs the ResultSet
+     * @throws SQLException          if a database access error occurs or this method is called on a closed result set
+     *                               (copied from {@link ResultSet#next()})
+     * @throws IllegalStateException if the result set was not advanced
+     */
+    public static void nextOrThrow(ResultSet rs) throws SQLException {
+        nextOrThrow(rs, "ResultSet.next() returned false");
+    }
+
+    /**
+     * Attempt to call {@link ResultSet#next()} on the given ResultSet, and throw an {@link IllegalStateException}
+     * if the result set was not advanced.
+     *
+     * @param rs      the ResultSet
+     * @param message the error message in case the result set cannot be advanced
+     * @throws SQLException          if a database access error occurs or this method is called on a closed result set
+     *                               (copied from {@link ResultSet#next()})
+     * @throws IllegalStateException if the result set was not advanced
+     */
+    public static void nextOrThrow(ResultSet rs, String message) throws SQLException {
+        checkState(rs.next(), message);
+    }
+
+    /**
+     * Attempt to call {@link ResultSet#next()} on the given ResultSet, and throw an {@link IllegalStateException}
+     * if the result set was not advanced.
+     *
+     * @param rs              the ResultSet
+     * @param messageTemplate the error message template in case the result set cannot be advanced, according to how
+     *                        {@link KiwiStrings#format(String, Object...)} handles placeholders
+     * @param args            the arguments to be substituted into the message template
+     * @throws SQLException          if a database access error occurs or this method is called on a closed result set
+     *                               (copied from {@link ResultSet#next()})
+     * @throws IllegalStateException if the result set was not advanced
+     */
+    public static void nextOrThrow(ResultSet rs, String messageTemplate, Object... args) throws SQLException {
+        if (!rs.next()) {
+            throw new IllegalStateException(format(messageTemplate, args));
+        }
+    }
 
     /**
      * Convert the timestamp column given by {@code columnName} in the {@link ResultSet} to milliseconds
