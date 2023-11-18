@@ -455,6 +455,13 @@ class AsyncTest {
         }
     }
 
+    /**
+     * Cancel the given CompletableFuture. This should be called by tests that are testing timeout situations
+     * such as when testing {@link Async#waitFor(CompletableFuture, long, TimeUnit)} and the other similar
+     * methods that wrap a CompletableFuture and apply a timeout. If the test is verifying that waitFor methods
+     * work as expected when a CompletableFuture has not completed when the timeout period expires, then that
+     * test should call this method to ensure the outstanding tasks are canceled.
+     */
     private static <T> void cancel(CompletableFuture<T> future) {
         var wasCancelled = future.cancel(true);
         assertThat(wasCancelled).isTrue();
