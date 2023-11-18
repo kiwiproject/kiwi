@@ -1,14 +1,18 @@
 package org.kiwiproject.jdbc;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatCode;
 import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
+import static org.assertj.core.api.Assertions.assertThatIllegalStateException;
 import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.only;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -36,6 +40,84 @@ import java.util.Date;
 
 @DisplayName("KiwiJdbc")
 class KiwiJdbcTest {
+
+    @Nested
+    class NextOrThrow {
+
+        private ResultSet resultSet;
+
+        @BeforeEach
+        void setUp() {
+            resultSet = mock(ResultSet.class);
+        }
+
+        @Test
+        void shouldAdvanceResultSet() throws SQLException {
+            when(resultSet.next()).thenReturn(true);
+
+            assertThatCode(() -> KiwiJdbc.nextOrThrow(resultSet))
+                    .doesNotThrowAnyException();
+
+            verify(resultSet, only()).next();
+        }
+
+        @Test
+        void shouldAdvanceResultSet_WithCustomMessageArgument() throws SQLException {
+            when(resultSet.next()).thenReturn(true);
+
+            assertThatCode(() -> KiwiJdbc.nextOrThrow(resultSet, "failed to advance ResultSet"))
+                    .doesNotThrowAnyException();
+
+            verify(resultSet, only()).next();
+        }
+
+        @Test
+        void shouldAdvanceResultSet_WithCustomMessageTemplateAndArguments() throws SQLException {
+            when(resultSet.next()).thenReturn(true);
+
+            assertThatCode(() -> KiwiJdbc.nextOrThrow(resultSet, "{} with id {} was not found", "Order", "12345ABC"))
+                    .doesNotThrowAnyException();
+
+            verify(resultSet, only()).next();
+        }
+
+        @Test
+        void shouldThrowIllegalState_WhenNextReturnsFalse() throws SQLException {
+            when(resultSet.next()).thenReturn(false);
+
+            assertThatIllegalStateException()
+                    .isThrownBy(() -> KiwiJdbc.nextOrThrow(resultSet))
+                    .withMessage("ResultSet.next() returned false");
+
+            verify(resultSet, only()).next();
+        }
+
+        @Test
+        void shouldThrowIllegalState_WithCustomMessage_WhenNextReturnsFalse() throws SQLException {
+            when(resultSet.next()).thenReturn(false);
+
+            assertThatIllegalStateException()
+                    .isThrownBy(() -> KiwiJdbc.nextOrThrow(resultSet, "record was not found"))
+                    .withMessage("record was not found");
+
+            verify(resultSet, only()).next();
+        }
+
+        @ParameterizedTest
+        @ValueSource(strings = {
+                "{} with id {} was not found",
+                "%s with id %s was not found"
+        })
+        void shouldThrowIllegalState_WithCustomMessageTemplate_WhenNextReturnsFalse(String template) throws SQLException {
+            when(resultSet.next()).thenReturn(false);
+
+            assertThatIllegalStateException()
+                    .isThrownBy(() -> KiwiJdbc.nextOrThrow(resultSet, template, "Item", 42))
+                    .withMessage("Item with id 42 was not found");
+
+            verify(resultSet, only()).next();
+        }
+    }
 
     @Nested
     class EpochMillisFromTimestamp {
