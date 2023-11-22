@@ -35,7 +35,7 @@
         <retrying-again.version>2.0.0</retrying-again.version>
 
         <!-- Versions for test dependencies -->
-        <test-containers.version>1.19.2</test-containers.version>
+        <test-containers.version>1.19.3</test-containers.version>
 
         <!-- Sonar properties -->
         <sonar.projectKey>kiwiproject_kiwi</sonar.projectKey>
