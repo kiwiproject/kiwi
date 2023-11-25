@@ -7,6 +7,7 @@ tlsConfig:
   trustStorePassword: tsPass100
   trustStoreType: PKCS12
   verifyHostname: false
+  disableSniHostCheck: true
   supportedProtocols:
     - TLSv1.2
     - TLSv1.3

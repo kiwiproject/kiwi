@@ -34,7 +34,7 @@ import java.util.Optional;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor(access = AccessLevel.PRIVATE)  // for Builder (b/c also need no-args constructor)
-@ToString(exclude = {"keyStorePassword", "trustStorePassword"})
+@ToString(exclude = { "keyStorePassword", "trustStorePassword" })
 public class TlsContextConfiguration implements KeyAndTrustStoreConfigProvider {
 
     /**
@@ -47,7 +47,7 @@ public class TlsContextConfiguration implements KeyAndTrustStoreConfigProvider {
     private String protocol = SSLContextProtocol.TLS_1_2.value;
 
     /**
-     * The name of the JCE (Java Cryptography Extension) provider to use on client side for cryptographic
+     * The name of the JCE (Java Cryptography Extension) provider to use on the client side for cryptographic
      * support (for example, SunJCE, Conscrypt, BC, etc.).
      * <p>
      * For more details, see the "Java Cryptography Architecture (JCA) Reference Guide" section of the Java
@@ -75,7 +75,7 @@ public class TlsContextConfiguration implements KeyAndTrustStoreConfigProvider {
     private String keyStoreType = KeyStoreType.JKS.value;
 
     /**
-     * The name of the provider for the key store, i.e. the value of {@code provider} to use when getting the
+     * The name of the provider for the key store, i.e., the value of {@code provider} to use when getting the
      * {@link java.security.KeyStore} instance for the key store.
      * <p>
      * For more details, see the "Java Cryptography Architecture (JCA) Reference Guide" section of the Java
@@ -107,7 +107,7 @@ public class TlsContextConfiguration implements KeyAndTrustStoreConfigProvider {
     private String trustStoreType = KeyStoreType.JKS.value;
 
     /**
-     * The name of the provider for the trust store, i.e. the value of {@code provider} to use when getting the
+     * The name of the provider for the trust store, i.e., the value of {@code provider} to use when getting the
      * {@link java.security.KeyStore} instance for the trust store.
      * <p>
      * For more details, see the "Java Cryptography Architecture (JCA) Reference Guide" section of the Java
@@ -129,6 +129,13 @@ public class TlsContextConfiguration implements KeyAndTrustStoreConfigProvider {
     private boolean verifyHostname = true;
 
     /**
+     * Whether the SNI (Server Name Indication) host check is disabled. Default is {@code false}
+     *
+     * @see <a href="https://www.cloudflare.com/learning/ssl/what-is-sni/">What is SNI? How TLS server name indication works</a>
+     */
+    private boolean disableSniHostCheck;
+
+    /**
      * List of supported protocols. It can be {@code null}. See the implementation note for why.
      *
      * @implNote Yes, this is null by default. This is due to the Dropwizard {@link TlsConfiguration} which has this
@@ -139,7 +146,7 @@ public class TlsContextConfiguration implements KeyAndTrustStoreConfigProvider {
      * {@link org.apache.hc.client5.http.ssl.SSLConnectionSocketFactory#createLayeredSocket(Socket, String, int, org.apache.hc.core5.http.protocol.HttpContext)}.
      * You will need to look at the source code, as the JavaDoc doesn't mention this tidbit, nor do the constructors
      * since they don't have any documentation regarding their arguments. If you don't like reading source code of the
-     * open source tools you rely on, then please close this file, log out, and change careers.
+     * open-source tools you rely on, then please close this file, log out, and change careers.
      */
     private List<String> supportedProtocols;
 
@@ -162,8 +169,12 @@ public class TlsContextConfiguration implements KeyAndTrustStoreConfigProvider {
      * Given a Dropwizard {@link TlsConfiguration}, create a new {@link TlsContextConfiguration}.
      * <p>
      * Even though {@link TlsContextConfiguration} does not permit null trust store properties (per the validation
-     * annotations), the {@link TlsConfiguration} does. If we encounter this sitation, we will be lenient; even though
+     * annotations), the {@link TlsConfiguration} does. If we encounter this situation, we will be lenient; even though
      * this could possibly cause downstream problems, we will just assume the caller knows what it is doing.
+     * <p>
+     * The Dropwizard {@link TlsConfiguration} class does not contain a {@code disableSniHostCheck} property, so
+     * it cannot transfer and is therefore ignored during conversions. Also note that it is set to {@code false}
+     * in the returned {@link TlsContextConfiguration} since that is the more secure option.
      *
      * @param tlsConfig the Dropwizard TlsConfiguration from which to pull information
      * @return a new TlsContextConfiguration instance
@@ -185,6 +196,7 @@ public class TlsContextConfiguration implements KeyAndTrustStoreConfigProvider {
                 .trustStoreProvider(tlsConfig.getTrustStoreProvider())
                 .trustSelfSignedCertificates(tlsConfig.isTrustSelfSignedCertificates())
                 .verifyHostname(tlsConfig.isVerifyHostname())
+                .disableSniHostCheck(false)
                 .supportedProtocols(tlsConfig.getSupportedProtocols())
                 .supportedCiphers(tlsConfig.getSupportedCiphers())
                 .certAlias(tlsConfig.getCertAlias())
@@ -198,6 +210,9 @@ public class TlsContextConfiguration implements KeyAndTrustStoreConfigProvider {
     /**
      * Convert this {@link TlsContextConfiguration} into a Dropwizard {@link TlsConfiguration} object. Assumes that
      * this object is valid.
+     * <p>
+     * The Dropwizard {@link TlsConfiguration} class does not contain a {@code disableSniHostCheck} property, so
+     * it cannot transfer and is therefore ignored during conversions.
      *
      * @return a new Dropwizard TlsConfiguration instance
      * @implNote Requires dropwizard-client as a dependency
@@ -248,6 +263,7 @@ public class TlsContextConfiguration implements KeyAndTrustStoreConfigProvider {
                 .trustStoreType(trustStoreType)
                 .protocol(protocol)
                 .verifyHostname(verifyHostname)
+                .disableSniHostCheck(disableSniHostCheck)
                 .build();
     }
 }
