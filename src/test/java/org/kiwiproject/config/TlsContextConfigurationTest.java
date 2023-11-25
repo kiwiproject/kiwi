@@ -2,6 +2,7 @@ package org.kiwiproject.config;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
+import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.kiwiproject.util.YamlTestHelper.loadFromYaml;
 import static org.kiwiproject.validation.ValidationTestHelper.assertNoViolations;
 import static org.kiwiproject.validation.ValidationTestHelper.assertOnePropertyViolation;
@@ -46,21 +47,24 @@ class TlsContextConfigurationTest {
     }
 
     private static void assertAllDefaultValues(TlsContextConfiguration config) {
-        assertThat(config.getProtocol()).isEqualTo(SSLContextProtocol.TLS_1_2.value);
-        assertThat(config.getProvider()).isNull();
-        assertThat(config.getKeyStorePath()).isNull();
-        assertThat(config.getKeyStorePassword()).isNull();
-        assertThat(config.getKeyStoreType()).isEqualTo(KeyStoreType.JKS.value);
-        assertThat(config.getKeyStoreProvider()).isNull();
-        assertThat(config.getTrustStorePath()).isNull();
-        assertThat(config.getTrustStorePassword()).isNull();
-        assertThat(config.getTrustStoreType()).isEqualTo(KeyStoreType.JKS.value);
-        assertThat(config.getTrustStoreProvider()).isNull();
-        assertThat(config.isTrustSelfSignedCertificates()).isFalse();
-        assertThat(config.isVerifyHostname()).isTrue();
-        assertThat(config.getSupportedProtocols()).isNull();
-        assertThat(config.getSupportedCiphers()).isNull();
-        assertThat(config.getCertAlias()).isNull();
+        assertAll(
+                () -> assertThat(config.getProtocol()).isEqualTo(SSLContextProtocol.TLS_1_2.value),
+                () -> assertThat(config.getProvider()).isNull(),
+                () -> assertThat(config.getKeyStorePath()).isNull(),
+                () -> assertThat(config.getKeyStorePassword()).isNull(),
+                () -> assertThat(config.getKeyStoreType()).isEqualTo(KeyStoreType.JKS.value),
+                () -> assertThat(config.getKeyStoreProvider()).isNull(),
+                () -> assertThat(config.getTrustStorePath()).isNull(),
+                () -> assertThat(config.getTrustStorePassword()).isNull(),
+                () -> assertThat(config.getTrustStoreType()).isEqualTo(KeyStoreType.JKS.value),
+                () -> assertThat(config.getTrustStoreProvider()).isNull(),
+                () -> assertThat(config.isTrustSelfSignedCertificates()).isFalse(),
+                () -> assertThat(config.isVerifyHostname()).isTrue(),
+                () -> assertThat(config.isDisableSniHostCheck()).isFalse(),
+                () -> assertThat(config.getSupportedProtocols()).isNull(),
+                () -> assertThat(config.getSupportedCiphers()).isNull(),
+                () -> assertThat(config.getCertAlias()).isNull()
+        );
     }
 
     @Nested
@@ -106,10 +110,12 @@ class TlsContextConfigurationTest {
 
             assertDefaultValues(tlsConfig);
 
-            assertThat(tlsConfig.getKeyStorePath()).isEqualTo("/path/to/keystore.jks");
-            assertThat(tlsConfig.getKeyStorePassword()).isEqualTo("ksPassWd");
-            assertThat(tlsConfig.getTrustStorePath()).isEqualTo("/path/to/truststore.jks");
-            assertThat(tlsConfig.getTrustStorePassword()).isEqualTo("tsPass100");
+            assertAll(
+                    () -> assertThat(tlsConfig.getKeyStorePath()).isEqualTo("/path/to/keystore.jks"),
+                    () -> assertThat(tlsConfig.getKeyStorePassword()).isEqualTo("ksPassWd"),
+                    () -> assertThat(tlsConfig.getTrustStorePath()).isEqualTo("/path/to/truststore.jks"),
+                    () -> assertThat(tlsConfig.getTrustStorePassword()).isEqualTo("tsPass100")
+            );
         }
 
         @Test
@@ -118,35 +124,43 @@ class TlsContextConfigurationTest {
 
             assertDefaultValues(tlsConfig);
 
-            assertThat(tlsConfig.getKeyStorePath()).isNull();
-            assertThat(tlsConfig.getKeyStorePassword()).isNull();
+            assertAll(
+                    () -> assertThat(tlsConfig.getKeyStorePath()).isNull(),
+                    () -> assertThat(tlsConfig.getKeyStorePassword()).isNull()
+            );
         }
 
         @Test
         void shouldDeserializeFullConfig() {
             var tlsConfig = loadTlsContextConfiguration("TlsContextConfigurationTest/full-tls-config.yml");
 
-            assertThat(tlsConfig.getProtocol()).isEqualTo("TLSv1.3");
-            assertThat(tlsConfig.getKeyStorePath()).isEqualTo("/path/to/keystore.pkcs12");
-            assertThat(tlsConfig.getKeyStorePassword()).isEqualTo("ksPassWd");
-            assertThat(tlsConfig.getKeyStoreType()).isEqualTo("PKCS12");
-            assertThat(tlsConfig.getTrustStorePath()).isEqualTo("/path/to/truststore.pkcs12");
-            assertThat(tlsConfig.getTrustStorePassword()).isEqualTo("tsPass100");
-            assertThat(tlsConfig.getTrustStoreType()).isEqualTo("PKCS12");
-            assertThat(tlsConfig.isVerifyHostname()).isFalse();
-            assertThat(tlsConfig.getSupportedProtocols()).containsOnly(
-                    SSLContextProtocol.TLS_1_2.value,
-                    SSLContextProtocol.TLS_1_3.value
+            assertAll(
+                    () -> assertThat(tlsConfig.getProtocol()).isEqualTo("TLSv1.3"),
+                    () -> assertThat(tlsConfig.getKeyStorePath()).isEqualTo("/path/to/keystore.pkcs12"),
+                    () -> assertThat(tlsConfig.getKeyStorePassword()).isEqualTo("ksPassWd"),
+                    () -> assertThat(tlsConfig.getKeyStoreType()).isEqualTo("PKCS12"),
+                    () -> assertThat(tlsConfig.getTrustStorePath()).isEqualTo("/path/to/truststore.pkcs12"),
+                    () -> assertThat(tlsConfig.getTrustStorePassword()).isEqualTo("tsPass100"),
+                    () -> assertThat(tlsConfig.getTrustStoreType()).isEqualTo("PKCS12"),
+                    () -> assertThat(tlsConfig.isVerifyHostname()).isFalse(),
+                    () -> assertThat(tlsConfig.isDisableSniHostCheck()).isTrue(),
+                    () -> assertThat(tlsConfig.getSupportedProtocols()).containsOnly(
+                            SSLContextProtocol.TLS_1_2.value,
+                            SSLContextProtocol.TLS_1_3.value
+                    )
             );
         }
     }
 
     private static void assertDefaultValues(TlsContextConfiguration config) {
-        assertThat(config.getProtocol()).isEqualTo(SSLContextProtocol.TLS_1_2.value);
-        assertThat(config.getKeyStoreType()).isEqualTo(KeyStoreType.JKS.value);
-        assertThat(config.getTrustStoreType()).isEqualTo(KeyStoreType.JKS.value);
-        assertThat(config.isVerifyHostname()).isTrue();
-        assertThat(config.getSupportedProtocols()).isNull();
+        assertAll(
+                () -> assertThat(config.getProtocol()).isEqualTo(SSLContextProtocol.TLS_1_2.value),
+                () -> assertThat(config.getKeyStoreType()).isEqualTo(KeyStoreType.JKS.value),
+                () -> assertThat(config.getTrustStoreType()).isEqualTo(KeyStoreType.JKS.value),
+                () -> assertThat(config.isVerifyHostname()).isTrue(),
+                () -> assertThat(config.isDisableSniHostCheck()).isFalse(),
+                () -> assertThat(config.getSupportedProtocols()).isNull()
+        );
     }
 
     @Nested
@@ -235,6 +249,7 @@ class TlsContextConfigurationTest {
                     .trustStoreProvider("BC")
                     .trustSelfSignedCertificates(true)
                     .verifyHostname(false)
+                    .disableSniHostCheck(true)
                     .supportedProtocols(List.of("TLSv1.3"))
                     .supportedCiphers(List.of("TLS_ECDHE_ECDSA_WITH_AES_128_CBC_SHA256"))
                     .certAlias("cert84")
@@ -279,44 +294,50 @@ class TlsContextConfigurationTest {
 
                 var tlsContextConfig = TlsContextConfiguration.fromDropwizardTlsConfiguration(dwTlsConfig);
 
-                // The following also test assumptions about defaults of Dropwizard's TlsConfiguration, for example
-                // which are null. This isn't wonderful but at the same time we'll find out quickly what Dropwizard
+                // The following also tests assumptions about defaults of Dropwizard's TlsConfiguration, for example,
+                // which ones are null. This isn't wonderful, but at the same time we'll find out quickly what Dropwizard
                 // has changed.
-                assertThat(tlsContextConfig.getProtocol()).isNotNull().isEqualTo(dwTlsConfig.getProtocol());
-                assertThat(tlsContextConfig.getKeyStorePath()).isNull();
-                assertThat(tlsContextConfig.getKeyStorePassword()).isNull();
-                assertThat(tlsContextConfig.getKeyStoreType()).isNotNull().isEqualTo(dwTlsConfig.getKeyStoreType());
-                assertThat(tlsContextConfig.getKeyStoreProvider()).isNull();
-                assertThat(tlsContextConfig.getTrustStorePath()).isNull();
-                assertThat(tlsContextConfig.getTrustStorePassword()).isNull();
-                assertThat(tlsContextConfig.getTrustStoreType()).isNotNull().isEqualTo(dwTlsConfig.getTrustStoreType());
-                assertThat(tlsContextConfig.getTrustStoreProvider()).isNull();
-                assertThat(tlsContextConfig.isTrustSelfSignedCertificates()).isFalse();
-                assertThat(tlsContextConfig.isVerifyHostname()).isTrue();
-                assertThat(tlsContextConfig.getSupportedProtocols()).isNull();
-                assertThat(tlsContextConfig.getSupportedCiphers()).isNull();
-                assertThat(tlsContextConfig.getCertAlias()).isNull();
+                assertAll(
+                        () -> assertThat(tlsContextConfig.getProtocol()).isNotNull().isEqualTo(dwTlsConfig.getProtocol()),
+                        () -> assertThat(tlsContextConfig.getKeyStorePath()).isNull(),
+                        () -> assertThat(tlsContextConfig.getKeyStorePassword()).isNull(),
+                        () -> assertThat(tlsContextConfig.getKeyStoreType()).isNotNull().isEqualTo(dwTlsConfig.getKeyStoreType()),
+                        () -> assertThat(tlsContextConfig.getKeyStoreProvider()).isNull(),
+                        () -> assertThat(tlsContextConfig.getTrustStorePath()).isNull(),
+                        () -> assertThat(tlsContextConfig.getTrustStorePassword()).isNull(),
+                        () -> assertThat(tlsContextConfig.getTrustStoreType()).isNotNull().isEqualTo(dwTlsConfig.getTrustStoreType()),
+                        () -> assertThat(tlsContextConfig.getTrustStoreProvider()).isNull(),
+                        () -> assertThat(tlsContextConfig.isTrustSelfSignedCertificates()).isFalse(),
+                        () -> assertThat(tlsContextConfig.isVerifyHostname()).isTrue(),
+                        () -> assertThat(tlsContextConfig.isDisableSniHostCheck()).isFalse(),
+                        () -> assertThat(tlsContextConfig.getSupportedProtocols()).isNull(),
+                        () -> assertThat(tlsContextConfig.getSupportedCiphers()).isNull(),
+                        () -> assertThat(tlsContextConfig.getCertAlias()).isNull()
+                );
             }
 
             @Test
             void shouldReturnTlsContextConfiguration() {
                 var tlsContextConfig = TlsContextConfiguration.fromDropwizardTlsConfiguration(dwTlsConfig);
 
-                assertThat(tlsContextConfig.getProtocol()).isEqualTo("TLSv1.3");
-                assertThat(tlsContextConfig.getProvider()).isEqualTo("BC");
-                assertThat(tlsContextConfig.getKeyStorePath()).isEqualTo("/pki/test.ks");
-                assertThat(tlsContextConfig.getKeyStorePassword()).isEqualTo("ks-pass");
-                assertThat(tlsContextConfig.getKeyStoreType()).isEqualTo("PKCS12");
-                assertThat(tlsContextConfig.getKeyStoreProvider()).isEqualTo("BC");
-                assertThat(tlsContextConfig.getTrustStorePath()).isEqualTo("/pki/test.ts");
-                assertThat(tlsContextConfig.getTrustStorePassword()).isEqualTo("ts-pass");
-                assertThat(tlsContextConfig.getTrustStoreType()).isEqualTo("PKCS12");
-                assertThat(tlsContextConfig.getTrustStoreProvider()).isEqualTo("BC");
-                assertThat(tlsContextConfig.isTrustSelfSignedCertificates()).isTrue();
-                assertThat(tlsContextConfig.isVerifyHostname()).isFalse();
-                assertThat(tlsContextConfig.getSupportedProtocols()).containsOnly("TLSv1.3");
-                assertThat(tlsContextConfig.getSupportedCiphers()).containsOnly("TLS_ECDHE_ECDSA_WITH_AES_128_CBC_SHA256");
-                assertThat(tlsContextConfig.getCertAlias()).isEqualTo("cert42");
+                assertAll(
+                        () -> assertThat(tlsContextConfig.getProtocol()).isEqualTo("TLSv1.3"),
+                        () -> assertThat(tlsContextConfig.getProvider()).isEqualTo("BC"),
+                        () -> assertThat(tlsContextConfig.getKeyStorePath()).isEqualTo("/pki/test.ks"),
+                        () -> assertThat(tlsContextConfig.getKeyStorePassword()).isEqualTo("ks-pass"),
+                        () -> assertThat(tlsContextConfig.getKeyStoreType()).isEqualTo("PKCS12"),
+                        () -> assertThat(tlsContextConfig.getKeyStoreProvider()).isEqualTo("BC"),
+                        () -> assertThat(tlsContextConfig.getTrustStorePath()).isEqualTo("/pki/test.ts"),
+                        () -> assertThat(tlsContextConfig.getTrustStorePassword()).isEqualTo("ts-pass"),
+                        () -> assertThat(tlsContextConfig.getTrustStoreType()).isEqualTo("PKCS12"),
+                        () -> assertThat(tlsContextConfig.getTrustStoreProvider()).isEqualTo("BC"),
+                        () -> assertThat(tlsContextConfig.isTrustSelfSignedCertificates()).isTrue(),
+                        () -> assertThat(tlsContextConfig.isVerifyHostname()).isFalse(),
+                        () -> assertThat(tlsContextConfig.isDisableSniHostCheck()).isFalse(),
+                        () -> assertThat(tlsContextConfig.getSupportedProtocols()).containsOnly("TLSv1.3"),
+                        () -> assertThat(tlsContextConfig.getSupportedCiphers()).containsOnly("TLS_ECDHE_ECDSA_WITH_AES_128_CBC_SHA256"),
+                        () -> assertThat(tlsContextConfig.getCertAlias()).isEqualTo("cert42")
+                );
             }
 
             @Test
@@ -381,21 +402,25 @@ class TlsContextConfigurationTest {
             void shouldReturnTlsConfiguration() {
                 var dwTlsConfig = tlsConfig.toDropwizardTlsConfiguration();
 
-                assertThat(dwTlsConfig.getProtocol()).isEqualTo(protocol);
-                assertThat(dwTlsConfig.getProvider()).isEqualTo("BC");
-                assertThat(dwTlsConfig.getKeyStorePath().getAbsolutePath()).isEqualTo(path);
-                assertThat(dwTlsConfig.getKeyStorePassword()).isEqualTo(password);
-                assertThat(dwTlsConfig.getKeyStoreType()).isEqualTo(type);
-                assertThat(dwTlsConfig.getKeyStoreProvider()).isEqualTo("BC");
-                assertThat(dwTlsConfig.getTrustStorePath().getAbsolutePath()).isEqualTo(path);
-                assertThat(dwTlsConfig.getTrustStorePassword()).isEqualTo(password);
-                assertThat(dwTlsConfig.getTrustStoreType()).isEqualTo(type);
-                assertThat(dwTlsConfig.getTrustStoreProvider()).isEqualTo("BC");
-                assertThat(dwTlsConfig.isTrustSelfSignedCertificates()).isTrue();
-                assertThat(dwTlsConfig.isVerifyHostname()).isFalse();
-                assertThat(dwTlsConfig.getSupportedProtocols()).containsOnly("TLSv1.3");
-                assertThat(dwTlsConfig.getSupportedCiphers()).containsOnly("TLS_ECDHE_ECDSA_WITH_AES_128_CBC_SHA256");
-                assertThat(dwTlsConfig.getCertAlias()).isEqualTo("cert84");
+                // Note: Dropwizard TlsConfiguration does not contain disableSniHostCheck, so we cannot check it
+                
+                assertAll(
+                        () -> assertThat(dwTlsConfig.getProtocol()).isEqualTo(protocol),
+                        () -> assertThat(dwTlsConfig.getProvider()).isEqualTo("BC"),
+                        () -> assertThat(dwTlsConfig.getKeyStorePath().getAbsolutePath()).isEqualTo(path),
+                        () -> assertThat(dwTlsConfig.getKeyStorePassword()).isEqualTo(password),
+                        () -> assertThat(dwTlsConfig.getKeyStoreType()).isEqualTo(type),
+                        () -> assertThat(dwTlsConfig.getKeyStoreProvider()).isEqualTo("BC"),
+                        () -> assertThat(dwTlsConfig.getTrustStorePath().getAbsolutePath()).isEqualTo(path),
+                        () -> assertThat(dwTlsConfig.getTrustStorePassword()).isEqualTo(password),
+                        () -> assertThat(dwTlsConfig.getTrustStoreType()).isEqualTo(type),
+                        () -> assertThat(dwTlsConfig.getTrustStoreProvider()).isEqualTo("BC"),
+                        () -> assertThat(dwTlsConfig.isTrustSelfSignedCertificates()).isTrue(),
+                        () -> assertThat(dwTlsConfig.isVerifyHostname()).isFalse(),
+                        () -> assertThat(dwTlsConfig.getSupportedProtocols()).containsOnly("TLSv1.3"),
+                        () -> assertThat(dwTlsConfig.getSupportedCiphers()).containsOnly("TLS_ECDHE_ECDSA_WITH_AES_128_CBC_SHA256"),
+                        () -> assertThat(dwTlsConfig.getCertAlias()).isEqualTo("cert84")
+                );
             }
 
             @SuppressWarnings("DataFlowIssue")  // b/c IntelliJ sees Dropwizard [key|trust]StorePath are @Nullable
@@ -409,14 +434,16 @@ class TlsContextConfigurationTest {
 
                 var dwTlsConfig = tlsConfig.toDropwizardTlsConfiguration();
 
-                assertThat(dwTlsConfig.getProtocol()).isEqualTo(SSLContextProtocol.TLS_1_2.value);
-                assertThat(dwTlsConfig.getKeyStorePath()).isNull();
-                assertThat(dwTlsConfig.getKeyStorePassword()).isNull();
-                assertThat(dwTlsConfig.getKeyStoreType()).isEqualTo(KeyStoreType.JKS.value);
-                assertThat(dwTlsConfig.getTrustStorePath().getAbsolutePath()).isEqualTo("/data/pki/trust-store.pkcs12");
-                assertThat(dwTlsConfig.getTrustStorePassword()).isEqualTo("mySuperSecretTsPassword");
-                assertThat(dwTlsConfig.getTrustStoreType()).isEqualTo(KeyStoreType.PKCS12.value);
-                assertThat(dwTlsConfig.isVerifyHostname()).isTrue();
+                assertAll(
+                        () -> assertThat(dwTlsConfig.getProtocol()).isEqualTo(SSLContextProtocol.TLS_1_2.value),
+                        () -> assertThat(dwTlsConfig.getKeyStorePath()).isNull(),
+                        () -> assertThat(dwTlsConfig.getKeyStorePassword()).isNull(),
+                        () -> assertThat(dwTlsConfig.getKeyStoreType()).isEqualTo(KeyStoreType.JKS.value),
+                        () -> assertThat(dwTlsConfig.getTrustStorePath().getAbsolutePath()).isEqualTo("/data/pki/trust-store.pkcs12"),
+                        () -> assertThat(dwTlsConfig.getTrustStorePassword()).isEqualTo("mySuperSecretTsPassword"),
+                        () -> assertThat(dwTlsConfig.getTrustStoreType()).isEqualTo(KeyStoreType.PKCS12.value),
+                        () -> assertThat(dwTlsConfig.isVerifyHostname()).isTrue()
+                );
             }
         }
 
@@ -428,6 +455,7 @@ class TlsContextConfigurationTest {
                 var tlsContextConfig = TlsContextConfiguration.builder()
                         .protocol(SSLContextProtocol.TLS_1_3.value)
                         .verifyHostname(false)
+                        .disableSniHostCheck(true)
                         .keyStorePath("/data/pki/key-store.pkcs12")
                         .keyStorePassword("myKsPassword")
                         .keyStoreType(KeyStoreType.PKCS12.value)
@@ -439,16 +467,17 @@ class TlsContextConfigurationTest {
 
                 var sslConfig = tlsContextConfig.toSslContextConfiguration();
 
-                assertThat(sslConfig.getProtocol()).isEqualTo(SSLContextProtocol.TLS_1_3.value);
-                assertThat(sslConfig.isVerifyHostname()).isFalse();
-
-                assertThat(sslConfig.getKeyStorePath()).isEqualTo("/data/pki/key-store.pkcs12");
-                assertThat(sslConfig.getKeyStorePassword()).isEqualTo("myKsPassword");
-                assertThat(sslConfig.getKeyStoreType()).isEqualTo(KeyStoreType.PKCS12.value);
-
-                assertThat(sslConfig.getTrustStorePath()).isEqualTo("/data/pki/trust-store.pkcs12");
-                assertThat(sslConfig.getTrustStorePassword()).isEqualTo("myTsPassword");
-                assertThat(sslConfig.getTrustStoreType()).isEqualTo(KeyStoreType.PKCS12.value);
+                assertAll(
+                        () -> assertThat(sslConfig.getProtocol()).isEqualTo(SSLContextProtocol.TLS_1_3.value),
+                        () -> assertThat(sslConfig.isVerifyHostname()).isFalse(),
+                        () -> assertThat(sslConfig.isDisableSniHostCheck()).isTrue(),
+                        () -> assertThat(sslConfig.getKeyStorePath()).isEqualTo("/data/pki/key-store.pkcs12"),
+                        () -> assertThat(sslConfig.getKeyStorePassword()).isEqualTo("myKsPassword"),
+                        () -> assertThat(sslConfig.getKeyStoreType()).isEqualTo(KeyStoreType.PKCS12.value),
+                        () -> assertThat(sslConfig.getTrustStorePath()).isEqualTo("/data/pki/trust-store.pkcs12"),
+                        () -> assertThat(sslConfig.getTrustStorePassword()).isEqualTo("myTsPassword"),
+                        () -> assertThat(sslConfig.getTrustStoreType()).isEqualTo(KeyStoreType.PKCS12.value)
+                );
             }
 
             @Test

@@ -25,6 +25,7 @@ public class SSLContextConfiguration implements KeyAndTrustStoreConfigProvider {
     private String keyStoreType = KeyStoreType.JKS.value;
     private String trustStoreType = KeyStoreType.JKS.value;
     private boolean verifyHostname = true;
+    private boolean disableSniHostCheck;
 
     /**
      * A builder class for {@link SSLContextConfiguration}.
@@ -110,6 +111,20 @@ public class SSLContextConfiguration implements KeyAndTrustStoreConfigProvider {
             return this;
         }
 
+        /**
+         * Whether the SNI (Server Name Indication) host check is disabled. Default is {@code false}
+         *
+         * @see <a href="https://www.cloudflare.com/learning/ssl/what-is-sni/">What is SNI? How TLS server name indication works</a>
+         */
+        public Builder disableSniHostCheck(boolean disableSniHostCheck) {
+            return setDisableSniHostCheck(disableSniHostCheck);
+        }
+
+        public Builder setDisableSniHostCheck(boolean disableSniHostCheck) {
+            configuration.setDisableSniHostCheck(disableSniHostCheck);
+            return this;
+        }
+
         public SSLContextConfiguration build() {
             return configuration;
         }
@@ -145,8 +160,15 @@ public class SSLContextConfiguration implements KeyAndTrustStoreConfigProvider {
      * @return a new instance
      */
     public SimpleSSLContextFactory toSimpleSSLContextFactory() {
-        return new SimpleSSLContextFactory(
-                keyStorePath, keyStorePassword, keyStoreType, trustStorePath, trustStorePassword, trustStoreType, protocol, verifyHostname);
+        return new SimpleSSLContextFactory(keyStorePath,
+                keyStorePassword,
+                keyStoreType,
+                trustStorePath,
+                trustStorePassword,
+                trustStoreType,
+                protocol,
+                verifyHostname,
+                disableSniHostCheck);
     }
 
     /**
@@ -164,6 +186,7 @@ public class SSLContextConfiguration implements KeyAndTrustStoreConfigProvider {
                 .trustStoreType(trustStoreType)
                 .protocol(protocol)
                 .verifyHostname(verifyHostname)
+                .disableSniHostCheck(disableSniHostCheck)
                 .build();
     }
 

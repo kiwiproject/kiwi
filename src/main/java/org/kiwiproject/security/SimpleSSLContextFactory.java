@@ -3,12 +3,12 @@ package org.kiwiproject.security;
 import static java.util.Objects.isNull;
 import static org.kiwiproject.base.KiwiStrings.f;
 
-import com.google.common.annotations.VisibleForTesting;
 import lombok.Getter;
 import lombok.Synchronized;
 import org.kiwiproject.collect.KiwiMaps;
 
 import javax.net.ssl.SSLContext;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -17,6 +17,8 @@ import java.util.Optional;
  * A "simple" factory class that makes it simpler to create {@link SSLContext} instances.
  * <p>
  * Construct using one of the public constructors or via the {@link #builder()}.
+ * <em>Prefer using the builder, as the constructors may be deprecated
+ * (most likely for removal) in the future.</em>
  * <p>
  * This abstracts the much lower level {@link KiwiSecurity} class.
  *
@@ -32,6 +34,7 @@ public class SimpleSSLContextFactory {
     private static final String TRUST_STORE_TYPE_PROPERTY = "trustStoreType";
     private static final String PROTOCOL_PROPERTY = "protocol";
     private static final String VERIFY_HOSTNAME_PROPERTY = "verifyHostname";
+    private static final String DISABLE_SNI_HOST_CHECK_PROPERTY = "disableSniHostCheck";
 
     private static final List<String> REQUIRED_PROPERTIES = List.of(
             TRUST_STORE_PATH_PROPERTY, TRUST_STORE_PASSWORD_PROPERTY, PROTOCOL_PROPERTY
@@ -54,6 +57,14 @@ public class SimpleSSLContextFactory {
      */
     @Getter
     private final boolean verifyHostname;
+
+    /**
+     * This is not strictly needed when creating {@link SSLContext}s. It is here only in case this factory
+     * will be supplied to other code that makes HTTPS connections and needs to create {@link SSLContext}
+     * instances AND also needs to know whether it should perform SNI host checking.
+     */
+    @Getter
+    private boolean disableSniHostCheck;
 
     /**
      * Create a new {@link SimpleSSLContextFactory} with {@code verifyHostname} set to {@code true} and "JKS" as
@@ -89,7 +100,14 @@ public class SimpleSSLContextFactory {
                                    String trustStorePassword,
                                    String protocol,
                                    boolean verifyHostname) {
-        this(keyStorePath, keyStorePassword, KeyStoreType.JKS.value, trustStorePath, trustStorePassword, KeyStoreType.JKS.value, protocol, verifyHostname);
+        this(keyStorePath,
+                keyStorePassword,
+                KeyStoreType.JKS.value,
+                trustStorePath,
+                trustStorePassword,
+                KeyStoreType.JKS.value,
+                protocol,
+                verifyHostname);
     }
 
     /**
@@ -124,6 +142,40 @@ public class SimpleSSLContextFactory {
     }
 
     /**
+     * Create a new {@link SimpleSSLContextFactory}.
+     *
+     * @param keyStorePath        path to the key store
+     * @param keyStorePassword    password of the key store
+     * @param keyStoreType        the keystore type
+     * @param trustStorePath      path to the trust store
+     * @param trustStorePassword  password of the trust store
+     * @param trustStoreType      the trust store type
+     * @param protocol            the protocol to use
+     * @param verifyHostname      whether to verify host names or not
+     * @param disableSniHostCheck whether to disable SNI host checking
+     */
+    @SuppressWarnings("java:S107")
+    public SimpleSSLContextFactory(String keyStorePath,
+                                   String keyStorePassword,
+                                   String keyStoreType,
+                                   String trustStorePath,
+                                   String trustStorePassword,
+                                   String trustStoreType,
+                                   String protocol,
+                                   boolean verifyHostname,
+                                   boolean disableSniHostCheck) {
+        this.keyStorePath = keyStorePath;
+        this.keyStorePassword = keyStorePassword;
+        this.keyStoreType = keyStoreType;
+        this.trustStorePath = trustStorePath;
+        this.trustStorePassword = trustStorePassword;
+        this.trustStoreType = trustStoreType;
+        this.protocol = protocol;
+        this.verifyHostname = verifyHostname;
+        this.disableSniHostCheck = disableSniHostCheck;
+    }
+
+    /**
      * A builder class for {@link SimpleSSLContextFactory}.
      * <p>
      * If not specified, key and trust store type default to "JKS", and {@code verifyHostname} defaults to {@code true}.
@@ -145,7 +197,8 @@ public class SimpleSSLContextFactory {
                     TRUST_STORE_PASSWORD_PROPERTY, Optional.empty(),
                     TRUST_STORE_TYPE_PROPERTY, Optional.of(KeyStoreType.JKS.value),
                     PROTOCOL_PROPERTY, Optional.empty(),
-                    VERIFY_HOSTNAME_PROPERTY, Optional.of("true")
+                    VERIFY_HOSTNAME_PROPERTY, Optional.of("true"),
+                    DISABLE_SNI_HOST_CHECK_PROPERTY, Optional.of("false")
             );
         }
 
@@ -217,22 +270,36 @@ public class SimpleSSLContextFactory {
         }
 
         public Builder setVerifyHostname(boolean verifyHostname) {
-            entries.put(VERIFY_HOSTNAME_PROPERTY, Optional.of(String.valueOf(verifyHostname)));
+            entries.put(VERIFY_HOSTNAME_PROPERTY, optionalStringOf(verifyHostname));
             return this;
+        }
+
+        public Builder disableSniHostCheck(boolean disableSniHostCheck) {
+            return setDisableSniHostCheck(disableSniHostCheck);
+        }
+
+        public Builder setDisableSniHostCheck(boolean disableSniHostCheck) {
+            entries.put(DISABLE_SNI_HOST_CHECK_PROPERTY, optionalStringOf(disableSniHostCheck));
+            return this;
+        }
+
+        private static Optional<String> optionalStringOf(boolean value) {
+            return Optional.of(String.valueOf(value));
         }
 
         public SimpleSSLContextFactory build() {
             validateBuilderState();
 
             return new SimpleSSLContextFactory(
-                    entries.get(KEY_STORE_PATH_PROPERTY).orElse(null),
-                    entries.get(KEY_STORE_PASSWORD_PROPERTY).orElse(null),
-                    entries.get(KEY_STORE_TYPE_PROPERTY).orElseThrow(IllegalStateException::new),
-                    entries.get(TRUST_STORE_PATH_PROPERTY).orElseThrow(IllegalStateException::new),
-                    entries.get(TRUST_STORE_PASSWORD_PROPERTY).orElseThrow(IllegalStateException::new),
-                    entries.get(TRUST_STORE_TYPE_PROPERTY).orElseThrow(IllegalStateException::new),
-                    entries.get(PROTOCOL_PROPERTY).orElseThrow(IllegalStateException::new),
-                    Boolean.parseBoolean(entries.get(VERIFY_HOSTNAME_PROPERTY).orElseThrow(IllegalStateException::new))
+                    stringOrNull(KEY_STORE_PATH_PROPERTY),
+                    stringOrNull(KEY_STORE_PASSWORD_PROPERTY),
+                    stringOrThrow(KEY_STORE_TYPE_PROPERTY),
+                    stringOrThrow(TRUST_STORE_PATH_PROPERTY),
+                    stringOrThrow(TRUST_STORE_PASSWORD_PROPERTY),
+                    stringOrThrow(TRUST_STORE_TYPE_PROPERTY),
+                    stringOrThrow(PROTOCOL_PROPERTY),
+                    toBooleanOrThrow(VERIFY_HOSTNAME_PROPERTY),
+                    toBooleanOrThrow(DISABLE_SNI_HOST_CHECK_PROPERTY)
             );
         }
 
@@ -242,6 +309,19 @@ public class SimpleSSLContextFactory {
                     .filter(entry -> REQUIRED_PROPERTIES.contains(entry.getKey()))
                     .findAny()
                     .ifPresent(entry -> throwBuildException(entry.getKey()));
+        }
+
+        private String stringOrNull(String propertyName) {
+            return entries.get(propertyName).orElse(null);
+        }
+
+        private String stringOrThrow(String propertyName) {
+            return entries.get(propertyName).orElseThrow(IllegalStateException::new);
+        }
+
+        private boolean toBooleanOrThrow(String propertyName) {
+            var boolString = entries.get(propertyName).orElseThrow(IllegalStateException::new);
+            return Boolean.parseBoolean(boolString);
         }
 
         private static void throwBuildException(String property) {
@@ -265,8 +345,8 @@ public class SimpleSSLContextFactory {
      * {@link SimpleSSLContextFactory} instance was built with.
      *
      * @return a new {@link SSLContext} instance when first called; all subsequent calls return the same cached instance
-     * @implNote This is intended to be called infrequently, e.g. once when a service/app starts. It is internally
-     * synchronized to ensure thread-safety when creating the {@link SSLContext}.
+     * @implNote This is intended to be called infrequently, e.g., once when a service/app starts.
+     * It is internally synchronized to ensure thread-safety when creating the {@link SSLContext}.
      */
     @Synchronized
     public SSLContext getSslContext() {
@@ -279,23 +359,25 @@ public class SimpleSSLContextFactory {
 
     /**
      * Get the properties this factory was configured with, <strong>including passwords</strong>.
+     * Callers are responsible for securely handling the result, and not unnecessarily exposing it.
      *
      * @return a map containing the configuration of this factory
-     * @apiNote Currently this is not publicly exposed, as it should not generally be needed except in tests.
-     * @implNote Uses {@link KiwiMaps#newHashMap(Object...)} because some values may be {@code null}, e.g. the key
-     * store path
+     * @apiNote This is publicly exposed, but should not generally be needed except in tests, and perhaps debugging.
+     * @implNote Uses {@link KiwiMaps#newHashMap(Object...)} because some values may be {@code null}, e.g., the key
+     * store path, and wraps that using {@link Collections#unmodifiableMap(Map)} to prevent modification of the
+     * returned map.
      */
-    @VisibleForTesting
-    Map<String, Object> configuration() {
-        return KiwiMaps.newHashMap(
-            KEY_STORE_PATH_PROPERTY, keyStorePath,
-            KEY_STORE_PASSWORD_PROPERTY, keyStorePassword,
-            KEY_STORE_TYPE_PROPERTY, keyStoreType,
-            TRUST_STORE_PATH_PROPERTY, trustStorePath,
-            TRUST_STORE_PASSWORD_PROPERTY, trustStorePassword,
-            TRUST_STORE_TYPE_PROPERTY, trustStoreType,
-            PROTOCOL_PROPERTY, protocol,
-            VERIFY_HOSTNAME_PROPERTY, verifyHostname
-        );
+    public Map<String, Object> configuration() {
+        return Collections.unmodifiableMap(KiwiMaps.newHashMap(
+                KEY_STORE_PATH_PROPERTY, keyStorePath,
+                KEY_STORE_PASSWORD_PROPERTY, keyStorePassword,
+                KEY_STORE_TYPE_PROPERTY, keyStoreType,
+                TRUST_STORE_PATH_PROPERTY, trustStorePath,
+                TRUST_STORE_PASSWORD_PROPERTY, trustStorePassword,
+                TRUST_STORE_TYPE_PROPERTY, trustStoreType,
+                PROTOCOL_PROPERTY, protocol,
+                VERIFY_HOSTNAME_PROPERTY, verifyHostname,
+                DISABLE_SNI_HOST_CHECK_PROPERTY, disableSniHostCheck
+        ));
     }
 }

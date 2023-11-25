@@ -8,7 +8,6 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
-import org.kiwiproject.junit.jupiter.ClearBoxTest;
 
 @DisplayName("SimpleSSLContextFactory")
 class SimpleSSLContextFactoryTest {
@@ -43,6 +42,24 @@ class SimpleSSLContextFactoryTest {
     }
 
     @Test
+    void shouldDefaultDisableSniHostCheckToFalse() {
+        var contextFactory = new SimpleSSLContextFactory(path, password, path, password, protocol);
+
+        assertThat(contextFactory.isDisableSniHostCheck()).isFalse();
+    }
+
+    @Test
+    void shouldDefaultDisableSniHostCheckToFalse_ForBuilder() {
+        var contextFactory = SimpleSSLContextFactory.builder()
+                .trustStorePath(path)
+                .trustStorePassword(password)
+                .protocol(protocol)
+                .build();
+
+        assertThat(contextFactory.isDisableSniHostCheck()).isFalse();
+    }
+
+    @Test
     void shouldCreateSimpleSSLContextFactory() {
         var contextFactory = new SimpleSSLContextFactory(path, password, path, password, protocol);
 
@@ -59,10 +76,12 @@ class SimpleSSLContextFactoryTest {
                 .trustStorePassword(password)
                 .protocol(protocol)
                 .verifyHostname(false)
+                .disableSniHostCheck(true)
                 .build();
 
         assertThat(contextFactory.getSslContext()).isNotNull();
         assertThat(contextFactory.isVerifyHostname()).isFalse();
+        assertThat(contextFactory.isDisableSniHostCheck()).isTrue();
     }
 
     @Test
@@ -119,7 +138,20 @@ class SimpleSSLContextFactoryTest {
     @Nested
     class Configuration {
 
-        @ClearBoxTest
+        @Test
+        void shouldReturnUnmodifiableMap() {
+            var factory = SimpleSSLContextFactory.builder()
+                    .trustStorePath("/path/to/trust_store")
+                    .trustStorePassword("password_12345")
+                    .protocol("TLSv1.3")
+                    .build();
+
+            var config = factory.configuration();
+
+            assertThat(config).isUnmodifiable();
+        }
+
+        @Test
         void shouldSetDefaultsForSomeProperties() {
             var factory = SimpleSSLContextFactory.builder()
                     .trustStorePath("/path/to/trust_store")
@@ -139,11 +171,12 @@ class SimpleSSLContextFactoryTest {
                             entry("trustStorePassword", "password_12345"),
                             entry("trustStoreType", "JKS"),
                             entry("protocol", "TLSv1.2"),
-                            entry("verifyHostname", true)
-            );
+                            entry("verifyHostname", true),
+                            entry("disableSniHostCheck", false)
+                    );
         }
 
-        @ClearBoxTest
+        @Test
         void shouldSetAllProperties() {
             var factory = SimpleSSLContextFactory.builder()
                     .keyStorePath("/path/to/key_store")
@@ -154,19 +187,21 @@ class SimpleSSLContextFactoryTest {
                     .trustStoreType(KeyStoreType.PKCS12.value)
                     .protocol("TLSv1.1")
                     .verifyHostname(false)
+                    .disableSniHostCheck(true)
                     .build();
 
             var config = factory.configuration();
 
             assertThat(config).containsOnly(
-                entry("keyStorePath", "/path/to/key_store"),
-                entry("keyStorePassword", "password_xyz"),
-                entry("keyStoreType", "PKCS11"),
-                entry("trustStorePath", "/path/to/trust_store"),
-                entry("trustStorePassword", "password_12345"),
-                entry("trustStoreType", "PKCS12"),
-                entry("protocol", "TLSv1.1"),
-                entry("verifyHostname", false)
+                    entry("keyStorePath", "/path/to/key_store"),
+                    entry("keyStorePassword", "password_xyz"),
+                    entry("keyStoreType", "PKCS11"),
+                    entry("trustStorePath", "/path/to/trust_store"),
+                    entry("trustStorePassword", "password_12345"),
+                    entry("trustStoreType", "PKCS12"),
+                    entry("protocol", "TLSv1.1"),
+                    entry("verifyHostname", false),
+                    entry("disableSniHostCheck", true)
             );
         }
     }
