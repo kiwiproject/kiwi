@@ -1,6 +1,7 @@
 package org.kiwiproject.collect;
 
 import static java.util.Objects.isNull;
+import static java.util.Objects.nonNull;
 import static org.kiwiproject.base.KiwiPreconditions.checkEvenItemCount;
 
 import lombok.experimental.UtilityClass;
@@ -227,14 +228,31 @@ public class KiwiMaps {
      * {@code key}, and (3) the value associated with the given key is {@code null}.
      *
      * @param map the map
-     * @param key the key check
+     * @param key the key to check
      * @param <K> the type of the keys in the map
      * @param <V> the type of the values in the map
      * @return {@code true} if and only if (1) {@code map} is not null or empty, (2) {@code map} contains the given
      * {@code key}, and (3) the value associated with the given key is {@code null}
      */
     public static <K, V> boolean keyExistsWithNullValue(Map<K, V> map, K key) {
-        return isNotNullOrEmpty(map) && map.containsKey(key) && isNull(map.get(key));
+        return keyExists(map, key) && isNull(map.get(key));
     }
 
+    /**
+     * Checks whether the given map contains a key whose value is not null.
+     *
+     * @param map the map
+     * @param key the key to check
+     * @param <K> the type of the keys in the map
+     * @param <V> the type of the values in the map
+     * @return {@code true} if and only if (1) {@code map} is not null or empty, (2) {@code map} contains the given
+     * {@code key}, and (3) the value associated with the given key is not {@code null}
+     */
+    public static <K, V> boolean keyExistsWithNonNullValue(Map<K, V> map, K key) {
+        return keyExists(map, key) && nonNull(map.get(key));
+    }
+
+    private static <K, V> boolean keyExists(Map<K, V> map, K key) {
+        return isNotNullOrEmpty(map) && map.containsKey(key);
+    }
 }

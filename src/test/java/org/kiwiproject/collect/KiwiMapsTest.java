@@ -354,4 +354,69 @@ class KiwiMapsTest {
         assertThatThrownBy(() -> unmodifiableConcurrentHashMap.put("nine", 9))
                 .isInstanceOf(UnsupportedOperationException.class);
     }
+
+    @Nested
+    class KeyExistsWithNonNullValue {
+
+        @Nested
+        class ShouldReturnTrue {
+
+            @Test
+            void whenKeyExistsAndHasANonNullValue() {
+                var key = "aKey";
+                assertThat(KiwiMaps.keyExistsWithNonNullValue(Map.of(key, "aValue"), key)).isTrue();
+            }
+
+            @Test
+            void whenObjectKeyExistsAndHasANonNullValue() {
+                var key = new Object();
+                assertThat(KiwiMaps.keyExistsWithNonNullValue(Map.of(key, "aValue"), key)).isTrue();
+            }
+        }
+
+        @Nested
+        class ShouldReturnFalse {
+
+            @Test
+            void whenMapIsNull() {
+                assertThat(KiwiMaps.keyExistsWithNonNullValue(null, "aKey")).isFalse();
+            }
+
+            @Test
+            void whenMapIsEmpty() {
+                assertThat(KiwiMaps.keyExistsWithNonNullValue(Map.of(), "aKey")).isFalse();
+            }
+
+            @Test
+            void whenKeyIsNull() {
+                assertThat(KiwiMaps.keyExistsWithNonNullValue(Map.of(), null)).isFalse();
+            }
+
+            @ParameterizedTest
+            @BlankStringSource
+            void whenKeyIsBlank(String value) {
+                assertThat(KiwiMaps.keyExistsWithNonNullValue(Map.of(), value)).isFalse();
+            }
+
+            @Test
+            void whenKeyDoesNotExist() {
+                var map = Map.of("aKey", "aValue");
+                assertThat(KiwiMaps.keyExistsWithNonNullValue(map, "anotherKey")).isFalse();
+            }
+
+            @Test
+            void whenKeyExistsAndHasNullValue() {
+                var key = "aKey";
+                var map = KiwiMaps.<String, Object>newUnmodifiableHashMap(key, null);
+                assertThat(KiwiMaps.keyExistsWithNonNullValue(map, key)).isFalse();
+            }
+
+            @Test
+            void whenObjectKeyExistsAndHasNullValue() {
+                var key = new Object();
+                var map = KiwiMaps.newUnmodifiableHashMap(key, null);
+                assertThat(KiwiMaps.keyExistsWithNonNullValue(map, key)).isFalse();
+            }
+        }
+    }
 }
