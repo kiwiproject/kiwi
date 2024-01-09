@@ -419,4 +419,22 @@ class KiwiMapsTest {
             }
         }
     }
+
+    @Nested
+    class GetOrThrow {
+
+        // TODO
+    }
+
+    @Nested
+    class GetOrThrowCustomRuntimeException {
+
+        // TODO
+    }
+
+    @Nested
+    class GetOrThrowCustomCheckedException {
+
+        // TODO
+    }
 }
