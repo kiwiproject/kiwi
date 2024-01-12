@@ -2,8 +2,10 @@ package org.kiwiproject.collect;
 
 import static java.util.stream.Collectors.toList;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.assertj.core.api.Assertions.entry;
+import static org.junit.jupiter.api.Assertions.assertAll;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -423,17 +425,51 @@ class KiwiMapsTest {
     @Nested
     class GetOrThrow {
 
+        @Test
+        void shouldRequireArguments() {
+            assertAll(
+                    () -> assertThatIllegalArgumentException()
+                            .isThrownBy(() -> KiwiMaps.getOrThrow(null, "aKey")),
+                    () -> assertThatIllegalArgumentException()
+                            .isThrownBy(() -> KiwiMaps.getOrThrow(Map.of("count", 42), null))
+            );
+        }
+
         // TODO
     }
 
     @Nested
     class GetOrThrowCustomRuntimeException {
 
+        @Test
+        void shouldRequireArguments() {
+            assertAll(
+                    () -> assertThatIllegalArgumentException()
+                            .isThrownBy(() -> KiwiMaps.getOrThrow(null, "aKey", IllegalStateException::new)),
+                    () -> assertThatIllegalArgumentException()
+                            .isThrownBy(() -> KiwiMaps.getOrThrow(Map.of("count", 42), null, IllegalStateException::new)),
+                    () -> assertThatIllegalArgumentException()
+                            .isThrownBy(() -> KiwiMaps.getOrThrow(Map.of("count", 42), "count", null))
+            );
+        }
+
         // TODO
     }
 
     @Nested
     class GetOrThrowCustomCheckedException {
+
+        @Test
+        void shouldRequireArguments() {
+            assertAll(
+                    () -> assertThatIllegalArgumentException()
+                            .isThrownBy(() -> KiwiMaps.getOrThrowChecked(null, "aKey", Exception::new)),
+                    () -> assertThatIllegalArgumentException()
+                            .isThrownBy(() -> KiwiMaps.getOrThrowChecked(Map.of("count", 42), null, Exception::new)),
+                    () -> assertThatIllegalArgumentException()
+                            .isThrownBy(() -> KiwiMaps.getOrThrowChecked(Map.of("count", 42), "count", null))
+            );
+        }
 
         // TODO
     }
