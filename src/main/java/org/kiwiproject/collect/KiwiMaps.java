@@ -2,6 +2,7 @@ package org.kiwiproject.collect;
 
 import static java.util.Objects.isNull;
 import static java.util.Objects.nonNull;
+import static org.kiwiproject.base.KiwiPreconditions.checkArgumentNotNull;
 import static org.kiwiproject.base.KiwiPreconditions.checkEvenItemCount;
 
 import lombok.experimental.UtilityClass;
@@ -274,6 +275,9 @@ public class KiwiMaps {
      *                                or the value associated with the key is null
      */
     public static <K, V> V getOrThrow(Map<K, V> map, K key) {
+        checkArgumentNotNull(map, "map must not be null");
+        checkArgumentNotNull(key, "key must not be null");
+
         throw new UnsupportedOperationException();
     }
 
@@ -297,6 +301,10 @@ public class KiwiMaps {
     public static <K, V, E extends RuntimeException> V getOrThrow(Map<K, V> map,
                                                                   K key,
                                                                   Supplier<E> exceptionSupplier) {
+        checkArgumentNotNull(map, "map must not be null");
+        checkArgumentNotNull(key, "key must not be null");
+        checkArgumentNotNull(exceptionSupplier, "exceptionSupplier must not be null");
+
         throw new UnsupportedOperationException();
     }
 
@@ -320,6 +328,10 @@ public class KiwiMaps {
     public static <K, V, E extends Exception> V getOrThrowChecked(Map<K, V> map,
                                                                   K key,
                                                                   Supplier<E> exceptionSupplier) throws E {
+        checkArgumentNotNull(map, "map must not be null");
+        checkArgumentNotNull(key, "key must not be null");
+        checkArgumentNotNull(exceptionSupplier, "exceptionSupplier must not be null");
+
         throw new UnsupportedOperationException();
     }
 }
