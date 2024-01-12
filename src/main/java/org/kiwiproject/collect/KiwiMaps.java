@@ -269,6 +269,7 @@ public class KiwiMaps {
      * @param <K> the type of the keys in the map
      * @param <V> the type of the values in the map
      * @return the value to which the specified key is mapped
+     * @throws IllegalArgumentException if either argument is null
      * @throws NoSuchElementException if the map is null or empty, does not contain the specified key,
      *                                or the value associated with the key is null
      */
@@ -289,6 +290,7 @@ public class KiwiMaps {
      * @param <V>               the type of the values in the map
      * @param <E>               the type of RuntimeException
      * @return the value to which the specified key is mapped
+     * @throws IllegalArgumentException if any of the arguments is null
      * @throws E if the map is null or empty, does not contain the specified key,
      *           or the value associated with the key is null
      */
@@ -311,6 +313,7 @@ public class KiwiMaps {
      * @param <V>               the type of the values in the map
      * @param <E>               the type of Exception
      * @return the value to which the specified key is mapped
+     * @throws IllegalArgumentException if any of the arguments is null
      * @throws E if the map is null or empty, does not contain the specified key,
      *           or the value associated with the key is null
      */
