@@ -277,7 +277,7 @@ public class KiwiMaps {
     public static <K, V> V getOrThrow(Map<K, V> map, K key) {
         checkMapAndKeyArgsNotNull(map, key);
 
-        throw new UnsupportedOperationException();
+        return map.get(key);
     }
 
     /**
@@ -303,7 +303,7 @@ public class KiwiMaps {
         checkMapAndKeyArgsNotNull(map, key);
         checkArgumentNotNull(exceptionSupplier, "exceptionSupplier must not be null");
 
-        throw new UnsupportedOperationException();
+        return map.get(key);
     }
 
     /**
@@ -329,7 +329,7 @@ public class KiwiMaps {
         checkMapAndKeyArgsNotNull(map, key);
         checkArgumentNotNull(exceptionSupplier, "exceptionSupplier must not be null");
 
-        throw new UnsupportedOperationException();
+        return map.get(key);
     }
 
     private static <K, V> void checkMapAndKeyArgsNotNull(Map<K, V> map, K key) {

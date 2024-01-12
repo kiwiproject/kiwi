@@ -435,6 +435,18 @@ class KiwiMapsTest {
             );
         }
 
+        @Test
+        void shouldReturnValue() {
+            var fruitCounts = Map.of("orange", 12, "apple", 6);
+
+            assertAll(
+                    () -> assertThat(KiwiMaps.getOrThrow(fruitCounts, "orange"))
+                            .isEqualTo(12),
+                    () -> assertThat(KiwiMaps.getOrThrow(fruitCounts, "apple"))
+                            .isEqualTo(6)
+            );
+        }
+
         // TODO
     }
 
@@ -453,6 +465,18 @@ class KiwiMapsTest {
             );
         }
 
+        @Test
+        void shouldReturnValue() {
+            var fruitCounts = Map.of("mango", 10, "kiwi", 7);
+
+            assertAll(
+                    () -> assertThat(KiwiMaps.getOrThrow(fruitCounts, "mango", RuntimeException::new))
+                            .isEqualTo(10),
+                    () -> assertThat(KiwiMaps.getOrThrow(fruitCounts, "kiwi", IllegalStateException::new))
+                            .isEqualTo(7)
+            );
+        }
+
         // TODO
     }
 
@@ -468,6 +492,18 @@ class KiwiMapsTest {
                             .isThrownBy(() -> KiwiMaps.getOrThrowChecked(Map.of("count", 42), null, Exception::new)),
                     () -> assertThatIllegalArgumentException()
                             .isThrownBy(() -> KiwiMaps.getOrThrowChecked(Map.of("count", 42), "count", null))
+            );
+        }
+
+        @Test
+        void shouldReturnValue() {
+            var fruitCounts = Map.of("papaya", 4, "guava", 3);
+
+            assertAll(
+                    () -> assertThat(KiwiMaps.getOrThrowChecked(fruitCounts, "papaya", Exception::new))
+                            .isEqualTo(4),
+                    () -> assertThat(KiwiMaps.getOrThrowChecked(fruitCounts, "guava", Exception::new))
+                            .isEqualTo(3)
             );
         }
 
