@@ -448,6 +448,8 @@ class KiwiMapsTest {
         }
 
         // TODO
+        //  key doesn't exist
+        //  key exists but value is null
     }
 
     @Nested
@@ -478,6 +480,8 @@ class KiwiMapsTest {
         }
 
         // TODO
+        //  key doesn't exist
+        //  key exists but value is null
     }
 
     @Nested
@@ -508,5 +512,7 @@ class KiwiMapsTest {
         }
 
         // TODO
+        //  key doesn't exist
+        //  key exists but value is null
     }
 }
