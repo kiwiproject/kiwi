@@ -275,8 +275,7 @@ public class KiwiMaps {
      *                                or the value associated with the key is null
      */
     public static <K, V> V getOrThrow(Map<K, V> map, K key) {
-        checkArgumentNotNull(map, "map must not be null");
-        checkArgumentNotNull(key, "key must not be null");
+        checkMapAndKeyArgsNotNull(map, key);
 
         throw new UnsupportedOperationException();
     }
@@ -301,8 +300,7 @@ public class KiwiMaps {
     public static <K, V, E extends RuntimeException> V getOrThrow(Map<K, V> map,
                                                                   K key,
                                                                   Supplier<E> exceptionSupplier) {
-        checkArgumentNotNull(map, "map must not be null");
-        checkArgumentNotNull(key, "key must not be null");
+        checkMapAndKeyArgsNotNull(map, key);
         checkArgumentNotNull(exceptionSupplier, "exceptionSupplier must not be null");
 
         throw new UnsupportedOperationException();
@@ -328,10 +326,14 @@ public class KiwiMaps {
     public static <K, V, E extends Exception> V getOrThrowChecked(Map<K, V> map,
                                                                   K key,
                                                                   Supplier<E> exceptionSupplier) throws E {
-        checkArgumentNotNull(map, "map must not be null");
-        checkArgumentNotNull(key, "key must not be null");
+        checkMapAndKeyArgsNotNull(map, key);
         checkArgumentNotNull(exceptionSupplier, "exceptionSupplier must not be null");
 
         throw new UnsupportedOperationException();
+    }
+
+    private static <K, V> void checkMapAndKeyArgsNotNull(Map<K, V> map, K key) {
+        checkArgumentNotNull(map, "map must not be null");
+        checkArgumentNotNull(key, "key must not be null");
     }
 }
