@@ -2,7 +2,9 @@ package org.kiwiproject.collect;
 
 import static java.util.Objects.isNull;
 import static java.util.Objects.nonNull;
+import static org.kiwiproject.base.KiwiPreconditions.checkArgumentNotNull;
 import static org.kiwiproject.base.KiwiPreconditions.checkEvenItemCount;
+import static org.kiwiproject.base.KiwiStrings.f;
 
 import lombok.experimental.UtilityClass;
 
@@ -10,10 +12,12 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.NoSuchElementException;
 import java.util.SortedMap;
 import java.util.TreeMap;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
+import java.util.function.Supplier;
 
 /**
  * Utility methods for working with {@link Map} instances
@@ -254,5 +258,97 @@ public class KiwiMaps {
 
     private static <K, V> boolean keyExists(Map<K, V> map, K key) {
         return isNotNullOrEmpty(map) && map.containsKey(key);
+    }
+
+    /**
+     * Returns the value to which the specified key is mapped.
+     * <p>
+     * If the map is null or empty, or it does not contain the specified key, or the value
+     * associated with the key is null, a {@link NoSuchElementException} is thrown.
+     *
+     * @param map the map
+     * @param key the key whose associated value is to be returned
+     * @param <K> the type of the keys in the map
+     * @param <V> the type of the values in the map
+     * @return the value to which the specified key is mapped
+     * @throws IllegalArgumentException if either argument is null
+     * @throws NoSuchElementException if the map is null or empty, does not contain the specified key,
+     *                                or the value associated with the key is null
+     */
+    public static <K, V> V getOrThrow(Map<K, V> map, K key) {
+        checkMapAndKeyArgsNotNull(map, key);
+
+        if (map.containsKey(key)) {
+            var v = map.get(key);
+            if (isNull(v)) {
+                throw new NoSuchElementException(f("value associated with key '{}' is null", key));
+            }
+            return v;
+        }
+
+        throw new NoSuchElementException(f("key '{}' does not exist in map", key));
+    }
+
+    /**
+     * Returns the value to which the specified key is mapped.
+     * <p>
+     * If the map is null or empty, or it does not contain the specified key, or the value
+     * associated with the key is null, the exception provided by the given Supplier is thrown.
+     *
+     * @param map               the map
+     * @param key               the key whose associated value is to be returned
+     * @param exceptionSupplier supplies a RuntimeException when there is no value to return
+     * @param <K>               the type of the keys in the map
+     * @param <V>               the type of the values in the map
+     * @param <E>               the type of RuntimeException
+     * @return the value to which the specified key is mapped
+     * @throws IllegalArgumentException if any of the arguments is null
+     * @throws E if the map is null or empty, does not contain the specified key,
+     *           or the value associated with the key is null
+     */
+    public static <K, V, E extends RuntimeException> V getOrThrow(Map<K, V> map,
+                                                                  K key,
+                                                                  Supplier<E> exceptionSupplier) {
+
+        return getOrThrowChecked(map, key, exceptionSupplier);
+    }
+
+    /**
+     * Returns the value to which the specified key is mapped.
+     * <p>
+     * If the map is null or empty, or it does not contain the specified key, or the value
+     * associated with the key is null, the exception provided by the given Supplier is thrown.
+     *
+     * @param map               the map
+     * @param key               the key whose associated value is to be returned
+     * @param exceptionSupplier supplies an Exception when there is no value to return
+     * @param <K>               the type of the keys in the map
+     * @param <V>               the type of the values in the map
+     * @param <E>               the type of Exception
+     * @return the value to which the specified key is mapped
+     * @throws IllegalArgumentException if any of the arguments is null
+     * @throws E if the map is null or empty, does not contain the specified key,
+     *           or the value associated with the key is null
+     */
+    public static <K, V, E extends Exception> V getOrThrowChecked(Map<K, V> map,
+                                                                  K key,
+                                                                  Supplier<E> exceptionSupplier) throws E {
+        checkMapAndKeyArgsNotNull(map, key);
+        checkArgumentNotNull(exceptionSupplier, "exceptionSupplier must not be null");
+
+        if (map.containsKey(key)) {
+            var v = map.get(key);
+            if (isNull(v)) {
+                throw exceptionSupplier.get();
+            }
+            return v;
+        }
+
+        throw exceptionSupplier.get();
+    }
+
+    private static <K, V> void checkMapAndKeyArgsNotNull(Map<K, V> map, K key) {
+        checkArgumentNotNull(map, "map must not be null");
+        checkArgumentNotNull(key, "key must not be null");
     }
 }

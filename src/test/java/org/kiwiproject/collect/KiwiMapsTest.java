@@ -2,9 +2,14 @@ package org.kiwiproject.collect;
 
 import static java.util.stream.Collectors.toList;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
+import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.assertj.core.api.Assertions.entry;
+import static org.junit.jupiter.api.Assertions.assertAll;
+import static org.kiwiproject.collect.KiwiMaps.newHashMap;
 
+import lombok.experimental.StandardException;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -20,10 +25,12 @@ import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.NoSuchElementException;
 import java.util.SortedMap;
 import java.util.TreeMap;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
+import java.util.function.Supplier;
 
 @DisplayName("KiwiMaps")
 class KiwiMapsTest {
@@ -65,7 +72,7 @@ class KiwiMapsTest {
     @Test
     void testNewHashMap() {
         Object[] items = wordToNumberArray();
-        Map<String, Integer> hashMap = KiwiMaps.newHashMap(items);
+        Map<String, Integer> hashMap = newHashMap(items);
         assertThat(hashMap)
                 .isExactlyInstanceOf(HashMap.class)
                 .containsAllEntriesOf(newWordNumberMap());
@@ -73,12 +80,12 @@ class KiwiMapsTest {
 
     @Test
     void testNewHashMap_WhenNoItems() {
-        assertThat(KiwiMaps.newHashMap()).isEmpty();
+        assertThat(newHashMap()).isEmpty();
     }
 
     @Test
     void testNewHashMap_WhenOddNumberOfItems() {
-        assertThatThrownBy(() -> KiwiMaps.newHashMap("one", 1, "two"))
+        assertThatThrownBy(() -> newHashMap("one", 1, "two"))
                 .isExactlyInstanceOf(IllegalArgumentException.class)
                 .hasMessage("must be an even number of items (received 3)");
     }
@@ -225,7 +232,7 @@ class KiwiMapsTest {
             @Test
             void whenObjectKeyExistsAndHasNullValue() {
                 var key = new Object();
-                var map = KiwiMaps.newHashMap(key, null);
+                var map = newHashMap(key, null);
                 assertThat(KiwiMaps.keyExistsWithNullValue(map, key)).isTrue();
             }
         }
@@ -417,6 +424,158 @@ class KiwiMapsTest {
                 var map = KiwiMaps.newUnmodifiableHashMap(key, null);
                 assertThat(KiwiMaps.keyExistsWithNonNullValue(map, key)).isFalse();
             }
+        }
+    }
+
+    @Nested
+    class GetOrThrow {
+
+        @Test
+        void shouldRequireArguments() {
+            assertAll(
+                    () -> assertThatIllegalArgumentException()
+                            .isThrownBy(() -> KiwiMaps.getOrThrow(null, "aKey")),
+                    () -> assertThatIllegalArgumentException()
+                            .isThrownBy(() -> KiwiMaps.getOrThrow(Map.of("count", 42), null))
+            );
+        }
+
+        @Test
+        void shouldReturnValue() {
+            var fruitCounts = Map.of("orange", 12, "apple", 6);
+
+            assertAll(
+                    () -> assertThat(KiwiMaps.getOrThrow(fruitCounts, "orange"))
+                            .isEqualTo(12),
+                    () -> assertThat(KiwiMaps.getOrThrow(fruitCounts, "apple"))
+                            .isEqualTo(6)
+            );
+        }
+
+        @Test
+        void shouldThrowNoSuchElementException_WhenKeyDoesNotExist() {
+            var fruitCounts = newHashMap("orange", 12, "apple", 6);
+
+            assertThatExceptionOfType(NoSuchElementException.class)
+                    .isThrownBy(() -> KiwiMaps.getOrThrow(fruitCounts, "dragon fruit"))
+                    .withMessage("key 'dragon fruit' does not exist in map");
+        }
+
+        @Test
+        void shouldThrowNoSuchElementException_WhenValueIsNull() {
+            var fruitCounts = newHashMap("orange", 12, "apple", 6, "papaya", null);
+
+            assertThatExceptionOfType(NoSuchElementException.class)
+                    .isThrownBy(() -> KiwiMaps.getOrThrow(fruitCounts, "papaya"))
+                    .withMessage("value associated with key 'papaya' is null");
+        }
+    }
+
+    @Nested
+    class GetOrThrowCustomRuntimeException {
+
+        @Test
+        void shouldRequireArguments() {
+            assertAll(
+                    () -> assertThatIllegalArgumentException()
+                            .isThrownBy(() -> KiwiMaps.getOrThrow(null, "aKey", IllegalStateException::new)),
+                    () -> assertThatIllegalArgumentException()
+                            .isThrownBy(() -> KiwiMaps.getOrThrow(Map.of("count", 42), null, IllegalStateException::new)),
+                    () -> assertThatIllegalArgumentException()
+                            .isThrownBy(() -> KiwiMaps.getOrThrow(Map.of("count", 42), "count", null))
+            );
+        }
+
+        @Test
+        void shouldReturnValue() {
+            var fruitCounts = Map.of("mango", 10, "kiwi", 7);
+
+            assertAll(
+                    () -> assertThat(KiwiMaps.getOrThrow(fruitCounts, "mango", RuntimeException::new))
+                            .isEqualTo(10),
+                    () -> assertThat(KiwiMaps.getOrThrow(fruitCounts, "kiwi", IllegalStateException::new))
+                            .isEqualTo(7)
+            );
+        }
+
+        @Test
+        void shouldThrowCustomRuntimeException_WhenKeyDoesNotExist() {
+            var fruitCounts = newHashMap("orange", 12, "apple", 6);
+
+            Supplier<IllegalStateException> exceptionSupplier =
+                    () -> new IllegalStateException("missing key or null value");
+            assertThatExceptionOfType(IllegalStateException.class)
+                    .isThrownBy(() -> KiwiMaps.getOrThrow(fruitCounts, "dragon fruit", exceptionSupplier))
+                    .withMessage("missing key or null value");
+        }
+
+        @Test
+        void shouldThrowCustomRuntimeException_WhenValueIsNull() {
+            var fruitCounts = newHashMap("orange", 12, "apple", 6, "papaya", null);
+
+            Supplier<MyRuntimeException> exceptionSupplier =
+                    () -> new MyRuntimeException("missing key or null value");
+            assertThatExceptionOfType(MyRuntimeException.class)
+                    .isThrownBy(() -> KiwiMaps.getOrThrow(fruitCounts, "papaya", exceptionSupplier))
+                    .withMessage("missing key or null value");
+        }
+
+        @StandardException
+        static class MyRuntimeException extends RuntimeException {
+        }
+    }
+
+    @Nested
+    class GetOrThrowCustomCheckedException {
+
+        @Test
+        void shouldRequireArguments() {
+            assertAll(
+                    () -> assertThatIllegalArgumentException()
+                            .isThrownBy(() -> KiwiMaps.getOrThrowChecked(null, "aKey", Exception::new)),
+                    () -> assertThatIllegalArgumentException()
+                            .isThrownBy(() -> KiwiMaps.getOrThrowChecked(Map.of("count", 42), null, Exception::new)),
+                    () -> assertThatIllegalArgumentException()
+                            .isThrownBy(() -> KiwiMaps.getOrThrowChecked(Map.of("count", 42), "count", null))
+            );
+        }
+
+        @Test
+        void shouldReturnValue() {
+            var fruitCounts = Map.of("papaya", 4, "guava", 3);
+
+            assertAll(
+                    () -> assertThat(KiwiMaps.getOrThrowChecked(fruitCounts, "papaya", Exception::new))
+                            .isEqualTo(4),
+                    () -> assertThat(KiwiMaps.getOrThrowChecked(fruitCounts, "guava", Exception::new))
+                            .isEqualTo(3)
+            );
+        }
+
+        @Test
+        void shouldThrowCustomException_WhenKeyDoesNotExist() {
+            var fruitCounts = newHashMap("orange", 12, "apple", 6);
+
+            Supplier<Exception> exceptionSupplier =
+                    () -> new Exception("missing key or null value");
+            assertThatExceptionOfType(Exception.class)
+                    .isThrownBy(() -> KiwiMaps.getOrThrowChecked(fruitCounts, "dragon fruit", exceptionSupplier))
+                    .withMessage("missing key or null value");
+        }
+
+        @Test
+        void shouldThrowCustomException_WhenValueIsNull() {
+            var fruitCounts = newHashMap("orange", 12, "apple", 6, "papaya", null);
+
+            Supplier<MyException> exceptionSupplier =
+                    () -> new MyException("missing key or null value");
+            assertThatExceptionOfType(MyException.class)
+                    .isThrownBy(() -> KiwiMaps.getOrThrowChecked(fruitCounts, "papaya", exceptionSupplier))
+                    .withMessage("missing key or null value");
+        }
+
+        @StandardException
+        static class MyException extends Exception {
         }
     }
 }
