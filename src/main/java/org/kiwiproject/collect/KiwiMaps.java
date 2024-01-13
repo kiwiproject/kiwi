@@ -4,6 +4,7 @@ import static java.util.Objects.isNull;
 import static java.util.Objects.nonNull;
 import static org.kiwiproject.base.KiwiPreconditions.checkArgumentNotNull;
 import static org.kiwiproject.base.KiwiPreconditions.checkEvenItemCount;
+import static org.kiwiproject.base.KiwiStrings.f;
 
 import lombok.experimental.UtilityClass;
 
@@ -277,7 +278,15 @@ public class KiwiMaps {
     public static <K, V> V getOrThrow(Map<K, V> map, K key) {
         checkMapAndKeyArgsNotNull(map, key);
 
-        return map.get(key);
+        if (map.containsKey(key)) {
+            var v = map.get(key);
+            if (isNull(v)) {
+                throw new NoSuchElementException(f("value associated with key '{}' is null", key));
+            }
+            return v;
+        }
+
+        throw new NoSuchElementException(f("key '{}' does not exist in map", key));
     }
 
     /**
@@ -300,10 +309,8 @@ public class KiwiMaps {
     public static <K, V, E extends RuntimeException> V getOrThrow(Map<K, V> map,
                                                                   K key,
                                                                   Supplier<E> exceptionSupplier) {
-        checkMapAndKeyArgsNotNull(map, key);
-        checkArgumentNotNull(exceptionSupplier, "exceptionSupplier must not be null");
 
-        return map.get(key);
+        return getOrThrowChecked(map, key, exceptionSupplier);
     }
 
     /**
@@ -329,7 +336,15 @@ public class KiwiMaps {
         checkMapAndKeyArgsNotNull(map, key);
         checkArgumentNotNull(exceptionSupplier, "exceptionSupplier must not be null");
 
-        return map.get(key);
+        if (map.containsKey(key)) {
+            var v = map.get(key);
+            if (isNull(v)) {
+                throw exceptionSupplier.get();
+            }
+            return v;
+        }
+
+        throw exceptionSupplier.get();
     }
 
     private static <K, V> void checkMapAndKeyArgsNotNull(Map<K, V> map, K key) {
