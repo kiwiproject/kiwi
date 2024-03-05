@@ -204,7 +204,12 @@ public class KiwiUrls {
      * @return a new String with a leading slash
      */
     public static String prependLeadingSlash(String path) {
-        var trimmedPath = path.trim();
+        var trimmedPath = path.strip();
+
+        if (trimmedPath.isEmpty()) {
+            return "/";
+        }
+
         if (trimmedPath.charAt(0) == '/') {
             return trimmedPath;
         }

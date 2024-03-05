@@ -337,6 +337,27 @@ class KiwiUrlsTest {
         assertThat(KiwiUrls.prependLeadingSlash(padded)).isEqualTo("/" + notPadded);
     }
 
+    @ParameterizedTest
+    @ValueSource(strings = {"", " ", "\r\n", "  \t  "})
+    void shouldPrependLeadingSlash_WhenPathIsEmptyOrBlank(String path) {
+        assertThat(KiwiUrls.prependLeadingSlash(path)).isEqualTo("/");
+    }
+
+    @ParameterizedTest
+    @CsvSource(textBlock = """
+            /, /
+            ' / ', /
+            /q, /q
+            q, /q
+            foo, /foo
+            /foo, /foo
+            bar/baz, /bar/baz
+            /bar/baz, /bar/baz
+            """)
+    void shouldPrependLeadingSlash_WithVariousPaths(String path, String expectedResult) {
+        assertThat(KiwiUrls.prependLeadingSlash(path)).isEqualTo(expectedResult);
+    }
+
     @Test
     void testReplaceDomainIn_BiggerDomain() {
         assertThat(KiwiUrls.replaceDomainsIn(
