@@ -98,7 +98,7 @@ public class KiwiUrls {
     }
 
     /**
-     * Create a well-formed URL (String) from the given protocol, hostname, port and path.
+     * Create a well-formed URL (String) from the given protocol, hostname, port, and path.
      *
      * @param protocol the protocol
      * @param hostname the host name
@@ -132,9 +132,9 @@ public class KiwiUrls {
     }
 
     /**
-     * Wrapper around URL's constructor which throws a checked {@link MalformedURLException}. This instead assumes
-     * the given {@code urlSpec} is valid and throws {@link UncheckedMalformedURLException} in case it is actually
-     * not valid.
+     * Wrapper around {@code URL}'s constructor which throws a checked {@link MalformedURLException}.
+     * This instead assumes the given {@code urlSpec} is valid and throws {@link UncheckedMalformedURLException}
+     * in case it is actually not valid.
      *
      * @param urlSpec the String to parse as a URL
      * @return a new {@link URL} instance
@@ -151,29 +151,29 @@ public class KiwiUrls {
     /**
      * Create a well-formed URL string from the given {@code schemeHostPort} and zero or more path components.
      *
-     * @param schemeHostPort a string containing the scheme, host, and port parts, e.g. http://acme.com:8080
-     * @param pathComponents zero or more path components to append
+     * @param schemeHostPort a string containing the scheme, host, and port parts, e.g., {@code http://acme.com:8080}
+     * @param pathParts zero or more path parts to append
      * @return the constructed URL as a {@link String}
      */
-    public static String createUrl(String schemeHostPort, String... pathComponents) {
-        return createUrlObject(schemeHostPort, pathComponents).toString();
+    public static String createUrl(String schemeHostPort, String... pathParts) {
+        return createUrlObject(schemeHostPort, pathParts).toString();
     }
 
     /**
      * Create a well-formed URL from the given {@code schemeHostPort} and zero or more path components.
      *
-     * @param schemeHostPort a string containing the scheme, host, and port parts, e.g. http://acme.com:8080
-     * @param pathComponents zero or more path components to append
+     * @param schemeHostPort a string containing the scheme, host, and port parts, e.g., {@code http://acme.com:8080}
+     * @param pathParts zero or more path parts to append
      * @return the constructed URL as a {@link URL}
      */
-    public static URL createUrlObject(String schemeHostPort, String... pathComponents) {
+    public static URL createUrlObject(String schemeHostPort, String... pathParts) {
         var rawBaseUri = URI.create(schemeHostPort);
-        if (pathComponents.length == 0) {
+        if (pathParts.length == 0) {
             return toURL(rawBaseUri);
         }
 
         var baseUri = stripTrailingSlash(rawBaseUri.toString());
-        var path = Paths.get("/", pathComponents).toString();
+        var path = Paths.get("/", pathParts).toString();
         var fullUrlString = baseUri + path;
 
         return toURL(URI.create(fullUrlString));
@@ -260,7 +260,7 @@ public class KiwiUrls {
     }
 
     /**
-     * Create a well-formed HTTP URL (String) from the given hostname, port and path.
+     * Create a well-formed HTTP URL (String) from the given hostname, port, and path.
      *
      * @param hostname the host name
      * @param port     the port
@@ -272,7 +272,7 @@ public class KiwiUrls {
     }
 
     /**
-     * Create a well-formed HTTP URL from the given hostname, port and path.
+     * Create a well-formed HTTP URL from the given hostname, port, and path.
      *
      * @param hostname the host name
      * @param port     the port
@@ -306,7 +306,7 @@ public class KiwiUrls {
     }
 
     /**
-     * Create a well-formed HTTPS URL (String) from the given hostname, port and path.
+     * Create a well-formed HTTPS URL (String) from the given hostname, port, and path.
      *
      * @param hostname the host name
      * @param port     the port
@@ -318,7 +318,7 @@ public class KiwiUrls {
     }
 
     /**
-     * Create a well-formed HTTPS URL from the given hostname, port and path.
+     * Create a well-formed HTTPS URL from the given hostname, port, and path.
      *
      * @param hostname the host name
      * @param port     the port
@@ -332,7 +332,7 @@ public class KiwiUrls {
     /**
      * Extract all the relevant sections from the given {@code uri}.
      * <p>
-     * As an example, if given "https://news.bbc.co.uk:8080/a-news-article" this would return the following:
+     * As an example, if given {@code https://news.bbc.co.uk:8080/a-news-article} this would return the following:
      * <ul>
      * <li>scheme = "https"</li>
      * <li>subDomainName = "news"</li>
@@ -411,7 +411,7 @@ public class KiwiUrls {
     /**
      * Extracts the canonical server name from a given URL.
      * <p>
-     * As an example, if given "https://news.bbc.co.uk:8080/a-news-article" this method would return
+     * As an example, if given {@code https://news.bbc.co.uk:8080/a-news-article}, this method would return
      * "news.bbc.co.uk"
      * </p>
      *
@@ -428,7 +428,7 @@ public class KiwiUrls {
     /**
      * Extracts the server's domain name from a given URL.
      * <p>
-     * As an example, if given "https://news.bbc.co.uk:8080/a-news-article" this method would return
+     * As an example, if given {@code https://news.bbc.co.uk:8080/a-news-article}, this method would return
      * "bbc.co.uk"
      * </p>
      *
@@ -445,7 +445,7 @@ public class KiwiUrls {
     /**
      * Extracts the path from a given URL.
      * <p>
-     * As an example, if given "https://news.bbc.co.uk:8080/a-news-article" this method would return
+     * As an example, if given {@code https://news.bbc.co.uk:8080/a-news-article}, this method would return
      * "a-news-article"
      * </p>
      *
@@ -474,7 +474,7 @@ public class KiwiUrls {
     /**
      * Extracts the port from a given URL.
      * <p>
-     * As an example, if given "https://news.bbc.co.uk:8080/a-news-article" this method would return
+     * As an example, if given {@code https://news.bbc.co.uk:8080/a-news-article}, this method would return
      * "8080" (represented by an int).
      * </p>
      *
@@ -509,7 +509,7 @@ public class KiwiUrls {
     /**
      * Extracts the scheme from a given URL.
      * <p>
-     * As an example, if given "https://news.bbc.co.uk:8080/a-news-article" this method would return
+     * As an example, if given {@code https://news.bbc.co.uk:8080/a-news-article}, this method would return
      * "https"
      * </p>
      *
@@ -526,7 +526,7 @@ public class KiwiUrls {
     /**
      * Extracts the simple server name from a given URL.
      * <p>
-     * As an example, if given "https://news.bbc.co.uk:8080/a-news-article" this method would return
+     * As an example, if given {@code https://news.bbc.co.uk:8080/a-news-article}, this method would return
      * "news"
      * </p>
      *
@@ -581,7 +581,7 @@ public class KiwiUrls {
     /**
      * Replace {@code expectedDomain} in {@code url} with {@code replacementDomain} if and only if {@code url}'s domain
      * is equal to {@code expectedDomain}. If the given {@code url} has no domain, or is not the expected domain, be
-     * lenient and just return the original URL.
+     * lenient and return the original URL.
      */
     private static String replaceDomain(URL url, String expectedDomain, String replacementDomain) {
         var host = url.getHost();
@@ -615,16 +615,16 @@ public class KiwiUrls {
     }
 
     /**
-     * Converts a query string (comprised of key/value pairs separated by '&amp;' characters) into a Map whose keys
+     * Converts a query string (composed of key/value pairs separated by {@code &} characters) into a Map whose keys
      * are the parameter names and values are the parameter values.
      * <p>
      * Note specifically that this method does <strong>not</strong> decode the query string parameters. It splits on
      * literal &amp; characters to obtain the key/value pairs and then on the literal {@code =} to get the name and
-     * value of each pair. If a parameter doesn't contain any value, its values is set to an empty string. For example,
+     * value of each pair. If a parameter doesn't contain any value, its value is set to an empty string. For example,
      * in the query string {@code ?sorted&sortProp=}, both {@code sorted} and {@code sortProp} will have an empty
      * string as their value in the returned map.
      * <p>
-     * Also note that if a parameter has multiple values, only the <em>first</em> one is returned, e.g. the value of
+     * Also note that if a parameter has multiple values, only the <em>first</em> one is returned, e.g., the value of
      * "topping" in the query string {@code topping=pepperoni&topping=banana+pepper&topping=sausage} will always be
      * "pepperoni".
      *
@@ -757,14 +757,16 @@ public class KiwiUrls {
     }
 
     /**
-     * Converts a Map containing String keys and V values into one (potentially long) string of key/value parameters
-     * (each key/value parameter is separated by an '=' character), with each parameter pair separated by an '&amp;'
+     * Converts a Map containing String keys and V values into one (potentially long) string of key/value parameters.
+     * Each key/value parameter is separated by an '=' character, and each parameter pair is separated by an {@code &}
      * character.
+     * <p>
+     * For example, {@code page=0&pageSize=25&sort1=last&sortDir1=desc&sort2=first&sortDir2=asc}.
      * <p>
      * Note specifically that this method does <strong>not</strong> URL encode the parameters.
      *
      * @param parameters the map of the parameters to create the query string from
-     * @param <V>        the type of values in the parameters map
+     * @param <V>        the type of values in the {@code parameters} map
      * @return a concatenated query string
      * @see #queryStringToMap(String) queryStringToMap(String) for the inverse operation
      */
@@ -783,7 +785,7 @@ public class KiwiUrls {
      * string using {@link StandardCharsets#UTF_8} as the character set.
      *
      * @param parameters the map of the parameters to create the query string from
-     * @param <V>        the type of values in the parameters map
+     * @param <V>        the type of values in the {@code parameters} map
      * @return a URL-encoded query string
      * @see URLEncoder#encode(String, Charset)
      */
@@ -799,7 +801,7 @@ public class KiwiUrls {
      *
      * @param parameters  the map of the parameters to create the query string from
      * @param charsetName the name of the {@link Charset} (must be valid via {@link Charset#forName(String)})
-     * @param <V>         the type of values in the parameters map
+     * @param <V>         the type of values in the {@code parameters} map
      * @return a URL-encoded query string
      * @see Charset#forName(String)
      * @see URLEncoder#encode(String, Charset)
@@ -815,7 +817,7 @@ public class KiwiUrls {
      *
      * @param parameters the map of the parameters to create the query string from
      * @param charset    the {@link Charset} to use when encoding the parameters
-     * @param <V>        the type of values in the parameters map
+     * @param <V>        the type of values in the {@code parameters} map
      * @return a URL-encoded query string
      * @see URLEncoder#encode(String, Charset)
      */
