@@ -218,6 +218,26 @@ public class KiwiUrls {
     }
 
     /**
+     * Trims {@code path} and, if a leading slash is present, removes it.
+     *
+     * @param path a path
+     * @return a new String without a leading slash
+     */
+    public static String stripLeadingSlash(String path) {
+        var trimmedPath = path.strip();
+
+        if (trimmedPath.isEmpty()) {
+            return trimmedPath;
+        }
+
+        if (trimmedPath.charAt(0) == '/') {
+            return trimmedPath.substring(1);
+        }
+
+        return trimmedPath;
+    }
+
+    /**
      * Create a well-formed HTTP URL (String) from the given hostname and port.
      *
      * @param hostname the host name
