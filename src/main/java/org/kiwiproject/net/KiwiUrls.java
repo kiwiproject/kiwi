@@ -389,7 +389,7 @@ public class KiwiUrls {
      * @return the URL minus any trailing slash
      */
     public static String stripTrailingSlash(String url) {
-        var trimmedUrl = url.trim();
+        var trimmedUrl = url.strip();
 
         if (trimmedUrl.endsWith("/")) {
             return trimmedUrl.substring(0, trimmedUrl.length() - 1);
