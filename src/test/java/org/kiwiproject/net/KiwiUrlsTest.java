@@ -358,6 +358,28 @@ class KiwiUrlsTest {
         assertThat(KiwiUrls.prependLeadingSlash(path)).isEqualTo(expectedResult);
     }
 
+    @ParameterizedTest
+    @CsvSource(textBlock = """
+            '', '',
+            '  ', '',
+            ' \t\t\r   ', ''
+            /, ''
+            ' / ', ''
+            q, q
+            ' q ', q
+            /q, q
+            ' \t/q\r ', q
+            foo, foo
+            ' \tfoo\t ', foo
+            /foo, foo
+            '  /foo  ', foo
+            /foo/bar, foo/bar
+            ' /foo/bar ', foo/bar
+            """)
+    void shouldStripLeadingSlash(String path, String expectedResult) {
+        assertThat(KiwiUrls.stripLeadingSlash(path)).isEqualTo(expectedResult);
+    }
+
     @Test
     void testReplaceDomainIn_BiggerDomain() {
         assertThat(KiwiUrls.replaceDomainsIn(
