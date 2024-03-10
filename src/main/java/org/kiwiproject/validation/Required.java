@@ -32,7 +32,7 @@ import java.lang.annotation.Target;
  * that method reflectively and use its return value to determine whether the object is empty or not.
  */
 @Documented
-@Constraint(validatedBy = {RequiredValidator.class})
+@Constraint(validatedBy = {})
 @Target({METHOD, FIELD, ANNOTATION_TYPE, CONSTRUCTOR, PARAMETER, TYPE_USE})
 @Retention(RUNTIME)
 public @interface Required {

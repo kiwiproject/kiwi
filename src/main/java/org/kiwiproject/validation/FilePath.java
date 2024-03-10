@@ -40,7 +40,7 @@ import java.lang.annotation.Target;
  * location such as a configuration service, so users should understand the usage risks and mitigate when possible.
  */
 @Documented
-@Constraint(validatedBy = {FilePathValidator.class})
+@Constraint(validatedBy = {})
 @Target({METHOD, FIELD, ANNOTATION_TYPE, CONSTRUCTOR, PARAMETER, TYPE_USE})
 @Retention(RUNTIME)
 public @interface FilePath {

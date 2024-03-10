@@ -26,7 +26,7 @@ import java.lang.annotation.Target;
  * range).
  */
 @Documented
-@Constraint(validatedBy = {Ipv4AndPortValidator.class})
+@Constraint(validatedBy = {})
 @Target({METHOD, FIELD, ANNOTATION_TYPE, CONSTRUCTOR, PARAMETER, TYPE_USE})
 @Retention(RUNTIME)
 public @interface Ipv4AndPort {

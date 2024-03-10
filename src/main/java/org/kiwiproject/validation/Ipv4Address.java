@@ -21,7 +21,7 @@ import java.lang.annotation.Target;
  * See <a href="https://en.wikipedia.org/wiki/IPv4">IPv4</a> on Wikipedia.
  */
 @Documented
-@Constraint(validatedBy = {Ipv4AddressValidator.class})
+@Constraint(validatedBy = {})
 @Target({METHOD, FIELD, ANNOTATION_TYPE, CONSTRUCTOR, PARAMETER, TYPE_USE})
 @Retention(RUNTIME)
 public @interface Ipv4Address {

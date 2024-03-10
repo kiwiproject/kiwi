@@ -49,7 +49,7 @@ import java.lang.annotation.Target;
  * single day (again because there is no date component to indicate otherwise), 12:15 AM always comes before 23:56 PM.
  */
 @Documented
-@Constraint(validatedBy = {FieldRangeValidator.class})
+@Constraint(validatedBy = {})
 @Target({TYPE})
 @Retention(RUNTIME)
 @Repeatable(FieldRanges.class)
