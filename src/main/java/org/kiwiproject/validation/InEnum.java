@@ -42,7 +42,7 @@ import java.lang.annotation.Target;
  * </pre>
  */
 @Documented
-@Constraint(validatedBy = {InEnumValidator.class})
+@Constraint(validatedBy = {})
 @Target({METHOD, FIELD, ANNOTATION_TYPE, CONSTRUCTOR, PARAMETER, TYPE_USE})
 @Retention(RUNTIME)
 public @interface InEnum {

@@ -55,7 +55,7 @@ import java.lang.annotation.Target;
  * therefore when the {@link RangeValidator} is instantiated.
  */
 @Documented
-@Constraint(validatedBy = {RangeValidator.class})
+@Constraint(validatedBy = {})
 @Target({METHOD, FIELD, ANNOTATION_TYPE, CONSTRUCTOR, PARAMETER, TYPE_USE})
 @Retention(RUNTIME)
 public @interface Range {

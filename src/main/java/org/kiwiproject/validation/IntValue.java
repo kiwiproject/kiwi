@@ -19,7 +19,7 @@ import java.lang.annotation.Target;
  * The annotated element must have a value that can be converted to a Java int or {@link Integer}.
  */
 @Documented
-@Constraint(validatedBy = IntValueValidator.class)
+@Constraint(validatedBy = {})
 @Target({METHOD, FIELD, ANNOTATION_TYPE, CONSTRUCTOR, PARAMETER, TYPE_USE})
 @Retention(RetentionPolicy.RUNTIME)
 public @interface IntValue {
