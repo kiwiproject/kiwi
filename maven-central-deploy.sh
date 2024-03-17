@@ -3,9 +3,10 @@
 # maven-release-plugin goals (https://maven.apache.org/maven-release/maven-release-plugin/)
 
 function print_usage() {
-  echo "Usage: $0 -h -t"
+  echo "Usage: $0 -h -n -s -t"
   echo
   echo '-h: print this help'
+  echo "-n: don't clean up release plugin working directory (by default it is deleted)"
   echo '-s: skip confirmation prompt'
   echo '-t: run tests (they will run twice, once during release:prepare and a second time during release:perform)'
 }
@@ -13,13 +14,18 @@ function print_usage() {
 # set default values
 confirm_release=1
 run_tests=0
+cleanup=1
 
 # process arguments
-while getopts 'hst' opt; do
+while getopts 'hnst' opt; do
   case "$opt" in
     h)
       print_usage
       exit 0
+      ;;
+
+    n)
+      cleanup=0
       ;;
 
     s)
@@ -82,6 +88,19 @@ if [[ "$confirmation" == 'yes' ]]; then
 
   echo "Running Maven to perform release (logging to console and maven-central-deploy.log)"
   mvn "${extra_args[@]}" release:clean release:prepare release:perform -e | tee maven-central-deploy.log
+  mvn_result=$?
+
+  if [[ "$cleanup" -eq 1 ]]; then
+    if [[ "$mvn_result" -eq 0 ]]; then
+      echo "Cleanup: Remove Maven release plugin working directory"
+      find . -type d -name checkout -path '*/target/checkout' -exec rm -rf {} +
+    else
+      echo "Cleanup: Leaving Maven release plugin working directory for debugging because Maven execution failed (code: $mvn_result)"
+    fi
+  else
+    echo "Cleanup: Not deleting Maven release plugin working directory because -n was specified"
+  fi
+
 else
   echo 'Exit without deploy'
 fi
