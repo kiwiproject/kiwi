@@ -44,12 +44,13 @@ while getopts 'hnst' opt; do
 done
 
 # ensure the current branch is master or main
-echo "Checking branch is 'master' or 'main'"
+echo "Checking branch is 'master' or 'main' or starts with 'release/'"
 current_branch=$(git rev-parse --abbrev-ref HEAD)
-if [ "$current_branch" != 'master' ] && [ "$current_branch" != 'main' ]; then
-  echo 'WARNING: Must be on the master or main branch to release'
+if [ "$current_branch" != 'master' ] && [ "$current_branch" != 'main' ] && [[ ! "$current_branch" =~ ^release/ ]]; then
+  echo 'WARNING: Must be on master, main, or a branch starting with "release/" to release'
   exit 1
 fi
+echo "Branch is OK [${current_branch}]"
 
 # fetch latest information from remote repository and ensure there are no remote changes
 echo 'Checking repository is up to date'
