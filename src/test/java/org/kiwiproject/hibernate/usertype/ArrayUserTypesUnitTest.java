@@ -13,6 +13,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import java.io.Serializable;
 
 @DisplayName("ArrayUserTypes (Unit)")
+@SuppressWarnings({"deprecation", "removal"})
 class ArrayUserTypesUnitTest {
 
     private AbstractArrayUserType<String[]> arrayUserType;

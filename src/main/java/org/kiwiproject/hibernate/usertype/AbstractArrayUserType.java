@@ -6,6 +6,8 @@ import org.hibernate.HibernateException;
 import org.hibernate.engine.spi.SharedSessionContractImplementor;
 import org.hibernate.type.SqlTypes;
 import org.hibernate.usertype.UserType;
+import org.kiwiproject.base.KiwiDeprecated;
+import org.kiwiproject.base.KiwiDeprecated.Severity;
 
 import java.io.Serializable;
 import java.sql.PreparedStatement;
@@ -17,10 +19,16 @@ import java.util.Arrays;
 /**
  * Abstract base class for custom Hibernate user-defined array types.
  *
+ * @deprecated Replaced by native arrary support in Hibernate
  * @implNote Suppress Sonar "'throws' declarations should not be superfluous" warning since the signatures
  * come directly from UserType, and we are just preserving them.
  */
 @SuppressWarnings("java:S1130")
+@Deprecated(since = "3.4.0", forRemoval = true)
+@KiwiDeprecated(removeAt = "4.0.0",
+                replacedBy = "Native array support in Hibernate",
+                usageSeverity = Severity.SEVERE,
+                reference = "https://github.com/kiwiproject/kiwi/issues/1117")
 public abstract class AbstractArrayUserType<T> implements UserType<T> {
 
     private static final int[] SQL_TYPES = {Types.ARRAY};
