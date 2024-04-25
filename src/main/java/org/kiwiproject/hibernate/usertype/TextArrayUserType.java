@@ -6,6 +6,8 @@ import org.kiwiproject.base.KiwiDeprecated.Severity;
 /**
  * A Hibernate user-defined type that maps to/from (Postgres) array column of a text type, e.g. {@code TEXT[]}
  * or {@code VARCHAR[]}, mapping to the Java type {@code String[]}.
+ *
+ * @deprecated Replaced by native arrary support in Hibernate
  */
 @Deprecated(since = "3.4.0", forRemoval = true)
 @KiwiDeprecated(removeAt = "4.0.0",

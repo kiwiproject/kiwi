@@ -19,6 +19,7 @@ import java.util.Arrays;
 /**
  * Abstract base class for custom Hibernate user-defined array types.
  *
+ * @deprecated Replaced by native arrary support in Hibernate
  * @implNote Suppress Sonar "'throws' declarations should not be superfluous" warning since the signatures
  * come directly from UserType, and we are just preserving them.
  */
