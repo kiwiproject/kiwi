@@ -67,7 +67,7 @@ class ConstraintViolationExceptionMapperTest {
             var entity = assertHasMapEntity(response);
             assertThat(entity).containsOnlyKeys("errors");
 
-            //noinspection unchecked
+            @SuppressWarnings("unchecked")
             var errors = (List<ErrorMessage>) entity.get("errors");
 
             assertThat(errors).containsExactlyInAnyOrder(
@@ -98,7 +98,7 @@ class ConstraintViolationExceptionMapperTest {
             var entity = assertHasMapEntity(response);
             assertThat(entity).containsOnlyKeys("errors");
 
-            //noinspection unchecked
+            @SuppressWarnings("unchecked")
             var errors = (List<ErrorMessage>) entity.get("errors");
             assertThat(errors).hasSameSizeAs(violations);
         }

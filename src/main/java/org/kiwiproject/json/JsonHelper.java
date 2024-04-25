@@ -339,6 +339,7 @@ public class JsonHelper {
      * @param <T>         the object type
      * @return a new instance of the given type, or {@code null} if the given input JSON is blank
      */
+    @SuppressWarnings("unchecked")
     public <T> T toObject(@Nullable String json, Class<T> targetClass) {
         if (isBlank(json)) {
             return null;
@@ -350,7 +351,6 @@ public class JsonHelper {
             if (nonNull(e.getTargetType())
                     && isNullOrEmpty(e.getPath())
                     && e.getTargetType().isAssignableFrom(String.class)) {
-                //noinspection unchecked
                 return (T) json;
             } else {
                 throw new RuntimeJsonException(e);
@@ -581,13 +581,13 @@ public class JsonHelper {
      * @return a new instance of the target type
      * @see ObjectMapper#convertValue(Object, Class)
      */
+    @SuppressWarnings("unchecked")
     public <T> T convert(Object fromObject, Class<T> targetType) {
         if (isNull(fromObject)) {
             return null;
         }
 
         if (targetType.isAssignableFrom(String.class)) {
-            //noinspection unchecked
             return (T) toJson(fromObject);
         }
 
@@ -947,6 +947,7 @@ public class JsonHelper {
      * @return a new instance of type T
      * @see MergeOption
      */
+    @SuppressWarnings("unchecked")
     public <T> T mergeObjects(T originalObject, Object updateObject, MergeOption... mergeOptions) {
         var originalObjJson = toJson(originalObject);
         var updateObjJson = toJson(updateObject);
@@ -956,7 +957,6 @@ public class JsonHelper {
 
         JsonNode updatedNode = mergeNodes(originalNode, updateNode, mergeOptions);
 
-        //noinspection unchecked
         return (T) toObject(updatedNode.toString(), originalObject.getClass());
     }
 

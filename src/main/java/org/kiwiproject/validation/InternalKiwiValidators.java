@@ -54,6 +54,7 @@ class InternalKiwiValidators {
      * it becomes unreadable. Interestingly, neither IntelliJ not Sonar is complaining...maybe we don't have the
      * appropriate rules enabled. Suggestions for improvement welcome!
      */
+    @SuppressWarnings("unchecked")
     static <T> Comparable<T> toComparableOrNull(String compareValue, Comparable<T> value) {
         if (isBlank(compareValue) || isNull(value)) {
             return null;
@@ -88,7 +89,6 @@ class InternalKiwiValidators {
             throw new IllegalArgumentException(message);
         }
 
-        //noinspection unchecked
         return (Comparable<T>) typedValue;
     }
 

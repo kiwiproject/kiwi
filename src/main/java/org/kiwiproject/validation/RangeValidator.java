@@ -56,6 +56,7 @@ public class RangeValidator implements ConstraintValidator<Range, Object> {
         return isNotBlank(constraintAnnotation.min()) || isNotBlank(constraintAnnotation.max());
     }
 
+    @SuppressWarnings("unchecked")
     @Override
     public boolean isValid(Object value, ConstraintValidatorContext context) {
         Validity validity;
@@ -63,7 +64,6 @@ public class RangeValidator implements ConstraintValidator<Range, Object> {
             validity = checkNull(value, context);
 
             if (validity == Validity.CONTINUE) {
-                // noinspection unchecked
                 validity = checkMinMax((Comparable<Object>) value, context);
             }
         } catch (Exception e) {
