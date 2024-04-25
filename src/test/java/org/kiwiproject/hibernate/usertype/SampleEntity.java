@@ -14,7 +14,7 @@ import org.hibernate.annotations.Type;
 @Table(name = "sample_entity")
 @Getter
 @Setter
-@SuppressWarnings("JpaDataSourceORMInspection")
+@SuppressWarnings({"JpaDataSourceORMInspection", "removal"})
 class SampleEntity implements IdentifiableEntity {
 
     @Id
