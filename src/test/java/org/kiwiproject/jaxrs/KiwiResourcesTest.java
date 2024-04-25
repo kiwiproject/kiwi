@@ -448,6 +448,7 @@ class KiwiResourcesTest {
             assertThat(mapEntity).isEqualTo(FromResponseTestResource.ENTITY);
         }
 
+        @SuppressWarnings("resource")
         @Test
         void shouldThrowIllegalStateException_WhenEntityAlreadyConsumed() {
             var originalResponse = RESOURCES.client().target("/from-response/with-entity").request().get();

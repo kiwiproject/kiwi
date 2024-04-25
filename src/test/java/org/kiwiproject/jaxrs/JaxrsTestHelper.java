@@ -105,11 +105,11 @@ public class JaxrsTestHelper {
         );
     }
 
+    @SuppressWarnings("unchecked")
     public static Map<String, Object> assertHasMapEntity(Response response) {
         var entityObj = response.getEntity();
         assertThat(entityObj).isInstanceOf(Map.class);
 
-        //noinspection unchecked
         return (Map<String, Object>) entityObj;
     }
 }
