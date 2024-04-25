@@ -20,6 +20,7 @@ class VaultEncryptCommandTest {
     }
 
     @Test
+    @SuppressWarnings("removal")
     void shouldBuildCommand() {
         var plainTextFileName = "/data/etc/secrets/passwords.txt";
 
@@ -38,6 +39,7 @@ class VaultEncryptCommandTest {
     }
 
     @Test
+    @SuppressWarnings("removal")
     void shouldBuildCommand_WithVaultId() {
         var vaultIdLabel = "test";
         var plainTextFileName = "/data/etc/secrets/passwords.txt";

@@ -20,6 +20,7 @@ class VaultViewCommandTest {
     }
 
     @Test
+    @SuppressWarnings("removal")
     void shouldBuildCommand() {
         var encryptedFileName = "/data/crypt/passwords.txt";
 
