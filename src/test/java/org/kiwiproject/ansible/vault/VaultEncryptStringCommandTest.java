@@ -20,6 +20,7 @@ class VaultEncryptStringCommandTest {
     }
 
     @Test
+    @SuppressWarnings("removal")
     void shouldBuildCommand() {
         var plainText = "the plain text";
         var variableName = "MySecret";
@@ -40,6 +41,7 @@ class VaultEncryptStringCommandTest {
     }
 
     @Test
+    @SuppressWarnings("removal")
     void shouldBuildCommand_WithVaultId() {
         var vaultIdLabel = "test";
         var plainText = "the plain text";

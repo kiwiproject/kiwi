@@ -20,6 +20,7 @@ class VaultRekeyCommandTest {
     }
 
     @Test
+    @SuppressWarnings("removal")
     void shouldBuildCommand() {
         var encryptedFileName = "/data/crypt/passwords.txt";
         var newVaultPasswordFilePath = "/~.ansible/new_vault_pass";
