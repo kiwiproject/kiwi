@@ -7,7 +7,7 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
 
 @DisplayName("KiwiIntegers")
-public class KiwiIntegersTest {
+class KiwiIntegersTest {
 
     @ParameterizedTest(name = "Integer: {0}, expect: {1}")
     @CsvSource(textBlock = """
