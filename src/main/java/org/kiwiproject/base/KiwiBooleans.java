@@ -42,6 +42,6 @@ public class KiwiBooleans {
      * @return the boolean value of the Boolean object when non-null, otherwise {@code defaultValue}
      */
     public static boolean toBooleanOrDefault(@Nullable Boolean booleanObject, boolean defaultValue) {
-        return isNull(booleanObject) ? defaultValue : booleanObject.booleanValue();
+        return isNull(booleanObject) ? defaultValue : booleanObject;
     }
 }

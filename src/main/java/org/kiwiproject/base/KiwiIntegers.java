@@ -3,7 +3,6 @@ package org.kiwiproject.base;
 import static java.util.Objects.isNull;
 
 import lombok.experimental.UtilityClass;
-
 import org.checkerframework.checker.nullness.qual.Nullable;
 
 /**
@@ -32,6 +31,6 @@ public class KiwiIntegers {
      * @return the {@code int} value of the Integer object when non-null, otherwise {@code defaultValue}
      */
     public static int toIntOrDefault(@Nullable Integer integerObject, int defaultValue) {
-        return isNull(integerObject) ? defaultValue : integerObject.intValue();
+        return isNull(integerObject) ? defaultValue : integerObject;
     }
 }
