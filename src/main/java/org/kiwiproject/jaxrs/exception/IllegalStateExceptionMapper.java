@@ -7,7 +7,7 @@ import jakarta.ws.rs.ext.Provider;
 /**
  * Map {@link IllegalStateException} to {@link Response}.
  * <p>
- * The mapped response has status code 500 (Bad Request) and media type JSON.
+ * The mapped response has status code 500 (Internal Server Error) and media type JSON.
  */
 @Provider
 public class IllegalStateExceptionMapper implements ExceptionMapper<IllegalStateException> {
