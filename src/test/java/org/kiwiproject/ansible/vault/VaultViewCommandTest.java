@@ -20,7 +20,6 @@ class VaultViewCommandTest {
     }
 
     @Test
-    @SuppressWarnings("removal")
     void shouldBuildCommand() {
         var encryptedFileName = "/data/crypt/passwords.txt";
 
@@ -33,8 +32,5 @@ class VaultViewCommandTest {
                 configuration.getVaultPasswordFilePath(),
                 encryptedFileName
         );
-
-        //noinspection removal
-        assertThat(command.getCommandParts()).isEqualTo(command.parts());
     }
 }

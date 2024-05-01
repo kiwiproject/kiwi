@@ -25,7 +25,6 @@ class VaultDecryptCommandTest {
     class ShouldBuildCommand {
 
         @Test
-        @SuppressWarnings("removal")
         void whenGivenNoOutputFile() {
             var encryptedFilePath = "/data/secret/MySecret.txt";
             var command = VaultDecryptCommand.from(configuration, encryptedFilePath);
@@ -37,13 +36,9 @@ class VaultDecryptCommandTest {
                     configuration.getVaultPasswordFilePath(),
                     encryptedFilePath
             );
-
-            //noinspection removal
-            assertThat(command.getCommandParts()).isEqualTo(command.parts());
         }
 
         @Test
-        @SuppressWarnings("removal")
         void whenGivenOutputFile() {
             var encryptedFilePath = "/data/secret/MySecret.txt";
             var outputFilePath = "/data/temp/Plain.txt";
@@ -58,13 +53,9 @@ class VaultDecryptCommandTest {
                     outputFilePath,
                     encryptedFilePath
             );
-
-            //noinspection removal
-            assertThat(command.getCommandParts()).isEqualTo(command.parts());
         }
 
         @Test
-        @SuppressWarnings("removal")
         void whenGivenStdOutAsOutputFile() {
             var encryptedFilePath = "/data/secret/MySecret.txt";
             var command = VaultDecryptCommand.toStdoutFrom(configuration, encryptedFilePath);
@@ -78,9 +69,6 @@ class VaultDecryptCommandTest {
                     "-",
                     encryptedFilePath
             );
-
-            //noinspection removal
-            assertThat(command.getCommandParts()).isEqualTo(command.parts());
         }
     }
 }
