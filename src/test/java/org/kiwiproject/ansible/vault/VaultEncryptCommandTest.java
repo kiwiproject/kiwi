@@ -20,7 +20,6 @@ class VaultEncryptCommandTest {
     }
 
     @Test
-    @SuppressWarnings("removal")
     void shouldBuildCommand() {
         var plainTextFileName = "/data/etc/secrets/passwords.txt";
 
@@ -33,13 +32,9 @@ class VaultEncryptCommandTest {
                 configuration.getVaultPasswordFilePath(),
                 plainTextFileName
         );
-
-        //noinspection removal
-        assertThat(command.getCommandParts()).isEqualTo(command.parts());
     }
 
     @Test
-    @SuppressWarnings("removal")
     void shouldBuildCommand_WithVaultId() {
         var vaultIdLabel = "test";
         var plainTextFileName = "/data/etc/secrets/passwords.txt";
@@ -53,8 +48,5 @@ class VaultEncryptCommandTest {
                 vaultIdLabel + "@" + configuration.getVaultPasswordFilePath(),
                 plainTextFileName
         );
-
-        //noinspection removal
-        assertThat(command.getCommandParts()).isEqualTo(command.parts());
     }
 }
