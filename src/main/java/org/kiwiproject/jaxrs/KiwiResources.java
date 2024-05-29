@@ -26,8 +26,8 @@ import java.util.Map;
 import java.util.Optional;
 
 /**
- * Static utilities for use in JAX-RS resource classes. Contains utilities for verifying entities (e.g. obtained from
- * a service or data access class), factories for creating new responses, and for validating query parameters.
+ * Static utilities for use in Jakarta REST resource classes. Contains utilities for verifying entities (e.g. obtained
+ * from a service or data access class), factories for creating new responses, and for validating query parameters.
  *
  * @apiNote Some methods in this class accept {@link Optional} arguments, which we know is considered a code smell
  * by various people and analysis tools such as IntelliJ's inspections, Sonar, etc. However, we also like to return

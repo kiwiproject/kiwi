@@ -15,11 +15,11 @@ import java.net.URI;
 import java.util.Optional;
 
 /**
- * A set of "standard" JAX-RS responses for various HTTP methods. The "standard" is simply Kiwi's view of
+ * A set of "standard" Jakarta REST responses for various HTTP methods. The "standard" is simply Kiwi's view of
  * what should be in responses for common HTTP methods in a REST-based interface using JSON as the primary
  * data format.
  * <p>
- * These utilities are intended for use within JAX-RS resource classes.
+ * These utilities are intended for use within Jakarta REST resource classes.
  * <p>
  * One specific thing to note is that the content type is always set to {@link MediaType#APPLICATION_JSON}, since
  * the primary use case of this class assumes JSON-based REST interfaces. You can change the content type by

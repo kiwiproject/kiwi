@@ -14,7 +14,7 @@ import java.util.Collections;
 import java.util.Map;
 
 /**
- * An error message that kiwi uses in JAX-RS related utilities. This is effectively a replacement for the
+ * An error message that kiwi uses in Jakarta REST related utilities. This is effectively a replacement for the
  * Dropwizard class of the same name.
  * <p>
  * Each instance contains the HTTP status (error) code; the error message; an optional identifier to identify the

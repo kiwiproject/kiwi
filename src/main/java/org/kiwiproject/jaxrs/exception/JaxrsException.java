@@ -24,7 +24,7 @@ import java.util.Optional;
 import java.util.Set;
 
 /**
- * Represents a JAX-RS exception that uses the Kiwi {@link ErrorMessage} to describe
+ * Represents a Jakarta REST exception that uses the Kiwi {@link ErrorMessage} to describe
  * the errors causing this exception.
  * <p>
  * This class is concrete but also can be subclassed to represent specific HTTP status error codes.

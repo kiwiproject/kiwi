@@ -290,11 +290,11 @@ public class EndpointConfiguration {
     }
 
     /**
-     * Converts the URI returned by {@link #getURI()} into a JAX-RS {@link UriBuilder}.
+     * Converts the URI returned by {@link #getURI()} into a Jakarta REST {@link UriBuilder}.
      * <p>
-     * Note that JAX-RS must be in the classpath when calling this method.
+     * Note that Jakarta REST must be in the classpath when calling this method.
      *
-     * @return a JAX-RS {@link UriBuilder} instance
+     * @return a new {@link UriBuilder} instance
      */
     public UriBuilder toUriBuilder() {
         return UriBuilder.fromUri(getURI());

@@ -65,10 +65,10 @@ public class KiwiSearching {
 
     /**
      * The rather opinionated value for default page size as a String, in order to support web framework annotations
-     * like JAX-RS's {@code javax.ws.rs.DefaultValue} that require a String.
+     * like Jakarta REST's {@code jakarta.ws.rs.DefaultValue} that require a String.
      *
      * @implNote This <em>must</em> be a constant not an expression, otherwise trying to use it in an annotation like
-     * the JAX-RS {@code DefaultValue} will result in a compilation error due to the vagaries of Java annotations.
+     * the Jakarta REST {@code DefaultValue} will result in a compilation error due to the vagaries of Java annotations.
      * For example, trying to do this:
      * {@code DEFAULT_PAGE_SIZE_AS_STRING = String.valueOf(DEFAULT_PAGE_SIZE)}
      * and then using in an annotation like this:

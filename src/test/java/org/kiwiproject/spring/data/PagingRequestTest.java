@@ -26,8 +26,8 @@ import org.kiwiproject.search.KiwiSearching.PageNumberingScheme;
 import org.springframework.data.domain.Sort;
 
 /**
- * @implNote This test uses Dropwizard's (JAX-RS) test support classes to enable testing of
- * the JAX-RS annotations in {@link PagingRequest}.
+ * @implNote This test uses Dropwizard's (Jakarta REST) test support classes to enable testing of
+ * the Jakarta REST annotations in {@link PagingRequest}.
  */
 @DisplayName("PagingRequest")
 @ExtendWith({DropwizardExtensionsSupport.class, SoftAssertionsExtension.class})

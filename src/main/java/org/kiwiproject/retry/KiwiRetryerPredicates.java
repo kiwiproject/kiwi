@@ -67,13 +67,13 @@ public class KiwiRetryerPredicates {
             ex instanceof NoRouteToHostException || getRootCause(ex) instanceof NoRouteToHostException;
 
     /**
-     * Check if a given JAX-RS {@link Response} is a client error (4xx).
+     * Check if a given Jakarta REST {@link Response} is a client error (4xx).
      */
     public static final Predicate<Response> IS_HTTP_400s = response ->
             nonNull(response) && Response.Status.Family.CLIENT_ERROR == response.getStatusInfo().getFamily();
 
     /**
-     * Check if a given JAX-RS {@link Response} is a server error (5xx).
+     * Check if a given Jakarta REST {@link Response} is a server error (5xx).
      */
     public static final Predicate<Response> IS_HTTP_500s = response ->
             nonNull(response) && Response.Status.Family.SERVER_ERROR == response.getStatusInfo().getFamily();

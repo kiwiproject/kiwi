@@ -14,9 +14,9 @@ import java.util.function.Consumer;
 import java.util.function.Function;
 
 /**
- * Static utilities related to evaluating and acting upon JAX-RS responses. For example, this class contains utilities
- * to determine whether responses are successful or not, whether they are a specific type of response, and to perform
- * actions (or throw exceptions) based on success or failure.
+ * Static utilities related to evaluating and acting upon Jakarta REST responses. For example, this class contains
+ * utilities to determine whether responses are successful or not, whether they are a specific type of response, and to
+ * perform actions (or throw exceptions) based on success or failure.
  * <p>
  * These utilities are intended mainly to be used in classes that make HTTP requests and need to evaluate and/or take
  * action with the HTTP responses.

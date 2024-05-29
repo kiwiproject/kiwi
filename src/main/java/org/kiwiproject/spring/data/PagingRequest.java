@@ -12,9 +12,9 @@ import org.kiwiproject.search.KiwiSearching.PageNumberingScheme;
 import org.springframework.data.domain.Sort;
 
 /**
- * JAX-RS based implementation of {@link PagingParams}.
+ * Jakarta REST based implementation of {@link PagingParams}.
  * <p>
- * Intended to be used in JAX-RS resource classes with HTTP {@link jakarta.ws.rs.GET} endpoint methods having an
+ * Intended to be used in Jakarta REST resource classes with HTTP {@link jakarta.ws.rs.GET} endpoint methods having an
  * argument annotated with {@link jakarta.ws.rs.BeanParam}.
  * <p>
  * Example:
@@ -25,7 +25,7 @@ import org.springframework.data.domain.Sort;
  *  }
  * </pre>
  *
- * @implNote Requires Spring Data Commons and the JAX-RS API to be available at runtime.
+ * @implNote Requires Spring Data Commons and the Jakarta REST API to be available at runtime.
  */
 @Getter
 @Setter

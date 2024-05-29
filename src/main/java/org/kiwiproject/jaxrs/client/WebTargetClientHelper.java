@@ -10,7 +10,7 @@ import jakarta.ws.rs.core.UriBuilder;
 import java.net.URI;
 
 /**
- * Use with JAX-RS {@link Client} instances to provide additional functionality via {@link WebTargetHelper}. Each
+ * Use with Jakarta REST {@link Client} instances to provide additional functionality via {@link WebTargetHelper}. Each
  * of the {@code target} methods returns a {@link WebTargetHelper} to allow method chaining. Please see the
  * documentation in {@link WebTargetHelper} for more explanation.
  *

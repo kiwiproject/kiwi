@@ -10,7 +10,7 @@ import org.glassfish.jersey.client.ClientProperties;
 import java.time.Duration;
 
 /**
- * Static utilities related to <em>Jersey</em> {@link Client} instances. If these methods are used with a JAX-RS
+ * Static utilities related to <em>Jersey</em> {@link Client} instances. If these methods are used with a Jakarta REST
  * implementation other than Jersey, you should not expect anything to work. Some might fail silently, others could
  * throw unexpected exceptions, etc.
  * <p>
