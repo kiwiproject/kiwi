@@ -8,14 +8,15 @@ import javax.net.ssl.SSLSocketFactory;
 import java.net.URI;
 
 /**
- * Some JAX-WS utilities and constants. These make use of specific features in the JDK/Apache CXF implementation
- * in order to provide connect and read timeouts, as well as to provide an {@link SSLSocketFactory}. See
- * the implementation note for more details if you are not using the JDK/Apache CXF implementations.
+ * Some utilities and constants for Jakarta XML Web Services. These make use of specific features in the
+ * JDK/Apache CXF implementation in order to provide connect and read timeouts, as well as to provide an
+ * {@link SSLSocketFactory}. See the implementation note for more details if you are not using the JDK/Apache CXF
+ * implementations.
  *
- * @implNote Note specifically that these use JAX-WS reference implementation vendor extension features that are
- * available only when using the JAX-WS reference implementation. Specifically we are using constants in
- * {@link JAXWSProperties}. If you are not using the reference implementation, this will almost certainly not
- * work. For one thing you won't have JAXWSProperties in your classpath, so will most likely get
+ * @implNote Note specifically that these use Jakarta XML Web Services vendor extension features that are
+ * available only when using the the JDK/Apache CXF implementations. Specifically, we are using constants in
+ * {@link JAXWSProperties}. If you are not using the JDK implementation or Apache CXF, this will almost certainly
+ * not work. For one thing you won't have JAXWSProperties in your classpath, so will most likely get
  * {@link NoClassDefFoundError} or {@link ClassNotFoundException} at runtime.
  * @see JAXWSProperties#CONNECT_TIMEOUT
  * @see JAXWSProperties#REQUEST_TIMEOUT
