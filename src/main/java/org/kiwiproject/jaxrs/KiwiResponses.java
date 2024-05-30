@@ -306,6 +306,14 @@ public class KiwiResponses {
         return response.getStatusInfo().getFamily() == family;
     }
 
+    /**
+     * TODO
+     *
+     * @param responseSupplier
+     * @param successConsumer
+     * @param failedConsumer
+     * @param exceptionConsumer
+     */
     public static void onSuccessOrFailure(Supplier<Response> responseSupplier,
                                           Consumer<Response> successConsumer,
                                           Consumer<Response> failedConsumer,
@@ -348,6 +356,13 @@ public class KiwiResponses {
         }
     }
 
+    /**
+     * TODO
+     *
+     * @param responseSupplier
+     * @param successConsumer
+     * @param throwingFun
+     */
     public static void onSuccessOrFailureThrow(Supplier<Response> responseSupplier,
                                                Consumer<Response> successConsumer,
                                                Function<Response, ? extends RuntimeException> throwingFun) {
@@ -390,6 +405,12 @@ public class KiwiResponses {
         }
     }
 
+    /**
+     * TODO
+     *
+     * @param response
+     * @param successConsumer
+     */
     public static void onSuccess(Supplier<Response> response,
                                  Consumer<Response> successConsumer) {
 
@@ -413,6 +434,14 @@ public class KiwiResponses {
         onSuccessOrFailure(response, successConsumer, NO_OP_RESPONSE_CONSUMER);
     }
 
+    /**
+     * TODO
+     *
+     * @param <T>
+     * @param responseSupplier
+     * @param successFun
+     * @return
+     */
     public static <T> Optional<T> onSuccessWithResult(Supplier<Response> responseSupplier,
                                                       Function<Response, T> successFun) {
 
@@ -440,6 +469,13 @@ public class KiwiResponses {
         return onSuccessWithResultOrFailure(response, successFun, NO_OP_RESPONSE_CONSUMER);
     }
 
+    /**
+     * TODO
+     *
+     * @param responseSupplier
+     * @param failedConsumer
+     * @param exceptionConsumer
+     */
     public static void onFailure(Supplier<Response> responseSupplier,
                                  Consumer<Response> failedConsumer,
                                  Consumer<RuntimeException> exceptionConsumer) {
@@ -466,6 +502,12 @@ public class KiwiResponses {
         onSuccessOrFailure(response, NO_OP_RESPONSE_CONSUMER, failedConsumer);
     }
 
+    /**
+     * TODO
+     *
+     * @param responseSupplier
+     * @param throwingFun
+     */
     public static void onFailureThrow(Supplier<Response> responseSupplier,
                                       Function<Response, ? extends RuntimeException> throwingFun) {
 
@@ -502,6 +544,16 @@ public class KiwiResponses {
         }
     }
 
+    /**
+     * TODO
+     *
+     * @param <T>
+     * @param responseSupplier
+     * @param successFun
+     * @param failedConsumer
+     * @param exceptionConsumer
+     * @return
+     */
     public static <T> Optional<T> onSuccessWithResultOrFailure(Supplier<Response> responseSupplier,
                                                                Function<Response, T> successFun,
                                                                Consumer<Response> failedConsumer,
@@ -551,6 +603,16 @@ public class KiwiResponses {
         return Optional.ofNullable(result);
     }
 
+    /**
+     * TODO
+     *
+     * @param <T>
+     * @param responseSupplier
+     * @param successFun
+     * @param failedFun
+     * @param exceptionFun
+     * @return
+     */
     public static <T> T onSuccessOrFailureWithResult(Supplier<Response> responseSupplier,
                                                      Function<Response, T> successFun,
                                                      Function<Response, T> failedFun,
@@ -591,6 +653,15 @@ public class KiwiResponses {
         }
     }
 
+    /**
+     * TODO
+     *
+     * @param <T>
+     * @param responseSupplier
+     * @param successFun
+     * @param throwingFun
+     * @return
+     */
     public static <T> T onSuccessWithResultOrFailureThrow(Supplier<Response> responseSupplier,
                                                           Function<Response, T> successFun,
                                                           Function<Response, ? extends RuntimeException> throwingFun) {
