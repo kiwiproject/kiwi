@@ -7,6 +7,7 @@ import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.assertj.core.api.Assertions.catchThrowable;
 import static org.assertj.core.util.Sets.newLinkedHashSet;
+import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.kiwiproject.base.KiwiPreconditions.MAX_PORT_NUMBER;
 import static org.kiwiproject.base.KiwiPreconditions.checkArgumentNotNull;
 import static org.kiwiproject.base.KiwiPreconditions.requireNotBlank;
@@ -210,6 +211,78 @@ class KiwiPreconditionsTest {
                 .hasMessage("foo cannot be null (code: 42)");
 
         softly.assertThat(catchThrowable(() -> checkArgumentNotNull(new Object(), errorMessageTemplate, errorMessageArgs))).isNull();
+    }
+
+    @Nested
+    class CheckOnlyOneArgumentIsNull {
+
+        @Test
+        void shouldCheckWithNoErrorMessage() {
+            assertAll(
+                    () -> assertThatCode(() -> KiwiPreconditions.checkOnlyOneArgumentIsNull("a", null))
+                            .doesNotThrowAnyException(),
+
+                    () -> assertThatCode(() -> KiwiPreconditions.checkOnlyOneArgumentIsNull(null, "b"))
+                            .doesNotThrowAnyException(),
+
+                    () -> assertThatIllegalArgumentException()
+                            .isThrownBy(() -> KiwiPreconditions.checkOnlyOneArgumentIsNull(null, null))
+                            .withMessage(null),
+
+                    () -> assertThatIllegalArgumentException()
+                            .isThrownBy(() -> KiwiPreconditions.checkOnlyOneArgumentIsNull("a", "b"))
+                            .withMessage(null)
+            );
+        }
+
+        @Test
+        void shouldCheckWithErrorMessage() {
+            var message = "only one can be non-null";
+            assertAll(
+                    () -> assertThatCode(() ->
+                            KiwiPreconditions.checkOnlyOneArgumentIsNull("a", null, message))
+                            .doesNotThrowAnyException(),
+
+                    () -> assertThatCode(() ->
+                            KiwiPreconditions.checkOnlyOneArgumentIsNull(null, "b", message))
+                            .doesNotThrowAnyException(),
+
+                    () -> assertThatIllegalArgumentException().isThrownBy(() ->
+                                    KiwiPreconditions.checkOnlyOneArgumentIsNull(null, null, message))
+                            .withMessage(message),
+
+                    () -> assertThatIllegalArgumentException().isThrownBy(() ->
+                                    KiwiPreconditions.checkOnlyOneArgumentIsNull("a", "b", message))
+                            .withMessage(message)
+            );
+        }
+
+        @Test
+        void shouldCheckWithErrorMessageTemplate() {
+            var errorMessageTemplate = "only %s or %s can be non-null";
+            var expectedMessage = "only a or b can be non-null";
+            assertAll(
+                    () -> assertThatCode(() ->
+                            KiwiPreconditions.checkOnlyOneArgumentIsNull(
+                                    "a", null, errorMessageTemplate, "a", "b"))
+                            .doesNotThrowAnyException(),
+
+                    () -> assertThatCode(() ->
+                            KiwiPreconditions.checkOnlyOneArgumentIsNull(
+                                    null, "b", errorMessageTemplate, "a", "b"))
+                            .doesNotThrowAnyException(),
+
+                    () -> assertThatIllegalArgumentException().isThrownBy(() ->
+                                    KiwiPreconditions.checkOnlyOneArgumentIsNull(
+                                            null, null, errorMessageTemplate, "a", "b"))
+                            .withMessage(expectedMessage),
+
+                    () -> assertThatIllegalArgumentException().isThrownBy(() ->
+                                    KiwiPreconditions.checkOnlyOneArgumentIsNull(
+                                            "a", "b", errorMessageTemplate, "a", "b"))
+                            .withMessage(expectedMessage)
+            );
+        }
     }
 
     @Nested
