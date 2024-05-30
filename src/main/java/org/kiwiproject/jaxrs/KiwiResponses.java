@@ -715,31 +715,6 @@ public class KiwiResponses {
         throw result.error();
     }
 
-    @VisibleForTesting
-    record WebCallResult(RuntimeException error, Response response) {
-
-        // This is really an "either" type...which sadly, Java does not have.
-
-        WebCallResult {
-            checkOnlyOneArgumentIsNull(error, response,
-                    "Either the Response or the RuntimeException can be null, but not both");
-        }
-
-        boolean hasResponse() {
-            return nonNull(response);
-        }
-    }
-
-    private static WebCallResult getResponse(Supplier<Response> responseSupplier) {
-        try {
-            var response = responseSupplier.get();
-            return new WebCallResult(null, response);
-        } catch (RuntimeException e) {
-            LOG.trace("Response Supplier threw an exception", e);
-            return new WebCallResult(e, null);
-        }
-    }
-
     /**
      * Given a {@link Response}, perform an action that returns a result if it was successful ({@code successFun}
      * or throw a (subclass of) {@link RuntimeException} if it failed ({@code throwingFun}).
@@ -768,6 +743,31 @@ public class KiwiResponses {
             throw throwingFun.apply(response);
         } finally {
             closeQuietly(response);
+        }
+    }
+
+    @VisibleForTesting
+    record WebCallResult(RuntimeException error, Response response) {
+
+        // This is really an "either" type...which sadly, Java does not have.
+
+        WebCallResult {
+            checkOnlyOneArgumentIsNull(error, response,
+                    "Either the Response or the RuntimeException can be null, but not both");
+        }
+
+        boolean hasResponse() {
+            return nonNull(response);
+        }
+    }
+
+    private static WebCallResult getResponse(Supplier<Response> responseSupplier) {
+        try {
+            var response = responseSupplier.get();
+            return new WebCallResult(null, response);
+        } catch (RuntimeException e) {
+            LOG.trace("Response Supplier threw an exception", e);
+            return new WebCallResult(e, null);
         }
     }
 
