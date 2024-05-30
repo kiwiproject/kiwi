@@ -310,10 +310,10 @@ public class KiwiResponses {
     /**
      * TODO
      *
-     * @param responseSupplier
-     * @param successConsumer
-     * @param failedConsumer
-     * @param exceptionConsumer
+     * @param responseSupplier a Supplier that provides the response
+     * @param successConsumer the action to run if the response is successful
+     * @param failedConsumer the action to run if the response is not successful
+     * @param exceptionConsumer the action to run if the Supplier throws an exception
      */
     public static void onSuccessOrFailure(Supplier<Response> responseSupplier,
                                           Consumer<Response> successConsumer,
@@ -360,9 +360,10 @@ public class KiwiResponses {
     /**
      * TODO
      *
-     * @param responseSupplier
-     * @param successConsumer
-     * @param throwingFun
+     * @param responseSupplier a Supplier that provides the response
+     * @param successConsumer the action to run if the response is successful
+     * @param throwingFun a function that creates an appropriate (subclass of) RuntimeException
+     * @throws RuntimeException the result of {@code throwingFun}, or the exception thrown by the Supplier
      */
     public static void onSuccessOrFailureThrow(Supplier<Response> responseSupplier,
                                                Consumer<Response> successConsumer,
@@ -409,13 +410,13 @@ public class KiwiResponses {
     /**
      * TODO
      *
-     * @param response
-     * @param successConsumer
+     * @param responseSupplier a Supplier that provides the response
+     * @param successConsumer the action to run if the response is successful
      */
-    public static void onSuccess(Supplier<Response> response,
+    public static void onSuccess(Supplier<Response> responseSupplier,
                                  Consumer<Response> successConsumer) {
 
-        var result = getResponse(response);
+        var result = getResponse(responseSupplier);
 
         if (result.hasResponse()) {
             onSuccess(result.response(), successConsumer);
@@ -438,10 +439,10 @@ public class KiwiResponses {
     /**
      * TODO
      *
-     * @param <T>
-     * @param responseSupplier
-     * @param successFun
-     * @return
+     * @param responseSupplier a Supplier that provides the response
+     * @param successFun the function to apply if the response is successful
+     * @param <T> the result type
+     * @return an Optional containing a result for successful responses, or an empty Optional
      */
     public static <T> Optional<T> onSuccessWithResult(Supplier<Response> responseSupplier,
                                                       Function<Response, T> successFun) {
@@ -473,9 +474,9 @@ public class KiwiResponses {
     /**
      * TODO
      *
-     * @param responseSupplier
-     * @param failedConsumer
-     * @param exceptionConsumer
+     * @param responseSupplier a Supplier that provides the response
+     * @param failedConsumer the action to run if the response is not successful
+     * @param exceptionConsumer the action to run if the Supplier throws an exception
      */
     public static void onFailure(Supplier<Response> responseSupplier,
                                  Consumer<Response> failedConsumer,
@@ -506,8 +507,9 @@ public class KiwiResponses {
     /**
      * TODO
      *
-     * @param responseSupplier
-     * @param throwingFun
+     * @param responseSupplier a Supplier that provides the response
+     * @param throwingFun function that creates an appropriate (subclass of) RuntimeException
+     * @throws RuntimeException the result of {@code throwingFun}, or the exception thrown by the Supplier
      */
     public static void onFailureThrow(Supplier<Response> responseSupplier,
                                       Function<Response, ? extends RuntimeException> throwingFun) {
@@ -548,12 +550,13 @@ public class KiwiResponses {
     /**
      * TODO
      *
-     * @param <T>
-     * @param responseSupplier
-     * @param successFun
-     * @param failedConsumer
-     * @param exceptionConsumer
-     * @return
+     * @param responseSupplier a Supplier that provides the response
+     * @param successFun the function to apply if the response is successful
+     * @param failedConsumer the action to run if the response is not successful
+     * @param exceptionConsumer the action to run if the Supplier throws an exception
+     * @param <T> the result type
+     * @return the result from {@code successFun} for successful responses, or an empty Optional
+     * for unsuccessful responses or if the Supplier throws an exception
      */
     public static <T> Optional<T> onSuccessWithResultOrFailure(Supplier<Response> responseSupplier,
                                                                Function<Response, T> successFun,
@@ -607,12 +610,12 @@ public class KiwiResponses {
     /**
      * TODO
      *
-     * @param <T>
-     * @param responseSupplier
-     * @param successFun
-     * @param failedFun
-     * @param exceptionFun
-     * @return
+     * @param responseSupplier a Supplier that provides the response
+     * @param successFun the function to apply if the response is successful
+     * @param failedFun the function to apply if the response is not successful
+     * @param exceptionFun the function to apply if the Supplier throws an exception
+     * @param <T> the result type
+     * @return the result from applying {@code successFun}, {@code failedFun}, or {@code exceptionFun}
      */
     public static <T> T onSuccessOrFailureWithResult(Supplier<Response> responseSupplier,
                                                      Function<Response, T> successFun,
@@ -657,11 +660,12 @@ public class KiwiResponses {
     /**
      * TODO
      *
-     * @param <T>
-     * @param responseSupplier
-     * @param successFun
-     * @param throwingFun
-     * @return
+     * @param responseSupplier a Supplier that provides the response
+     * @param successFun the function to apply if the response is successful
+     * @param throwingFun a function that creates an appropriate (subclass of) RuntimeException
+     * @param <T> the result type
+     * @return the result from applying {@code successFun}
+     * @throws RuntimeException the result of {@code throwingFun} or the exception thrown by the Supplier
      */
     public static <T> T onSuccessWithResultOrFailureThrow(Supplier<Response> responseSupplier,
                                                           Function<Response, T> successFun,
