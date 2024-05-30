@@ -308,7 +308,11 @@ public class KiwiResponses {
     }
 
     /**
-     * TODO
+     * Given a {@link Response} Supplier, perform an action depending on whether it was
+     * successful ({@code successConsumer}), failed ({@code failedConsumer}), or if the
+     * Supplier threw an exception ({@code exceptionConsumer}).
+     * <p>
+     * Ensures the response is closed after performing the action.
      *
      * @param responseSupplier a Supplier that provides the response
      * @param successConsumer the action to run if the response is successful
@@ -358,7 +362,11 @@ public class KiwiResponses {
     }
 
     /**
-     * TODO
+     * Given a {@link Response}, perform an action if it was successful ({@code successConsumer}. If
+     * the response was unsuccessful, throw the exception supplied by {@code throwingFun}. If the
+     * Supplier throws an exception, then that exception is rethrown.
+     * <p>
+     * Ensures the response is closed after performing the action.
      *
      * @param responseSupplier a Supplier that provides the response
      * @param successConsumer the action to run if the response is successful
@@ -408,7 +416,10 @@ public class KiwiResponses {
     }
 
     /**
-     * TODO
+     * Given a {@link Response}, perform an action only if it was successful ({@code successConsumer}. No action
+     * is performed for an unsuccessful response, and exceptions thrown by the Supplier are ignored.
+     * <p>
+     * Ensures the response is closed after performing the action.
      *
      * @param responseSupplier a Supplier that provides the response
      * @param successConsumer the action to run if the response is successful
@@ -437,7 +448,10 @@ public class KiwiResponses {
     }
 
     /**
-     * TODO
+     * Given a {@link Response}, perform an action that returns a result only if it was successful ({@code successFun}).
+     * No action is performed for an unsuccessful response, and exceptions thrown by the Supplier are ignored.
+     * <p>
+     * Ensures the response is closed after performing the action.
      *
      * @param responseSupplier a Supplier that provides the response
      * @param successFun the function to apply if the response is successful
@@ -458,7 +472,7 @@ public class KiwiResponses {
 
     /**
      * Given a {@link Response}, perform an action that returns a result only if it was successful ({@code successFun}).
-     * No action is performer for an unsuccessful response.
+     * No action is performed for an unsuccessful response.
      * <p>
      * Ensures the response is closed after performing the action.
      *
@@ -472,7 +486,11 @@ public class KiwiResponses {
     }
 
     /**
-     * TODO
+     * Given a {@link Response}, perform an action only if it was <em>not</em> successful ({@code failedConsumer}),
+     * or if the Supplier threw an exception ({@code exceptionConsumer}).
+     * No action is performed for a successful response.
+     * <p>
+     * Ensures the response is closed after performing the action.
      *
      * @param responseSupplier a Supplier that provides the response
      * @param failedConsumer the action to run if the response is not successful
@@ -505,7 +523,11 @@ public class KiwiResponses {
     }
 
     /**
-     * TODO
+     * Given a {@link Response}, throw a (subclass of) {@link RuntimeException} for failed responses using
+     * {@code throwingFun}. If the Supplier throws an exception, that exception is rethrown.
+     * No action is performed for a successful response.
+     * <p>
+     * Ensures the response is closed after performing the action.
      *
      * @param responseSupplier a Supplier that provides the response
      * @param throwingFun function that creates an appropriate (subclass of) RuntimeException
@@ -548,7 +570,11 @@ public class KiwiResponses {
     }
 
     /**
-     * TODO
+     * Given a {@link Response}, perform an action that returns a result if the response was
+     * successful ({@code successFun}). Perform an action if the response was unsuccessful ({@code failedConsumer},
+     * or if the Supplier threw an exception ({@code exceptionConsumer}).
+     * <p>
+     * Ensures the response is closed after performing the action.
      *
      * @param responseSupplier a Supplier that provides the response
      * @param successFun the function to apply if the response is successful
@@ -608,7 +634,12 @@ public class KiwiResponses {
     }
 
     /**
-     * TODO
+     * Given a {@link Response}, perform an action that returns a result if the response was
+     * successful ({@code successFun}. If the response was not successful return the result
+     * of a function ({@code failedFun}). If the Supplier threw an exception, return the result
+     * of a different function ({@code exceptionFun}).
+     * <p>
+     * Ensures the response is closed after performing the action.
      *
      * @param responseSupplier a Supplier that provides the response
      * @param successFun the function to apply if the response is successful
@@ -658,7 +689,11 @@ public class KiwiResponses {
     }
 
     /**
-     * TODO
+     * Given a {@link Response}, perform an action that returns a result if it was successful ({@code successFun}
+     * or throw a (subclass of) {@link RuntimeException} if it failed ({@code throwingFun}). If the
+     * Supplier threw an exception, then that exception is rethrown.
+     * <p>
+     * Ensures the response is closed after performing the action.
      *
      * @param responseSupplier a Supplier that provides the response
      * @param successFun the function to apply if the response is successful
@@ -707,7 +742,7 @@ public class KiwiResponses {
 
     /**
      * Given a {@link Response}, perform an action that returns a result if it was successful ({@code successFun}
-     * or throw a (subclass of ) {@link RuntimeException} if it failed ({@code throwingFun}).
+     * or throw a (subclass of) {@link RuntimeException} if it failed ({@code throwingFun}).
      * <p>
      * Ensures the response is closed after performing the action.
      *
