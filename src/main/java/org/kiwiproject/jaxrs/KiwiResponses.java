@@ -2,6 +2,7 @@ package org.kiwiproject.jaxrs;
 
 import static java.util.Objects.nonNull;
 import static org.kiwiproject.base.KiwiPreconditions.checkArgumentNotNull;
+import static org.kiwiproject.base.KiwiPreconditions.checkOnlyOneArgumentIsNull;
 
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
@@ -12,6 +13,7 @@ import lombok.extern.slf4j.Slf4j;
 import java.util.Optional;
 import java.util.function.Consumer;
 import java.util.function.Function;
+import java.util.function.Supplier;
 
 /**
  * Static utilities related to evaluating and acting upon Jakarta REST responses. For example, this class contains
@@ -304,6 +306,20 @@ public class KiwiResponses {
         return response.getStatusInfo().getFamily() == family;
     }
 
+    public static void onSuccessOrFailure(Supplier<Response> responseSupplier,
+                                          Consumer<Response> successConsumer,
+                                          Consumer<Response> failedConsumer,
+                                          Consumer<RuntimeException> exceptionConsumer) {
+
+        var result = getResponse(responseSupplier);
+
+        if (result.hasResponse()) {
+            onSuccessOrFailure(result.response(), successConsumer, failedConsumer);
+        } else {
+            exceptionConsumer.accept(result.error());
+        }
+    }
+
     /**
      * Given a {@link Response}, perform an action depending on whether it was successful ({@code successConsumer})
      * or failed ({@code failedConsumer}).
@@ -329,6 +345,19 @@ public class KiwiResponses {
             }
         } finally {
             closeQuietly(response);
+        }
+    }
+
+    public static void onSuccessOrFailureThrow(Supplier<Response> responseSupplier,
+                                               Consumer<Response> successConsumer,
+                                               Function<Response, ? extends RuntimeException> throwingFun) {
+
+        var result = getResponse(responseSupplier);
+
+        if (result.hasResponse()) {
+            onSuccessOrFailureThrow(responseSupplier.get(), successConsumer, throwingFun);
+        } else {
+            throw result.error();
         }
     }
 
@@ -361,6 +390,16 @@ public class KiwiResponses {
         }
     }
 
+    public static void onSuccess(Supplier<Response> response,
+                                 Consumer<Response> successConsumer) {
+
+        var result = getResponse(response);
+
+        if (result.hasResponse()) {
+            onSuccess(result.response(), successConsumer);
+        }
+    }
+
     /**
      * Given a {@link Response}, perform an action only if it was successful ({@code successConsumer}. No action
      * is performed for an unsuccessful response.
@@ -372,6 +411,18 @@ public class KiwiResponses {
      */
     public static void onSuccess(Response response, Consumer<Response> successConsumer) {
         onSuccessOrFailure(response, successConsumer, NO_OP_RESPONSE_CONSUMER);
+    }
+
+    public static <T> Optional<T> onSuccessWithResult(Supplier<Response> responseSupplier,
+                                                      Function<Response, T> successFun) {
+
+        var result = getResponse(responseSupplier);
+
+        if (result.hasResponse()) {
+            return onSuccessWithResult(result.response(), successFun);
+        }
+
+        return Optional.empty();
     }
 
     /**
@@ -389,6 +440,19 @@ public class KiwiResponses {
         return onSuccessWithResultOrFailure(response, successFun, NO_OP_RESPONSE_CONSUMER);
     }
 
+    public static void onFailure(Supplier<Response> responseSupplier,
+                                 Consumer<Response> failedConsumer,
+                                 Consumer<RuntimeException> exceptionConsumer) {
+
+        var result = getResponse(responseSupplier);
+
+        if (result.hasResponse()) {
+            onFailure(result.response(), failedConsumer);
+        } else {
+            exceptionConsumer.accept(result.error());
+        }
+    }
+
     /**
      * Given a {@link Response}, perform an action only if it was <em>not</em> successful ({@code failedConsumer}).
      * No action is performed for a successful response.
@@ -400,6 +464,18 @@ public class KiwiResponses {
      */
     public static void onFailure(Response response, Consumer<Response> failedConsumer) {
         onSuccessOrFailure(response, NO_OP_RESPONSE_CONSUMER, failedConsumer);
+    }
+
+    public static void onFailureThrow(Supplier<Response> responseSupplier,
+                                      Function<Response, ? extends RuntimeException> throwingFun) {
+
+        var result = getResponse(responseSupplier);
+
+        if (result.hasResponse()) {
+            onFailureThrow(result.response(), throwingFun);
+        } else {
+            throw result.error();
+        }
     }
 
     /**
@@ -424,6 +500,22 @@ public class KiwiResponses {
         } finally {
             closeQuietly(response);
         }
+    }
+
+    public static <T> Optional<T> onSuccessWithResultOrFailure(Supplier<Response> responseSupplier,
+                                                               Function<Response, T> successFun,
+                                                               Consumer<Response> failedConsumer,
+                                                               Consumer<RuntimeException> exceptionConsumer) {
+
+        var result = getResponse(responseSupplier);
+
+        if (result.hasResponse()) {
+            return onSuccessWithResultOrFailure(result.response(), successFun, failedConsumer);
+        } else {
+            exceptionConsumer.accept(result.error());
+        }
+
+        return Optional.empty();
     }
 
     /**
@@ -459,6 +551,20 @@ public class KiwiResponses {
         return Optional.ofNullable(result);
     }
 
+    public static <T> T onSuccessOrFailureWithResult(Supplier<Response> responseSupplier,
+                                                     Function<Response, T> successFun,
+                                                     Function<Response, T> failedFun,
+                                                     Function<RuntimeException, T> exceptionFun) {
+
+        var result = getResponse(responseSupplier);
+
+        if (result.hasResponse()) {
+            return onSuccessOrFailureWithResult(result.response(), successFun, failedFun);
+        }
+
+        return exceptionFun.apply(result.error());
+    }
+
     /**
      * Given a {@link Response}, perform an action that returns a result if the response was
      * successful ({@code successFun}) or if not successful ({@code failedFun}).
@@ -482,6 +588,43 @@ public class KiwiResponses {
             return successful(response) ? successFun.apply(response) : failedFun.apply(response);
         } finally {
             closeQuietly(response);
+        }
+    }
+
+    public static <T> T onSuccessWithResultOrFailureThrow(Supplier<Response> responseSupplier,
+                                                          Function<Response, T> successFun,
+                                                          Function<Response, ? extends RuntimeException> throwingFun) {
+
+        var result = getResponse(responseSupplier);
+
+        if (result.hasResponse()) {
+            return onSuccessWithResultOrFailureThrow(result.response(), successFun, throwingFun);
+        }
+
+        throw result.error();
+    }
+
+    private record WebCallResult(RuntimeException error, Response response) {
+
+        // This is really an "either" type...which sadly, Java does not have.
+
+        WebCallResult {
+            checkOnlyOneArgumentIsNull(error, response,
+                    "Either the Response or the RuntimeException can be null, but not both");
+        }
+
+        boolean hasResponse() {
+            return nonNull(response);
+        }
+    }
+
+    private static WebCallResult getResponse(Supplier<Response> responseSupplier) {
+        try {
+            var response = responseSupplier.get();
+            return new WebCallResult(null, response);
+        } catch (RuntimeException e) {
+            LOG.trace("Response Supplier threw an exception", e);
+            return new WebCallResult(e, null);
         }
     }
 
