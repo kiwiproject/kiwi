@@ -4,6 +4,7 @@ import static java.util.Objects.nonNull;
 import static org.kiwiproject.base.KiwiPreconditions.checkArgumentNotNull;
 import static org.kiwiproject.base.KiwiPreconditions.checkOnlyOneArgumentIsNull;
 
+import com.google.common.annotations.VisibleForTesting;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 import jakarta.ws.rs.core.Response.Status.Family;
@@ -675,7 +676,8 @@ public class KiwiResponses {
         throw result.error();
     }
 
-    private record WebCallResult(RuntimeException error, Response response) {
+    @VisibleForTesting
+    record WebCallResult(RuntimeException error, Response response) {
 
         // This is really an "either" type...which sadly, Java does not have.
 

@@ -10,6 +10,7 @@ import static jakarta.ws.rs.core.MediaType.WILDCARD;
 import static jakarta.ws.rs.core.MediaType.WILDCARD_TYPE;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatCode;
+import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
 import static org.assertj.core.api.Assertions.catchThrowable;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
@@ -27,11 +28,13 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.kiwiproject.jaxrs.KiwiResponses.WebCallResult;
 
 import java.util.Arrays;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Consumer;
+import java.util.function.Supplier;
 import java.util.stream.IntStream;
 
 @ExtendWith(SoftAssertionsExtension.class)
@@ -39,11 +42,13 @@ class KiwiResponsesTest {
 
     private AtomicInteger successCount;
     private AtomicInteger failureCount;
+    private AtomicInteger exceptionCount;
 
     @BeforeEach
     void setUp() {
         successCount = new AtomicInteger();
         failureCount = new AtomicInteger();
+        exceptionCount = new AtomicInteger();
     }
 
     @Nested
@@ -414,6 +419,43 @@ class KiwiResponsesTest {
     }
 
     @Nested
+    class OnSuccessOrFailure_UsingResponseSupplier {
+
+        @Test
+        void shouldUseResponseFromSupplier() {
+            var response = newMockResponseWithStatus(Response.Status.CREATED);
+            Supplier<Response> supplier = () -> response;
+
+            KiwiResponses.onSuccessOrFailure(supplier,
+                    successResponse -> successCount.incrementAndGet(),
+                    failResponse -> failureCount.incrementAndGet(),
+                    supplierException -> exceptionCount.incrementAndGet());
+
+            assertThat(successCount).hasValue(1);
+            assertThat(failureCount).hasValue(0);
+            assertThat(exceptionCount).hasValue(0);
+
+            verify(response).close();
+        }
+
+        @Test
+        void shouldCallExceptionConsumer_WhenResponseSupplierThrowsException() {
+            Supplier<Response> supplier = () -> {
+                throw new ProcessingException("request processing failed");
+            };
+
+            KiwiResponses.onSuccessOrFailure(supplier,
+                    successResponse -> successCount.incrementAndGet(),
+                    failResponse -> failureCount.incrementAndGet(),
+                    supplierException -> exceptionCount.incrementAndGet());
+
+            assertThat(successCount).hasValue(0);
+            assertThat(failureCount).hasValue(0);
+            assertThat(exceptionCount).hasValue(1);
+        }
+    }
+
+    @Nested
     class OnSuccessOrFailure {
 
         @Test
@@ -462,6 +504,49 @@ class KiwiResponsesTest {
     }
 
     @Nested
+    class OnSuccessOrFailureThrow_UsingResponseSupplier {
+
+        @Test
+        void shouldUseResponseFromSupplier() {
+            var response = newMockResponseWithStatus(Response.Status.OK);
+            Supplier<Response> supplier = () -> response;
+
+            KiwiResponses.onSuccessOrFailureThrow(supplier,
+                    successResponse -> successCount.incrementAndGet(),
+                    failResponse -> {
+                        failureCount.incrementAndGet();
+                        return new CustomKiwiResponsesRuntimeException(failResponse);
+                    });
+
+            assertThat(successCount).hasValue(1);
+            assertThat(failureCount).hasValue(0);
+
+            verify(response).close();
+        }
+
+        @Test
+        void shouldRethrowSupplierException_WhenResponseSupplierThrowsException() {
+            Supplier<Response> supplier = () -> {
+                throw new ProcessingException("request processing failed");
+            };
+
+            var thrown = catchThrowable(() ->
+                    KiwiResponses.onSuccessOrFailureThrow(supplier,
+                            successResponse -> successCount.incrementAndGet(),
+                            failResponse -> {
+                                failureCount.incrementAndGet();
+                                return new CustomKiwiResponsesRuntimeException(failResponse);
+                            }));
+
+            assertThat(thrown).isExactlyInstanceOf(ProcessingException.class)
+                    .hasMessage("request processing failed");
+
+            assertThat(successCount).hasValue(0);
+            assertThat(failureCount).hasValue(0);
+        }
+    }
+
+    @Nested
     class OnSuccessOrFailureThrow {
 
         @Test
@@ -503,6 +588,33 @@ class KiwiResponsesTest {
     }
 
     @Nested
+    class OnSuccess_UsingResponseSupplier {
+
+        @Test
+        void shouldUseResponseFromSupplier() {
+            var response = newMockResponseWithStatus(Response.Status.CREATED);
+            Supplier<Response> supplier = () -> response;
+
+            KiwiResponses.onSuccess(supplier, successResponse -> successCount.incrementAndGet());
+
+            assertThat(successCount).hasValue(1);
+
+            verify(response).close();
+        }
+
+        @Test
+        void shouldIgnoreExceptionsThrownBySupplier() {
+            Supplier<Response> supplier = () -> {
+                throw new ProcessingException("request processing failed");
+            };
+
+            KiwiResponses.onSuccess(supplier, successResponse -> successCount.incrementAndGet());
+
+            assertThat(successCount).hasValue(0);
+        }
+    }
+
+    @Nested
     class OnSuccess {
 
         @Test
@@ -525,6 +637,37 @@ class KiwiResponsesTest {
             assertThat(successCount).hasValue(0);
 
             verify(response).close();
+        }
+    }
+
+    @Nested
+    class OnSuccessWithResult_UsingResponseSupplier {
+
+        @Test
+        void shouldUseResponseFromSupplier() {
+            var response = newMockResponseWithStatus(Response.Status.ACCEPTED);
+            Supplier<Response> supplier = () -> response;
+
+            Optional<Integer> count = KiwiResponses.onSuccessWithResult(supplier,
+                    successResponse -> successCount.incrementAndGet());
+
+            assertThat(count).hasValue(1);
+            assertThat(successCount).hasValue(1);
+
+            verify(response).close();
+        }
+
+        @Test
+        void shouldIgnoreExceptionsThrownBySupplier() {
+            Supplier<Response> supplier = () -> {
+                throw new ProcessingException("request processing failed");
+            };
+
+            Optional<Integer> count = KiwiResponses.onSuccessWithResult(supplier,
+                    successResponse -> successCount.incrementAndGet());
+
+            assertThat(count).isEmpty();
+            assertThat(successCount).hasValue(0);
         }
     }
 
@@ -559,6 +702,39 @@ class KiwiResponsesTest {
     }
 
     @Nested
+    class OnFailure_UsingResponseSupplier {
+
+        @Test
+        void shouldUseResponseFromSupplier() {
+            var response = newMockResponseWithStatus(Response.Status.BAD_REQUEST);
+            Supplier<Response> supplier = () -> response;
+
+            KiwiResponses.onFailure(supplier,
+                    failResponse -> failureCount.incrementAndGet(),
+                    exceptionConsumer -> exceptionCount.incrementAndGet());
+
+            assertThat(failureCount).hasValue(1);
+            assertThat(exceptionCount).hasValue(0);
+
+            verify(response).close();
+        }
+
+        @Test
+        void shouldCallExceptionConsumer_WhenResponseSupplierThrowsException() {
+	        Supplier<Response> supplier = () -> {
+                throw new ProcessingException("request processing failed");
+            };
+
+            KiwiResponses.onFailure(supplier,
+                    failResponse -> failureCount.incrementAndGet(),
+                    exceptionConsumer -> exceptionCount.incrementAndGet());
+
+            assertThat(failureCount).hasValue(0);
+            assertThat(exceptionCount).hasValue(1);
+        }
+    }
+
+    @Nested
     class OnFailure {
 
         @Test
@@ -585,6 +761,43 @@ class KiwiResponsesTest {
     }
 
     @Nested
+    class OnFailureThrow_UsingResponseSupplier {
+
+        @Test
+        void shouldUseResponseFromSupplier() {
+	        var response = newMockResponseWithStatus(Response.Status.CREATED);
+            Supplier<Response> supplier = () -> response;
+
+            KiwiResponses.onFailureThrow(supplier, failResponse -> {
+                failureCount.incrementAndGet();
+                return new CustomKiwiResponsesRuntimeException(response);
+            });
+
+            assertThat(failureCount).hasValue(0);
+
+            verify(response).close();
+        }
+
+        @Test
+        void shouldRethrowSupplierException_WhenResponseSupplierThrowsException() {
+            Supplier<Response> supplier = () -> {
+                throw new ProcessingException("request processing failed");
+            };
+
+            var thrown = catchThrowable(() ->
+                    KiwiResponses.onFailureThrow(supplier, failResponse -> {
+                        failureCount.incrementAndGet();
+                        return new RuntimeException("should not be called");
+                    }));
+
+            assertThat(thrown).isExactlyInstanceOf(ProcessingException.class)
+                        .hasMessage("request processing failed");
+
+            assertThat(failureCount).hasValue(0);
+        }
+    }
+
+    @Nested
     class OnFailureThrow {
 
         @Test
@@ -602,7 +815,7 @@ class KiwiResponsesTest {
         }
 
         @Test
-        void shouldThrow_ForSuccessfulResponse() {
+        void shouldThrow_ForUnsuccessfulResponse() {
             var response = newMockResponseWithStatus(Response.Status.EXPECTATION_FAILED);
 
             var thrown = catchThrowable(() ->
@@ -616,6 +829,47 @@ class KiwiResponsesTest {
             assertThat(failureCount).hasValue(1);
 
             verify(response).close();
+        }
+    }
+
+    @Nested
+    class OnSuccessWithResultOrFailure_UsingResponseSupplier {
+
+        @Test
+        void shouldUseResponseFromSupplier() {
+            var response = newMockResponseWithStatus(Response.Status.NO_CONTENT);
+            Supplier<Response> supplier = () -> response;
+
+            Optional<Integer> count = KiwiResponses.onSuccessWithResultOrFailure(supplier,
+                    successResponse -> successCount.incrementAndGet(),
+                    failResponse -> failureCount.incrementAndGet(),
+                    exceptionConsumer -> exceptionCount.incrementAndGet());
+
+            assertThat(count).hasValue(1);
+
+            assertThat(successCount).hasValue(1);
+            assertThat(failureCount).hasValue(0);
+            assertThat(exceptionCount).hasValue(0);
+
+            verify(response).close();
+        }
+
+        @Test
+        void shouldCallExceptionConsumer_WhenResponseSupplierThrowsException() {
+            Supplier<Response> supplier = () -> {
+                throw new ProcessingException("request processing failed");
+            };
+
+            Optional<Integer> count = KiwiResponses.onSuccessWithResultOrFailure(supplier,
+                    successResponse -> successCount.incrementAndGet(),
+                    failResponse -> failureCount.incrementAndGet(),
+                    exceptionConsumer -> exceptionCount.incrementAndGet());
+
+            assertThat(count).isEmpty();
+
+            assertThat(successCount).hasValue(0);
+            assertThat(failureCount).hasValue(0);
+            assertThat(exceptionCount).hasValue(1);
         }
     }
 
@@ -656,6 +910,39 @@ class KiwiResponsesTest {
     }
 
     @Nested
+    class OnSuccessOrFailureWithResult_UsingResponseSupplier {
+
+        @Test
+        void shouldUseResponseFromSupplier() {
+            var response = newMockResponseWithStatus(Response.Status.OK);
+            Supplier<Response> supplier = () -> response;
+
+            var result = KiwiResponses.onSuccessOrFailureWithResult(supplier,
+                    successResponse -> 42,
+                    failResponse -> -1,
+                    supplierException -> 84);
+
+            assertThat(result).isEqualTo(42);
+
+            verify(response).close();
+        }
+
+        @Test
+        void shouldCallExceptionFunction_WhenResponseSupplierThrowsException() {
+            Supplier<Response> supplier = () -> {
+                throw new ProcessingException("request processing failed");
+            };
+
+            var result = KiwiResponses.onSuccessOrFailureWithResult(supplier,
+                    successResponse -> 42,
+                    failResponse -> -1,
+                    supplierException -> 84);
+
+            assertThat(result).isEqualTo(84);
+        }
+    }
+
+    @Nested
     class OnSuccessOrFailureWithResult {
 
         @Test
@@ -682,6 +969,39 @@ class KiwiResponsesTest {
             assertThat(result).isEqualTo(-1);
 
             verify(response).close();
+        }
+    }
+
+    @Nested
+    class OnSuccessWithResultOrFailureThrow_UsingResponseSupplier {
+
+        @Test
+        void shouldUseResponseFromSupplier() {
+            var response = newMockResponseWithStatus(Response.Status.PARTIAL_CONTENT);
+            Supplier<Response> supplier = () -> response;
+
+            var result = KiwiResponses.onSuccessWithResultOrFailureThrow(supplier,
+                    successResponse -> 42,
+                    CustomKiwiResponsesRuntimeException::new);
+
+            assertThat(result).isEqualTo(42);
+
+            verify(response).close();
+        }
+
+        @Test
+        void shouldRethrowSupplierException_WhenResponseSupplierThrowsException() {
+            Supplier<Response> supplier = () -> {
+                throw new ProcessingException("request processing failed");
+            };
+
+            var thrown = catchThrowable(() ->
+                    KiwiResponses.onSuccessWithResultOrFailureThrow(supplier,
+                            successResponse -> 42,
+                            CustomKiwiResponsesRuntimeException::new));
+
+            assertThat(thrown).isExactlyInstanceOf(ProcessingException.class)
+                    .hasMessage("request processing failed");
         }
     }
 
@@ -714,6 +1034,47 @@ class KiwiResponsesTest {
                     .hasMessage("Kiwi received failed response with status: 406");
 
             verify(response).close();
+        }
+    }
+
+    @Nested
+    class WebCallResultRecord {
+
+        @Test
+        void shouldConstructWithResponse() {
+            var response = Response.accepted().build();
+
+            var result = new WebCallResult(null, response);
+
+            assertThat(result.hasResponse()).isTrue();
+            assertThat(result.response()).isSameAs(response);
+            assertThat(result.error()).isNull();
+        }
+
+        @Test
+        void shouldConstructWithError() {
+            var error = new ProcessingException("something failed");
+
+            var result = new WebCallResult(error, null);
+
+            assertThat(result.hasResponse()).isFalse();
+            assertThat(result.response()).isNull();
+            assertThat(result.error()).isSameAs(error);
+        }
+
+        @Test
+        void shouldThrowIllegalArgument_WhenResponseAndEror_AreBothNull() {
+            assertThatIllegalArgumentException()
+                    .isThrownBy(() -> new WebCallResult(null, null));
+        }
+
+        @Test
+        void shouldThrowIllegalArgument_WhenResponseAndEror_AreBothNonNull() {
+            var error = new ProcessingException("something failed");
+            var response = Response.serverError().build();
+
+            assertThatIllegalArgumentException()
+                    .isThrownBy(() -> new WebCallResult(error, response));
         }
     }
 
