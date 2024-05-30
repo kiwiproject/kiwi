@@ -221,6 +221,54 @@ public class KiwiPreconditions {
     }
 
     /**
+     * Ensures that only one of two given arguments is null.
+     * Throws {@link IllegalArgumentException} if both are null or both are non-null.
+     *
+     * @param first  the first argument
+     * @param second the second argument
+     * @param <T>    the object type
+     */
+    public static <T> void checkOnlyOneArgumentIsNull(T first, T second) {
+        Preconditions.checkArgument(isOnlyOneNull(first, second));
+    }
+
+    /**
+     * Ensures that only one of two given arguments is null.
+     * Throws {@link IllegalArgumentException} if both are null or both are non-null.
+     *
+     * @param first   the first argument
+     * @param second  the second argument
+     * @param message the error message to use if the check fails
+     * @param <T>     the object type
+     */
+    public static <T> void checkOnlyOneArgumentIsNull(T first, T second, String message) {
+        Preconditions.checkArgument(isOnlyOneNull(first, second), message);
+    }
+
+    /**
+     * Ensures that only one of two given arguments is null.
+     * Throws {@link IllegalArgumentException} if both are null or both are non-null.
+     *
+     * @param first                the first argument
+     * @param second               the second argument
+     * @param errorMessageTemplate a template for the exception message should the check fail, according to how
+     *                             {@link KiwiStrings#format(String, Object...)} handles placeholders
+     * @param errorMessageArgs     the arguments to be substituted into the message template. Arguments
+     *                             are converted to strings using {@link String#valueOf(Object)}.
+     * @param <T>                  the object type
+     */
+    public static <T> void checkOnlyOneArgumentIsNull(T first,
+                                                      T second,
+                                                      String errorMessageTemplate,
+                                                      Object... errorMessageArgs) {
+        Preconditions.checkArgument(isOnlyOneNull(first, second), errorMessageTemplate, errorMessageArgs);
+    }
+
+    private static <T> boolean isOnlyOneNull(T left, T right) {
+        return (nonNull(left) && isNull(right)) || (isNull(left) && nonNull(right));
+    }
+
+    /**
      * Ensures that an object reference passed as a parameter to the calling method is null, throwing
      * an {@link IllegalArgumentException} if not null.
      *
