@@ -10,6 +10,7 @@ import jakarta.ws.rs.core.Response;
 import jakarta.ws.rs.core.Response.Status.Family;
 import lombok.experimental.UtilityClass;
 import lombok.extern.slf4j.Slf4j;
+import org.slf4j.Logger;
 
 import java.util.Optional;
 import java.util.function.Consumer;
@@ -324,6 +325,9 @@ public class KiwiResponses {
                                           Consumer<Response> failedConsumer,
                                           Consumer<RuntimeException> exceptionConsumer) {
 
+        checkArgumentNotNull(responseSupplier);
+        checkArgumentNotNull(exceptionConsumer);
+
         var result = getResponse(responseSupplier);
 
         if (result.hasResponse()) {
@@ -377,6 +381,8 @@ public class KiwiResponses {
                                                Consumer<Response> successConsumer,
                                                Function<Response, ? extends RuntimeException> throwingFun) {
 
+        checkArgumentNotNull(responseSupplier);
+
         var result = getResponse(responseSupplier);
 
         if (result.hasResponse()) {
@@ -427,6 +433,8 @@ public class KiwiResponses {
     public static void onSuccess(Supplier<Response> responseSupplier,
                                  Consumer<Response> successConsumer) {
 
+        checkArgumentNotNull(responseSupplier);
+
         var result = getResponse(responseSupplier);
 
         if (result.hasResponse()) {
@@ -460,6 +468,8 @@ public class KiwiResponses {
      */
     public static <T> Optional<T> onSuccessWithResult(Supplier<Response> responseSupplier,
                                                       Function<Response, T> successFun) {
+
+        checkArgumentNotNull(responseSupplier);
 
         var result = getResponse(responseSupplier);
 
@@ -500,6 +510,9 @@ public class KiwiResponses {
                                  Consumer<Response> failedConsumer,
                                  Consumer<RuntimeException> exceptionConsumer) {
 
+        checkArgumentNotNull(responseSupplier);
+        checkArgumentNotNull(exceptionConsumer);
+
         var result = getResponse(responseSupplier);
 
         if (result.hasResponse()) {
@@ -535,6 +548,8 @@ public class KiwiResponses {
      */
     public static void onFailureThrow(Supplier<Response> responseSupplier,
                                       Function<Response, ? extends RuntimeException> throwingFun) {
+
+        checkArgumentNotNull(responseSupplier);
 
         var result = getResponse(responseSupplier);
 
@@ -588,6 +603,9 @@ public class KiwiResponses {
                                                                Function<Response, T> successFun,
                                                                Consumer<Response> failedConsumer,
                                                                Consumer<RuntimeException> exceptionConsumer) {
+
+        checkArgumentNotNull(responseSupplier);
+        checkArgumentNotNull(exceptionConsumer);
 
         var result = getResponse(responseSupplier);
 
@@ -653,6 +671,9 @@ public class KiwiResponses {
                                                      Function<Response, T> failedFun,
                                                      Function<RuntimeException, T> exceptionFun) {
 
+        checkArgumentNotNull(responseSupplier);
+        checkArgumentNotNull(exceptionFun);
+
         var result = getResponse(responseSupplier);
 
         if (result.hasResponse()) {
@@ -706,6 +727,8 @@ public class KiwiResponses {
                                                           Function<Response, T> successFun,
                                                           Function<Response, ? extends RuntimeException> throwingFun) {
 
+        checkArgumentNotNull(responseSupplier);
+
         var result = getResponse(responseSupplier);
 
         if (result.hasResponse()) {
@@ -756,18 +779,49 @@ public class KiwiResponses {
                     "Either the Response or the RuntimeException can be null, but not both");
         }
 
+        static WebCallResult ofResponse(Response response) {
+            return new WebCallResult(null, response);
+        }
+
+        static WebCallResult ofError(RuntimeException error) {
+            return new WebCallResult(error, null);
+        }
+
         boolean hasResponse() {
             return nonNull(response);
         }
     }
 
-    private static WebCallResult getResponse(Supplier<Response> responseSupplier) {
+    @VisibleForTesting
+    static WebCallResult getResponse(Supplier<Response> responseSupplier) {
+        Response response = null;
+        RuntimeException error = null;
         try {
-            var response = responseSupplier.get();
-            return new WebCallResult(null, response);
+            response = responseSupplier.get();
         } catch (RuntimeException e) {
-            LOG.trace("Response Supplier threw an exception", e);
-            return new WebCallResult(e, null);
+            error = e;
+        }
+
+        if (nonNull(response)) {
+            return WebCallResult.ofResponse(response);
+        }
+
+        if (nonNull(error)) {
+            logResponseSupplierException(LOG, error);
+            return WebCallResult.ofError(error);
+        }
+
+        LOG.warn("Response Supplier returned a null Response, which is not permitted");
+        throw new IllegalStateException("Response returned by Supplier must not be null");
+    }
+
+    @VisibleForTesting
+    static void logResponseSupplierException(Logger logger, RuntimeException error) {
+        if (logger.isTraceEnabled()) {
+            logger.trace("Response Supplier threw an exception", error);
+        } else {
+            logger.warn("Response Supplier unexpectedly threw: {}: {} (enable TRACE level to see stack trace)",
+                    error.getClass().getName(), error.getMessage());
         }
     }
 

@@ -11,11 +11,14 @@ import static jakarta.ws.rs.core.MediaType.WILDCARD_TYPE;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatCode;
 import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
+import static org.assertj.core.api.Assertions.assertThatIllegalStateException;
 import static org.assertj.core.api.Assertions.catchThrowable;
+import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
 
 import jakarta.ws.rs.ProcessingException;
@@ -29,6 +32,8 @@ import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.kiwiproject.jaxrs.KiwiResponses.WebCallResult;
+import org.kiwiproject.junit.jupiter.ClearBoxTest;
+import org.slf4j.Logger;
 
 import java.util.Arrays;
 import java.util.Optional;
@@ -1044,7 +1049,7 @@ class KiwiResponsesTest {
         void shouldConstructWithResponse() {
             var response = Response.accepted().build();
 
-            var result = new WebCallResult(null, response);
+            var result = WebCallResult.ofResponse(response);
 
             assertThat(result.hasResponse()).isTrue();
             assertThat(result.response()).isSameAs(response);
@@ -1055,7 +1060,7 @@ class KiwiResponsesTest {
         void shouldConstructWithError() {
             var error = new ProcessingException("something failed");
 
-            var result = new WebCallResult(error, null);
+            var result = WebCallResult.ofError(error);
 
             assertThat(result.hasResponse()).isFalse();
             assertThat(result.response()).isNull();
@@ -1069,12 +1074,94 @@ class KiwiResponsesTest {
         }
 
         @Test
-        void shouldThrowIllegalArgument_WhenResponseAndEror_AreBothNonNull() {
+        void shouldThrowIllegalArgument_WhenResponseAndError_AreBothNonNull() {
             var error = new ProcessingException("something failed");
             var response = Response.serverError().build();
 
             assertThatIllegalArgumentException()
                     .isThrownBy(() -> new WebCallResult(error, response));
+        }
+    }
+
+    @Nested
+    class GetResponseFromSupplier {
+
+        @ClearBoxTest
+        void shouldRequireNonNullResponse() {
+            Supplier<Response> responseSupplier = () -> null;
+
+            assertThatIllegalStateException()
+                    .isThrownBy(() -> KiwiResponses.getResponse(responseSupplier))
+                    .withMessage("Response returned by Supplier must not be null");
+        }
+
+        @ClearBoxTest
+        void shouldReturnResponseFromSupplier() {
+            var response = Response.accepted().build();
+            Supplier<Response> responseSupplier = () -> response;
+
+            var webCallResult = KiwiResponses.getResponse(responseSupplier);
+
+            assertAll(
+                    () -> assertThat(webCallResult.hasResponse()).isTrue(),
+                    () -> assertThat(webCallResult.response()).isSameAs(response),
+                    () -> assertThat(webCallResult.error()).isNull()
+            );
+        }
+
+        @ClearBoxTest
+        void shouldReturnRuntimeExceptionFromSupplier() {
+            var processingException = new ProcessingException("request processing failed");
+            Supplier<Response> responseSupplier = () -> {
+                throw processingException;
+            };
+
+            var webCallResult = KiwiResponses.getResponse(responseSupplier);
+
+            assertAll(
+                    () -> assertThat(webCallResult.hasResponse()).isFalse(),
+                    () -> assertThat(webCallResult.response()).isNull(),
+                    () -> assertThat(webCallResult.error()).isSameAs(processingException)
+            );
+        }
+
+        @Nested
+        class LogResponseSupplierException {
+
+            private Logger logger;
+            private RuntimeException error;
+
+            @BeforeEach
+            void setUp() {
+                logger = mock(Logger.class);
+                error = new ProcessingException("error processing");
+            }
+
+            @ClearBoxTest
+            void shouldLogAtTraceWhenTraceLevelEnabled() {
+                when(logger.isTraceEnabled()).thenReturn(true);
+
+                KiwiResponses.logResponseSupplierException(logger, error);
+
+                verify(logger).isTraceEnabled();
+                verify(logger).trace("Response Supplier threw an exception", error);
+                verifyNoMoreInteractions(logger);
+            }
+
+            @ClearBoxTest
+            void shouldLogAtWarnWhenTraceLevelNotEnabled() {
+                when(logger.isTraceEnabled()).thenReturn(false);
+
+                KiwiResponses.logResponseSupplierException(logger, error);
+
+                verify(logger).isTraceEnabled();
+                verify(logger).warn(
+                        "Response Supplier unexpectedly threw: {}: {} (enable TRACE level to see stack trace)",
+                        ProcessingException.class.getName(),
+                        "error processing"
+                );
+                verifyNoMoreInteractions(logger);
+            }
         }
     }
 
