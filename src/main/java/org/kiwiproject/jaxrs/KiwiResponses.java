@@ -423,7 +423,8 @@ public class KiwiResponses {
 
     /**
      * Given a {@link Response} Supplier, perform an action only if it was successful ({@code successConsumer}.
-     * No action is performed for an unsuccessful response, and exceptions thrown by the Supplier are ignored.
+     * <p>
+     * <em>No action is performed for an unsuccessful response, and exceptions thrown by the Supplier are ignored.</em>
      * <p>
      * Ensures the response is closed after performing the action.
      *
@@ -443,8 +444,9 @@ public class KiwiResponses {
     }
 
     /**
-     * Given a {@link Response}, perform an action only if it was successful ({@code successConsumer}. No action
-     * is performed for an unsuccessful response.
+     * Given a {@link Response}, perform an action only if it was successful ({@code successConsumer}.
+     * <p>
+     * <em>No action is performed for an unsuccessful response.</em>
      * <p>
      * Ensures the response is closed after performing the action.
      *
@@ -458,8 +460,9 @@ public class KiwiResponses {
     /**
      * Given a {@link Response} Supplier, perform an action that returns a result only if it was
      * successful ({@code successFun}).
-     * No action is performed for an unsuccessful response, and exceptions
-     * thrown by the Supplier are ignored.
+     * <p>
+     * <em>No action is performed for an unsuccessful response, and exceptions
+     * thrown by the Supplier are ignored.</em>
      * <p>
      * Ensures the response is closed after performing the action.
      *
@@ -484,7 +487,8 @@ public class KiwiResponses {
 
     /**
      * Given a {@link Response}, perform an action that returns a result only if it was successful ({@code successFun}).
-     * No action is performed for an unsuccessful response.
+     * <p>
+     * <em>No action is performed for an unsuccessful response.</em>
      * <p>
      * Ensures the response is closed after performing the action.
      *
