@@ -31,7 +31,6 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.kiwiproject.jaxrs.KiwiResponses.WebCallResult;
 import org.kiwiproject.junit.jupiter.ClearBoxTest;
 import org.slf4j.Logger;
 
@@ -1043,13 +1042,129 @@ class KiwiResponsesTest {
     }
 
     @Nested
+    class Accept_UsingResponseSupplier {
+
+        @Test
+        void shouldUseResponseFromSupplier() {
+            var response = newMockResponseWithStatus(Response.Status.UNSUPPORTED_MEDIA_TYPE);
+            Supplier<Response> supplier = () -> response;
+
+            KiwiResponses.accept(supplier,
+                    anyResponse -> successCount.incrementAndGet(),
+                    supplierException -> exceptionCount.incrementAndGet());
+
+            assertThat(successCount).hasValue(1);
+            assertThat(exceptionCount).hasValue(0);
+
+            verify(response).close();
+        }
+
+        @Test
+        void shouldCallExceptionConsumer_WhenResponseSupplierThrowsException() {
+            Supplier<Response> supplier = () -> {
+                throw new ProcessingException("request processing failed");
+            };
+
+            KiwiResponses.accept(supplier,
+                    anyResponse -> successCount.incrementAndGet(),
+                    supplierException -> exceptionCount.incrementAndGet());
+
+            assertThat(successCount).hasValue(0);
+            assertThat(exceptionCount).hasValue(1);
+        }
+    }
+
+    @Nested
+    class Accept {
+
+        @Test
+        void shouldAccept_SuccessfulResponses() {
+            var response = newMockResponseWithStatus(Response.Status.NO_CONTENT);
+
+            assertAccepts(response);
+        }
+
+        @Test
+        void shouldAccept_UnsuccessfulResponses() {
+            var response = newMockResponseWithStatus(Response.Status.BAD_REQUEST);
+
+            assertAccepts(response);
+        }
+
+        private void assertAccepts(Response response) {
+            KiwiResponses.accept(response, response1 -> successCount.incrementAndGet());
+
+            assertThat(successCount).hasValue(1);
+
+            verify(response).close();
+        }
+    }
+
+    @Nested
+    class Apply_UsingResponseSupplier {
+
+        @Test
+        void shouldUseResponseFromSupplier() {
+            var response = newMockResponseWithStatus(Response.Status.CREATED);
+            Supplier<Response> supplier = () -> response;
+
+            var result = KiwiResponses.apply(supplier,
+                    anyResponse -> 42,
+                    supplierException -> 24);
+
+            assertThat(result).isEqualTo(42);
+
+            verify(response).close();
+        }
+
+        @Test
+        void shouldCallExceptionFunction_WhenResponseSupplierThrowsException() {
+            Supplier<Response> supplier = () -> {
+                throw new ProcessingException("request processing failed");
+            };
+
+            var result = KiwiResponses.apply(supplier,
+                    anyResponse -> 42,
+                    supplierException -> 24);
+
+            assertThat(result).isEqualTo(24);
+        }
+    }
+
+    @Nested
+    class Apply {
+
+        @Test
+        void shouldApply_SuccessfulResponses() {
+            var response = newMockResponseWithStatus(Response.Status.CREATED);
+
+            assertApplies(response);
+        }
+
+        @Test
+        void shouldApply_UnsuccessfulResponses() {
+            var response = newMockResponseWithStatus(Response.Status.UNAUTHORIZED);
+
+            assertApplies(response);
+        }
+
+        private void assertApplies(Response response) {
+            var result = KiwiResponses.apply(response, response1 -> 84);
+
+            assertThat(result).isEqualTo(84);
+
+            verify(response).close();
+        }
+    }
+
+    @Nested
     class WebCallResultRecord {
 
         @Test
         void shouldConstructWithResponse() {
             var response = Response.accepted().build();
 
-            var result = WebCallResult.ofResponse(response);
+            var result = KiwiResponses.WebCallResult.ofResponse(response);
 
             assertThat(result.hasResponse()).isTrue();
             assertThat(result.response()).isSameAs(response);
@@ -1060,7 +1175,7 @@ class KiwiResponsesTest {
         void shouldConstructWithError() {
             var error = new ProcessingException("something failed");
 
-            var result = WebCallResult.ofError(error);
+            var result = KiwiResponses.WebCallResult.ofError(error);
 
             assertThat(result.hasResponse()).isFalse();
             assertThat(result.response()).isNull();
@@ -1068,9 +1183,9 @@ class KiwiResponsesTest {
         }
 
         @Test
-        void shouldThrowIllegalArgument_WhenResponseAndEror_AreBothNull() {
+        void shouldThrowIllegalArgument_WhenResponseAndError_AreBothNull() {
             assertThatIllegalArgumentException()
-                    .isThrownBy(() -> new WebCallResult(null, null));
+                    .isThrownBy(() -> new KiwiResponses.WebCallResult(null, null));
         }
 
         @Test
@@ -1079,7 +1194,7 @@ class KiwiResponsesTest {
             var response = Response.serverError().build();
 
             assertThatIllegalArgumentException()
-                    .isThrownBy(() -> new WebCallResult(error, response));
+                    .isThrownBy(() -> new KiwiResponses.WebCallResult(error, response));
         }
     }
 
@@ -1162,58 +1277,6 @@ class KiwiResponsesTest {
                 );
                 verifyNoMoreInteractions(logger);
             }
-        }
-    }
-
-    @Nested
-    class Accept {
-
-        @Test
-        void shouldAccept_SuccessfulResponses() {
-            var response = newMockResponseWithStatus(Response.Status.NO_CONTENT);
-
-            assertAccepts(response);
-        }
-
-        @Test
-        void shouldAccept_UnsuccessfulResponses() {
-            var response = newMockResponseWithStatus(Response.Status.BAD_REQUEST);
-
-            assertAccepts(response);
-        }
-
-        private void assertAccepts(Response response) {
-            KiwiResponses.accept(response, response1 -> successCount.incrementAndGet());
-
-            assertThat(successCount).hasValue(1);
-
-            verify(response).close();
-        }
-    }
-
-    @Nested
-    class Apply {
-
-        @Test
-        void shouldApply_SuccessfulResponses() {
-            var response = newMockResponseWithStatus(Response.Status.CREATED);
-
-            assertApplies(response);
-        }
-
-        @Test
-        void shouldApply_UnsuccessfulResponses() {
-            var response = newMockResponseWithStatus(Response.Status.UNAUTHORIZED);
-
-            assertApplies(response);
-        }
-
-        private void assertApplies(Response response) {
-            var result = KiwiResponses.apply(response, response1 -> 84);
-
-            assertThat(result).isEqualTo(84);
-
-            verify(response).close();
         }
     }
 

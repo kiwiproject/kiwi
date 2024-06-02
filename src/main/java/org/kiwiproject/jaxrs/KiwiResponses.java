@@ -315,9 +315,9 @@ public class KiwiResponses {
      * <p>
      * Ensures the response is closed after performing the action.
      *
-     * @param responseSupplier a Supplier that provides the response
-     * @param successConsumer the action to run if the response is successful
-     * @param failedConsumer the action to run if the response is not successful
+     * @param responseSupplier  a Supplier that provides the response
+     * @param successConsumer   the action to run if the response is successful
+     * @param failedConsumer    the action to run if the response is not successful
      * @param exceptionConsumer the action to run if the Supplier throws an exception
      */
     public static void onSuccessOrFailure(Supplier<Response> responseSupplier,
@@ -366,15 +366,15 @@ public class KiwiResponses {
     }
 
     /**
-     * Given a {@link Response}, perform an action if it was successful ({@code successConsumer}. If
-     * the response was unsuccessful, throw the exception supplied by {@code throwingFun}. If the
-     * Supplier throws an exception, then that exception is rethrown.
+     * Given a {@link Response} Supplier, perform an action if it was successful ({@code successConsumer}.
+     * If the response was unsuccessful, throw the exception supplied by {@code throwingFun}.
+     * If the Supplier throws an exception, then that exception is rethrown.
      * <p>
      * Ensures the response is closed after performing the action.
      *
      * @param responseSupplier a Supplier that provides the response
-     * @param successConsumer the action to run if the response is successful
-     * @param throwingFun a function that creates an appropriate (subclass of) RuntimeException
+     * @param successConsumer  the action to run if the response is successful
+     * @param throwingFun      a function that creates an appropriate (subclass of) RuntimeException
      * @throws RuntimeException the result of {@code throwingFun}, or the exception thrown by the Supplier
      */
     public static void onSuccessOrFailureThrow(Supplier<Response> responseSupplier,
@@ -422,13 +422,13 @@ public class KiwiResponses {
     }
 
     /**
-     * Given a {@link Response}, perform an action only if it was successful ({@code successConsumer}. No action
-     * is performed for an unsuccessful response, and exceptions thrown by the Supplier are ignored.
+     * Given a {@link Response} Supplier, perform an action only if it was successful ({@code successConsumer}.
+     * No action is performed for an unsuccessful response, and exceptions thrown by the Supplier are ignored.
      * <p>
      * Ensures the response is closed after performing the action.
      *
      * @param responseSupplier a Supplier that provides the response
-     * @param successConsumer the action to run if the response is successful
+     * @param successConsumer  the action to run if the response is successful
      */
     public static void onSuccess(Supplier<Response> responseSupplier,
                                  Consumer<Response> successConsumer) {
@@ -456,14 +456,16 @@ public class KiwiResponses {
     }
 
     /**
-     * Given a {@link Response}, perform an action that returns a result only if it was successful ({@code successFun}).
-     * No action is performed for an unsuccessful response, and exceptions thrown by the Supplier are ignored.
+     * Given a {@link Response} Supplier, perform an action that returns a result only if it was
+     * successful ({@code successFun}).
+     * No action is performed for an unsuccessful response, and exceptions
+     * thrown by the Supplier are ignored.
      * <p>
      * Ensures the response is closed after performing the action.
      *
      * @param responseSupplier a Supplier that provides the response
-     * @param successFun the function to apply if the response is successful
-     * @param <T> the result type
+     * @param successFun       the function to apply if the response is successful
+     * @param <T>              the result type
      * @return an Optional containing a result for successful responses, or an empty Optional
      */
     public static <T> Optional<T> onSuccessWithResult(Supplier<Response> responseSupplier,
@@ -496,14 +498,15 @@ public class KiwiResponses {
     }
 
     /**
-     * Given a {@link Response}, perform an action only if it was <em>not</em> successful ({@code failedConsumer}),
-     * or if the Supplier threw an exception ({@code exceptionConsumer}).
+     * Given a {@link Response} Supplier, perform an action only if it was
+     * <em>not</em> successful ({@code failedConsumer}), or if the Supplier
+     * threw an exception ({@code exceptionConsumer}).
      * No action is performed for a successful response.
      * <p>
      * Ensures the response is closed after performing the action.
      *
-     * @param responseSupplier a Supplier that provides the response
-     * @param failedConsumer the action to run if the response is not successful
+     * @param responseSupplier  a Supplier that provides the response
+     * @param failedConsumer    the action to run if the response is not successful
      * @param exceptionConsumer the action to run if the Supplier throws an exception
      */
     public static void onFailure(Supplier<Response> responseSupplier,
@@ -536,14 +539,15 @@ public class KiwiResponses {
     }
 
     /**
-     * Given a {@link Response}, throw a (subclass of) {@link RuntimeException} for failed responses using
-     * {@code throwingFun}. If the Supplier throws an exception, that exception is rethrown.
+     * Given a {@link Response} Supplier, throw a (subclass of) {@link RuntimeException} for failed
+     * responses using {@code throwingFun}.
+     * If the Supplier throws an exception, that exception is rethrown.
      * No action is performed for a successful response.
      * <p>
      * Ensures the response is closed after performing the action.
      *
      * @param responseSupplier a Supplier that provides the response
-     * @param throwingFun function that creates an appropriate (subclass of) RuntimeException
+     * @param throwingFun      function that creates an appropriate (subclass of) RuntimeException
      * @throws RuntimeException the result of {@code throwingFun}, or the exception thrown by the Supplier
      */
     public static void onFailureThrow(Supplier<Response> responseSupplier,
@@ -585,17 +589,17 @@ public class KiwiResponses {
     }
 
     /**
-     * Given a {@link Response}, perform an action that returns a result if the response was
+     * Given a {@link Response} Supplier, perform an action that returns a result if the response was
      * successful ({@code successFun}). Perform an action if the response was unsuccessful ({@code failedConsumer},
      * or if the Supplier threw an exception ({@code exceptionConsumer}).
      * <p>
      * Ensures the response is closed after performing the action.
      *
-     * @param responseSupplier a Supplier that provides the response
-     * @param successFun the function to apply if the response is successful
-     * @param failedConsumer the action to run if the response is not successful
+     * @param responseSupplier  a Supplier that provides the response
+     * @param successFun        the function to apply if the response is successful
+     * @param failedConsumer    the action to run if the response is not successful
      * @param exceptionConsumer the action to run if the Supplier throws an exception
-     * @param <T> the result type
+     * @param <T>               the result type
      * @return the result from {@code successFun} for successful responses, or an empty Optional
      * for unsuccessful responses or if the Supplier throws an exception
      */
@@ -652,7 +656,7 @@ public class KiwiResponses {
     }
 
     /**
-     * Given a {@link Response}, perform an action that returns a result if the response was
+     * Given a {@link Response} Supplier, perform an action that returns a result if the response was
      * successful ({@code successFun}. If the response was not successful return the result
      * of a function ({@code failedFun}). If the Supplier threw an exception, return the result
      * of a different function ({@code exceptionFun}).
@@ -660,10 +664,10 @@ public class KiwiResponses {
      * Ensures the response is closed after performing the action.
      *
      * @param responseSupplier a Supplier that provides the response
-     * @param successFun the function to apply if the response is successful
-     * @param failedFun the function to apply if the response is not successful
-     * @param exceptionFun the function to apply if the Supplier throws an exception
-     * @param <T> the result type
+     * @param successFun       the function to apply if the response is successful
+     * @param failedFun        the function to apply if the response is not successful
+     * @param exceptionFun     the function to apply if the Supplier throws an exception
+     * @param <T>              the result type
      * @return the result from applying {@code successFun}, {@code failedFun}, or {@code exceptionFun}
      */
     public static <T> T onSuccessOrFailureWithResult(Supplier<Response> responseSupplier,
@@ -710,16 +714,17 @@ public class KiwiResponses {
     }
 
     /**
-     * Given a {@link Response}, perform an action that returns a result if it was successful ({@code successFun}
-     * or throw a (subclass of) {@link RuntimeException} if it failed ({@code throwingFun}). If the
-     * Supplier threw an exception, then that exception is rethrown.
+     * Given a {@link Response} Supplier, perform an action that returns a result if it was
+     * successful ({@code successFun} or throw a (subclass of) {@link RuntimeException} if it
+     * failed ({@code throwingFun}).
+     * If the Supplier threw an exception, then that exception is rethrown.
      * <p>
      * Ensures the response is closed after performing the action.
      *
      * @param responseSupplier a Supplier that provides the response
-     * @param successFun the function to apply if the response is successful
-     * @param throwingFun a function that creates an appropriate (subclass of) RuntimeException
-     * @param <T> the result type
+     * @param successFun       the function to apply if the response is successful
+     * @param throwingFun      a function that creates an appropriate (subclass of) RuntimeException
+     * @param <T>              the result type
      * @return the result from applying {@code successFun}
      * @throws RuntimeException the result of {@code throwingFun} or the exception thrown by the Supplier
      */
@@ -764,6 +769,98 @@ public class KiwiResponses {
             }
 
             throw throwingFun.apply(response);
+        } finally {
+            closeQuietly(response);
+        }
+    }
+
+    /**
+     * Given a {@link Response} Supplier, perform some action using the supplied consumer.
+     * <p>
+     * Ensures the response is closed after performing the action.
+     *
+     * @param responseSupplier  a Supplier that provides the response
+     * @param responseConsumer  the action to run
+     * @param exceptionConsumer the action to run if the Supplier throws an exception
+     */
+    public static void accept(Supplier<Response> responseSupplier,
+                              Consumer<Response> responseConsumer,
+                              Consumer<RuntimeException> exceptionConsumer) {
+
+        checkArgumentNotNull(responseSupplier);
+        checkArgumentNotNull(exceptionConsumer);
+
+        var result = getResponse(responseSupplier);
+
+        if (result.hasResponse()) {
+            accept(result.response(), responseConsumer);
+        } else {
+            exceptionConsumer.accept(result.error());
+        }
+    }
+
+    /**
+     * Given a {@link Response}, perform some action using the supplied consumer.
+     * <p>
+     * Ensures the response is closed after performing the action.
+     *
+     * @param response         the response object
+     * @param responseConsumer the action to run
+     */
+    public static void accept(Response response, Consumer<Response> responseConsumer) {
+        checkArgumentNotNull(response);
+        checkArgumentNotNull(responseConsumer);
+
+        try {
+            responseConsumer.accept(response);
+        } finally {
+            closeQuietly(response);
+        }
+    }
+
+    /**
+     * Given a {@link Response} Supplier, perform an action tha returns a result using the given function.
+     * <p>
+     * Ensures the response is closed after performing the action.
+     *
+     * @param responseSupplier a Supplier that provides the response
+     * @param fun              the function to apply to the response
+     * @param exceptionFun     the function to apply if the Supplier throws an exception
+     * @param <T>              the result type
+     * @return the result of applying the given function
+     */
+    public static <T> T apply(Supplier<Response> responseSupplier,
+                              Function<Response, T> fun,
+                              Function<RuntimeException, T> exceptionFun) {
+
+        checkArgumentNotNull(responseSupplier);
+        checkArgumentNotNull(exceptionFun);
+
+        var result = getResponse(responseSupplier);
+
+        if (result.hasResponse()) {
+            return apply(result.response(), fun);
+        }
+
+        return exceptionFun.apply(result.error());
+    }
+
+    /**
+     * Given a {@link Response}, perform an action tha returns a result using the given function.
+     * <p>
+     * Ensures the response is closed after performing the action.
+     *
+     * @param response the response object
+     * @param fun      the function to apply to the response
+     * @param <T>      the result type
+     * @return the result of applying the given function
+     */
+    public static <T> T apply(Response response, Function<Response, T> fun) {
+        checkArgumentNotNull(response);
+        checkArgumentNotNull(fun);
+
+        try {
+            return fun.apply(response);
         } finally {
             closeQuietly(response);
         }
@@ -822,46 +919,6 @@ public class KiwiResponses {
         } else {
             logger.warn("Response Supplier unexpectedly threw: {}: {} (enable TRACE level to see stack trace)",
                     error.getClass().getName(), error.getMessage());
-        }
-    }
-
-    /**
-     * Given a {@link Response}, perform some action using the supplied consumer.
-     * <p>
-     * Ensures the response is closed after performing the action.
-     *
-     * @param response         the response object
-     * @param responseConsumer the action to run
-     */
-    public static void accept(Response response, Consumer<Response> responseConsumer) {
-        checkArgumentNotNull(response);
-        checkArgumentNotNull(responseConsumer);
-
-        try {
-            responseConsumer.accept(response);
-        } finally {
-            closeQuietly(response);
-        }
-    }
-
-    /**
-     * Given a {@link Response}, perform an action tha returns a result using the given function.
-     * <p>
-     * Ensures the response is closed after performing the action.
-     *
-     * @param response the response object
-     * @param fun      the function to apply to the response
-     * @param <T>      the result type
-     * @return the result of applying the given function
-     */
-    public static <T> T apply(Response response, Function<Response, T> fun) {
-        checkArgumentNotNull(response);
-        checkArgumentNotNull(fun);
-
-        try {
-            return fun.apply(response);
-        } finally {
-            closeQuietly(response);
         }
     }
 
