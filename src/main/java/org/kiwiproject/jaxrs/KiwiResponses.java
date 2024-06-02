@@ -310,19 +310,19 @@ public class KiwiResponses {
 
     /**
      * Given a {@link Response} Supplier, perform an action depending on whether it was
-     * successful ({@code successConsumer}), failed ({@code failedConsumer}), or if the
+     * successful ({@code successConsumer}), failed ({@code failureConsumer}), or if the
      * Supplier threw an exception ({@code exceptionConsumer}).
      * <p>
      * Ensures the response is closed after performing the action.
      *
      * @param responseSupplier  a Supplier that provides the response
      * @param successConsumer   the action to run if the response is successful
-     * @param failedConsumer    the action to run if the response is not successful
+     * @param failureConsumer    the action to run if the response is not successful
      * @param exceptionConsumer the action to run if the Supplier throws an exception
      */
     public static void onSuccessOrFailure(Supplier<Response> responseSupplier,
                                           Consumer<Response> successConsumer,
-                                          Consumer<Response> failedConsumer,
+                                          Consumer<Response> failureConsumer,
                                           Consumer<RuntimeException> exceptionConsumer) {
 
         checkArgumentNotNull(responseSupplier);
@@ -331,7 +331,7 @@ public class KiwiResponses {
         var result = getResponse(responseSupplier);
 
         if (result.hasResponse()) {
-            onSuccessOrFailure(result.response(), successConsumer, failedConsumer);
+            onSuccessOrFailure(result.response(), successConsumer, failureConsumer);
         } else {
             exceptionConsumer.accept(result.error());
         }
@@ -339,26 +339,26 @@ public class KiwiResponses {
 
     /**
      * Given a {@link Response}, perform an action depending on whether it was successful ({@code successConsumer})
-     * or failed ({@code failedConsumer}).
+     * or failed ({@code failureConsumer}).
      * <p>
      * Ensures the response is closed after performing the action.
      *
      * @param response        the response object
      * @param successConsumer the action to run if the response is successful
-     * @param failedConsumer  the action to run if the response is not successful
+     * @param failureConsumer  the action to run if the response is not successful
      */
     public static void onSuccessOrFailure(Response response,
                                           Consumer<Response> successConsumer,
-                                          Consumer<Response> failedConsumer) {
+                                          Consumer<Response> failureConsumer) {
         checkArgumentNotNull(response);
         checkArgumentNotNull(successConsumer);
-        checkArgumentNotNull(failedConsumer);
+        checkArgumentNotNull(failureConsumer);
 
         try {
             if (successful(response)) {
                 successConsumer.accept(response);
             } else {
-                failedConsumer.accept(response);
+                failureConsumer.accept(response);
             }
         } finally {
             closeQuietly(response);
@@ -503,7 +503,7 @@ public class KiwiResponses {
 
     /**
      * Given a {@link Response} Supplier, perform an action only if it was
-     * <em>not</em> successful ({@code failedConsumer}), or if the Supplier
+     * <em>not</em> successful ({@code failureConsumer}), or if the Supplier
      * threw an exception ({@code exceptionConsumer}).
      * <p>
      * No action is performed for a successful response.
@@ -511,11 +511,11 @@ public class KiwiResponses {
      * Ensures the response is closed after performing the action.
      *
      * @param responseSupplier  a Supplier that provides the response
-     * @param failedConsumer    the action to run if the response is not successful
+     * @param failureConsumer    the action to run if the response is not successful
      * @param exceptionConsumer the action to run if the Supplier throws an exception
      */
     public static void onFailure(Supplier<Response> responseSupplier,
-                                 Consumer<Response> failedConsumer,
+                                 Consumer<Response> failureConsumer,
                                  Consumer<RuntimeException> exceptionConsumer) {
 
         checkArgumentNotNull(responseSupplier);
@@ -524,24 +524,24 @@ public class KiwiResponses {
         var result = getResponse(responseSupplier);
 
         if (result.hasResponse()) {
-            onFailure(result.response(), failedConsumer);
+            onFailure(result.response(), failureConsumer);
         } else {
             exceptionConsumer.accept(result.error());
         }
     }
 
     /**
-     * Given a {@link Response}, perform an action only if it was <em>not</em> successful ({@code failedConsumer}).
+     * Given a {@link Response}, perform an action only if it was <em>not</em> successful ({@code failureConsumer}).
      * <p>
      * No action is performed for a successful response.
      * <p>
      * Ensures the response is closed after performing the action.
      *
      * @param response       the response object
-     * @param failedConsumer the action to run if the response is not successful
+     * @param failureConsumer the action to run if the response is not successful
      */
-    public static void onFailure(Response response, Consumer<Response> failedConsumer) {
-        onSuccessOrFailure(response, NO_OP_RESPONSE_CONSUMER, failedConsumer);
+    public static void onFailure(Response response, Consumer<Response> failureConsumer) {
+        onSuccessOrFailure(response, NO_OP_RESPONSE_CONSUMER, failureConsumer);
     }
 
     /**
@@ -599,14 +599,14 @@ public class KiwiResponses {
 
     /**
      * Given a {@link Response} Supplier, perform an action that returns a result if the response was
-     * successful ({@code successFun}). Perform an action if the response was unsuccessful ({@code failedConsumer},
+     * successful ({@code successFun}). Perform an action if the response was unsuccessful ({@code failureConsumer},
      * or if the Supplier threw an exception ({@code exceptionConsumer}).
      * <p>
      * Ensures the response is closed after performing the action.
      *
      * @param responseSupplier  a Supplier that provides the response
      * @param successFun        the function to apply if the response is successful
-     * @param failedConsumer    the action to run if the response is not successful
+     * @param failureConsumer    the action to run if the response is not successful
      * @param exceptionConsumer the action to run if the Supplier throws an exception
      * @param <T>               the result type
      * @return the result from {@code successFun} for successful responses, or an empty Optional
@@ -614,7 +614,7 @@ public class KiwiResponses {
      */
     public static <T> Optional<T> onSuccessWithResultOrFailure(Supplier<Response> responseSupplier,
                                                                Function<Response, T> successFun,
-                                                               Consumer<Response> failedConsumer,
+                                                               Consumer<Response> failureConsumer,
                                                                Consumer<RuntimeException> exceptionConsumer) {
 
         checkArgumentNotNull(responseSupplier);
@@ -623,7 +623,7 @@ public class KiwiResponses {
         var result = getResponse(responseSupplier);
 
         if (result.hasResponse()) {
-            return onSuccessWithResultOrFailure(result.response(), successFun, failedConsumer);
+            return onSuccessWithResultOrFailure(result.response(), successFun, failureConsumer);
         } else {
             exceptionConsumer.accept(result.error());
         }
@@ -633,29 +633,29 @@ public class KiwiResponses {
 
     /**
      * Given a {@link Response}, perform an action that returns a result if the response was
-     * successful ({@code successFun}) or perform an action if the response was unsuccessful ({@code failedConsumer}.
+     * successful ({@code successFun}) or perform an action if the response was unsuccessful ({@code failureConsumer}.
      * <p>
      * Ensures the response is closed after performing the action.
      *
      * @param response       the response object
      * @param successFun     the function to apply if the response is successful
-     * @param failedConsumer the action to run if the response is not successful
+     * @param failureConsumer the action to run if the response is not successful
      * @param <T>            the result type
      * @return the result from {@code successFun} for successful responses, or an empty Optional for unsuccessful ones
      */
     public static <T> Optional<T> onSuccessWithResultOrFailure(Response response,
                                                                Function<Response, T> successFun,
-                                                               Consumer<Response> failedConsumer) {
+                                                               Consumer<Response> failureConsumer) {
         checkArgumentNotNull(response);
         checkArgumentNotNull(successFun);
-        checkArgumentNotNull(failedConsumer);
+        checkArgumentNotNull(failureConsumer);
 
         T result = null;
         try {
             if (successful(response)) {
                 result = successFun.apply(response);
             } else {
-                failedConsumer.accept(response);
+                failureConsumer.accept(response);
             }
         } finally {
             closeQuietly(response);
