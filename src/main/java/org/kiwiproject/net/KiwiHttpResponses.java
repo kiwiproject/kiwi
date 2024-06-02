@@ -199,7 +199,7 @@ public class KiwiHttpResponses {
      * Check if the given status code is 404 Not Found.
      *
      * @param statusCode the status code to check
-     * @return true if the status code is , otherwise false
+     * @return true if the status code is 404, otherwise false
      */
     public static boolean notFound(int statusCode) {
         return statusCode == 404;
