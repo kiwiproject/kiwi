@@ -775,12 +775,12 @@ public class KiwiResponses {
     }
 
     /**
-     * Given a {@link Response} Supplier, perform some action using the supplied consumer.
+     * Given a {@link Response} Supplier, perform some action using one of the supplied consumers.
      * <p>
      * Ensures the response is closed after performing the action.
      *
      * @param responseSupplier  a Supplier that provides the response
-     * @param responseConsumer  the action to run
+     * @param responseConsumer  the action to run on any response
      * @param exceptionConsumer the action to run if the Supplier throws an exception
      */
     public static void accept(Supplier<Response> responseSupplier,
@@ -819,7 +819,7 @@ public class KiwiResponses {
     }
 
     /**
-     * Given a {@link Response} Supplier, perform an action tha returns a result using the given function.
+     * Given a {@link Response} Supplier, perform an action tha returns a result using one of the given functions.
      * <p>
      * Ensures the response is closed after performing the action.
      *
