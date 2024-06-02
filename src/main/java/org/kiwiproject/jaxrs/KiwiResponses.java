@@ -2,16 +2,20 @@ package org.kiwiproject.jaxrs;
 
 import static java.util.Objects.nonNull;
 import static org.kiwiproject.base.KiwiPreconditions.checkArgumentNotNull;
+import static org.kiwiproject.base.KiwiPreconditions.checkOnlyOneArgumentIsNull;
 
+import com.google.common.annotations.VisibleForTesting;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 import jakarta.ws.rs.core.Response.Status.Family;
 import lombok.experimental.UtilityClass;
 import lombok.extern.slf4j.Slf4j;
+import org.slf4j.Logger;
 
 import java.util.Optional;
 import java.util.function.Consumer;
 import java.util.function.Function;
+import java.util.function.Supplier;
 
 /**
  * Static utilities related to evaluating and acting upon Jakarta REST responses. For example, this class contains
@@ -305,30 +309,86 @@ public class KiwiResponses {
     }
 
     /**
+     * Given a {@link Response} Supplier, perform an action depending on whether it was
+     * successful ({@code successConsumer}), failed ({@code failureConsumer}), or if the
+     * Supplier threw an exception ({@code exceptionConsumer}).
+     * <p>
+     * Ensures the response is closed after performing the action.
+     *
+     * @param responseSupplier  a Supplier that provides the response
+     * @param successConsumer   the action to run if the response is successful
+     * @param failureConsumer    the action to run if the response is not successful
+     * @param exceptionConsumer the action to run if the Supplier throws an exception
+     */
+    public static void onSuccessOrFailure(Supplier<Response> responseSupplier,
+                                          Consumer<Response> successConsumer,
+                                          Consumer<Response> failureConsumer,
+                                          Consumer<RuntimeException> exceptionConsumer) {
+
+        checkArgumentNotNull(responseSupplier);
+        checkArgumentNotNull(exceptionConsumer);
+
+        var result = getResponse(responseSupplier);
+
+        if (result.hasResponse()) {
+            onSuccessOrFailure(result.response(), successConsumer, failureConsumer);
+        } else {
+            exceptionConsumer.accept(result.error());
+        }
+    }
+
+    /**
      * Given a {@link Response}, perform an action depending on whether it was successful ({@code successConsumer})
-     * or failed ({@code failedConsumer}).
+     * or failed ({@code failureConsumer}).
      * <p>
      * Ensures the response is closed after performing the action.
      *
      * @param response        the response object
      * @param successConsumer the action to run if the response is successful
-     * @param failedConsumer  the action to run if the response is not successful
+     * @param failureConsumer  the action to run if the response is not successful
      */
     public static void onSuccessOrFailure(Response response,
                                           Consumer<Response> successConsumer,
-                                          Consumer<Response> failedConsumer) {
+                                          Consumer<Response> failureConsumer) {
         checkArgumentNotNull(response);
         checkArgumentNotNull(successConsumer);
-        checkArgumentNotNull(failedConsumer);
+        checkArgumentNotNull(failureConsumer);
 
         try {
             if (successful(response)) {
                 successConsumer.accept(response);
             } else {
-                failedConsumer.accept(response);
+                failureConsumer.accept(response);
             }
         } finally {
             closeQuietly(response);
+        }
+    }
+
+    /**
+     * Given a {@link Response} Supplier, perform an action if it was successful ({@code successConsumer}.
+     * If the response was unsuccessful, throw the exception supplied by {@code throwingFun}.
+     * If the Supplier throws an exception, then that exception is rethrown.
+     * <p>
+     * Ensures the response is closed after performing the action.
+     *
+     * @param responseSupplier a Supplier that provides the response
+     * @param successConsumer  the action to run if the response is successful
+     * @param throwingFun      a function that creates an appropriate (subclass of) RuntimeException
+     * @throws RuntimeException the result of {@code throwingFun}, or the exception thrown by the Supplier
+     */
+    public static void onSuccessOrFailureThrow(Supplier<Response> responseSupplier,
+                                               Consumer<Response> successConsumer,
+                                               Function<Response, ? extends RuntimeException> throwingFun) {
+
+        checkArgumentNotNull(responseSupplier);
+
+        var result = getResponse(responseSupplier);
+
+        if (result.hasResponse()) {
+            onSuccessOrFailureThrow(responseSupplier.get(), successConsumer, throwingFun);
+        } else {
+            throw result.error();
         }
     }
 
@@ -362,8 +422,31 @@ public class KiwiResponses {
     }
 
     /**
-     * Given a {@link Response}, perform an action only if it was successful ({@code successConsumer}. No action
-     * is performed for an unsuccessful response.
+     * Given a {@link Response} Supplier, perform an action only if it was successful ({@code successConsumer}.
+     * <p>
+     * <em>No action is performed for an unsuccessful response, and exceptions thrown by the Supplier are ignored.</em>
+     * <p>
+     * Ensures the response is closed after performing the action.
+     *
+     * @param responseSupplier a Supplier that provides the response
+     * @param successConsumer  the action to run if the response is successful
+     */
+    public static void onSuccess(Supplier<Response> responseSupplier,
+                                 Consumer<Response> successConsumer) {
+
+        checkArgumentNotNull(responseSupplier);
+
+        var result = getResponse(responseSupplier);
+
+        if (result.hasResponse()) {
+            onSuccess(result.response(), successConsumer);
+        }
+    }
+
+    /**
+     * Given a {@link Response}, perform an action only if it was successful ({@code successConsumer}.
+     * <p>
+     * <em>No action is performed for an unsuccessful response.</em>
      * <p>
      * Ensures the response is closed after performing the action.
      *
@@ -375,8 +458,37 @@ public class KiwiResponses {
     }
 
     /**
+     * Given a {@link Response} Supplier, perform an action that returns a result only if it was
+     * successful ({@code successFun}).
+     * <p>
+     * <em>No action is performed for an unsuccessful response, and exceptions
+     * thrown by the Supplier are ignored.</em>
+     * <p>
+     * Ensures the response is closed after performing the action.
+     *
+     * @param responseSupplier a Supplier that provides the response
+     * @param successFun       the function to apply if the response is successful
+     * @param <T>              the result type
+     * @return an Optional containing a result for successful responses, or an empty Optional
+     */
+    public static <T> Optional<T> onSuccessWithResult(Supplier<Response> responseSupplier,
+                                                      Function<Response, T> successFun) {
+
+        checkArgumentNotNull(responseSupplier);
+
+        var result = getResponse(responseSupplier);
+
+        if (result.hasResponse()) {
+            return onSuccessWithResult(result.response(), successFun);
+        }
+
+        return Optional.empty();
+    }
+
+    /**
      * Given a {@link Response}, perform an action that returns a result only if it was successful ({@code successFun}).
-     * No action is performer for an unsuccessful response.
+     * <p>
+     * <em>No action is performed for an unsuccessful response.</em>
      * <p>
      * Ensures the response is closed after performing the action.
      *
@@ -390,21 +502,80 @@ public class KiwiResponses {
     }
 
     /**
-     * Given a {@link Response}, perform an action only if it was <em>not</em> successful ({@code failedConsumer}).
+     * Given a {@link Response} Supplier, perform an action only if it was
+     * <em>not</em> successful ({@code failureConsumer}), or if the Supplier
+     * threw an exception ({@code exceptionConsumer}).
+     * <p>
+     * No action is performed for a successful response.
+     * <p>
+     * Ensures the response is closed after performing the action.
+     *
+     * @param responseSupplier  a Supplier that provides the response
+     * @param failureConsumer    the action to run if the response is not successful
+     * @param exceptionConsumer the action to run if the Supplier throws an exception
+     */
+    public static void onFailure(Supplier<Response> responseSupplier,
+                                 Consumer<Response> failureConsumer,
+                                 Consumer<RuntimeException> exceptionConsumer) {
+
+        checkArgumentNotNull(responseSupplier);
+        checkArgumentNotNull(exceptionConsumer);
+
+        var result = getResponse(responseSupplier);
+
+        if (result.hasResponse()) {
+            onFailure(result.response(), failureConsumer);
+        } else {
+            exceptionConsumer.accept(result.error());
+        }
+    }
+
+    /**
+     * Given a {@link Response}, perform an action only if it was <em>not</em> successful ({@code failureConsumer}).
+     * <p>
      * No action is performed for a successful response.
      * <p>
      * Ensures the response is closed after performing the action.
      *
      * @param response       the response object
-     * @param failedConsumer the action to run if the response is not successful
+     * @param failureConsumer the action to run if the response is not successful
      */
-    public static void onFailure(Response response, Consumer<Response> failedConsumer) {
-        onSuccessOrFailure(response, NO_OP_RESPONSE_CONSUMER, failedConsumer);
+    public static void onFailure(Response response, Consumer<Response> failureConsumer) {
+        onSuccessOrFailure(response, NO_OP_RESPONSE_CONSUMER, failureConsumer);
+    }
+
+    /**
+     * Given a {@link Response} Supplier, throw a (subclass of) {@link RuntimeException} for failed
+     * responses using {@code throwingFun}.
+     * If the Supplier throws an exception, that exception is rethrown.
+     * <p>
+     * No action is performed for a successful response.
+     * <p>
+     * Ensures the response is closed after performing the action.
+     *
+     * @param responseSupplier a Supplier that provides the response
+     * @param throwingFun      function that creates an appropriate (subclass of) RuntimeException
+     * @throws RuntimeException the result of {@code throwingFun}, or the exception thrown by the Supplier
+     */
+    public static void onFailureThrow(Supplier<Response> responseSupplier,
+                                      Function<Response, ? extends RuntimeException> throwingFun) {
+
+        checkArgumentNotNull(responseSupplier);
+
+        var result = getResponse(responseSupplier);
+
+        if (result.hasResponse()) {
+            onFailureThrow(result.response(), throwingFun);
+        } else {
+            throw result.error();
+        }
     }
 
     /**
      * Given a {@link Response}, throw a (subclass of) {@link RuntimeException} for failed responses using
-     * {@code throwingFun}. No action is performed for a successful response.
+     * {@code throwingFun}.
+     * <p>
+     * No action is performed for a successful response.
      * <p>
      * Ensures the response is closed after performing the action.
      *
@@ -427,36 +598,102 @@ public class KiwiResponses {
     }
 
     /**
+     * Given a {@link Response} Supplier, perform an action that returns a result if the response was
+     * successful ({@code successFun}). Perform an action if the response was unsuccessful ({@code failureConsumer},
+     * or if the Supplier threw an exception ({@code exceptionConsumer}).
+     * <p>
+     * Ensures the response is closed after performing the action.
+     *
+     * @param responseSupplier  a Supplier that provides the response
+     * @param successFun        the function to apply if the response is successful
+     * @param failureConsumer    the action to run if the response is not successful
+     * @param exceptionConsumer the action to run if the Supplier throws an exception
+     * @param <T>               the result type
+     * @return the result from {@code successFun} for successful responses, or an empty Optional
+     * for unsuccessful responses or if the Supplier throws an exception
+     */
+    public static <T> Optional<T> onSuccessWithResultOrFailure(Supplier<Response> responseSupplier,
+                                                               Function<Response, T> successFun,
+                                                               Consumer<Response> failureConsumer,
+                                                               Consumer<RuntimeException> exceptionConsumer) {
+
+        checkArgumentNotNull(responseSupplier);
+        checkArgumentNotNull(exceptionConsumer);
+
+        var result = getResponse(responseSupplier);
+
+        if (result.hasResponse()) {
+            return onSuccessWithResultOrFailure(result.response(), successFun, failureConsumer);
+        } else {
+            exceptionConsumer.accept(result.error());
+        }
+
+        return Optional.empty();
+    }
+
+    /**
      * Given a {@link Response}, perform an action that returns a result if the response was
-     * successful ({@code successFun}) or perform an action if the response was unsuccessful ({@code failedConsumer}.
+     * successful ({@code successFun}) or perform an action if the response was unsuccessful ({@code failureConsumer}.
      * <p>
      * Ensures the response is closed after performing the action.
      *
      * @param response       the response object
      * @param successFun     the function to apply if the response is successful
-     * @param failedConsumer the action to run if the response is not successful
+     * @param failureConsumer the action to run if the response is not successful
      * @param <T>            the result type
      * @return the result from {@code successFun} for successful responses, or an empty Optional for unsuccessful ones
      */
     public static <T> Optional<T> onSuccessWithResultOrFailure(Response response,
                                                                Function<Response, T> successFun,
-                                                               Consumer<Response> failedConsumer) {
+                                                               Consumer<Response> failureConsumer) {
         checkArgumentNotNull(response);
         checkArgumentNotNull(successFun);
-        checkArgumentNotNull(failedConsumer);
+        checkArgumentNotNull(failureConsumer);
 
         T result = null;
         try {
             if (successful(response)) {
                 result = successFun.apply(response);
             } else {
-                failedConsumer.accept(response);
+                failureConsumer.accept(response);
             }
         } finally {
             closeQuietly(response);
         }
 
         return Optional.ofNullable(result);
+    }
+
+    /**
+     * Given a {@link Response} Supplier, perform an action that returns a result if the response was
+     * successful ({@code successFun}. If the response was not successful return the result
+     * of a function ({@code failedFun}). If the Supplier threw an exception, return the result
+     * of a different function ({@code exceptionFun}).
+     * <p>
+     * Ensures the response is closed after performing the action.
+     *
+     * @param responseSupplier a Supplier that provides the response
+     * @param successFun       the function to apply if the response is successful
+     * @param failedFun        the function to apply if the response is not successful
+     * @param exceptionFun     the function to apply if the Supplier throws an exception
+     * @param <T>              the result type
+     * @return the result from applying {@code successFun}, {@code failedFun}, or {@code exceptionFun}
+     */
+    public static <T> T onSuccessOrFailureWithResult(Supplier<Response> responseSupplier,
+                                                     Function<Response, T> successFun,
+                                                     Function<Response, T> failedFun,
+                                                     Function<RuntimeException, T> exceptionFun) {
+
+        checkArgumentNotNull(responseSupplier);
+        checkArgumentNotNull(exceptionFun);
+
+        var result = getResponse(responseSupplier);
+
+        if (result.hasResponse()) {
+            return onSuccessOrFailureWithResult(result.response(), successFun, failedFun);
+        }
+
+        return exceptionFun.apply(result.error());
     }
 
     /**
@@ -486,8 +723,38 @@ public class KiwiResponses {
     }
 
     /**
+     * Given a {@link Response} Supplier, perform an action that returns a result if it was
+     * successful ({@code successFun} or throw a (subclass of) {@link RuntimeException} if it
+     * failed ({@code throwingFun}).
+     * If the Supplier threw an exception, then that exception is rethrown.
+     * <p>
+     * Ensures the response is closed after performing the action.
+     *
+     * @param responseSupplier a Supplier that provides the response
+     * @param successFun       the function to apply if the response is successful
+     * @param throwingFun      a function that creates an appropriate (subclass of) RuntimeException
+     * @param <T>              the result type
+     * @return the result from applying {@code successFun}
+     * @throws RuntimeException the result of {@code throwingFun} or the exception thrown by the Supplier
+     */
+    public static <T> T onSuccessWithResultOrFailureThrow(Supplier<Response> responseSupplier,
+                                                          Function<Response, T> successFun,
+                                                          Function<Response, ? extends RuntimeException> throwingFun) {
+
+        checkArgumentNotNull(responseSupplier);
+
+        var result = getResponse(responseSupplier);
+
+        if (result.hasResponse()) {
+            return onSuccessWithResultOrFailureThrow(result.response(), successFun, throwingFun);
+        }
+
+        throw result.error();
+    }
+
+    /**
      * Given a {@link Response}, perform an action that returns a result if it was successful ({@code successFun}
-     * or throw a (subclass of ) {@link RuntimeException} if it failed ({@code throwingFun}).
+     * or throw a (subclass of) {@link RuntimeException} if it failed ({@code throwingFun}).
      * <p>
      * Ensures the response is closed after performing the action.
      *
@@ -517,6 +784,31 @@ public class KiwiResponses {
     }
 
     /**
+     * Given a {@link Response} Supplier, perform some action using one of the supplied consumers.
+     * <p>
+     * Ensures the response is closed after performing the action.
+     *
+     * @param responseSupplier  a Supplier that provides the response
+     * @param responseConsumer  the action to run on any response
+     * @param exceptionConsumer the action to run if the Supplier throws an exception
+     */
+    public static void accept(Supplier<Response> responseSupplier,
+                              Consumer<Response> responseConsumer,
+                              Consumer<RuntimeException> exceptionConsumer) {
+
+        checkArgumentNotNull(responseSupplier);
+        checkArgumentNotNull(exceptionConsumer);
+
+        var result = getResponse(responseSupplier);
+
+        if (result.hasResponse()) {
+            accept(result.response(), responseConsumer);
+        } else {
+            exceptionConsumer.accept(result.error());
+        }
+    }
+
+    /**
      * Given a {@link Response}, perform some action using the supplied consumer.
      * <p>
      * Ensures the response is closed after performing the action.
@@ -533,6 +825,33 @@ public class KiwiResponses {
         } finally {
             closeQuietly(response);
         }
+    }
+
+    /**
+     * Given a {@link Response} Supplier, perform an action tha returns a result using one of the given functions.
+     * <p>
+     * Ensures the response is closed after performing the action.
+     *
+     * @param responseSupplier a Supplier that provides the response
+     * @param fun              the function to apply to the response
+     * @param exceptionFun     the function to apply if the Supplier throws an exception
+     * @param <T>              the result type
+     * @return the result of applying the given function
+     */
+    public static <T> T apply(Supplier<Response> responseSupplier,
+                              Function<Response, T> fun,
+                              Function<RuntimeException, T> exceptionFun) {
+
+        checkArgumentNotNull(responseSupplier);
+        checkArgumentNotNull(exceptionFun);
+
+        var result = getResponse(responseSupplier);
+
+        if (result.hasResponse()) {
+            return apply(result.response(), fun);
+        }
+
+        return exceptionFun.apply(result.error());
     }
 
     /**
@@ -553,6 +872,62 @@ public class KiwiResponses {
             return fun.apply(response);
         } finally {
             closeQuietly(response);
+        }
+    }
+
+    @VisibleForTesting
+    record WebCallResult(RuntimeException error, Response response) {
+
+        // This is really an "either" type...which sadly, Java does not have.
+
+        WebCallResult {
+            checkOnlyOneArgumentIsNull(error, response,
+                    "Either the Response or the RuntimeException can be null, but not both");
+        }
+
+        static WebCallResult ofResponse(Response response) {
+            return new WebCallResult(null, response);
+        }
+
+        static WebCallResult ofError(RuntimeException error) {
+            return new WebCallResult(error, null);
+        }
+
+        boolean hasResponse() {
+            return nonNull(response);
+        }
+    }
+
+    @VisibleForTesting
+    static WebCallResult getResponse(Supplier<Response> responseSupplier) {
+        Response response = null;
+        RuntimeException error = null;
+        try {
+            response = responseSupplier.get();
+        } catch (RuntimeException e) {
+            error = e;
+        }
+
+        if (nonNull(response)) {
+            return WebCallResult.ofResponse(response);
+        }
+
+        if (nonNull(error)) {
+            logResponseSupplierException(LOG, error);
+            return WebCallResult.ofError(error);
+        }
+
+        LOG.warn("Response Supplier returned a null Response, which is not permitted");
+        throw new IllegalStateException("Response returned by Supplier must not be null");
+    }
+
+    @VisibleForTesting
+    static void logResponseSupplierException(Logger logger, RuntimeException error) {
+        if (logger.isTraceEnabled()) {
+            logger.trace("Response Supplier threw an exception", error);
+        } else {
+            logger.warn("Response Supplier unexpectedly threw: {}: {} (enable TRACE level to see stack trace)",
+                    error.getClass().getName(), error.getMessage());
         }
     }
 
