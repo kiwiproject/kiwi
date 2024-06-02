@@ -505,6 +505,7 @@ public class KiwiResponses {
      * Given a {@link Response} Supplier, perform an action only if it was
      * <em>not</em> successful ({@code failedConsumer}), or if the Supplier
      * threw an exception ({@code exceptionConsumer}).
+     * <p>
      * No action is performed for a successful response.
      * <p>
      * Ensures the response is closed after performing the action.
@@ -531,6 +532,7 @@ public class KiwiResponses {
 
     /**
      * Given a {@link Response}, perform an action only if it was <em>not</em> successful ({@code failedConsumer}).
+     * <p>
      * No action is performed for a successful response.
      * <p>
      * Ensures the response is closed after performing the action.
@@ -546,6 +548,7 @@ public class KiwiResponses {
      * Given a {@link Response} Supplier, throw a (subclass of) {@link RuntimeException} for failed
      * responses using {@code throwingFun}.
      * If the Supplier throws an exception, that exception is rethrown.
+     * <p>
      * No action is performed for a successful response.
      * <p>
      * Ensures the response is closed after performing the action.
@@ -570,7 +573,9 @@ public class KiwiResponses {
 
     /**
      * Given a {@link Response}, throw a (subclass of) {@link RuntimeException} for failed responses using
-     * {@code throwingFun}. No action is performed for a successful response.
+     * {@code throwingFun}.
+     * <p>
+     * No action is performed for a successful response.
      * <p>
      * Ensures the response is closed after performing the action.
      *
