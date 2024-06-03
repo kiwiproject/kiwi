@@ -111,7 +111,7 @@ class KiwiHttpResponsesTest {
             () -> assertThat(KiwiHttpResponses.preconditionFailed(statusCode))
                     .isEqualTo(statusCode == 412),
 
-            () -> assertThat(KiwiHttpResponses.payloadTooLarge(statusCode))
+            () -> assertThat(KiwiHttpResponses.contentTooLarge(statusCode))
                     .isEqualTo(statusCode == 413),
 
             () -> assertThat(KiwiHttpResponses.uriTooLong(statusCode))
