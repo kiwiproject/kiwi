@@ -2,7 +2,6 @@ package org.kiwiproject.spring.data;
 
 import static java.util.Comparator.comparing;
 import static java.util.Comparator.comparingDouble;
-import static java.util.stream.Collectors.toList;
 import static org.apache.commons.lang3.StringUtils.containsAny;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.kiwiproject.collect.KiwiLists.first;
@@ -117,7 +116,7 @@ class KiwiSpringMongoQueriesTest {
         var expectedOrders = storedOrders.stream()
                 .sorted(comparing(Order::getCustomerId))
                 .limit(limit)
-                .collect(toList());
+                .toList();
 
         softly.assertThat(orderPage.getContent()).isEqualTo(expectedOrders);
     }
@@ -148,7 +147,7 @@ class KiwiSpringMongoQueriesTest {
         var expectedOrders = storedOrders.stream()
                 .sorted(comparing(Order::getCustomerId).thenComparing(comparingDouble(Order::getAmount).reversed()))
                 .limit(limit)
-                .collect(toList());
+                .toList();
 
         softly.assertThat(orderPage.getContent()).isEqualTo(expectedOrders);
     }
@@ -176,7 +175,7 @@ class KiwiSpringMongoQueriesTest {
         var expectedOrders = storedOrders.stream()
                 .sorted(comparing(Order::getCustomerId).reversed())
                 .limit(limit)
-                .collect(toList());
+                .toList();
 
         softly.assertThat(orderPage.getContent()).isEqualTo(expectedOrders);
     }
@@ -208,7 +207,7 @@ class KiwiSpringMongoQueriesTest {
                 .sorted(comparing(Order::getCustomerId).thenComparing(Order::getStatus))
                 .skip(pageNumber * limit)
                 .limit(limit)
-                .collect(toList());
+                .toList();
 
         softly.assertThat(orderPage.getContent()).isEqualTo(expectedOrders);
     }
@@ -280,7 +279,7 @@ class KiwiSpringMongoQueriesTest {
                 .filter(order -> order.getCustomerId().equals("A123"))
                 .sorted(comparing(Order::getAmount).reversed())
                 .limit(limit)
-                .collect(toList());
+                .toList();
 
         var expectedTotalElements = expectedOrders.size();
 
@@ -326,7 +325,7 @@ class KiwiSpringMongoQueriesTest {
                         order.getDateReceived().toInstant().isAfter(startDate) &&
                                 order.getDateReceived().toInstant().isBefore(endDate))
                 .limit(limit)
-                .collect(toList());
+                .toList();
 
         softly.assertThat(orderPage.getContent()).isEqualTo(expectedOrders);
     }
@@ -450,7 +449,7 @@ class KiwiSpringMongoQueriesTest {
                 .filter(customerFilter)
                 .sorted(comparing(Order::getCustomerId))
                 .limit(limit)
-                .collect(toList());
+                .toList();
 
         softly.assertThat(orderPage.getContent()).isEqualTo(expectedOrders);
     }
@@ -487,7 +486,7 @@ class KiwiSpringMongoQueriesTest {
                 .filter(customerFilter)
                 .sorted(comparing(Order::getCustomerId))
                 .limit(limit)
-                .collect(toList());
+                .toList();
 
         softly.assertThat(orderPage.getContent()).isEqualTo(expectedOrders);
     }
@@ -538,7 +537,7 @@ class KiwiSpringMongoQueriesTest {
                 .filter(customerFilter)
                 .sorted(comparing(Order::getCustomerId))
                 .limit(limit)
-                .collect(toList());
+                .toList();
 
         softly.assertThat(orderPage.getContent()).isEqualTo(expectedOrders);
     }
@@ -576,7 +575,7 @@ class KiwiSpringMongoQueriesTest {
                 .filter(customerFilter)
                 .sorted(comparing(Order::getCustomerId))
                 .limit(limit)
-                .collect(toList());
+                .toList();
 
         softly.assertThat(orderPage.getContent()).isEqualTo(expectedOrders);
     }
@@ -625,7 +624,7 @@ class KiwiSpringMongoQueriesTest {
                 .filter(customerFilter)
                 .sorted(comparing(Order::getCustomerId))
                 .limit(limit)
-                .collect(toList());
+                .toList();
 
         softly.assertThat(orderPage.getContent()).isEqualTo(expectedOrders);
     }
@@ -665,7 +664,7 @@ class KiwiSpringMongoQueriesTest {
                 .filter(amountFilter)
                 .sorted(comparing(Order::getCustomerId).thenComparing(comparingDouble(Order::getAmount).reversed()))
                 .limit(limit)
-                .collect(toList());
+                .toList();
 
         softly.assertThat(orderPage.getContent()).isEqualTo(expectedOrders);
     }

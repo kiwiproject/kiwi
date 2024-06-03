@@ -1,6 +1,5 @@
 package org.kiwiproject.dropwizard.jdbi3;
 
-import static java.util.stream.Collectors.toList;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
 import static org.kiwiproject.collect.KiwiLists.first;
@@ -125,7 +124,7 @@ class Jdbi3BuildersTest {
                 .map(lifeCycle -> (JettyManaged) lifeCycle)
                 .map(JettyManaged::getManaged)
                 .map(Managed::getClass)
-                .collect(toList());
+                .toList();
         assertThat(managedClasses).hasSize(1);
         var firstManagedClass = first(managedClasses);
         assertThat(firstManagedClass.getInterfaces()).contains(ManagedDataSource.class);
@@ -243,7 +242,7 @@ class Jdbi3BuildersTest {
                 .stream()
                 .map(lifeCycle -> (JettyManaged) lifeCycle)
                 .map(JettyManaged::getManaged)
-                .collect(toList());
+                .toList();
         assertThat(managedObjects).containsExactly(managedDataSource);
 
         assertThat(healthCheckRegistry.getHealthCheck(healthCheckName)).isInstanceOf(JdbiHealthCheck.class);

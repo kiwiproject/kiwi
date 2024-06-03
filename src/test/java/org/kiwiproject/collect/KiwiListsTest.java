@@ -1,6 +1,5 @@
 package org.kiwiproject.collect;
 
-import static java.util.stream.Collectors.toList;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatCode;
 import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
@@ -121,7 +120,7 @@ class KiwiListsTest {
 
         @Test
         void shouldReturnSortedList_WhenHasItems() {
-            var someIntegers = IntStream.iterate(1, n -> n + 1).limit(100).boxed().collect(toList());
+            var someIntegers = IntStream.iterate(1, n -> n + 1).limit(100).boxed().toList();
 
             var randomIntegers = newArrayList(someIntegers);
             Collections.shuffle(randomIntegers);
@@ -159,7 +158,7 @@ class KiwiListsTest {
 
         @Test
         void shouldReturnSortedList_WhenHasItems() {
-            var someIntegers = IntStream.iterate(1, n -> n + 1).limit(100).boxed().collect(toList());
+            var someIntegers = IntStream.iterate(1, n -> n + 1).limit(100).boxed().toList();
             var reverseIntegers = newArrayList(someIntegers);
             Collections.reverse(reverseIntegers);
 

@@ -1,6 +1,5 @@
 package org.kiwiproject.spring.data;
 
-import static java.util.stream.Collectors.toList;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -337,7 +336,7 @@ class KiwiPagingTest {
     private static void assertSortChain(Sort sortChain) {
         assertThat(sortChain).isNotNull();
 
-        var sortOrders = Streams.stream(sortChain.iterator()).collect(toList());
+        var sortOrders = Streams.stream(sortChain.iterator()).toList();
 
         assertThat(sortOrders)
                 .extracting("property", "direction")

@@ -1,6 +1,5 @@
 package org.kiwiproject.config;
 
-import static java.util.stream.Collectors.toList;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.assertj.core.api.Assertions.tuple;
@@ -330,7 +329,7 @@ class SecureEndpointsConfigurationTest {
     }
 
     private SecureEndpointsConfiguration newSecureEndpointsConfiguration(IntStream tagStream) {
-        var endpointConfigs = tagStream.mapToObj(this::newHttpEndpointConfiguration).collect(toList());
+        var endpointConfigs = tagStream.mapToObj(this::newHttpEndpointConfiguration).toList();
 
         var config = newSecureEndpointsConfigurationWithNoEndpoints();
         config.setEndpoints(endpointConfigs);

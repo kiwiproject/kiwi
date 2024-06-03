@@ -1,7 +1,5 @@
 package org.kiwiproject.io;
 
-import static java.util.stream.Collectors.toList;
-
 import org.apache.commons.io.FileUtils;
 
 import java.io.File;
@@ -51,7 +49,7 @@ public class TimeBasedDirectoryCleanerTestHelper {
 
     public List<File> filesInTempFolder() throws IOException {
         try (var paths = Files.list(cleanerPath)) {
-            return paths.map(Path::toFile).collect(toList());
+            return paths.map(Path::toFile).toList();
         }
     }
 }

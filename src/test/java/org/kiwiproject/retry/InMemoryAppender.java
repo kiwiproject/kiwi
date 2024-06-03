@@ -1,7 +1,6 @@
 package org.kiwiproject.retry;
 
 import static java.util.Comparator.comparing;
-import static java.util.stream.Collectors.toList;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import ch.qos.logback.classic.spi.ILoggingEvent;
@@ -49,13 +48,13 @@ public class InMemoryAppender extends AppenderBase<ILoggingEvent> {
     }
 
     List<ILoggingEvent> getOrderedEvents() {
-        return getOrderedEventStream().collect(toList());
+        return getOrderedEventStream().toList();
     }
 
     List<String> getOrderedEventMessages() {
         return getOrderedEventStream()
                 .map(ILoggingEvent::getFormattedMessage)
-                .collect(toList());
+                .toList();
     }
 
     private Stream<ILoggingEvent> getOrderedEventStream() {

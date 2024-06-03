@@ -2,7 +2,6 @@ package org.kiwiproject.spring.data;
 
 import static java.util.Comparator.comparing;
 import static java.util.Comparator.comparingDouble;
-import static java.util.stream.Collectors.toList;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.kiwiproject.base.KiwiStrings.f;
 import static org.kiwiproject.spring.data.OrderTestData.ORDER_COLLECTION;
@@ -119,12 +118,12 @@ abstract class AbstractPagingQueryIntegrationTest {
                 .sorted(comparing(Order::getCustomerId))
                 .map(Order::getCustomerId)
                 .limit(limit)
-                .collect(toList());
+                .toList();
 
         var aggregatedCustomerIds = aggregatePage.getContent()
                 .stream()
                 .map(Order::getCustomerId)
-                .collect(toList());
+                .toList();
 
         softly.assertThat(aggregatedCustomerIds).isEqualTo(expectedCustomerIds);
     }
@@ -202,7 +201,7 @@ abstract class AbstractPagingQueryIntegrationTest {
                 .filter(orderFilter)
                 .sorted(comparing(Order::getCustomerId).thenComparing(comparingDouble(Order::getAmount).reversed()))
                 .limit(limit)
-                .collect(toList());
+                .toList();
 
         softly.assertThat(aggregatePage.getContent()).isEqualTo(expectedOrders);
     }

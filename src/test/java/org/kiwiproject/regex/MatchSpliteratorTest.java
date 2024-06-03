@@ -1,6 +1,5 @@
 package org.kiwiproject.regex;
 
-import static java.util.stream.Collectors.toList;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
 import static org.assertj.core.api.Assertions.tuple;
@@ -49,7 +48,7 @@ class MatchSpliteratorTest {
             var matcher = Pattern.compile("the|(lazy cat)", Pattern.CASE_INSENSITIVE).matcher(input);
             var matchSpliterator = new MatchSpliterator(matcher);
 
-            var matchResults = matchSpliterator.stream().collect(toList());
+            var matchResults = matchSpliterator.stream().toList();
             assertThat(matchResults)
                     .extracting(MatchResult::group, MatchResult::start)
                     .containsExactly(
@@ -66,7 +65,7 @@ class MatchSpliteratorTest {
         @Test
         void shouldCreateMatchResultStream_FromStringRegularExpression() {
             var input = "The quick brown fox jumped over the fence and the lazy brown dog";
-            var matchResults = MatchSpliterator.stream("the", input).collect(toList());
+            var matchResults = MatchSpliterator.stream("the", input).toList();
 
             assertThat(matchResults)
                     .extracting(MatchResult::group, MatchResult::start)
@@ -91,7 +90,7 @@ class MatchSpliteratorTest {
         void shouldCreateMatchResultStream_FromPattern() {
             var input = "The quick brown fox jumped over the fence and the lazy brown dog and the lazy cat";
             var pattern = Pattern.compile("the|(lazy cat)", Pattern.CASE_INSENSITIVE);
-            var matchResults = MatchSpliterator.stream(pattern, input).collect(toList());
+            var matchResults = MatchSpliterator.stream(pattern, input).toList();
 
             assertThat(matchResults)
                     .extracting(MatchResult::group, MatchResult::start)
