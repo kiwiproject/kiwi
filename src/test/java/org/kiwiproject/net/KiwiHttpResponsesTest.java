@@ -48,14 +48,26 @@ class KiwiHttpResponsesTest {
             () -> assertThat(KiwiHttpResponses.noContent(statusCode))
                     .isEqualTo(statusCode == 204),
 
+            () -> assertThat(KiwiHttpResponses.resetContent(statusCode))
+                    .isEqualTo(statusCode == 205),
+
+            () -> assertThat(KiwiHttpResponses.partialContent(statusCode))
+                    .isEqualTo(statusCode == 206),
+
             () -> assertThat(KiwiHttpResponses.movedPermanently(statusCode))
                     .isEqualTo(statusCode == 301),
 
             () -> assertThat(KiwiHttpResponses.found(statusCode))
                     .isEqualTo(statusCode == 302),
 
+            () -> assertThat(KiwiHttpResponses.seeOther(statusCode))
+                    .isEqualTo(statusCode == 303),
+
             () -> assertThat(KiwiHttpResponses.notModified(statusCode))
                     .isEqualTo(statusCode == 304),
+
+            () -> assertThat(KiwiHttpResponses.temporaryRedirect(statusCode))
+                    .isEqualTo(statusCode == 307),
 
             () -> assertThat(KiwiHttpResponses.badRequest(statusCode))
                     .isEqualTo(statusCode == 400),
@@ -75,17 +87,77 @@ class KiwiHttpResponsesTest {
             () -> assertThat(KiwiHttpResponses.notAcceptable(statusCode))
                     .isEqualTo(statusCode == 406),
 
+            () -> assertThat(KiwiHttpResponses.proxyAuthenticationRequired(statusCode))
+                    .isEqualTo(statusCode == 407),
+
+            () -> assertThat(KiwiHttpResponses.requestTimeout(statusCode))
+                    .isEqualTo(statusCode == 408),
+
             () -> assertThat(KiwiHttpResponses.conflict(statusCode))
                     .isEqualTo(statusCode == 409),
 
+            () -> assertThat(KiwiHttpResponses.gone(statusCode))
+                    .isEqualTo(statusCode == 410),
+
+            () -> assertThat(KiwiHttpResponses.lengthRequired(statusCode))
+                    .isEqualTo(statusCode == 411),
+
+            () -> assertThat(KiwiHttpResponses.preconditionFailed(statusCode))
+                    .isEqualTo(statusCode == 412),
+
+            () -> assertThat(KiwiHttpResponses.requestEntityTooLarge(statusCode))
+                    .isEqualTo(statusCode == 413),
+
+            () -> assertThat(KiwiHttpResponses.requestUriTooLong(statusCode))
+                    .isEqualTo(statusCode == 414),
+
+            () -> assertThat(KiwiHttpResponses.unsupportedMediaType(statusCode))
+                    .isEqualTo(statusCode == 415),
+
+            () -> assertThat(KiwiHttpResponses.requestedRangeNotSatisfiable(statusCode))
+                    .isEqualTo(statusCode == 416),
+
+            () -> assertThat(KiwiHttpResponses.expectationFailed(statusCode))
+                    .isEqualTo(statusCode == 417),
+
+            () -> assertThat(KiwiHttpResponses.iAmATeapot(statusCode))
+                    .isEqualTo(statusCode == 418),
+
+            () -> assertThat(KiwiHttpResponses.unprocessableContent(statusCode))
+                    .isEqualTo(statusCode == 422),
+
+            () -> assertThat(KiwiHttpResponses.upgradeRequired(statusCode))
+                    .isEqualTo(statusCode == 426),
+
+            () -> assertThat(KiwiHttpResponses.preconditionRequired(statusCode))
+                    .isEqualTo(statusCode == 428),
+
+            () -> assertThat(KiwiHttpResponses.tooManyRequests(statusCode))
+                    .isEqualTo(statusCode == 429),
+
+            () -> assertThat(KiwiHttpResponses.requestHeaderFieldsTooLarge(statusCode))
+                    .isEqualTo(statusCode == 431),
+
             () -> assertThat(KiwiHttpResponses.internalServerError(statusCode))
                     .isEqualTo(statusCode == 500),
+
+            () -> assertThat(KiwiHttpResponses.notImplemented(statusCode))
+                    .isEqualTo(statusCode == 501),
 
             () -> assertThat(KiwiHttpResponses.badGateway(statusCode))
                     .isEqualTo(statusCode == 502),
 
             () -> assertThat(KiwiHttpResponses.serviceUnavailable(statusCode))
-                    .isEqualTo(statusCode == 503)
+                    .isEqualTo(statusCode == 503),
+
+            () -> assertThat(KiwiHttpResponses.gatewayTimeout(statusCode))
+                    .isEqualTo(statusCode == 504),
+
+            () -> assertThat(KiwiHttpResponses.httpVersionNotSupported(statusCode))
+                    .isEqualTo(statusCode == 505),
+
+            () -> assertThat(KiwiHttpResponses.networkAuthenticationRequired(statusCode))
+                    .isEqualTo(statusCode == 511)
         );
     }
 
