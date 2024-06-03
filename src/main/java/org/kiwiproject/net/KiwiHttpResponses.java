@@ -206,6 +206,16 @@ public class KiwiHttpResponses {
     }
 
     /**
+     * Check if the given status code is 308 Permanent Redirect.
+     *
+     * @param statusCode the status code to check
+     * @return true if the status code is 308, otherwise false
+     */
+    public static boolean permanentRedirect(int statusCode) {
+        return statusCode == 308;
+    }
+
+    /**
      * Check if the given status code is 400 Bad Request.
      *
      * @param statusCode the status code to check
@@ -223,6 +233,16 @@ public class KiwiHttpResponses {
      */
     public static boolean unauthorized(int statusCode) {
         return statusCode == 401;
+    }
+
+    /**
+     * Check if the given status code is 402 Payment Required.
+     *
+     * @param statusCode the status code to check
+     * @return true if the status code is 402, otherwise false
+     */
+    public static boolean paymentRequired(int statusCode) {
+        return statusCode == 402;
     }
 
     /**
