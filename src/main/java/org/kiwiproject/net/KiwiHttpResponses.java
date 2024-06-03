@@ -346,22 +346,22 @@ public class KiwiHttpResponses {
     }
 
     /**
-     * Check if the given status code is 413 Request Entity Too Large.
+     * Check if the given status code is 413 Payload Too Large.
      *
      * @param statusCode the status code to check
      * @return true if the status code is 413, otherwise false
      */
-    public static boolean requestEntityTooLarge(int statusCode) {
+    public static boolean payloadTooLarge(int statusCode) {
         return statusCode == 413;
     }
 
     /**
-     * Check if the given status code is 414 Request-URI Too Long.
+     * Check if the given status code is 414 URI Too Long.
      *
      * @param statusCode the status code to check
      * @return true if the status code is 414, otherwise false
      */
-    public static boolean requestUriTooLong(int statusCode) {
+    public static boolean uriTooLong(int statusCode) {
         return statusCode == 414;
     }
 
@@ -376,12 +376,12 @@ public class KiwiHttpResponses {
     }
 
     /**
-     * Check if the given status code is 416 Requested Range Not Satisfiable.
+     * Check if the given status code is 416 Range Not Satisfiable.
      *
      * @param statusCode the status code to check
      * @return true if the status code is 416, otherwise false
      */
-    public static boolean requestedRangeNotSatisfiable(int statusCode) {
+    public static boolean rangeNotSatisfiable(int statusCode) {
         return statusCode == 416;
     }
 
@@ -526,5 +526,95 @@ public class KiwiHttpResponses {
      */
     public static boolean networkAuthenticationRequired(int statusCode) {
         return statusCode == 511;
+    }
+
+    /**
+     * Get the human-readable (though not necessarily understandable)
+     * "reason phrase" for the given status code.
+     *
+     * @param statusCode the status code
+     * @return the reason phrase of the status code, or "Unknown" if the
+     * code is not known (it may or may not be a valid HTTP status code,
+     * or could be a custom code)
+     */
+    public static String reasonPhraseOf(int statusCode) {
+        return switch (statusCode) {
+
+            // Informational responses
+            case 100 -> "Continue";
+            case 101 -> "Switching Protocols";
+            case 102 -> "Processing";  // WebDAV
+            case 103 -> "Early Hints";
+
+            // Successful responses
+            case 200 -> "OK";
+            case 201 -> "Created";
+            case 202 -> "Accepted";
+            case 203 -> "Non-Authoritative Information";
+            case 204 -> "No Content";
+            case 205 -> "Reset Content";
+            case 206 -> "Partial Content";
+            case 207 -> "Multi-Status";  // WebDAV
+            case 208 -> "Already Reported";  // WebDAV
+            case 226 -> "IM Used";  // HTTP Delta encoding
+
+            // Redirection messages
+            case 300 -> "Multiple Choices";
+            case 301 -> "Moved Permanently";
+            case 302 -> "Found";
+            case 303 -> "See Other";
+            case 304 -> "Not Modified";
+            case 305 -> "Use Proxy";  // deprecated
+            case 306 -> "unused";  // no longer used, but still reserved
+            case 307 -> "Temporary Redirect";
+            case 308 -> "Permanent Redirect";
+
+            // Client error responses
+            case 400 -> "Bad Request";
+            case 401 -> "Unauthorized";
+            case 402 -> "Payment Required";  // experimental
+            case 403 -> "Forbidden";
+            case 404 -> "Not Found";
+            case 405 -> "Method Not Allowed";
+            case 406 -> "Not Acceptable";
+            case 407 -> "Proxy Authentication Required";
+            case 408 -> "Request Timeout";
+            case 409 -> "Conflict";
+            case 410 -> "Gone";
+            case 411 -> "Length Required";
+            case 412 -> "Precondition Failed";
+            case 413 -> "Payload Too Large";
+            case 414 -> "URI Too Long";
+            case 415 -> "Unsupported Media Type";
+            case 416 -> "Range Not Satisfiable";
+            case 417 -> "Expectation Failed";
+            case 418 -> "I'm a teapot";
+            case 421 -> "Misdirected Request";
+            case 422 -> "Unprocessable Content";  // WebDAV
+            case 423 -> "Locked";  // WebDAV
+            case 424 -> "Failed Dependency";  // WebDAV
+            case 425 -> "Too Early";  // experimental
+            case 426 -> "Upgrade Required";
+            case 428 -> "Precondition Required";
+            case 429 -> "Too Many Requests";
+            case 431 -> "Request Header Fields Too Large";
+            case 451 -> "Unavailable For Legal Reasons";
+
+            // Server error responses
+            case 500 -> "Internal Server Error";
+            case 501 -> "Not Implemented";
+            case 502 -> "Bad Gateway";
+            case 503 -> "Service Unavailable";
+            case 504 -> "Gateway Timeout";
+            case 505 -> "HTTP Version Not Supported";
+            case 506 -> "Variant Also Negotiates";
+            case 507 -> "Insufficient Storage";  // WebDAV
+            case 508 -> "Loop Detected";  // WebDAV
+            case 510 -> "Not Extended";
+            case 511 -> "Network Authentication Required";
+
+            // Something else that might have been added...
+            default -> "Unknown";
+        };
     }
 }

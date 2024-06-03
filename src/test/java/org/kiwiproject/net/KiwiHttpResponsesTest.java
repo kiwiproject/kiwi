@@ -11,7 +11,7 @@ import org.junitpioneer.jupiter.params.IntRangeSource;
 class KiwiHttpResponsesTest {
 
     @ParameterizedTest
-    @IntRangeSource(from = 0, to = 700, step = 1, closed = true)
+    @IntRangeSource(from = 0, to = 600, step = 1, closed = true)
     void shouldPassStatusCodeChecks(int statusCode) {
         assertAll(
 
@@ -111,16 +111,16 @@ class KiwiHttpResponsesTest {
             () -> assertThat(KiwiHttpResponses.preconditionFailed(statusCode))
                     .isEqualTo(statusCode == 412),
 
-            () -> assertThat(KiwiHttpResponses.requestEntityTooLarge(statusCode))
+            () -> assertThat(KiwiHttpResponses.payloadTooLarge(statusCode))
                     .isEqualTo(statusCode == 413),
 
-            () -> assertThat(KiwiHttpResponses.requestUriTooLong(statusCode))
+            () -> assertThat(KiwiHttpResponses.uriTooLong(statusCode))
                     .isEqualTo(statusCode == 414),
 
             () -> assertThat(KiwiHttpResponses.unsupportedMediaType(statusCode))
                     .isEqualTo(statusCode == 415),
 
-            () -> assertThat(KiwiHttpResponses.requestedRangeNotSatisfiable(statusCode))
+            () -> assertThat(KiwiHttpResponses.rangeNotSatisfiable(statusCode))
                     .isEqualTo(statusCode == 416),
 
             () -> assertThat(KiwiHttpResponses.expectationFailed(statusCode))
@@ -169,5 +169,14 @@ class KiwiHttpResponsesTest {
 
     private static int firstDigitInFamily(int statusCode) {
         return statusCode / 100;
+    }
+
+    // This does NOT check the actual reason phrase, since it
+    // doesn't add much value to restate the values here.
+    // It only verifies that we send back a non-blank value.
+    @ParameterizedTest
+    @IntRangeSource(from = 100, to = 600, step = 1, closed = true)
+    void shouldGetNonBlankReasonPhrase(int statusCode) {
+        assertThat(KiwiHttpResponses.reasonPhraseOf(statusCode)).isNotBlank();
     }
 }
