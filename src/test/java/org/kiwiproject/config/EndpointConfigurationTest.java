@@ -1,7 +1,6 @@
 package org.kiwiproject.config;
 
 import static java.util.stream.Collectors.joining;
-import static java.util.stream.Collectors.toList;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.assertj.core.api.Assertions.fail;
@@ -233,7 +232,7 @@ class EndpointConfigurationTest {
 
                 var domainNumbers = Stream.iterate(1, value -> value + 1)
                         .limit(numberOfDomains)
-                        .collect(toList());
+                        .toList();
                 var cyclingIterable = Iterables.cycle(domainNumbers);
 
                 StreamSupport.stream(cyclingIterable.spliterator(), /* parallel */ false)

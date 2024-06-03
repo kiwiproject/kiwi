@@ -1,7 +1,6 @@
 package org.kiwiproject.io;
 
 import static java.util.Collections.emptyList;
-import static java.util.stream.Collectors.toList;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatCode;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -333,7 +332,7 @@ class TimeBasedDirectoryCleanerTest {
 
         var filesNotDeleted = IntStream.rangeClosed(1, 501)
                 .mapToObj(value -> newFailedFileDeleteResult(temporaryPath.resolve("folder" + value).toString()))
-                .collect(toList());
+                .toList();
 
         cleaner.updateFileDeletionMetadata(600, filesNotDeleted);
 

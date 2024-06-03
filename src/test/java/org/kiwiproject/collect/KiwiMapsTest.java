@@ -1,6 +1,5 @@
 package org.kiwiproject.collect;
 
-import static java.util.stream.Collectors.toList;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
@@ -100,7 +99,7 @@ class KiwiMapsTest {
         List<String> expectedKeys = Arrays.stream(items)
                 .filter(obj -> obj instanceof String)
                 .map(String.class::cast)
-                .collect(toList());
+                .toList();
         assertThat(linkedHashMap.keySet()).containsExactlyElementsOf(expectedKeys);
     }
 
@@ -127,7 +126,7 @@ class KiwiMapsTest {
                 .filter(obj -> obj instanceof String)
                 .map(String.class::cast)
                 .sorted()
-                .collect(toList());
+                .toList();
         assertThat(treeMap.keySet()).containsExactlyElementsOf(expectedKeys);
     }
 
@@ -147,7 +146,7 @@ class KiwiMapsTest {
         List<String> transformed = treeMap.entrySet()
                 .stream()
                 .map(entry -> entry.getKey() + entry.getValue())
-                .collect(toList());
+                .toList();
 
         assertThat(transformed).containsExactly("bar84", "baz126", "foo42");
     }
@@ -313,7 +312,7 @@ class KiwiMapsTest {
         List<String> expectedKeys = Arrays.stream(items)
                 .filter(obj -> obj instanceof String)
                 .map(String.class::cast)
-                .collect(toList());
+                .toList();
         assertThat(unmodifiableLinkedHashMap.keySet()).containsExactlyElementsOf(expectedKeys);
 
         //noinspection DataFlowIssue
@@ -343,7 +342,7 @@ class KiwiMapsTest {
                 .filter(obj -> obj instanceof String)
                 .map(String.class::cast)
                 .sorted()
-                .collect(toList());
+                .toList();
         assertThat(unmodifiableTreeMap.keySet()).containsExactlyElementsOf(expectedKeys);
 
         //noinspection DataFlowIssue

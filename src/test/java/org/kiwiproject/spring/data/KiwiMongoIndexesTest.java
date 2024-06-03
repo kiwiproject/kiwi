@@ -1,6 +1,5 @@
 package org.kiwiproject.spring.data;
 
-import static java.util.stream.Collectors.toList;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.tuple;
 import static org.kiwiproject.spring.util.MongoTestHelpers.newMongoTemplate;
@@ -69,7 +68,7 @@ class KiwiMongoIndexesTest {
             var indexFields = indexInfos.stream()
                     .map(IndexInfo::getIndexFields)
                     .flatMap(Collection::stream)
-                    .collect(toList());
+                    .toList();
 
             assertThat(indexFields)
                     .extracting("key", "direction")

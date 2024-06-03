@@ -1,6 +1,5 @@
 package org.kiwiproject.util.regex;
 
-import static java.util.stream.Collectors.toList;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
@@ -113,7 +112,7 @@ class KiwiRegexesTest {
             var matchResultStream = KiwiRegexes.extractMatches(pattern, input);
             var matches = matchResultStream
                     .map(MatchResult::group)
-                    .collect(toList());
+                    .toList();
             assertThat(matches).containsExactly("red fox", "lazy brown");
         }
 
@@ -123,7 +122,7 @@ class KiwiRegexesTest {
 
             var pattern = Pattern.compile("(blue|orange|purple|lazy violet)", Pattern.MULTILINE);
 
-            var matchResults = KiwiRegexes.extractMatches(pattern, input).collect(toList());
+            var matchResults = KiwiRegexes.extractMatches(pattern, input).toList();
             assertThat(matchResults).isEmpty();
         }
 

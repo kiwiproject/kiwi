@@ -1,6 +1,5 @@
 package org.kiwiproject.validation;
 
-import static java.util.stream.Collectors.toList;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.catchThrowable;
 import static org.kiwiproject.base.KiwiStrings.f;
@@ -153,7 +152,7 @@ class InEnumValidatorTest {
         }
 
         static List<String> readableValues() {
-            return Arrays.stream(values()).map(Season::readableValue).collect(toList());
+            return Arrays.stream(values()).map(Season::readableValue).toList();
         }
     }
 

@@ -1,6 +1,5 @@
 package org.kiwiproject.validation;
 
-import static java.util.stream.Collectors.toList;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
 import static org.assertj.core.api.Assertions.entry;
@@ -476,7 +475,7 @@ class KiwiConstraintViolationsTest {
             var emailViolation = firstViolation(bob, "contactInfo.email.address");
             var nameViolations = validator.validateProperty(bob, "fullName").stream()
                     .map(ConstraintViolation::getMessage)
-                    .collect(toList());
+                    .toList();
 
             var violations = validator.validate(bob);
 

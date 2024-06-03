@@ -1,7 +1,5 @@
 package org.kiwiproject.spring.data;
 
-import static java.util.stream.Collectors.toList;
-
 import lombok.AllArgsConstructor;
 import org.kiwiproject.time.KiwiInstants;
 import org.springframework.data.mongodb.core.MongoTemplate;
@@ -48,6 +46,6 @@ class OrderTestData {
 
         return orders.stream()
                 .map(mongoTemplate::insert)
-                .collect(toList());
+                .toList();
     }
 }

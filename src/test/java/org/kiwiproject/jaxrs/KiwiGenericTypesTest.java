@@ -1,7 +1,6 @@
 package org.kiwiproject.jaxrs;
 
 import static java.util.Comparator.comparing;
-import static java.util.stream.Collectors.toList;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.entry;
 import static org.kiwiproject.collect.KiwiLists.third;
@@ -112,7 +111,7 @@ class KiwiGenericTypesTest {
 
         var sortedCars = cars.stream()
                 .sorted(comparing(car -> car.get("model").toString()))
-                .collect(toList());
+                .toList();
 
         assertThat(sortedCars).hasSize(3);
 
