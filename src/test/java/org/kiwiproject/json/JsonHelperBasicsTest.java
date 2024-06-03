@@ -459,13 +459,6 @@ class JsonHelperBasicsTest {
 
         @ParameterizedTest
         @NullAndEmptySource
-        void shouldReturnDefaultValue_WhenGivenNullAndEmptyInput(String value) {
-            var defaultFoo = newFoo();
-
-            assertThat(jsonHelper.toObjectOrDefault(value, Foo.class, defaultFoo)).isSameAs(defaultFoo);
-        }
-
-        @ParameterizedTest
         @ValueSource(strings = {" ", "  ", "\t", " \n "})
         void shouldReturnDefaultValue_WhenGivenBlankInput(String value) {
             var defaultFoo = newFoo();
@@ -628,13 +621,6 @@ class JsonHelperBasicsTest {
 
         @ParameterizedTest
         @NullAndEmptySource
-        void shouldReturnNull_GivenTypeReference_AndNullOrEmptyInput(String value) {
-            var people = jsonHelper.toMap(value, MAP_OF_STRING_TO_OBJECT_TYPE_REFERENCE);
-
-            assertThat(people).isNull();
-        }
-
-        @ParameterizedTest
         @ValueSource(strings = {" ", "  ", "\t", " \n "})
         void shouldReturnNull_GivenTypeReference_AndBlankInput(String value) {
             var people = jsonHelper.toMap(value, MAP_OF_STRING_TO_OBJECT_TYPE_REFERENCE);

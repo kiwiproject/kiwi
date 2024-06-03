@@ -66,8 +66,7 @@ class Ipv4AddressValidatorTest {
                 "0.0.255.255",
         })
         void whenBoundaryConditionIPs(String ip) {
-            var config = new Config(ip);
-            assertNoPropertyViolations(validator, config, "ipAddress");
+            assertValidConfig(ip);
         }
 
         @ParameterizedTest
@@ -84,6 +83,10 @@ class Ipv4AddressValidatorTest {
                 "5.0.0.128",
         })
         void whenValidIps(String ip) {
+            assertValidConfig(ip);
+        }
+
+        private void assertValidConfig(String ip) {
             var config = new Config(ip);
             assertNoPropertyViolations(validator, config, "ipAddress");
         }
