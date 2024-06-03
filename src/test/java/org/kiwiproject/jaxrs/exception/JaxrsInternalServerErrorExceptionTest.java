@@ -9,7 +9,7 @@ import org.junit.jupiter.params.provider.MethodSource;
 import java.util.stream.Stream;
 
 @DisplayName("JaxrsInternalServerErrorException")
-public class JaxrsInternalServerErrorExceptionTest {
+class JaxrsInternalServerErrorExceptionTest {
 
     private static final String MESSAGE = "Aw snap!";
     private static final String FIELD_NAME = "someField";
