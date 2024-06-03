@@ -1,7 +1,6 @@
 package org.kiwiproject.collect;
 
 import static java.util.Map.entry;
-import static java.util.stream.Collectors.toList;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatIllegalStateException;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -49,7 +48,7 @@ class KiwiCollectorsTest {
         }
 
         private void assertListContents(ImmutableList<Integer> list) {
-            var expectedList = firstFiftyEvenIntegers().collect(toList());
+            var expectedList = firstFiftyEvenIntegers().toList();
 
             assertThat(list).isEqualTo(expectedList);
         }

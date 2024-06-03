@@ -1,6 +1,6 @@
 package org.kiwiproject.spring.context;
 
-import static java.util.stream.Collectors.toSet;
+import static java.util.stream.Collectors.toUnmodifiableSet;
 import static org.kiwiproject.spring.data.KiwiMongoConverters.addCustomConverters;
 import static org.kiwiproject.spring.data.KiwiMongoConverters.newBsonUndefinedToNullObjectConverter;
 
@@ -95,7 +95,7 @@ public class MongoRepositoryContext {
         Set<String> registeredListenerClassNames = springContext.getApplicationListeners()
                 .stream()
                 .map(listener -> listener.getClass().getName())
-                .collect(toSet());
+                .collect(toUnmodifiableSet());
 
         Stream.of(listeners).forEach(listener -> {
             var listenerClassName = listener.getClass().getName();

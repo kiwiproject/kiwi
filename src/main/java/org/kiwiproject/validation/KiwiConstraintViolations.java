@@ -2,7 +2,7 @@ package org.kiwiproject.validation;
 
 import static com.google.common.base.Preconditions.checkArgument;
 import static java.util.stream.Collectors.joining;
-import static java.util.stream.Collectors.toMap;
+import static java.util.stream.Collectors.toUnmodifiableMap;
 import static org.kiwiproject.base.KiwiPreconditions.checkArgumentNotNull;
 import static org.kiwiproject.collect.KiwiSets.isNotNullOrEmpty;
 import static org.kiwiproject.collect.KiwiSets.isNullOrEmpty;
@@ -274,7 +274,7 @@ public class KiwiConstraintViolations {
         }
 
         return violations.stream()
-                .collect(toMap(
+                .collect(toUnmodifiableMap(
                         violation -> pathTransformer.apply(violation.getPropertyPath()),
                         ConstraintViolation::getMessage,
                         (accumulatedMessage, newErrorMessage) -> accumulatedMessage + ", " + newErrorMessage));

@@ -1,6 +1,5 @@
 package org.kiwiproject.collect;
 
-import static java.util.stream.Collectors.toList;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import org.junit.jupiter.api.DisplayName;
@@ -30,7 +29,7 @@ class KiwiEvictingQueuesTest {
             IntStream.rangeClosed(1, 150).forEach(queue::add);
 
             var queueItems = new ArrayList<>(queue);
-            var expectedItems = IntStream.rangeClosed(51, 150).boxed().collect(toList());
+            var expectedItems = IntStream.rangeClosed(51, 150).boxed().toList();
             assertThat(queueItems).containsExactlyElementsOf(expectedItems);
         }
     }

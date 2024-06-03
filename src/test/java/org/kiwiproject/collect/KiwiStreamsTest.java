@@ -1,6 +1,5 @@
 package org.kiwiproject.collect;
 
-import static java.util.stream.Collectors.toList;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
 
@@ -85,8 +84,8 @@ class KiwiStreamsTest {
         return Stream.of(24, 42L, 64, 84.0, 96L, 256.0);
     }
 
-    private List<Number> newNumberList() {
-        return newNumberStream().collect(toList());
+    private List<? extends Number> newNumberList() {
+        return newNumberStream().toList();
     }
 
     @Value

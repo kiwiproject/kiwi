@@ -2,7 +2,7 @@ package org.kiwiproject.retry;
 
 import static com.google.common.base.Preconditions.checkArgument;
 import static java.util.Objects.nonNull;
-import static java.util.stream.Collectors.toSet;
+import static java.util.stream.Collectors.toUnmodifiableSet;
 import static org.kiwiproject.collect.KiwiLists.isNullOrEmpty;
 import static org.kiwiproject.collect.KiwiLists.last;
 
@@ -172,6 +172,6 @@ public class RetryResult<T> {
     public Set<String> getUniqueErrorTypes() {
         return errors.stream()
                 .map(e -> e.getClass().getName())
-                .collect(toSet());
+                .collect(toUnmodifiableSet());
     }
 }

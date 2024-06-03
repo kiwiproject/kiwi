@@ -317,7 +317,7 @@ public class SimpleRetries {
      *
      * return StreamEx.of(resultStream)
      *     .takeWhileInclusive(result -> isNull(result.getLeft())
-     *     .collect(toList());
+     *     .toList();
      * </pre>
      */
     private static <T> List<Pair<T, Exception>> collectResults(int maxAttempts,

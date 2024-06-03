@@ -3,7 +3,7 @@ package org.kiwiproject.beans;
 import static com.google.common.base.Preconditions.checkState;
 import static java.util.Objects.isNull;
 import static java.util.function.Predicate.not;
-import static java.util.stream.Collectors.toSet;
+import static java.util.stream.Collectors.toUnmodifiableSet;
 
 import com.google.common.collect.Sets;
 import lombok.Getter;
@@ -106,7 +106,7 @@ public class BeanConverter<T> {
         // remove exclusions
         return propertyNames.stream()
                 .filter(not(prop -> exclusions.contains(prop)))
-                .collect(toSet());
+                .collect(toUnmodifiableSet());
     }
 
     @SuppressWarnings({"unchecked", "rawtypes"})
@@ -117,7 +117,7 @@ public class BeanConverter<T> {
 
         return Stream.of(inputWrapper.getPropertyDescriptors())
                 .map(PropertyDescriptor::getName)
-                .collect(toSet());
+                .collect(toUnmodifiableSet());
     }
 
     /**

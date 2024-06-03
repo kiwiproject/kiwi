@@ -3,7 +3,7 @@ package org.kiwiproject.jaxrs.exception;
 import static com.google.common.base.Verify.verify;
 import static java.util.Objects.isNull;
 import static java.util.Objects.nonNull;
-import static java.util.stream.Collectors.toSet;
+import static java.util.stream.Collectors.toUnmodifiableSet;
 import static org.kiwiproject.base.KiwiStrings.format;
 import static org.kiwiproject.collect.KiwiLists.first;
 import static org.kiwiproject.collect.KiwiLists.hasOneElement;
@@ -254,7 +254,7 @@ public class JaxrsException extends RuntimeException {
         }
 
         verify(errors.size() > 1, "Expecting more than one error at this point");
-        var uniqueStatusCodes = errors.stream().map(ErrorMessage::getCode).collect(toSet());
+        var uniqueStatusCodes = errors.stream().map(ErrorMessage::getCode).collect(toUnmodifiableSet());
         if (KiwiSets.hasOneElement(uniqueStatusCodes)) {
             return uniqueStatusCodes.iterator().next();
         }

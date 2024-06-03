@@ -1,6 +1,6 @@
 package org.kiwiproject.ansible.vault;
 
-import static java.util.stream.Collectors.toSet;
+import static java.util.stream.Collectors.toUnmodifiableSet;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
 
@@ -109,7 +109,7 @@ class VaultConfigurationTest {
             var invalidProperties = violations.stream()
                     .map(ConstraintViolation::getPropertyPath)
                     .map(Object::toString)
-                    .collect(toSet());
+                    .collect(toUnmodifiableSet());
 
             assertThat(invalidProperties).containsExactlyInAnyOrder(
                     "ansibleVaultPath",

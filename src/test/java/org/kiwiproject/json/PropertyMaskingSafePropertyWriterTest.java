@@ -1,6 +1,6 @@
 package org.kiwiproject.json;
 
-import static java.util.stream.Collectors.toList;
+import static java.util.stream.Collectors.toUnmodifiableList;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatCode;
 import static org.assertj.core.api.Assertions.entry;
@@ -179,7 +179,7 @@ class PropertyMaskingSafePropertyWriterTest {
                 return beanProperties.stream()
                         .map(beanPropertyWriter ->
                                 new PropertyMaskingSafePropertyWriter(beanPropertyWriter, maskedFields))
-                        .collect(toList());
+                        .collect(toUnmodifiableList());
             }
         };
     }

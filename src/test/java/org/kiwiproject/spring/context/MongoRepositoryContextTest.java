@@ -1,6 +1,6 @@
 package org.kiwiproject.spring.context;
 
-import static java.util.stream.Collectors.toSet;
+import static java.util.stream.Collectors.toUnmodifiableSet;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatCode;
 
@@ -98,7 +98,7 @@ class MongoRepositoryContextTest {
             var people = quoteDocRepository.findAll()
                     .stream()
                     .map(SampleQuoteDoc::getName)
-                    .collect(toSet());
+                    .collect(toUnmodifiableSet());
 
             assertThat(people).containsExactlyInAnyOrder("Adam Smith", "Blaise Pascal");
         }
