@@ -136,6 +136,26 @@ public class KiwiHttpResponses {
     }
 
     /**
+     * Check if the given status code is 205 Reset Content.
+     *
+     * @param statusCode the status code to check
+     * @return true if the status code is 205, otherwise false
+     */
+    public static boolean resetContent(int statusCode) {
+        return statusCode == 205;
+    }
+
+    /**
+     * Check if the given status code is 206 Partial Content.
+     *
+     * @param statusCode the status code to check
+     * @return true if the status code is 206, otherwise false
+     */
+    public static boolean partialContent(int statusCode) {
+        return statusCode == 206;
+    }
+
+    /**
      * Check if the given status code is 301 Moved Permanently.
      *
      * @param statusCode the status code to check
@@ -156,6 +176,16 @@ public class KiwiHttpResponses {
     }
 
     /**
+     * Check if the given status code is 303 See Other.
+     *
+     * @param statusCode the status code to check
+     * @return true if the status code is 303, otherwise false
+     */
+    public static boolean seeOther(int statusCode) {
+        return statusCode == 303;
+    }
+
+    /**
      * Check if the given status code is 304 Not Modified.
      *
      * @param statusCode the status code to check
@@ -163,6 +193,16 @@ public class KiwiHttpResponses {
      */
     public static boolean notModified(int statusCode) {
         return statusCode == 304;
+    }
+
+    /**
+     * Check if the given status code is 307 Temporary Redirect.
+     *
+     * @param statusCode the status code to check
+     * @return true if the status code is 307, otherwise false
+     */
+    public static boolean temporaryRedirect(int statusCode) {
+        return statusCode == 307;
     }
 
     /**
@@ -226,6 +266,26 @@ public class KiwiHttpResponses {
     }
 
     /**
+     * Check if the given status code is 407 Proxy Authentication Required.
+     *
+     * @param statusCode the status code to check
+     * @return true if the status code is 407, otherwise false
+     */
+    public static boolean proxyAuthenticationRequired(int statusCode) {
+        return statusCode == 407;
+    }
+
+    /**
+     * Check if the given status code is 408 Request Timeout.
+     *
+     * @param statusCode the status code to check
+     * @return true if the status code is 408, otherwise false
+     */
+    public static boolean requestTimeout(int statusCode) {
+        return statusCode == 408;
+    }
+
+    /**
      * Check if the given status code is 409 Conflict.
      *
      * @param statusCode the status code to check
@@ -236,6 +296,149 @@ public class KiwiHttpResponses {
     }
 
     /**
+     * Check if the given status code is 410 Gone.
+     *
+     * @param statusCode the status code to check
+     * @return true if the status code is 410, otherwise false
+     */
+    public static boolean gone(int statusCode) {
+        return statusCode == 410;
+    }
+
+    /**
+     * Check if the given status code is 411 Length Required.
+     *
+     * @param statusCode the status code to check
+     * @return true if the status code is 411, otherwise false
+     */
+    public static boolean lengthRequired(int statusCode) {
+        return statusCode == 411;
+    }
+
+    /**
+     * Check if the given status code is 412 Precondition Failed.
+     *
+     * @param statusCode the status code to check
+     * @return true if the status code is 412, otherwise false
+     */
+    public static boolean preconditionFailed(int statusCode) {
+        return statusCode == 412;
+    }
+
+    /**
+     * Check if the given status code is 413 Request Entity Too Large.
+     *
+     * @param statusCode the status code to check
+     * @return true if the status code is 413, otherwise false
+     */
+    public static boolean requestEntityTooLarge(int statusCode) {
+        return statusCode == 413;
+    }
+
+    /**
+     * Check if the given status code is 414 Request-URI Too Long.
+     *
+     * @param statusCode the status code to check
+     * @return true if the status code is 414, otherwise false
+     */
+    public static boolean requestUriTooLong(int statusCode) {
+        return statusCode == 414;
+    }
+
+    /**
+     * Check if the given status code is 415 Unsupported Media Type.
+     *
+     * @param statusCode the status code to check
+     * @return true if the status code is 415, otherwise false
+     */
+    public static boolean unsupportedMediaType(int statusCode) {
+        return statusCode == 415;
+    }
+
+    /**
+     * Check if the given status code is 416 Requested Range Not Satisfiable.
+     *
+     * @param statusCode the status code to check
+     * @return true if the status code is 416, otherwise false
+     */
+    public static boolean requestedRangeNotSatisfiable(int statusCode) {
+        return statusCode == 416;
+    }
+
+    /**
+     * Check if the given status code is 417 Expectation Failed.
+     *
+     * @param statusCode the status code to check
+     * @return true if the status code is 417, otherwise false
+     */
+    public static boolean expectationFailed(int statusCode) {
+        return statusCode == 417;
+    }
+
+    /**
+     * Check if the given status code is 418 I'm a teapot.
+     *
+     * @param statusCode the status code to check
+     * @return true if the status code is 418, otherwise false
+     */
+    public static boolean iAmATeapot(int statusCode) {
+        return statusCode == 418;
+    }
+
+    /**
+     * Check if the given status code is 422 Unprocessable Content.
+     * <p>
+     * This is technically a WebDAV code, but is used by many web
+     * frameworks to indicate an input validation failure.
+     *
+     * @param statusCode the status code to check
+     * @return true if the status code is 422, otherwise false
+     */
+    public static boolean unprocessableContent(int statusCode) {
+        return statusCode == 422;
+    }
+
+    /**
+     * Check if the given status code is 426 Upgrade Required.
+     *
+     * @param statusCode the status code to check
+     * @return true if the status code is 426, otherwise false
+     */
+    public static boolean upgradeRequired(int statusCode) {
+        return statusCode == 426;
+    }
+
+    /**
+     * Check if the given status code is 428 Precondition Required.
+     *
+     * @param statusCode the status code to check
+     * @return true if the status code is 428, otherwise false
+     */
+    public static boolean preconditionRequired(int statusCode) {
+        return statusCode == 428;
+    }
+
+    /**
+     * Check if the given status code is 429 Too Many Requests.
+     *
+     * @param statusCode the status code to check
+     * @return true if the status code is 429, otherwise false
+     */
+    public static boolean tooManyRequests(int statusCode) {
+        return statusCode == 429;
+    }
+
+    /**
+     * Check if the given status code is 431 Request Header Fields Too Large.
+     *
+     * @param statusCode the status code to check
+     * @return true if the status code is 431, otherwise false
+     */
+    public static boolean requestHeaderFieldsTooLarge(int statusCode) {
+        return statusCode == 431;
+    }
+
+    /**
      * Check if the given status code is 500 Internal Server Error.
      *
      * @param statusCode the status code to check
@@ -243,6 +446,16 @@ public class KiwiHttpResponses {
      */
     public static boolean internalServerError(int statusCode) {
         return statusCode == 500;
+    }
+
+     /**
+     * Check if the given status code is 501 Not Implemented.
+     *
+     * @param statusCode the status code to check
+     * @return true if the status code is 501, otherwise false
+     */
+    public static boolean notImplemented(int statusCode) {
+        return statusCode == 501;
     }
 
     /**
@@ -263,5 +476,35 @@ public class KiwiHttpResponses {
      */
     public static boolean serviceUnavailable(int statusCode) {
         return statusCode == 503;
+    }
+
+    /**
+     * Check if the given status code is 504 Gateway Timeout.
+     *
+     * @param statusCode the status code to check
+     * @return true if the status code is 504, otherwise false
+     */
+    public static boolean gatewayTimeout(int statusCode) {
+        return statusCode == 504;
+    }
+
+    /**
+     * Check if the given status code is 505 HTTP Version Not Supported.
+     *
+     * @param statusCode the status code to check
+     * @return true if the status code is 505, otherwise false
+     */
+    public static boolean httpVersionNotSupported(int statusCode) {
+        return statusCode == 505;
+    }
+
+    /**
+     * Check if the given status code is 511 Network Authentication Required.
+     *
+     * @param statusCode the status code to check
+     * @return true if the status code is 511, otherwise false
+     */
+    public static boolean networkAuthenticationRequired(int statusCode) {
+        return statusCode == 511;
     }
 }
