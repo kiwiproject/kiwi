@@ -77,8 +77,8 @@ class StripedLockTest {
         var recorder2 = new TaskRecorder("task2");
 
         var completableFutures = List.of(
-                Async.doAsync(() -> lock.runWithWriteLock(recorder1.id, () -> recorder1.record(task))),
-                Async.doAsync(() -> lock.runWithWriteLock(recorder2.id, () -> recorder2.record(task)))
+                Async.doAsync(() -> lock.runWithWriteLock(recorder1.id, () -> recorder1.runTask(task))),
+                Async.doAsync(() -> lock.runWithWriteLock(recorder2.id, () -> recorder2.runTask(task)))
         );
 
         waitForAll(completableFutures);
@@ -94,8 +94,8 @@ class StripedLockTest {
         var recorder2 = new TaskRecorder("task2");
 
         var completableFutures = List.of(
-                Async.doAsync(() -> lock.runWithWriteLock(recorder1.id, () -> recorder1.record(task))),
-                Async.doAsync(() -> lock.runWithWriteLock(recorder2.id, () -> recorder2.record(task)))
+                Async.doAsync(() -> lock.runWithWriteLock(recorder1.id, () -> recorder1.runTask(task))),
+                Async.doAsync(() -> lock.runWithWriteLock(recorder2.id, () -> recorder2.runTask(task)))
         );
 
         waitForAll(completableFutures);
@@ -111,8 +111,8 @@ class StripedLockTest {
         var recorder2 = new TaskRecorder("task2");
 
         var completableFutures = List.of(
-                Async.doAsync(() -> lock.runWithWriteLock(recorder1.id, () -> recorder1.record(task))),
-                Async.doAsync(() -> lock.runWithReadLock(recorder2.id, () -> recorder2.record(task)))
+                Async.doAsync(() -> lock.runWithWriteLock(recorder1.id, () -> recorder1.runTask(task))),
+                Async.doAsync(() -> lock.runWithReadLock(recorder2.id, () -> recorder2.runTask(task)))
         );
 
         waitForAll(completableFutures);
@@ -128,8 +128,8 @@ class StripedLockTest {
         var recorder2 = new TaskRecorder("task2");
 
         var completableFutures = List.of(
-                Async.doAsync(() -> lock.runWithReadLock(recorder1.id, () -> recorder1.record(task))),
-                Async.doAsync(() -> lock.runWithReadLock(recorder2.id, () -> recorder2.record(task)))
+                Async.doAsync(() -> lock.runWithReadLock(recorder1.id, () -> recorder1.runTask(task))),
+                Async.doAsync(() -> lock.runWithReadLock(recorder2.id, () -> recorder2.runTask(task)))
         );
 
         waitForAll(completableFutures);
@@ -146,8 +146,8 @@ class StripedLockTest {
         var recorder2 = new TaskRecorder("task2");
 
         var completableFutures = List.of(
-                Async.doAsync(() -> lock.supplyWithReadLock(recorder1.id, () -> recorder1.recordAndSupply(task1))),
-                Async.doAsync(() -> lock.supplyWithReadLock(recorder2.id, () -> recorder2.recordAndSupply(task2)))
+                Async.doAsync(() -> lock.supplyWithReadLock(recorder1.id, () -> recorder1.runTaskAndSupply(task1))),
+                Async.doAsync(() -> lock.supplyWithReadLock(recorder2.id, () -> recorder2.runTaskAndSupply(task2)))
         );
 
         waitForAll(completableFutures);
@@ -167,8 +167,8 @@ class StripedLockTest {
         var recorder2 = new TaskRecorder("task2");
 
         var completableFutures = List.of(
-                Async.doAsync(() -> lock.supplyWithWriteLock(recorder1.id, () -> recorder1.recordAndSupply(task1))),
-                Async.doAsync(() -> lock.supplyWithReadLock(recorder2.id, () -> recorder2.recordAndSupply(task2)))
+                Async.doAsync(() -> lock.supplyWithWriteLock(recorder1.id, () -> recorder1.runTaskAndSupply(task1))),
+                Async.doAsync(() -> lock.supplyWithReadLock(recorder2.id, () -> recorder2.runTaskAndSupply(task2)))
         );
 
         waitForAll(completableFutures);
@@ -188,8 +188,8 @@ class StripedLockTest {
         var recorder2 = new TaskRecorder("task2");
 
         var completableFutures = List.of(
-                Async.doAsync(() -> lock.supplyWithReadLock(recorder1.id, () -> recorder1.recordAndSupply(task1))),
-                Async.doAsync(() -> lock.supplyWithWriteLock(recorder2.id, () -> recorder2.recordAndSupply(task2)))
+                Async.doAsync(() -> lock.supplyWithReadLock(recorder1.id, () -> recorder1.runTaskAndSupply(task1))),
+                Async.doAsync(() -> lock.supplyWithWriteLock(recorder2.id, () -> recorder2.runTaskAndSupply(task2)))
         );
 
         waitForAll(completableFutures);
@@ -241,13 +241,13 @@ class StripedLockTest {
             this.id = id;
         }
 
-        void record(Runnable task) {
+        void runTask(Runnable task) {
             start = Instant.now();
             task.run();
             stop = Instant.now();
         }
 
-        <T> T recordAndSupply(Supplier<T> supplier) {
+        <T> T runTaskAndSupply(Supplier<T> supplier) {
             start = Instant.now();
             var result = supplier.get();
             stop = Instant.now();

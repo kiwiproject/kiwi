@@ -106,8 +106,8 @@ class JsonHelperBasicsTest {
         var nowMillis = now.toEpochMilli();
         var json = "{ \"timestamp\": " + nowMillis + "}";
 
-        var jsonHelper = new JsonHelper();
-        var holder = jsonHelper.toObject(json, TimestampHolder.class);
+        var plainJsonHelper = new JsonHelper();
+        var holder = plainJsonHelper.toObject(json, TimestampHolder.class);
 
         assertThat(holder.getTimestamp()).isEqualTo(now.truncatedTo(ChronoUnit.MILLIS));
     }
@@ -117,8 +117,8 @@ class JsonHelperBasicsTest {
         var now = Instant.now();
         var holder = new TimestampHolder(now);
 
-        var jsonHelper = new JsonHelper();
-        var json = jsonHelper.toJson(holder);
+        var plainJsonHelper = new JsonHelper();
+        var json = plainJsonHelper.toJson(holder);
 
         assertThat(json).isEqualTo("{\"timestamp\":" + now.toEpochMilli() + "}");
     }
@@ -163,9 +163,9 @@ class JsonHelperBasicsTest {
     @Test
     void shouldGetObjectMapper() {
         var mapper = new ObjectMapper();
-        var jsonHelper = new JsonHelper(mapper);
+        var customJsonHelper = new JsonHelper(mapper);
 
-        assertThat(jsonHelper.getObjectMapper()).isSameAs(mapper);
+        assertThat(customJsonHelper.getObjectMapper()).isSameAs(mapper);
     }
 
     @Test
@@ -410,17 +410,9 @@ class JsonHelperBasicsTest {
         }
 
         @ParameterizedTest
+        @NullAndEmptySource
         @ValueSource(strings = {" ", "  ", "\t", " \n "})
         void shouldReturnNull_GivenTargetTypeReference_AndBlankInput(String value) {
-            var user = jsonHelper.toObject(value, new TypeReference<User>() {
-            });
-
-            assertThat(user).isNull();
-        }
-
-        @ParameterizedTest
-        @NullAndEmptySource
-        void shouldReturnNull_GivenTargetTypeReference_AndNullOrEmptyInput(String value) {
             var user = jsonHelper.toObject(value, new TypeReference<User>() {
             });
 
@@ -497,14 +489,6 @@ class JsonHelperBasicsTest {
 
         @ParameterizedTest
         @NullAndEmptySource
-        void shouldReturnSuppliedValue_WhenGivenNullAndEmptyInput(String value) {
-            var foo = newFoo();
-            Supplier<Foo> fooSupplier = () -> foo;
-
-            assertThat(jsonHelper.toObjectOrSupply(value, Foo.class, fooSupplier)).isSameAs(foo);
-        }
-
-        @ParameterizedTest
         @ValueSource(strings = {" ", "  ", "\t", " \n "})
         void shouldReturnSuppliedValue_WhenGivenBlankInput(String value) {
             var foo = newFoo();
@@ -585,14 +569,6 @@ class JsonHelperBasicsTest {
 
         @ParameterizedTest
         @NullAndEmptySource
-        void shouldReturnNull_WhenGivenNullOrEmptyInput(String value) {
-            var people = jsonHelper.toObjectList(value, new TypeReference<List<Person>>() {
-            });
-
-            assertThat(people).isNull();
-        }
-
-        @ParameterizedTest
         @ValueSource(strings = {" ", "  ", "\t", " \n "})
         void shouldReturnNull_WhenGivenBlankInput(String value) {
             var people = jsonHelper.toObjectList(value, new TypeReference<List<Person>>() {
@@ -620,13 +596,6 @@ class JsonHelperBasicsTest {
 
         @ParameterizedTest
         @NullAndEmptySource
-        void shouldReturnNull_WhenGivenNullOrEmptyInput(String value) {
-            var people = jsonHelper.toMap(value);
-
-            assertThat(people).isNull();
-        }
-
-        @ParameterizedTest
         @ValueSource(strings = {" ", "  ", "\t", " \n "})
         void shouldReturnNull_WhenGivenBlankInput(String value) {
             var people = jsonHelper.toMap(value);

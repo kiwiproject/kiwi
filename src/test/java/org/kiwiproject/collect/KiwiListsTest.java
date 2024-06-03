@@ -136,10 +136,10 @@ class KiwiListsTest {
 
         @Test
         void shouldBeEmpty_WhenEmptyList() {
-            List<Integer> items = newArrayList();
+            List<Integer> emptyItems = newArrayList();
             Comparator<Integer> comparator = Comparator.reverseOrder();
 
-            assertThat(KiwiLists.sorted(items, comparator)).isEmpty();
+            assertThat(KiwiLists.sorted(emptyItems, comparator)).isEmpty();
         }
 
         @Test

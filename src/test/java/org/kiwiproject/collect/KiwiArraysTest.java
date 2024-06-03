@@ -129,10 +129,10 @@ class KiwiArraysTest {
 
         @Test
         void shouldBeEmpty_WhenEmptyArray() {
-            Integer[] items = new Integer[0];
+            Integer[] emptyItems = new Integer[0];
             Comparator<Integer> comparator = Comparator.reverseOrder();
 
-            assertThat(KiwiArrays.sorted(items, comparator, Integer.class)).isEmpty();
+            assertThat(KiwiArrays.sorted(emptyItems, comparator, Integer.class)).isEmpty();
         }
 
         @Test
