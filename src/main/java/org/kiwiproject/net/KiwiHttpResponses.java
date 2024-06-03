@@ -346,12 +346,16 @@ public class KiwiHttpResponses {
     }
 
     /**
-     * Check if the given status code is 413 Payload Too Large.
+     * Check if the given status code is 413 Content Too Large.
+     * <p>
+     * According to the Mozilla documentation, this used to be
+     * known as Payload Too Large, and that terminology is still
+     * apparently widely used.
      *
      * @param statusCode the status code to check
      * @return true if the status code is 413, otherwise false
      */
-    public static boolean payloadTooLarge(int statusCode) {
+    public static boolean contentTooLarge(int statusCode) {
         return statusCode == 413;
     }
 
@@ -583,7 +587,7 @@ public class KiwiHttpResponses {
             case 410 -> "Gone";
             case 411 -> "Length Required";
             case 412 -> "Precondition Failed";
-            case 413 -> "Payload Too Large";
+            case 413 -> "Content Too Large";
             case 414 -> "URI Too Long";
             case 415 -> "Unsupported Media Type";
             case 416 -> "Range Not Satisfiable";
