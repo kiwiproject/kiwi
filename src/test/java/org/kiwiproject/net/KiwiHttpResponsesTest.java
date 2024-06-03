@@ -69,11 +69,17 @@ class KiwiHttpResponsesTest {
             () -> assertThat(KiwiHttpResponses.temporaryRedirect(statusCode))
                     .isEqualTo(statusCode == 307),
 
+            () -> assertThat(KiwiHttpResponses.permanentRedirect(statusCode))
+                    .isEqualTo(statusCode == 308),
+
             () -> assertThat(KiwiHttpResponses.badRequest(statusCode))
                     .isEqualTo(statusCode == 400),
 
             () -> assertThat(KiwiHttpResponses.unauthorized(statusCode))
                     .isEqualTo(statusCode == 401),
+
+            () -> assertThat(KiwiHttpResponses.paymentRequired(statusCode))
+                    .isEqualTo(statusCode == 402),
 
             () -> assertThat(KiwiHttpResponses.forbidden(statusCode))
                     .isEqualTo(statusCode == 403),
