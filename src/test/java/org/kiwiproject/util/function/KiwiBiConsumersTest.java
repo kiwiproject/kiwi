@@ -42,9 +42,9 @@ class KiwiBiConsumersTest {
         }
 
         void mutateValues() {
-            mutateValues((numbers, text) -> {
-                numbers.add(ThreadLocalRandom.current().nextInt() % 100);
-                text.add(UUIDs.randomUUIDString());
+            mutateValues((theNumbers, theText) -> {
+                theNumbers.add(ThreadLocalRandom.current().nextInt() % 100);
+                theText.add(UUIDs.randomUUIDString());
             });
         }
 

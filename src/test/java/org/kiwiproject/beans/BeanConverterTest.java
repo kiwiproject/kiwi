@@ -152,8 +152,8 @@ class BeanConverterTest {
         @BeforeEach
         void setUp() {
             converter = new BeanConverter<>();
-            converter.addPropertyMapper("stringField", testData -> testData.getStringField() + "!!!");
-            converter.addPropertyMapper("numberField", testData -> testData.getNumberField() * 5);
+            converter.addPropertyMapper("stringField", data -> data.getStringField() + "!!!");
+            converter.addPropertyMapper("numberField", data -> data.getNumberField() * 5);
 
             testData = constructTestData();
         }
@@ -178,7 +178,7 @@ class BeanConverterTest {
             // The following MUST declare a variable else the exception is not thrown.
             // It does not, however, matter whether it is declared with an explicit type.
             assertThatThrownBy(() -> {
-                //noinspection unused
+                @SuppressWarnings("unused")
                 var aDouble = badResultTypeMapper.apply(testData);
             }).describedAs("should throw when try to assign result whether explicit type or using LVTI (var)")
                     .isExactlyInstanceOf(ClassCastException.class);

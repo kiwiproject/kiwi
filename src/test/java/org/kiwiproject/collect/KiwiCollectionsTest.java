@@ -6,7 +6,6 @@ import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException
 import static org.assertj.core.api.Assertions.assertThatNullPointerException;
 
 import com.google.common.collect.HashMultiset;
-import com.google.common.collect.ImmutableSet;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -326,7 +325,7 @@ class KiwiCollectionsTest {
         return Stream.of(
                 new HashSet<>(),
                 new CopyOnWriteArraySet<>(),
-                ImmutableSet.of(),
+                Set.of(),
                 new ArrayBlockingQueue<>(5),
                 HashMultiset.create()
         );

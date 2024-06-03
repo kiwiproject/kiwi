@@ -37,7 +37,7 @@ class KiwiConsumersTest {
         }
 
         void mutateValue() {
-            mutateValue(text -> text.add(UUIDs.randomUUIDString()));
+            mutateValue(theText -> theText.add(UUIDs.randomUUIDString()));
         }
 
         void mutateValue(Consumer<List<String>> block) {

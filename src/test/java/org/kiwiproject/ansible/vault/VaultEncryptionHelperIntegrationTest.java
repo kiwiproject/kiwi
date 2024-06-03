@@ -266,9 +266,9 @@ class VaultEncryptionHelperIntegrationTest {
 
             @Test
             void shouldThrowWhenGivenFileThatDoesNotExist() {
-                var encryptedFile = Path.of("/does/not/exist.txt");
+                var missingEncryptedFile = Path.of("/does/not/exist.txt");
 
-                assertThatThrownBy(() -> helper.decryptFile(encryptedFile, outputFile))
+                assertThatThrownBy(() -> helper.decryptFile(missingEncryptedFile, outputFile))
                         .isExactlyInstanceOf(VaultEncryptionException.class)
                         .hasMessageStartingWith("ansible-vault returned non-zero exit code 1. Stderr: ");
             }
