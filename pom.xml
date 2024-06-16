@@ -29,7 +29,7 @@
 
     <properties>
         <!-- Versions for required dependencies -->
-        <kiwi-bom.version>2.0.11</kiwi-bom.version>
+        <kiwi-bom.version>2.0.12</kiwi-bom.version>
 
         <!-- Versions for provided dependencies -->
         <retrying-again.version>2.0.3</retrying-again.version>
