@@ -226,7 +226,8 @@ class KiwiRetryerTest {
 
             var retryer = KiwiRetryer.<Response>newRetryerWithDefaultExceptions("thisFails");
 
-            var kiwiRetryerException = catchThrowableOfType(() -> retryer.call(callable), KiwiRetryerException.class);
+            var kiwiRetryerException = catchThrowableOfType(KiwiRetryerException.class,
+                    () -> retryer.call(callable));
 
             assertThat(kiwiRetryerException)
                     .hasMessage("KiwiRetryer thisFails failed all 1 attempts. Error: Retrying failed to complete successfully after 1 attempts.");
@@ -374,7 +375,8 @@ class KiwiRetryerTest {
                         .exceptionPredicate(KiwiRetryerPredicates.UNKNOWN_HOST)
                         .build();
 
-                var kiwiRetryerException = catchThrowableOfType(() -> retryer.call(callable), KiwiRetryerException.class);
+                var kiwiRetryerException = catchThrowableOfType(KiwiRetryerException.class,
+                        () -> retryer.call(callable));
 
                 assertThat(kiwiRetryerException)
                         .hasMessage("KiwiRetryer retryOnAllRuntimeExceptionsShouldTakePrecedence failed all 1 attempts." +

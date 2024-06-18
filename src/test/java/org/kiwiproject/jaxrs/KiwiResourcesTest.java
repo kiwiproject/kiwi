@@ -1023,8 +1023,8 @@ class KiwiResourcesTest {
         @NullAndEmptySource
         void shouldThrowBadRequest_WhenListIsNullOrEmpty(List<Object> values) {
             var thrown = catchThrowableOfType(
-                    () -> KiwiResources.assertOneElementOrThrowBadRequest(values, "testParam"),
-                    JaxrsBadRequestException.class);
+                    JaxrsBadRequestException.class,
+                    () -> KiwiResources.assertOneElementOrThrowBadRequest(values, "testParam"));
 
             assertThat(thrown.getMessage()).isEqualTo("testParam has no values, but exactly one was expected");
             assertThat(thrown.getErrors()).hasSize(1);
@@ -1035,8 +1035,8 @@ class KiwiResourcesTest {
             var values = List.of("42", "84");
 
             var thrown = catchThrowableOfType(
-                    () -> KiwiResources.assertOneElementOrThrowBadRequest(values, "testParam"),
-                    JaxrsBadRequestException.class);
+                    JaxrsBadRequestException.class,
+                    () -> KiwiResources.assertOneElementOrThrowBadRequest(values, "testParam"));
 
             assertThat(thrown.getMessage()).isEqualTo("testParam has 2 values, but only one was expected");
             assertThat(thrown.getErrors()).hasSize(1);
