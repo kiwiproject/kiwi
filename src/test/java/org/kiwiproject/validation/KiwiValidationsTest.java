@@ -159,7 +159,8 @@ class KiwiValidationsTest {
             var contactDetails = new SampleContactDetails("bob@example.org", "");
             var bob = new SamplePerson("Bob", null, null, contactDetails);
 
-            var exception = catchThrowableOfType(() -> KiwiValidations.validateThrowing(bob), ConstraintViolationException.class);
+            var exception = catchThrowableOfType(ConstraintViolationException.class,
+                    () -> KiwiValidations.validateThrowing(bob));
             var violations = exception.getConstraintViolations();
             assertThat(violations)
                     .extracting(v -> v.getPropertyPath().toString())
@@ -186,7 +187,8 @@ class KiwiValidationsTest {
             var contactDetails = new SampleContactDetails("bob@example.org", "");
             var bob = new SamplePerson(null, "S", null, contactDetails);
 
-            var exception = catchThrowableOfType(() -> KiwiValidations.validateThrowing(bob, Default.class, Secret.class), ConstraintViolationException.class);
+            var exception = catchThrowableOfType(ConstraintViolationException.class,
+                    () -> KiwiValidations.validateThrowing(bob, Default.class, Secret.class));
             var violations = exception.getConstraintViolations();
             assertThat(violations)
                     .extracting(v -> v.getPropertyPath().toString())
