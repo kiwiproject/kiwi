@@ -20,6 +20,7 @@ import org.assertj.core.api.SoftAssertions;
 import org.assertj.core.api.junit.jupiter.SoftAssertionsExtension;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
+import org.junit.jupiter.api.RepeatedTest;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -27,6 +28,7 @@ import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.junit.jupiter.params.provider.NullAndEmptySource;
 import org.junit.jupiter.params.provider.ValueSource;
+import org.kiwiproject.collect.KiwiLists;
 import org.kiwiproject.util.BlankStringSource;
 
 import java.math.BigInteger;
@@ -493,6 +495,286 @@ class KiwiPreconditionsTest {
                         .isThrownBy(() ->
                                 KiwiPreconditions.checkArgumentNotEmpty(set, "bad {} set", "foo"))
                         .withMessage("bad foo set");
+            }
+        }
+    }
+
+    @Nested
+    class CheckArgumentContainsOnlyNotNull {
+
+        @Nested
+        class WithNoMessage {
+
+            @ParameterizedTest
+            @NullAndEmptySource
+            void shouldThrowWhenListArgument_IsNullOrEmpty(List<Integer> list) {
+                assertThatIllegalArgumentException()
+                        .isThrownBy(() ->
+                                KiwiPreconditions.checkArgumentContainsOnlyNotNull(list))
+                        .withMessage("collection must not be null or empty");
+            }
+
+            @ParameterizedTest
+            @NullAndEmptySource
+            void shouldThrowWhenSetArgument_IsNullOrEmpty(Set<Double> set) {
+                assertThatIllegalArgumentException()
+                        .isThrownBy(() ->
+                                KiwiPreconditions.checkArgumentContainsOnlyNotNull(set))
+                        .withMessage("collection must not be null or empty");
+            }
+
+            @RepeatedTest(5)
+            void shouldThrowWhenArgumentContainsNullElement() {
+                var collection = KiwiLists.shuffledArrayListOf(1, 2, 3, 4, 5, null);
+                assertThatIllegalArgumentException()
+                        .isThrownBy(() ->
+                                KiwiPreconditions.checkArgumentContainsOnlyNotNull(collection))
+                        .withMessage("collection must not contain null elements");
+            }
+
+            @RepeatedTest(5)
+            void shouldNotThrow_WhenListHasAllNonNullElements() {
+                var list = KiwiLists.shuffledArrayListOf(1, 2, 3, 4, 5, 6);
+                assertThatCode(() -> KiwiPreconditions.checkArgumentContainsOnlyNotNull(list))
+                        .doesNotThrowAnyException();
+            }
+
+            @RepeatedTest(5)
+            void shouldNotThrow_WhenSetHasAllNonNullElements() {
+                var list = Set.of(1, 2, 3, 4, 5, 6);
+                assertThatCode(() -> KiwiPreconditions.checkArgumentContainsOnlyNotNull(list))
+                        .doesNotThrowAnyException();
+            }
+        }
+
+        @Nested
+        class WithMessage {
+
+            @ParameterizedTest
+            @NullAndEmptySource
+            void shouldThrowWhenListArgument_IsNullOrEmpty(List<Integer> list) {
+                assertThatIllegalArgumentException()
+                        .isThrownBy(() ->
+                                KiwiPreconditions.checkArgumentContainsOnlyNotNull(list, "will not be used"))
+                        .withMessage("collection must not be null or empty");
+            }
+
+            @ParameterizedTest
+            @NullAndEmptySource
+            void shouldThrowWhenSetArgument_IsNullOrEmpty(Set<Double> set) {
+                assertThatIllegalArgumentException()
+                        .isThrownBy(() ->
+                                KiwiPreconditions.checkArgumentContainsOnlyNotNull(set, "will not be used"))
+                        .withMessage("collection must not be null or empty");
+            }
+
+            @RepeatedTest(5)
+            void shouldThrowWhenArgumentContainsNullElement() {
+                var collection = KiwiLists.shuffledArrayListOf(1, 2, 3, 4, 5, null);
+                assertThatIllegalArgumentException()
+                        .isThrownBy(() ->
+                                KiwiPreconditions.checkArgumentContainsOnlyNotNull(collection, "nope, can't have null elements"))
+                        .withMessage("nope, can't have null elements");
+            }
+
+            @RepeatedTest(5)
+            void shouldNotThrow_WhenListHasAllNonNullElements() {
+                var collection = KiwiLists.shuffledArrayListOf(1, 2, 3, 4, 5, 6);
+                assertThatCode(() -> KiwiPreconditions.checkArgumentContainsOnlyNotNull(collection, "nope, can't have null elements"))
+                        .doesNotThrowAnyException();
+            }
+
+            @RepeatedTest(5)
+            void shouldNotThrow_WhenSetHasAllNonNullElements() {
+                var collection = Set.of(1, 2, 3, 4, 5, 6);
+                assertThatCode(() -> KiwiPreconditions.checkArgumentContainsOnlyNotNull(collection, "nope, can't have null elements"))
+                        .doesNotThrowAnyException();
+            }
+        }
+
+        @Nested
+        class WithMessageTemplate {
+
+            @ParameterizedTest
+            @NullAndEmptySource
+            void shouldThrowWhenListArgument_IsNullOrEmpty(List<Integer> list) {
+                assertThatIllegalArgumentException()
+                        .isThrownBy(() ->
+                                KiwiPreconditions.checkArgumentContainsOnlyNotNull(list, "will not be used %s %s", "arg1", "arg2"))
+                        .withMessage("collection must not be null or empty");
+            }
+
+            @ParameterizedTest
+            @NullAndEmptySource
+            void shouldThrowWhenSetArgument_IsNullOrEmpty(Set<Double> set) {
+                assertThatIllegalArgumentException()
+                        .isThrownBy(() ->
+                                KiwiPreconditions.checkArgumentContainsOnlyNotNull(set, "will not be used %s %s", "arg1", "arg2"))
+                        .withMessage("collection must not be null or empty");
+            }
+
+            @RepeatedTest(5)
+            void shouldThrowWhenArgumentContainsNullElement() {
+                var collection = KiwiLists.shuffledArrayListOf(1, 2, 3, 4, 5, null);
+                assertThatIllegalArgumentException()
+                        .isThrownBy(() ->
+                                KiwiPreconditions.checkArgumentContainsOnlyNotNull(collection, "nope, can't have null elements in {} of {}", "ArrayList", "Integer"))
+                        .withMessage("nope, can't have null elements in ArrayList of Integer");
+            }
+
+            @RepeatedTest(5)
+            void shouldNotThrow_WhenListHasAllNonNullElements() {
+                var collection = KiwiLists.shuffledArrayListOf(1, 2, 3, 4, 5, 6);
+                assertThatCode(() -> KiwiPreconditions.checkArgumentContainsOnlyNotNull(collection, "nope, can't have null elements in {} of {}", "ArrayList", "Integer"))
+                        .doesNotThrowAnyException();
+            }
+
+            @RepeatedTest(5)
+            void shouldNotThrow_WhenSetHasAllNonNullElements() {
+                var collection = Set.of(1, 2, 3, 4, 5, 6);
+                assertThatCode(() -> KiwiPreconditions.checkArgumentContainsOnlyNotNull(collection, "nope, can't have null elements in {} of {}", "ArrayList", "Integer"))
+                        .doesNotThrowAnyException();
+            }
+        }
+    }
+
+    @Nested
+    class CheckArgumentContainsOnlyNotBlank {
+
+        @Nested
+        class WithNoMessage {
+
+            @ParameterizedTest
+            @NullAndEmptySource
+            void shouldThrowWhenListArgument_IsNullOrEmpty(List<String> list) {
+                assertThatIllegalArgumentException()
+                        .isThrownBy(() ->
+                                KiwiPreconditions.checkArgumentContainsOnlyNotBlank(list))
+                        .withMessage("collection must not be null or empty");
+            }
+
+            @ParameterizedTest
+            @NullAndEmptySource
+            void shouldThrowWhenSetArgument_IsNullOrEmpty(Set<String> set) {
+                assertThatIllegalArgumentException()
+                        .isThrownBy(() ->
+                                KiwiPreconditions.checkArgumentContainsOnlyNotBlank(set))
+                        .withMessage("collection must not be null or empty");
+            }
+
+            @RepeatedTest(5)
+            void shouldThrowWhenArgumentContainsBlankElement() {
+                var blankValue = random().nextBoolean() ? null : "";
+                var collection = KiwiLists.shuffledArrayListOf("a", "b", "c", "d", blankValue);
+                assertThatIllegalArgumentException()
+                        .isThrownBy(() ->
+                                KiwiPreconditions.checkArgumentContainsOnlyNotBlank(collection))
+                        .withMessage("collection must not contain blank elements");
+            }
+
+            @RepeatedTest(5)
+            void shouldNotThrow_WhenListHasAllNonBlankElements() {
+                var collection = KiwiLists.shuffledArrayListOf("a", "b", "c", "d", "e");
+                assertThatCode(() -> KiwiPreconditions.checkArgumentContainsOnlyNotBlank(collection))
+                        .doesNotThrowAnyException();
+            }
+
+            @RepeatedTest(5)
+            void shouldNotThrow_WhenSetHasAllNonBlankElements() {
+                var collection = Set.of("a", "b", "c", "d", "e");
+                assertThatCode(() -> KiwiPreconditions.checkArgumentContainsOnlyNotBlank(collection))
+                        .doesNotThrowAnyException();
+            }
+        }
+
+        @Nested
+        class WithMessage {
+
+            @ParameterizedTest
+            @NullAndEmptySource
+            void shouldThrowWhenListArgument_IsNullOrEmpty(List<String> list) {
+                assertThatIllegalArgumentException()
+                        .isThrownBy(() ->
+                                KiwiPreconditions.checkArgumentContainsOnlyNotBlank(list, "won't be used"))
+                        .withMessage("collection must not be null or empty");
+            }
+
+            @ParameterizedTest
+            @NullAndEmptySource
+            void shouldThrowWhenSetArgument_IsNullOrEmpty(Set<String> set) {
+                assertThatIllegalArgumentException()
+                        .isThrownBy(() ->
+                                KiwiPreconditions.checkArgumentContainsOnlyNotBlank(set, "won't be used"))
+                        .withMessage("collection must not be null or empty");
+            }
+
+            @RepeatedTest(5)
+            void shouldThrowWhenArgumentContainsBlankElement() {
+                var blankValue = random().nextBoolean() ? null : "";
+                var collection = KiwiLists.shuffledArrayListOf("a", "b", "c", "d", blankValue);
+                assertThatIllegalArgumentException()
+                        .isThrownBy(() ->
+                                KiwiPreconditions.checkArgumentContainsOnlyNotBlank(collection, "nope, no blanks!"))
+                        .withMessage("nope, no blanks!");
+            }
+
+            @RepeatedTest(5)
+            void shouldNotThrow_WhenListHasAllNonBlankElements() {
+                var collection = KiwiLists.shuffledArrayListOf("a", "b", "c", "d", "e");
+                assertThatCode(() -> KiwiPreconditions.checkArgumentContainsOnlyNotBlank(collection, "nope, no blanks!"))
+                        .doesNotThrowAnyException();
+            }
+
+            @RepeatedTest(5)
+            void shouldNotThrow_WhenSetHasAllNonBlankElements() {
+                var collection = Set.of("a", "b", "c", "d", "e");
+                assertThatCode(() -> KiwiPreconditions.checkArgumentContainsOnlyNotBlank(collection, "nope, no blanks!"))
+                        .doesNotThrowAnyException();
+            }        }
+
+        @Nested
+        class WithMessageTemplate {
+
+            @ParameterizedTest
+            @NullAndEmptySource
+            void shouldThrowWhenListArgument_IsNullOrEmpty(List<String> list) {
+                assertThatIllegalArgumentException()
+                        .isThrownBy(() ->
+                                KiwiPreconditions.checkArgumentContainsOnlyNotBlank(list, "won't be used for {} of String", "List"))
+                        .withMessage("collection must not be null or empty");
+            }
+
+            @ParameterizedTest
+            @NullAndEmptySource
+            void shouldThrowWhenSetArgument_IsNullOrEmpty(Set<String> set) {
+                assertThatIllegalArgumentException()
+                        .isThrownBy(() ->
+                                KiwiPreconditions.checkArgumentContainsOnlyNotBlank(set, "won't be used for {} of String", "Set"))
+                        .withMessage("collection must not be null or empty");
+            }
+
+            @RepeatedTest(5)
+            void shouldThrowWhenArgumentContainsBlankElement() {
+                var blankValue = random().nextBoolean() ? null : "";
+                var collection = KiwiLists.shuffledArrayListOf("a", "b", "c", "d", blankValue);
+                assertThatIllegalArgumentException()
+                        .isThrownBy(() ->
+                                KiwiPreconditions.checkArgumentContainsOnlyNotBlank(collection, "nope, no blanks in {} of String!", "List"))
+                        .withMessage("nope, no blanks in List of String!");
+            }
+
+            @RepeatedTest(5)
+            void shouldNotThrow_WhenListHasAllNonBlankElements() {
+                var collection = KiwiLists.shuffledArrayListOf("a", "b", "c", "d", "e");
+                assertThatCode(() -> KiwiPreconditions.checkArgumentContainsOnlyNotBlank(collection, "nope, no blanks in {} of String!", "List"))
+                        .doesNotThrowAnyException();
+            }
+
+            @RepeatedTest(5)
+            void shouldNotThrow_WhenSetHasAllNonBlankElements() {
+                var collection = Set.of("a", "b", "c", "d", "e");
+                assertThatCode(() -> KiwiPreconditions.checkArgumentContainsOnlyNotBlank(collection, "nope, no blanks in {} of String!", "Set"))
+                        .doesNotThrowAnyException();
             }
         }
     }

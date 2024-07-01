@@ -15,9 +15,11 @@ import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.Preconditions;
 import lombok.SneakyThrows;
 import lombok.experimental.UtilityClass;
+import org.apache.commons.lang3.StringUtils;
 
 import java.util.Collection;
 import java.util.Map;
+import java.util.Objects;
 import java.util.function.IntSupplier;
 import java.util.function.Supplier;
 
@@ -422,6 +424,134 @@ public class KiwiPreconditions {
         if (isNullOrEmpty(collection)) {
             throw newIllegalArgumentException(errorMessageTemplate, errorMessageArgs);
         }
+    }
+
+    /**
+     * Ensures that the collection passed as a parameter to the calling method is not null or empty,
+     * and that none of its elements are null.
+     * <p>
+     * Throws an {@link IllegalArgumentException} if the collection is null or empty,
+     * or if any elements are null.
+     *
+     * @param collection a collection, possibly null
+     * @param <T>        the type of object in the collection
+     */
+    public static <T> void checkArgumentContainsOnlyNotNull(Collection<T> collection) {
+        checkCollectionNotNullOrEmpty(collection);
+        var anyNull = anyNullElementsIn(collection);
+        Preconditions.checkArgument(!anyNull, "collection must not contain null elements");
+    }
+
+    /**
+     * Ensures that the collection passed as a parameter to the calling method is not null or empty,
+     * and that none of its elements are null.
+     * <p>
+     * Throws an {@link IllegalArgumentException} if the collection is null or empty,
+     * or if any elements are null.
+     *
+     * @param collection   a collection, possibly null
+     * @param errorMessage the error message for the exception
+     * @param <T>          the type of object in the collection
+     */
+    public static <T> void checkArgumentContainsOnlyNotNull(Collection<T> collection,
+                                                            String errorMessage) {
+        checkCollectionNotNullOrEmpty(collection);
+        var anyNull = anyNullElementsIn(collection);
+        Preconditions.checkArgument(!anyNull, errorMessage);
+    }
+
+    /**
+     * Ensures that the collection passed as a parameter to the calling method is not null or empty,
+     * and that none of its elements are null.
+     * <p>
+     * Throws an {@link IllegalArgumentException} if the collection is null or empty,
+     * or if any elements are null.
+     *
+     * @param collection           a collection, possibly null
+     * @param errorMessageTemplate a template for the exception message should the check fail, according to how
+     *                             {@link KiwiStrings#format(String, Object...)} handles placeholders
+     * @param errorMessageArgs     the arguments to be substituted into the message template. Arguments
+     *                             are converted to Strings using {@link String#valueOf(Object)}.
+     * @param <T>                  the type of object in the collection
+     */
+    public static <T> void checkArgumentContainsOnlyNotNull(Collection<T> collection,
+                                                            String errorMessageTemplate,
+                                                            Object... errorMessageArgs) {
+        checkCollectionNotNullOrEmpty(collection);
+        if (anyNullElementsIn(collection)) {
+            throw newIllegalArgumentException(errorMessageTemplate, errorMessageArgs);
+        }
+    }
+
+    // This uses anyMatch to return as soon as a null element is found.
+    private static <T> boolean anyNullElementsIn(Collection<T> collection) {
+        return collection.stream().anyMatch(Objects::isNull);
+    }
+
+    /**
+     * Ensures that the collection passed as a parameter to the calling method is not null or empty,
+     * and that none of its elements are blank strings.
+     * <p>
+     * Throws an {@link IllegalArgumentException} if the collection is null or empty,
+     * or if any elements are blank strings.
+     *
+     * @param collection a collection, possibly null
+     * @implNote uses {@link StringUtils#isBlank(CharSequence)} to check for blank elements
+     */
+    public static void checkArgumentContainsOnlyNotBlank(Collection<String> collection) {
+        checkCollectionNotNullOrEmpty(collection);
+        var anyBlank = anyBlankElementsIn(collection);
+        Preconditions.checkArgument(!anyBlank, "collection must not contain blank elements");
+    }
+
+    /**
+     * Ensures that the collection passed as a parameter to the calling method is not null or empty,
+     * and that none of its elements are blank strings.
+     * <p>
+     * Throws an {@link IllegalArgumentException} if the collection is null or empty,
+     * or if any elements are blank strings.
+     *
+     * @param collection   a collection, possibly null
+     * @param errorMessage the error message for the exception
+     * @implNote uses {@link StringUtils#isBlank(CharSequence)} to check for blank elements
+     */
+    public static void checkArgumentContainsOnlyNotBlank(Collection<String> collection,
+                                                         String errorMessage) {
+        checkCollectionNotNullOrEmpty(collection);
+        var anyBlank = anyBlankElementsIn(collection);
+        Preconditions.checkArgument(!anyBlank, errorMessage);
+    }
+
+    /**
+     * Ensures that the collection passed as a parameter to the calling method is not null or empty,
+     * and that none of its elements are blank strings.
+     * <p>
+     * Throws an {@link IllegalArgumentException} if the collection is null or empty,
+     * or if any elements are blank strings.
+     *
+     * @param collection           a collection, possibly null
+     * @param errorMessageTemplate a template for the exception message should the check fail, according to how
+     *                             {@link KiwiStrings#format(String, Object...)} handles placeholders
+     * @param errorMessageArgs     the arguments to be substituted into the message template. Arguments
+     *                             are converted to Strings using {@link String#valueOf(Object)}.
+     * @implNote uses {@link StringUtils#isBlank(CharSequence)} to check for blank elements
+     */
+    public static void checkArgumentContainsOnlyNotBlank(Collection<String> collection,
+                                                         String errorMessageTemplate,
+                                                         Object... errorMessageArgs) {
+        checkCollectionNotNullOrEmpty(collection);
+        if (anyBlankElementsIn(collection)) {
+            throw newIllegalArgumentException(errorMessageTemplate, errorMessageArgs);
+        }
+    }
+
+    private static <T> void checkCollectionNotNullOrEmpty(Collection<T> collection) {
+        checkArgumentNotEmpty(collection, "collection must not be null or empty");
+    }
+
+    // This uses anyMatch to return as soon as a blank element is found.
+    private static boolean anyBlankElementsIn(Collection<String> collection) {
+        return collection.stream().anyMatch(StringUtils::isBlank);
     }
 
     /**
@@ -1134,7 +1264,7 @@ public class KiwiPreconditions {
     }
 
     private static IllegalStateException newIllegalStateException(String errorMessageTemplate,
-                                                                        Object... errorMessageArgs) {
+                                                                  Object... errorMessageArgs) {
         var errorMessage = format(errorMessageTemplate, errorMessageArgs);
         return new IllegalStateException(errorMessage);
     }
