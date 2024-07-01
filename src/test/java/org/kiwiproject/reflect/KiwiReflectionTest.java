@@ -1680,7 +1680,7 @@ class KiwiReflectionTest {
 
     @NoArgsConstructor
     @AllArgsConstructor
-    static abstract class NotQuiteReal {
+    abstract static class NotQuiteReal {
         String value;
     }
 

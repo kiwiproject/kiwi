@@ -83,7 +83,7 @@ class KiwiRetryerPredicatesTest {
      * Base class providing test generation for the Throwable predicates in KiwiRetryerPredicates.
      */
     @DisplayNameGeneration(PredicateDisplayNameGenerator.class)
-    static abstract class AbstractExceptionPredicateTest {
+    abstract static class AbstractExceptionPredicateTest {
 
         /**
          * The predicate to test.
