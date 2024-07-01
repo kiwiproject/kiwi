@@ -498,7 +498,7 @@ public class KiwiPreconditions {
      * @param collection a collection, possibly null
      * @implNote uses {@link StringUtils#isBlank(CharSequence)} to check for blank elements
      */
-    public static <T> void checkArgumentContainsOnlyNotBlank(Collection<String> collection) {
+    public static void checkArgumentContainsOnlyNotBlank(Collection<String> collection) {
         checkCollectionNotNullOrEmpty(collection);
         var anyBlank = anyBlankElementsIn(collection);
         Preconditions.checkArgument(!anyBlank, "collection must not contain blank elements");
