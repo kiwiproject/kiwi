@@ -1,12 +1,19 @@
 package org.kiwiproject.validation;
 
 import static com.google.common.base.Preconditions.checkArgument;
+import static java.util.stream.Collectors.collectingAndThen;
+import static java.util.stream.Collectors.groupingBy;
 import static java.util.stream.Collectors.joining;
 import static java.util.stream.Collectors.toUnmodifiableMap;
+import static java.util.stream.Collectors.toUnmodifiableSet;
 import static org.kiwiproject.base.KiwiPreconditions.checkArgumentNotNull;
 import static org.kiwiproject.collect.KiwiSets.isNotNullOrEmpty;
 import static org.kiwiproject.collect.KiwiSets.isNullOrEmpty;
+import static org.kiwiproject.stream.KiwiMultimapCollectors.toLinkedHashMultimap;
 
+import com.google.common.collect.ImmutableMultimap;
+import com.google.common.collect.Maps;
+import com.google.common.collect.Multimap;
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.Path;
 import lombok.experimental.UtilityClass;
@@ -14,6 +21,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.text.WordUtils;
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -36,6 +44,207 @@ import java.util.function.Function;
  */
 @UtilityClass
 public class KiwiConstraintViolations {
+
+    /**
+     * Convert the set of {@link ConstraintViolation} to an unmodifiable map keyed by the property path.
+     * <p>
+     * The map's values are the single {@link ConstraintViolation} associated with each property.
+     * <p>
+     * <strong>WARNING:</strong>
+     * An {@link IllegalStateException} is thrown if there is more than one violation associated
+     * with any key. Therefore, this method should only be used if you are sure there can only
+     * be at most one violation per property. Otherwise, use either {@link #asMultiValuedMap(Set)}
+     * or {@link #asSingleValuedMap(Set)}.
+     *
+     * @param violations set of non-null but possibly empty violations
+     * @param <T>        the type of the root bean that was validated
+     * @return a map whose keys are the property path of the violations, and values are the violations
+     * @throws IllegalStateException if there is more than one violation associated with any key
+     * @see #asSingleValuedMap(Set)
+     * @see #asMultiValuedMap(Set)
+     */
+    public static <T> Map<String, ConstraintViolation<T>> asMap(Set<ConstraintViolation<T>> violations) {
+        return asMap(violations, Path::toString);
+    }
+
+    /**
+     * Convert the set of {@link ConstraintViolation} to an unmodifiable map keyed by the property path.
+     * The property path is determined by the {@code pathTransformer}.
+     * <p>
+     * The map's values are the single {@link ConstraintViolation} associated with each property.
+     * <p>
+     * <strong>WARNING:</strong>
+     * An {@link IllegalStateException} is thrown if there is more than one violation associated
+     * with any key. Therefore, this method should only be used if you are sure there can only
+     * be at most one violation per property. Otherwise, use either {@link #asMultiValuedMap(Set)}
+     * or {@link #asSingleValuedMap(Set)}.
+     *
+     * @param violations      set of non-null but possibly empty violations
+     * @param pathTransformer function to convert a Path into a String
+     * @param <T>             the type of the root bean that was validated
+     * @return a map whose keys are the property path of the violations, and values are the violations
+     * @throws IllegalStateException if there is more than one violation associated with any key
+     * @see #asSingleValuedMap(Set)
+     * @see #asMultiValuedMap(Set)
+     */
+    public static <T> Map<String, ConstraintViolation<T>> asMap(Set<ConstraintViolation<T>> violations,
+                                                                Function<Path, String> pathTransformer) {
+        return violations.stream().collect(toUnmodifiableMap(
+                violation -> pathTransformer.apply(violation.getPropertyPath()),
+                violation -> violation));
+    }
+
+    /**
+     * Convert the set of {@link ConstraintViolation} to an unmodifiable map keyed by the property path.
+     * <p>
+     * The map's values are the <em>last</em> {@link ConstraintViolation} associated with each property.
+     * The definition of "last" depends on the iteration order of the provided set of violations, which
+     * may be non-deterministic if the set does not have a well-defined traversal order.
+     * <p>
+     * <strong>WARNING:</strong>
+     * If there is more than one violation associated with any key, the <em>last</em> violation, as
+     * determined by the set traversal order, becomes they key. If you need to retain all violations
+     * associated with each key, use {@link #asMultiValuedMap(Set)}.
+     *
+     * @param violations set of non-null but possibly empty violations
+     * @param <T>        the type of the root bean that was validated
+     * @return a map whose keys are the property path of the violations, and values are the violations
+     * @see #asMultiValuedMap(Set)
+     */
+    public static <T> Map<String, ConstraintViolation<T>> asSingleValuedMap(Set<ConstraintViolation<T>> violations) {
+        return asSingleValuedMap(violations, Path::toString);
+    }
+
+    /**
+     * Convert the set of {@link ConstraintViolation} to an unmodifiable map keyed by the property path.
+     * The property path is determined by the {@code pathTransformer}.
+     * <p>
+     * The map's values are the <em>last</em> {@link ConstraintViolation} associated with each property.
+     * The definition of "last" depends on the iteration order of the provided set of violations, which
+     * may be non-deterministic if the set does not have a well-defined traversal order.
+     * <p>
+     * <strong>WARNING:</strong>
+     * If there is more than one violation associated with any key, the <em>last</em> violation, as
+     * determined by the set traversal order, becomes they key. If you need to retain all violations
+     * associated with each key, use {@link #asMultiValuedMap(Set)}.
+     *
+     * @param violations      set of non-null but possibly empty violations
+     * @param pathTransformer function to convert a Path into a String
+     * @param <T>             the type of the root bean that was validated
+     * @return a map whose keys are the property path of the violations, and values are the violations
+     * @see #asMultiValuedMap(Set)
+     */
+    public static <T> Map<String, ConstraintViolation<T>> asSingleValuedMap(Set<ConstraintViolation<T>> violations,
+                                                                            Function<Path, String> pathTransformer) {
+        return violations.stream().collect(toUnmodifiableMap(
+                violation -> pathTransformer.apply(violation.getPropertyPath()),
+                violation -> violation,
+                (violation1, violation2) -> violation2));
+    }
+
+    /**
+     * Convert the set of {@link ConstraintViolation} to an unmodifiable map keyed by the property path.
+     * <p>
+     * The map's values are the set of {@link ConstraintViolation} associated with each property.
+     *
+     * @param violations set of non-null but possibly empty violations
+     * @param <T>        the type of the root bean that was validated
+     * @return a map whose keys are the property path of the violations, and values are a Set containing
+     * violations for the corresponding property
+     */
+    public static <T> Map<String, Set<ConstraintViolation<T>>> asMultiValuedMap(Set<ConstraintViolation<T>> violations) {
+        return asMultiValuedMap(violations, Path::toString);
+    }
+
+    /**
+     * Convert the set of {@link ConstraintViolation} to an unmodifiable map keyed by the property path.
+     * The property path is determined by the {@code pathTransformer}.
+     * <p>
+     * The map's values are unmodifiable sets of {@link ConstraintViolation} associated with each property.
+     *
+     * @param violations      set of non-null but possibly empty violations
+     * @param pathTransformer function to convert a Path into a String
+     * @param <T>             the type of the root bean that was validated
+     * @return a map whose keys are the property path of the violations, and values are a Set containing
+     * violations for the corresponding property
+     */
+    public static <T> Map<String, Set<ConstraintViolation<T>>> asMultiValuedMap(Set<ConstraintViolation<T>> violations,
+                                                                                Function<Path, String> pathTransformer) {
+        return violations.stream().collect(
+                collectingAndThen(
+                        groupingBy(violation -> pathTransformer.apply(violation.getPropertyPath()), toUnmodifiableSet()),
+                        Collections::unmodifiableMap));
+    }
+
+    /**
+     * Convert the set of {@link ConstraintViolation} to an unmodifiable {@link Multimap} keyed by the property path.
+     *
+     * @param violations set of non-null but possibly empty violations
+     * @param <T>        the type of the root bean that was validated
+     * @return a {@link Multimap} whose keys are the property path of the violations, and values contain
+     * the violations for the corresponding property
+     * @implNote The returned value is a {@link com.google.common.collect.LinkedHashMultimap}; the iteration
+     * order of the values for each key is always the order in which the values were added, and there
+     * cannot be duplicate values for a key.
+     */
+    public static <T> Multimap<String, ConstraintViolation<T>> asMultimap(Set<ConstraintViolation<T>> violations) {
+        return asMultimap(violations, Path::toString);
+    }
+
+    /**
+     * Convert the set of {@link ConstraintViolation} to an unmodifiable {@link Multimap} keyed by the property path.
+     *
+     * @param violations      set of non-null but possibly empty violations
+     * @param pathTransformer function to convert a Path into a String
+     * @param <T>             the type of the root bean that was validated
+     * @return a {@link Multimap} whose keys are the property path of the violations, and values contain
+     * the violations for the corresponding property
+     * @implNote The returned value is a {@link com.google.common.collect.LinkedHashMultimap}; the iteration
+     * order of the values for each key is always the order in which the values were added, and there
+     * cannot be duplicate values for a key.
+     */
+    public static <T> Multimap<String, ConstraintViolation<T>> asMultimap(Set<ConstraintViolation<T>> violations,
+                                                                          Function<Path, String> pathTransformer) {
+        return violations.stream()
+                .map(violation -> Maps.immutableEntry(pathTransformer.apply(violation.getPropertyPath()), violation))
+                .collect(collectingAndThen(toLinkedHashMultimap(), ImmutableMultimap::copyOf));
+    }
+
+    /**
+     * Convenience method to get the property path of the {@link ConstraintViolation} as a String.
+     * <p>
+     * Please refer to the Implementation Note for details on the structure of the returned values
+     * and <em>warnings</em> about that structure.
+     *
+     * @param violation the constraint violation
+     * @param <T>       the type of the root bean that was validated
+     * @return the property path of the violation, as a String
+     * @implNote This uses {@link ConstraintViolation#getPropertyPath()} to obtain a {@link Path}
+     * and then calls {@link Path#toString()} to get the final value. Therefore, the issues on
+     * {@link Path#toString()} with regard to the structure of the return value apply here as well.
+     * However, in many years of usage, the implementation (in Hibernate Validator anyway) has
+     * always returned the same expected result, and is <em>generally</em> what you expect.
+     * <p>
+     * The main exception is iterable types, such as Set, that don't have a consistent traversal
+     * order. For example, if you have a property named "nicknames" declared as
+     * {@code Set<@NotBlank String> nicknames}, the property path for violation errors
+     * look like {@code "nicknames[].<iterable element>"}.
+     * <p>
+     * Maps look similar to Sets. For example, in the Hibernate Validator reference
+     * documentation, one example shows the property path of a constraint violation
+     * on a Map as {@code "fuelConsumption[HIGHWAY].<map value>"}, and similarly on
+     * a Map value as {@code "fuelConsumption<K>[].<map key>"}.
+     * <p>
+     * Indexed properties such as a List look more reasonable. For example, suppose a property
+     * named "passwordHints" is declared as {@code List<@NotNull @Valid Hint> passwordHints},
+     * and that {@code Hint} contains a String property named {@code text}. The property
+     * path for violation errors includes the zero-based index as well as the path. For
+     * example, if the second password hint is not valid, the property path is
+     * {@code passwordHints[1].text}.
+     */
+    public static <T> String pathStringOf(ConstraintViolation<T> violation) {
+        return violation.getPropertyPath().toString();
+    }
 
     /**
      * Given a <em>non-empty</em> set of violations, produce a single string containing all violation messages
@@ -192,7 +401,7 @@ public class KiwiConstraintViolations {
 
     /**
      * Given a non-empty set of violations, produce a list of strings containing all violation messages.
-     * Each message will contain the "prettified" property name followed by the error message, e.g. for
+     * Each message will contain the "prettified" property name followed by the error message, e.g., for
      * a violation on the {@code firstName} property, the message would look like "First Name must not be blank".
      * If the given set is empty (or null), then return an empty list.
      *
@@ -301,7 +510,7 @@ public class KiwiConstraintViolations {
      * Transforms the give property path into a human-readable version. Nested paths are separated by
      * the given {@code pathSeparator}.
      * <p>
-     * For example contactInfo.email.address using ":" as the path separator would result in Contact Info:Email:Address.
+     * For example, contactInfo.email.address using ":" as the path separator would result in Contact Info:Email:Address.
      *
      * @param propertyPath  the property path from a {@link ConstraintViolation}
      * @param pathSeparator the separator to use between path elements
