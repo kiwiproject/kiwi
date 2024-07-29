@@ -1,16 +1,17 @@
 package org.kiwiproject.validation;
 
 import static com.google.common.base.Preconditions.checkArgument;
+import static java.util.stream.Collectors.collectingAndThen;
 import static java.util.stream.Collectors.groupingBy;
 import static java.util.stream.Collectors.joining;
-import static java.util.stream.Collectors.toMap;
-import static java.util.stream.Collectors.toSet;
 import static java.util.stream.Collectors.toUnmodifiableMap;
+import static java.util.stream.Collectors.toUnmodifiableSet;
 import static org.kiwiproject.base.KiwiPreconditions.checkArgumentNotNull;
 import static org.kiwiproject.collect.KiwiSets.isNotNullOrEmpty;
 import static org.kiwiproject.collect.KiwiSets.isNullOrEmpty;
 import static org.kiwiproject.stream.KiwiMultimapCollectors.toLinkedHashMultimap;
 
+import com.google.common.collect.ImmutableMultimap;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Multimap;
 import jakarta.validation.ConstraintViolation;
@@ -20,6 +21,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.text.WordUtils;
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -44,7 +46,7 @@ import java.util.function.Function;
 public class KiwiConstraintViolations {
 
     /**
-     * Convert the set of {@link ConstraintViolation} to a map keyed by the property path.
+     * Convert the set of {@link ConstraintViolation} to an unmodifiable map keyed by the property path.
      * <p>
      * The map's values are the single {@link ConstraintViolation} associated with each property.
      * <p>
@@ -66,7 +68,7 @@ public class KiwiConstraintViolations {
     }
 
     /**
-     * Convert the set of {@link ConstraintViolation} to a map keyed by the property path.
+     * Convert the set of {@link ConstraintViolation} to an unmodifiable map keyed by the property path.
      * The property path is determined by the {@code pathTransformer}.
      * <p>
      * The map's values are the single {@link ConstraintViolation} associated with each property.
@@ -87,13 +89,13 @@ public class KiwiConstraintViolations {
      */
     public static <T> Map<String, ConstraintViolation<T>> asMap(Set<ConstraintViolation<T>> violations,
                                                                 Function<Path, String> pathTransformer) {
-        return violations.stream().collect(toMap(
+        return violations.stream().collect(toUnmodifiableMap(
                 violation -> pathTransformer.apply(violation.getPropertyPath()),
                 violation -> violation));
     }
 
     /**
-     * Convert the set of {@link ConstraintViolation} to a map keyed by the property path.
+     * Convert the set of {@link ConstraintViolation} to an unmodifiable map keyed by the property path.
      * <p>
      * The map's values are the <em>last</em> {@link ConstraintViolation} associated with each property.
      * The definition of "last" depends on the iteration order of the provided set of violations, which
@@ -114,7 +116,7 @@ public class KiwiConstraintViolations {
     }
 
     /**
-     * Convert the set of {@link ConstraintViolation} to a map keyed by the property path.
+     * Convert the set of {@link ConstraintViolation} to an unmodifiable map keyed by the property path.
      * The property path is determined by the {@code pathTransformer}.
      * <p>
      * The map's values are the <em>last</em> {@link ConstraintViolation} associated with each property.
@@ -134,14 +136,14 @@ public class KiwiConstraintViolations {
      */
     public static <T> Map<String, ConstraintViolation<T>> asSingleValuedMap(Set<ConstraintViolation<T>> violations,
                                                                             Function<Path, String> pathTransformer) {
-        return violations.stream().collect(toMap(
+        return violations.stream().collect(toUnmodifiableMap(
                 violation -> pathTransformer.apply(violation.getPropertyPath()),
                 violation -> violation,
                 (violation1, violation2) -> violation2));
     }
 
     /**
-     * Convert the set of {@link ConstraintViolation} to a map keyed by the property path.
+     * Convert the set of {@link ConstraintViolation} to an unmodifiable map keyed by the property path.
      * <p>
      * The map's values are the set of {@link ConstraintViolation} associated with each property.
      *
@@ -155,10 +157,10 @@ public class KiwiConstraintViolations {
     }
 
     /**
-     * Convert the set of {@link ConstraintViolation} to a map keyed by the property path.
+     * Convert the set of {@link ConstraintViolation} to an unmodifiable map keyed by the property path.
      * The property path is determined by the {@code pathTransformer}.
      * <p>
-     * The map's values are the set of {@link ConstraintViolation} associated with each property.
+     * The map's values are unmodifiable sets of {@link ConstraintViolation} associated with each property.
      *
      * @param violations      set of non-null but possibly empty violations
      * @param pathTransformer function to convert a Path into a String
@@ -169,11 +171,13 @@ public class KiwiConstraintViolations {
     public static <T> Map<String, Set<ConstraintViolation<T>>> asMultiValuedMap(Set<ConstraintViolation<T>> violations,
                                                                                 Function<Path, String> pathTransformer) {
         return violations.stream().collect(
-                groupingBy(violation -> pathTransformer.apply(violation.getPropertyPath()), toSet()));
+                collectingAndThen(
+                        groupingBy(violation -> pathTransformer.apply(violation.getPropertyPath()), toUnmodifiableSet()),
+                        Collections::unmodifiableMap));
     }
 
     /**
-     * Convert the set of {@link ConstraintViolation} to a {@link Multimap} keyed by the property path.
+     * Convert the set of {@link ConstraintViolation} to an unmodifiable {@link Multimap} keyed by the property path.
      *
      * @param violations set of non-null but possibly empty violations
      * @param <T>        the type of the root bean that was validated
@@ -188,7 +192,7 @@ public class KiwiConstraintViolations {
     }
 
     /**
-     * Convert the set of {@link ConstraintViolation} to a {@link Multimap} keyed by the property path.
+     * Convert the set of {@link ConstraintViolation} to an unmodifiable {@link Multimap} keyed by the property path.
      *
      * @param violations      set of non-null but possibly empty violations
      * @param pathTransformer function to convert a Path into a String
@@ -203,7 +207,7 @@ public class KiwiConstraintViolations {
                                                                           Function<Path, String> pathTransformer) {
         return violations.stream()
                 .map(violation -> Maps.immutableEntry(pathTransformer.apply(violation.getPropertyPath()), violation))
-                .collect(toLinkedHashMultimap());
+                .collect(collectingAndThen(toLinkedHashMultimap(), ImmutableMultimap::copyOf));
     }
 
     /**

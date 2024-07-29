@@ -14,6 +14,7 @@ import static org.kiwiproject.collect.KiwiLists.third;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
+import com.google.common.collect.ImmutableMultimap;
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.Path;
 import jakarta.validation.Valid;
@@ -513,7 +514,9 @@ class KiwiConstraintViolationsTest {
 
         @Test
         void shouldReturnEmptyMap_WhenGivenEmptySet() {
-            assertThat(KiwiConstraintViolations.asMap(Set.of())).isEmpty();
+            assertThat(KiwiConstraintViolations.asMap(Set.of()))
+                    .isUnmodifiable()
+                    .isEmpty();
         }
 
         @Test
@@ -533,6 +536,7 @@ class KiwiConstraintViolationsTest {
             var violationMap = KiwiConstraintViolations.asMap(violations);
 
             assertAll(
+                    () -> assertThat(violationMap).isUnmodifiable(),
                     () -> assertThat(violationMap).containsOnlyKeys("fullName", "birthDate", "contactInfo.email.address"),
 
                     () -> assertThat(violationMap).extractingByKey("fullName")
@@ -556,7 +560,10 @@ class KiwiConstraintViolationsTest {
 
             var violationMap = KiwiConstraintViolations.asMap(violations, KiwiConstraintViolations::humanize);
 
-            assertThat(violationMap).containsOnlyKeys("Full Name", "Birth Date", "Contact Info / Email / Address");
+            assertAll(
+                    () -> assertThat(violationMap).isUnmodifiable(),
+                    () -> assertThat(violationMap).containsOnlyKeys("Full Name", "Birth Date", "Contact Info / Email / Address")
+            );
         }
     }
 
@@ -565,7 +572,9 @@ class KiwiConstraintViolationsTest {
 
         @Test
         void shouldReturnEmptyMap_WhenGivenEmptySet() {
-            assertThat(KiwiConstraintViolations.asSingleValuedMap(Set.of())).isEmpty();
+            assertThat(KiwiConstraintViolations.asSingleValuedMap(Set.of()))
+                    .isUnmodifiable()
+                    .isEmpty();
         }
 
         @Test
@@ -585,6 +594,8 @@ class KiwiConstraintViolationsTest {
             var violationMap = KiwiConstraintViolations.asSingleValuedMap(violations);
 
             assertAll(
+                    () -> assertThat(violationMap).isUnmodifiable(),
+
                     () -> assertThat(violationMap).containsOnlyKeys("fullName", "birthDate", "contactInfo.email.address"),
 
                     () -> assertThat(violationMap).extractingByKey("fullName")
@@ -611,7 +622,10 @@ class KiwiConstraintViolationsTest {
 
             var violationMap = KiwiConstraintViolations.asSingleValuedMap(violations, KiwiConstraintViolations::humanize);
 
-            assertThat(violationMap).containsOnlyKeys("Full Name", "Birth Date", "Contact Info / Email / Address");
+            assertAll(
+                    () -> assertThat(violationMap).isUnmodifiable(),
+                    () -> assertThat(violationMap).containsOnlyKeys("Full Name", "Birth Date", "Contact Info / Email / Address")
+            );
         }
     }
 
@@ -620,7 +634,9 @@ class KiwiConstraintViolationsTest {
 
         @Test
         void shouldReturnEmptyMap_WhenGivenEmptySet() {
-            assertThat(KiwiConstraintViolations.asMultiValuedMap(Set.of())).isEmpty();
+            assertThat(KiwiConstraintViolations.asMultiValuedMap(Set.of()))
+                    .isUnmodifiable()
+                    .isEmpty();
         }
 
         @Test
@@ -631,6 +647,8 @@ class KiwiConstraintViolationsTest {
             var violationMap = KiwiConstraintViolations.asMultiValuedMap(violations);
 
             assertAll(
+                    () -> assertThat(violationMap).isUnmodifiable(),
+
                     () -> assertThat(violationMap).containsOnlyKeys("fullName", "birthDate", "contactInfo.email.address"),
 
                     () -> assertThat(violationMap.get("fullName"))
@@ -659,7 +677,10 @@ class KiwiConstraintViolationsTest {
 
             var violationMap = KiwiConstraintViolations.asMultiValuedMap(violations, KiwiConstraintViolations::humanize);
 
-            assertThat(violationMap).containsOnlyKeys("Full Name", "Birth Date", "Contact Info / Email / Address");
+            assertAll(
+                    () -> assertThat(violationMap).isUnmodifiable(),
+                    () -> assertThat(violationMap).containsOnlyKeys("Full Name", "Birth Date", "Contact Info / Email / Address")
+            );
         }
     }
 
@@ -668,7 +689,11 @@ class KiwiConstraintViolationsTest {
 
         @Test
         void shouldReturnEmptyMap_WhenGivenEmptySet() {
-            assertThat(KiwiConstraintViolations.asMultimap(Set.of()).size()).isZero();
+            var multimap = KiwiConstraintViolations.asMultimap(Set.of());
+            assertAll(
+                    () -> assertThat(multimap).isInstanceOf(ImmutableMultimap.class),
+                    () -> assertThat(multimap.size()).isZero()
+            );
         }
 
         @Test
@@ -679,6 +704,8 @@ class KiwiConstraintViolationsTest {
             var violationMultimap = KiwiConstraintViolations.asMultimap(violations);
 
             assertAll(
+                    () -> assertThat(violationMultimap).isInstanceOf(ImmutableMultimap.class),
+
                     () -> Assertions.assertThat(violationMultimap)
                             .containsKeys("fullName", "birthDate", "contactInfo.email.address"),
 
@@ -708,8 +735,11 @@ class KiwiConstraintViolationsTest {
 
             var violationMultimap = KiwiConstraintViolations.asMultimap(violations, KiwiConstraintViolations::humanize);
 
-            Assertions.assertThat(violationMultimap)
-                    .containsKeys("Full Name", "Birth Date", "Contact Info / Email / Address");
+            assertAll(
+                    () -> assertThat(violationMultimap).isInstanceOf(ImmutableMultimap.class),
+                    () -> Assertions.assertThat(violationMultimap)
+                            .containsKeys("Full Name", "Birth Date", "Contact Info / Email / Address")
+            );
         }
     }
 
