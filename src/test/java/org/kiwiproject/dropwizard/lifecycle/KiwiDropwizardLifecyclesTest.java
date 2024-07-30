@@ -15,7 +15,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 class KiwiDropwizardLifecyclesTest {
 
     @Test
-    void testManageStart() throws Exception {
+    void shouldManageStart() throws Exception {
         var lifecycle = new LifecycleEnvironment(new MetricRegistry());
 
         var startCalled = new AtomicBoolean();
@@ -31,10 +31,11 @@ class KiwiDropwizardLifecyclesTest {
 
         managed.start();
         assertThat(startCalled.get()).isTrue();
+        assertThat(managed.isStarted()).isTrue();
     }
 
     @Test
-    void testManageStop() throws Exception {
+    void shouldManageStop() throws Exception {
         var lifecycle = new LifecycleEnvironment(new MetricRegistry());
 
         var stopCalled = new AtomicBoolean();
@@ -45,9 +46,56 @@ class KiwiDropwizardLifecyclesTest {
         var managedObjects = lifecycle.getManagedObjects();
         assertThat(managedObjects).hasSize(1);
 
+        // Make sure it's started, so that AbstractLifeCycle#stop will stop it
         var managed = first(managedObjects);
         managed.start();
+        assertThat(managed.isStarted())
+                .describedAs("Precondition: Managed object must be started")
+                .isTrue();
+
+        managed.stop();
+        assertThat(stopCalled.get()).isTrue();
+        assertThat(managed.isStopped()).isTrue();
+    }
+
+    @Test
+    void shouldManageOnlyStart() throws Exception {
+        var lifecycle = new LifecycleEnvironment(new MetricRegistry());
+
+        var startCalled = new AtomicBoolean();
+        Runnable startAction = () -> startCalled.set(true);
+
+        KiwiDropwizardLifecycles.manageOnlyStart(lifecycle, startAction);
+
+        var managedObjects = lifecycle.getManagedObjects();
+        assertThat(managedObjects).hasSize(1);
+
+        var managed = first(managedObjects);
+        assertThat(managed.isStarted()).isFalse();
+
+        managed.start();
+        assertThat(startCalled.get()).isTrue();
         assertThat(managed.isStarted()).isTrue();
+    }
+
+    @Test
+    void shouldManageOnlyStop() throws Exception {
+        var lifecycle = new LifecycleEnvironment(new MetricRegistry());
+
+        var stopCalled = new AtomicBoolean();
+        Runnable stopAction = () -> stopCalled.set(true);
+
+        KiwiDropwizardLifecycles.manageOnlyStop(lifecycle, stopAction);
+
+        var managedObjects = lifecycle.getManagedObjects();
+        assertThat(managedObjects).hasSize(1);
+
+        // Make sure it's started, so that AbstractLifeCycle#stop will stop it
+        var managed = first(managedObjects);
+        managed.start();
+        assertThat(managed.isStarted())
+                .describedAs("Precondition: Managed object must be started")
+                .isTrue();
 
         managed.stop();
         assertThat(stopCalled.get()).isTrue();
