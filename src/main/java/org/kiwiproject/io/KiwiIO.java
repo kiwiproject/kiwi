@@ -1,12 +1,18 @@
 package org.kiwiproject.io;
 
+import static com.google.common.base.Preconditions.checkArgument;
+import static java.lang.invoke.MethodType.methodType;
 import static java.util.Objects.isNull;
 import static java.util.Objects.nonNull;
 import static java.util.stream.Collectors.joining;
+import static org.kiwiproject.base.KiwiPreconditions.checkArgumentContainsOnlyNotBlank;
+import static org.kiwiproject.base.KiwiPreconditions.checkArgumentNotBlank;
+import static org.kiwiproject.base.KiwiPreconditions.checkArgumentNotEmpty;
 import static org.kiwiproject.base.KiwiPreconditions.checkArgumentNotNull;
 
 import lombok.experimental.UtilityClass;
 import lombok.extern.slf4j.Slf4j;
+import org.checkerframework.checker.nullness.qual.Nullable;
 
 import javax.xml.stream.XMLStreamReader;
 import javax.xml.stream.XMLStreamWriter;
@@ -18,10 +24,12 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.UncheckedIOException;
+import java.lang.invoke.MethodHandles;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Stream;
 
 /**
@@ -38,6 +46,9 @@ import java.util.stream.Stream;
 @UtilityClass
 @Slf4j
 public class KiwiIO {
+
+    private static final List<String> DEFAULT_CLOSE_METHOD_NAMES =
+            List.of("close", "stop", "shutdown", "shutdownNow");
 
     /**
      * Closes a <code>Closeable</code> unconditionally.
@@ -82,7 +93,7 @@ public class KiwiIO {
                 closeable.close();
             }
         } catch (final IOException ioe) {
-            logCloseException(closeable.getClass(), ioe);
+            logCloseError(closeable.getClass(), ioe);
         }
     }
 
@@ -153,7 +164,7 @@ public class KiwiIO {
             try {
                 xmlStreamReader.close();
             } catch (Exception e) {
-                logCloseException(XMLStreamReader.class, e);
+                logCloseError(XMLStreamReader.class, e);
             }
         }
     }
@@ -171,16 +182,128 @@ public class KiwiIO {
             try {
                 xmlStreamWriter.close();
             } catch (Exception e) {
-                logCloseException(XMLStreamWriter.class, e);
+                logCloseError(XMLStreamWriter.class, e);
             }
         }
     }
 
-    private static void logCloseException(Class<?> typeOfObject, Exception ex) {
-        String typeSimpleName = typeOfObject.getSimpleName();
+    // TODO javadocs
+    // TODO ensure no redundancy, or ambiguous methods
+
+    public record CloseableResource(@Nullable Object object, List<String> closeMethodNames) {
+        public CloseableResource {
+            checkArgumentContainsOnlyNotBlank(closeMethodNames,
+                    "closeMethodNames must not be null or empty, or contain any blanks");
+        }
+
+        public CloseableResource(@Nullable Object object) {
+            this(object, DEFAULT_CLOSE_METHOD_NAMES);
+        }
+
+        public CloseableResource(@Nullable Object object, String closeMethodName) {
+            this(object, List.of(closeMethodName));
+        }
+    }
+
+    public static void closeObjectQuietly(Object object) {
+        if (isNull(object)) {
+            return;
+        }
+
+        var closeableResource = asCloseableResource(object);
+        closeQuietly(closeableResource);
+    }
+
+    public static void closeObjectsQuietly(Object... objects) {
+        if (isNull(objects)) {
+            return;
+        }
+
+        Arrays.stream(objects)
+            .filter(Objects::nonNull)
+            .map(KiwiIO::asCloseableResource)
+            .forEach(KiwiIO::closeQuietly);
+    }
+
+    private static CloseableResource asCloseableResource(Object object) {
+        return (object instanceof CloseableResource) ?
+                (CloseableResource) object : new CloseableResource(object, DEFAULT_CLOSE_METHOD_NAMES);
+    }
+
+    public static void closeObjectsQuietly(String closeMethodName, Object... objects) {
+        if (isNull(objects)) {
+            return;
+        }
+
+       checkDoesNotContainAnyCloseableResources(objects);
+
+        Arrays.stream(objects)
+            .filter(Objects::nonNull)
+            .map(object -> new CloseableResource(object, List.of(closeMethodName)))
+            .forEach(KiwiIO::closeQuietly);
+    }
+
+    private static void checkDoesNotContainAnyCloseableResources(Object... objects) {
+        for (var object : objects) {
+            checkIsNotCloseableResource(object);
+        }
+    }
+
+    private static void checkIsNotCloseableResource(Object object) {
+        checkArgument(isNotCloseableResource(object),
+                    "objects should not contain any instances of CloseableResource when a single closeMethodName is specified");
+    }
+
+    private static boolean isNotCloseableResource(Object object) {
+        return !(object instanceof CloseableResource);
+    }
+
+    public static void closeObjectQuietly(String closeMethodName, Object object) {
+        checkArgumentNotBlank(closeMethodName, "closeMethodName must not be blank");
+        closeQuietly(new CloseableResource(object, List.of(closeMethodName)));
+    }
+
+    public static void closeQuietly(CloseableResource closeableResource) {
+        var closeMethodNames = closeableResource.closeMethodNames();
+        checkArgumentNotEmpty(closeMethodNames, "closeMethodNames must not be empty");
+
+        var object = closeableResource.object();
+        if (isNull(object)) {
+            return;
+        }
+
+        var objectType = object.getClass();
+        var typeName = object.getClass().getName();
+
+        closeMethodNames.stream()
+                .map(methodName -> tryClose(object, objectType, typeName, methodName))
+                .filter(CloseResult::succeeded)
+                .findFirst()
+                .ifPresentOrElse(
+                        successResult -> LOG.trace("Successfully closed a {} using {}", typeName, successResult.methodName()),
+                        () -> LOG.warn("All attempts to close a {} failed. Tried using methods: {}", typeName, closeMethodNames));
+    }
+
+    private CloseResult tryClose(Object object, Class<?> objectType, String typeName, String closeMethodName) {
+        try {
+            LOG.trace("Attempting to close a {} using {}", typeName, closeMethodName);
+            var methodHandle = MethodHandles.lookup()
+                    .findVirtual(objectType, closeMethodName, methodType(Void.TYPE));
+            methodHandle.invoke(object);
+            return new CloseResult(true, closeMethodName, null);
+        } catch (Throwable error) {
+            LOG.trace("Unable to close a {} using {}", typeName, closeMethodName, error);
+            return new CloseResult(false, closeMethodName, error);
+        }
+    }
+
+    private record CloseResult(boolean succeeded, String methodName, Throwable error) {
+    }
+
+    private static void logCloseError(Class<?> typeOfObject, Throwable error) {
         LOG.warn("Unexpected error while attempting to close {} quietly (use DEBUG-level for stack trace): {}",
-                typeSimpleName, ex.getMessage());
-        LOG.debug("Error closing {} instance", typeSimpleName, ex);
+                typeOfObject.getSimpleName(), error.getMessage());
+        LOG.debug("Error closing {} instance", typeOfObject.getName(), error);
     }
 
     /**

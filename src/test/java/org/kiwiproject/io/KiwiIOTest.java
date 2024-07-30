@@ -5,6 +5,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatCode;
 import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
@@ -15,7 +16,9 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.NullAndEmptySource;
 import org.junit.jupiter.params.provider.ValueSource;
+import org.kiwiproject.io.KiwiIO.CloseableResource;
 
 import javax.xml.stream.XMLInputFactory;
 import javax.xml.stream.XMLOutputFactory;
@@ -42,6 +45,7 @@ import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.time.Instant;
 import java.util.Arrays;
+import java.util.List;
 
 @DisplayName("KiwiIO")
 class KiwiIOTest {
@@ -268,6 +272,194 @@ class KiwiIOTest {
             var xmlStreamWriter = mock(XMLStreamWriter.class);
             doThrow(new XMLStreamException("I cannot stream XML")).when(xmlStreamWriter).close();
             assertThatCode(() -> KiwiIO.closeQuietly(xmlStreamWriter)).doesNotThrowAnyException();
+        }
+    }
+
+    @Nested
+    class CloseObjectQuietly {
+
+        // TODO Direct tests of closeQuietly(CloseableResource closeableResource)
+        // TODO Negative tests (when close throws exception)
+
+        @ParameterizedTest
+        @NullAndEmptySource
+        void shouldRequireAtLeastOneCloseMethodName_ToCreateCloseableResource(List<String> closeMethodNames) {
+            assertThatIllegalArgumentException()
+                    .isThrownBy(() -> new CloseableResource(new CloseClass(), closeMethodNames));
+        }
+
+        @Test
+        void shouldCreateCloseableResource_WithDefaultCloseMethodNames() {
+            var closeableResource = new CloseableResource(new StopClass());
+
+            assertThat(closeableResource.closeMethodNames())
+                    .containsExactly("close", "stop", "shutdown", "shutdownNow");
+        }
+
+        @Test
+        void shouldCreateCloseableResource_WithSingleCloseMethodName() {
+            var closeableResource = new CloseableResource(new HaltClass(), "halt");
+
+            assertThat(closeableResource.closeMethodNames()).containsExactly("halt");
+        }
+
+        @Test
+        void shouldIgnoreNullArguments() {
+            assertAll(
+                () -> {
+                    Object o = null;
+                    assertThatCode(() -> KiwiIO.closeObjectQuietly(o)).doesNotThrowAnyException();
+                },
+
+                () -> {
+                    Object[] objects = null;
+                    assertThatCode(() -> KiwiIO.closeObjectsQuietly(objects)).doesNotThrowAnyException();
+                },
+
+                () -> {
+                    Object o = null;
+                    assertThatCode(() -> KiwiIO.closeObjectQuietly("halt", o)).doesNotThrowAnyException();
+                },
+
+                () -> {
+                    Object[] objects = null;
+                    assertThatCode(() -> KiwiIO.closeObjectsQuietly("halt", objects)).doesNotThrowAnyException();
+                }
+            );
+        }
+
+        @Test
+        void shouldRequireCloseMethodName() {
+            assertAll(
+                () -> assertThatIllegalArgumentException()
+                        .isThrownBy(() -> KiwiIO.closeObjectsQuietly("", new CloseClass(), new CloseClass())),
+
+                () -> assertThatIllegalArgumentException()
+                        .isThrownBy(() -> KiwiIO.closeObjectQuietly("", new StopClass()))
+            );
+        }
+
+        @Test
+        void shouldCloseObjectWithCloseMethod() {
+            var obj = new CloseClass();
+            KiwiIO.closeObjectQuietly(obj);
+
+            assertThat(obj.closeCalled).isTrue();
+        }
+
+        @Test
+        void shouldCloseObjectWithStopMethod() {
+            var obj = new StopClass();
+            KiwiIO.closeObjectQuietly(obj);
+
+            assertThat(obj.stopCalled).isTrue();
+        }
+
+        @Test
+        void shouldCloseObjectWithShutdownMethod() {
+            var obj = new ShutdownClass();
+            KiwiIO.closeObjectQuietly(obj);
+
+            assertThat(obj.shutdownCalled).isTrue();
+        }
+
+        @Test
+        void shouldCloseObjectWithShutdownNowMethod() {
+            var obj = new ShutdownNowClass();
+            KiwiIO.closeObjectQuietly(obj);
+
+            assertThat(obj.shutdownNowCalled).isTrue();
+        }
+
+        @Test
+        void shouldClose_CloseableResource() {
+            var haltObj = new HaltClass();
+            var closeableResource = new CloseableResource(haltObj, List.of("halt"));
+
+            KiwiIO.closeObjectQuietly(closeableResource);
+
+            assertThat(haltObj.haltCalled).isTrue();
+        }
+
+        @Test
+        void shouldCloseManyObjects_WithSameCloseMethodName() {
+            var haltObj1 = new HaltClass();
+            var haltObj2 = new HaltClass();
+            var haltObj3 = new HaltClass();
+
+            KiwiIO.closeObjectsQuietly("halt", haltObj1, haltObj2, haltObj3);
+            assertAll(
+                () -> assertThat(haltObj1.haltCalled).isTrue(),
+                () -> assertThat(haltObj2.haltCalled).isTrue(),
+                () -> assertThat(haltObj3.haltCalled).isTrue()
+            );
+        }
+
+        @Test
+        void shouldCloseManyObjects_WithDifferingCloseMethodName() {
+            var closeObj = new CloseClass();
+            var stopObj = new StopClass();
+            var shutdownObj = new ShutdownClass();
+            var shutdownNowObj = new ShutdownNowClass();
+
+            KiwiIO.closeObjectsQuietly(closeObj, stopObj, shutdownObj, shutdownNowObj);
+
+            assertAll(
+                () -> assertThat(closeObj.closeCalled).isTrue(),
+                () -> assertThat(stopObj.stopCalled).isTrue(),
+                () -> assertThat(shutdownObj.shutdownCalled).isTrue(),
+                () -> assertThat(shutdownNowObj.shutdownNowCalled).isTrue()
+            );
+        }
+
+        @Test
+        void shouldClose_MixOfObjects_AndCloseableResources() {
+            var haltObj = new HaltClass();
+            var haltObjResource = new CloseableResource(haltObj, "halt");
+
+            var stopObj = new StopClass();
+
+            KiwiIO.closeObjectsQuietly(haltObjResource, stopObj);
+
+            assertAll(
+                () -> assertThat(haltObj.haltCalled).isTrue(),
+                () -> assertThat(stopObj.stopCalled).isTrue()
+            );
+        }
+
+        class CloseClass {
+            boolean closeCalled;
+            void close() {
+                closeCalled = true;
+            }
+        }
+
+        class StopClass {
+            boolean stopCalled;
+            void stop() {
+                stopCalled = true;
+            }
+        }
+
+        class ShutdownClass {
+            boolean shutdownCalled;
+            void shutdown() {
+                shutdownCalled = true;
+            }
+        }
+
+        class ShutdownNowClass {
+            boolean shutdownNowCalled;
+            void shutdownNow() {
+                shutdownNowCalled = true;
+            }
+        }
+
+        class HaltClass {
+            boolean haltCalled;
+            void halt() {
+                haltCalled = true;
+            }
         }
     }
 
