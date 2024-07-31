@@ -226,8 +226,8 @@ public class KiwiIO {
     }
 
     private static CloseableResource asCloseableResource(Object object) {
-        return (object instanceof CloseableResource) ?
-                (CloseableResource) object : new CloseableResource(object, DEFAULT_CLOSE_METHOD_NAMES);
+        return (object instanceof CloseableResource closeableResource) ?
+                closeableResource : new CloseableResource(object, DEFAULT_CLOSE_METHOD_NAMES);
     }
 
     public static void closeObjectsQuietly(String closeMethodName, Object... objects) {
