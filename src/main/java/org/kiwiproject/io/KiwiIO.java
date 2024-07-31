@@ -1,12 +1,20 @@
 package org.kiwiproject.io;
 
+import static com.google.common.base.Preconditions.checkArgument;
+import static java.lang.invoke.MethodType.methodType;
 import static java.util.Objects.isNull;
 import static java.util.Objects.nonNull;
 import static java.util.stream.Collectors.joining;
+import static org.kiwiproject.base.KiwiPreconditions.checkArgumentContainsOnlyNotBlank;
+import static org.kiwiproject.base.KiwiPreconditions.checkArgumentNotBlank;
+import static org.kiwiproject.base.KiwiPreconditions.checkArgumentNotEmpty;
+import static org.kiwiproject.base.KiwiPreconditions.checkArgumentNotInstanceOf;
 import static org.kiwiproject.base.KiwiPreconditions.checkArgumentNotNull;
+import static org.kiwiproject.base.KiwiPreconditions.requireNotBlank;
 
 import lombok.experimental.UtilityClass;
 import lombok.extern.slf4j.Slf4j;
+import org.checkerframework.checker.nullness.qual.Nullable;
 
 import javax.xml.stream.XMLStreamReader;
 import javax.xml.stream.XMLStreamWriter;
@@ -18,10 +26,12 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.UncheckedIOException;
+import java.lang.invoke.MethodHandles;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Stream;
 
 /**
@@ -38,6 +48,9 @@ import java.util.stream.Stream;
 @UtilityClass
 @Slf4j
 public class KiwiIO {
+
+    private static final List<String> DEFAULT_CLOSE_METHOD_NAMES =
+            List.of("close", "stop", "shutdown", "shutdownNow");
 
     /**
      * Closes a <code>Closeable</code> unconditionally.
@@ -71,7 +84,7 @@ public class KiwiIO {
      * }
      * </pre>
      *
-     * @param closeable the objects to close, may be null or already closed
+     * @param closeable the object to close, may be null or already closed
      * @implNote Copied from Apache Commons I/O's IOUtils once it became deprecated with the message "Please use
      * the try-with-resources statement or handle suppressed exceptions manually."
      * @see Throwable#addSuppressed(java.lang.Throwable)
@@ -82,7 +95,7 @@ public class KiwiIO {
                 closeable.close();
             }
         } catch (final IOException ioe) {
-            logCloseException(closeable.getClass(), ioe);
+            logCloseError(closeable.getClass(), ioe);
         }
     }
 
@@ -153,7 +166,7 @@ public class KiwiIO {
             try {
                 xmlStreamReader.close();
             } catch (Exception e) {
-                logCloseException(XMLStreamReader.class, e);
+                logCloseError(XMLStreamReader.class, e);
             }
         }
     }
@@ -171,16 +184,226 @@ public class KiwiIO {
             try {
                 xmlStreamWriter.close();
             } catch (Exception e) {
-                logCloseException(XMLStreamWriter.class, e);
+                logCloseError(XMLStreamWriter.class, e);
             }
         }
     }
 
-    private static void logCloseException(Class<?> typeOfObject, Exception ex) {
-        String typeSimpleName = typeOfObject.getSimpleName();
+
+    /**
+     * Represents a resource that can be closed using a "close" method.
+     * <p>
+     * Allows multiple close method names to be specified, which can be useful
+     * in situations where you want to close several resources that have
+     * different "close" methods. For example, any {@link AutoCloseable}
+     * contains a "close" method while any {@link java.util.concurrent.ExecutorService}
+     * has both "shutdown" and "shutdownNow" methods.
+     * <p>
+     * If you only need a single clsoe method name, or the default close
+     * method names, you can use one of the secondary constructors.
+     *
+     * @param object the resource that can be closed
+     * @param closeMethodNames a non-null, non-empty list of close method names
+     */
+    public record CloseableResource(@Nullable Object object, List<String> closeMethodNames) {
+        public CloseableResource {
+            checkArgumentContainsOnlyNotBlank(closeMethodNames,
+                    "closeMethodNames must not be null or empty, or contain any blanks");
+        }
+
+        /**
+         * Create a new instance with a default set of close method names.
+         *
+         * @param object the resource that can be closed
+         * @see KiwiIO#defaultCloseMethodNames()
+         */
+        public CloseableResource(@Nullable Object object) {
+            this(object, DEFAULT_CLOSE_METHOD_NAMES);
+        }
+
+        /**
+         * Create a new instance with a single close method name.
+         *
+         * @param object the resource that can be closed
+         * @param closeMethodName the single close method name
+         */
+        public CloseableResource(@Nullable Object object, String closeMethodName) {
+            this(
+                object,
+                List.of(requireNotBlank(closeMethodName, "closeMethodName must not be blank"))
+            );
+        }
+    }
+
+    /**
+     * Return the default method names used when closing objects using
+     * any of the methods to close generic {@link Object}.
+     * <p>
+     * These method names are tried in order when attempting to close
+     * an Object when no explicit close method name is provided.
+     * <p>
+     * The default names are
+     *
+     * @return the default close method names
+     */
+    public static List<String> defaultCloseMethodNames() {
+        return DEFAULT_CLOSE_METHOD_NAMES;
+    }
+
+    /**
+     * Closes an object unconditionally. This method ignores null objects and exceptions.
+     * <p>
+     * The object may be a {@link CloseableResource}.
+     * <p>
+     * Uses the default close method names.
+     *
+     * @param object the object to close, may be null or already closed
+     * @see #defaultCloseMethodNames()
+     */
+    public static void closeObjectQuietly(Object object) {
+        if (isNull(object)) {
+            return;
+        }
+
+        var closeableResource = asCloseableResource(object);
+        closeResourceQuietly(closeableResource);
+    }
+
+    /**
+     * Closes an object unconditionally. This method ignores null objects and exceptions.
+     * <p>
+     * The object may not be a {@link CloseableResource}, since it could contain a different
+     * close method name.
+     *
+     * @param closeMethodName the name of the close method
+     * @param object the object to close, may be null or already closed
+     * @throws IllegalArgumentException if closeMethodName is blank or object is a CloseableResource
+     */
+    public static void closeObjectQuietly(String closeMethodName, Object object) {
+        checkArgumentNotBlank(closeMethodName, "closeMethodName must not be blank");
+        checkArgumentNotInstanceOf(object, CloseableResource.class,
+                "object must not be a CloseableResource");
+        closeResourceQuietly(new CloseableResource(object, List.of(closeMethodName)));
+    }
+
+    /**
+     * Closes one or more objects unconditionally. This method ignores null objects and exceptions.
+     * <p>
+     * The objects may contain {@link CloseableResource} and/or other closeable objects.
+     * <p>
+     * Uses the default close method names.
+     *
+     * @param objects the objects to close, may be null or already closed
+     * @see #defaultCloseMethodNames()
+     */
+    public static void closeObjectsQuietly(Object... objects) {
+        if (isNull(objects)) {
+            return;
+        }
+
+        Arrays.stream(objects)
+            .filter(Objects::nonNull)
+            .map(KiwiIO::asCloseableResource)
+            .forEach(KiwiIO::closeResourceQuietly);
+    }
+
+    private static CloseableResource asCloseableResource(Object object) {
+        return (object instanceof CloseableResource closeableResource) ?
+                closeableResource : new CloseableResource(object, DEFAULT_CLOSE_METHOD_NAMES);
+    }
+
+    /**
+     * Closes one or more objects unconditionally. This method ignores null objects and exceptions.
+     * <p>
+     * The objects should not contain any {@link CloseableResource} instances. The reason is that
+     * those could specify a different close method name.
+     *
+     * @param closeMethodName the name of the close method
+     * @param objects the objects to close, may be null or already closed
+     * @throws IllegalArgumentException of objects contains any CloseableResource instances
+     */
+    public static void closeObjectsQuietly(String closeMethodName, Object... objects) {
+        if (isNull(objects)) {
+            return;
+        }
+
+       checkDoesNotContainAnyCloseableResources(closeMethodName, objects);
+
+        Arrays.stream(objects)
+            .filter(Objects::nonNull)
+            .map(object -> new CloseableResource(object, List.of(closeMethodName)))
+            .forEach(KiwiIO::closeResourceQuietly);
+    }
+
+    private static void checkDoesNotContainAnyCloseableResources(String closeMethodName, Object... objects) {
+        for (var object : objects) {
+            checkIsNotCloseableResource(closeMethodName, object);
+        }
+    }
+
+    private static void checkIsNotCloseableResource(String closeMethodName, Object object) {
+        checkArgument(
+                isNotCloseableResource(object),
+                "objects should not contain any instances of CloseableResource when a single closeMethodName (%s) is specified",
+                closeMethodName);
+    }
+
+    private static boolean isNotCloseableResource(Object object) {
+        return !(object instanceof CloseableResource);
+    }
+
+    /**
+     * Closes a resource unconditionally. This method ignores null objects and exceptions.
+     * <p>
+     * The object inside the resource may be null or already closed. The resource must
+     * contain at least one close method name.
+     *
+     * @param closeableResource the resource to close, must not be null
+     * @throws IllegalArgumentException if the closeableResource is null or has no close method names
+     */
+    public static void closeResourceQuietly(CloseableResource closeableResource) {
+        checkArgumentNotNull(closeableResource, "closeableResource must not be null");
+
+        var closeMethodNames = closeableResource.closeMethodNames();
+        checkArgumentNotEmpty(closeMethodNames, "closeMethodNames must not be empty");
+
+        var object = closeableResource.object();
+        if (isNull(object)) {
+            return;
+        }
+
+        var objectType = object.getClass();
+        var typeName = objectType.getName();
+
+        closeMethodNames.stream()
+                .map(methodName -> tryClose(object, objectType, typeName, methodName))
+                .filter(CloseResult::succeeded)
+                .findFirst()
+                .ifPresentOrElse(
+                        successResult -> LOG.trace("Successfully closed a {} using {}", typeName, successResult.methodName()),
+                        () -> LOG.warn("All attempts to close a {} failed. Tried using methods: {}", typeName, closeMethodNames));
+    }
+
+    private CloseResult tryClose(Object object, Class<?> objectType, String typeName, String closeMethodName) {
+        try {
+            LOG.trace("Attempting to close a {} using {}", typeName, closeMethodName);
+            var methodHandle = MethodHandles.lookup()
+                    .findVirtual(objectType, closeMethodName, methodType(Void.TYPE));
+            methodHandle.invoke(object);
+            return new CloseResult(true, closeMethodName, null);
+        } catch (Throwable error) {
+            LOG.trace("Unable to close a {} using {}", typeName, closeMethodName, error);
+            return new CloseResult(false, closeMethodName, error);
+        }
+    }
+
+    private record CloseResult(boolean succeeded, String methodName, Throwable error) {
+    }
+
+    private static void logCloseError(Class<?> typeOfObject, Throwable error) {
         LOG.warn("Unexpected error while attempting to close {} quietly (use DEBUG-level for stack trace): {}",
-                typeSimpleName, ex.getMessage());
-        LOG.debug("Error closing {} instance", typeSimpleName, ex);
+                typeOfObject.getSimpleName(), error.getMessage());
+        LOG.debug("Error closing {} instance", typeOfObject.getName(), error);
     }
 
     /**
