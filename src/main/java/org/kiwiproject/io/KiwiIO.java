@@ -235,7 +235,7 @@ public class KiwiIO {
             return;
         }
 
-       checkDoesNotContainAnyCloseableResources(objects);
+       checkDoesNotContainAnyCloseableResources(closeMethodName, objects);
 
         Arrays.stream(objects)
             .filter(Objects::nonNull)
@@ -243,15 +243,17 @@ public class KiwiIO {
             .forEach(KiwiIO::closeQuietly);
     }
 
-    private static void checkDoesNotContainAnyCloseableResources(Object... objects) {
+    private static void checkDoesNotContainAnyCloseableResources(String closeMethodName, Object... objects) {
         for (var object : objects) {
-            checkIsNotCloseableResource(object);
+            checkIsNotCloseableResource(closeMethodName, object);
         }
     }
 
-    private static void checkIsNotCloseableResource(Object object) {
-        checkArgument(isNotCloseableResource(object),
-                    "objects should not contain any instances of CloseableResource when a single closeMethodName is specified");
+    private static void checkIsNotCloseableResource(String closeMethodName, Object object) {
+        checkArgument(
+                isNotCloseableResource(object),
+                "objects should not contain any instances of CloseableResource when a single closeMethodName (%s) is specified",
+                closeMethodName);
     }
 
     private static boolean isNotCloseableResource(Object object) {

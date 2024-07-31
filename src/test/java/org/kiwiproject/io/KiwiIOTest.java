@@ -7,8 +7,10 @@ import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import org.junit.jupiter.api.BeforeEach;
@@ -21,7 +23,6 @@ import org.junit.jupiter.params.provider.ValueSource;
 import org.kiwiproject.io.KiwiIO.CloseableResource;
 
 import javax.xml.stream.XMLInputFactory;
-import javax.xml.stream.XMLOutputFactory;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
 import javax.xml.stream.XMLStreamWriter;
@@ -71,6 +72,7 @@ class KiwiIOTest {
             var reader = mock(Reader.class);
             doThrow(new IOException("I cannot read")).when(reader).close();
             assertThatCode(() -> KiwiIO.closeQuietly(reader)).doesNotThrowAnyException();
+            verify(reader).close();
         }
 
         @SuppressWarnings("ConstantValue")
@@ -91,6 +93,7 @@ class KiwiIOTest {
             var writer = mock(Writer.class);
             doThrow(new IOException("I cannot write")).when(writer).close();
             assertThatCode(() -> KiwiIO.closeQuietly(writer)).doesNotThrowAnyException();
+            verify(writer).close();
         }
 
         @SuppressWarnings("ConstantValue")
@@ -111,6 +114,7 @@ class KiwiIOTest {
             var stream = mock(InputStream.class);
             doThrow(new IOException("I cannot read")).when(stream).close();
             assertThatCode(() -> KiwiIO.closeQuietly(stream)).doesNotThrowAnyException();
+            verify(stream).close();
         }
 
         @SuppressWarnings("ConstantValue")
@@ -131,6 +135,7 @@ class KiwiIOTest {
             var stream = mock(OutputStream.class);
             doThrow(new IOException("I cannot stream")).when(stream).close();
             assertThatCode(() -> KiwiIO.closeQuietly(stream)).doesNotThrowAnyException();
+            verify(stream).close();
         }
 
         @SuppressWarnings("ConstantValue")
@@ -152,6 +157,7 @@ class KiwiIOTest {
             var socket = mock(Socket.class);
             doThrow(new IOException("I cannot read")).when(socket).close();
             assertThatCode(() -> KiwiIO.closeQuietly(socket)).doesNotThrowAnyException();
+            verify(socket).close();
         }
 
         @SuppressWarnings("ConstantValue")
@@ -170,9 +176,10 @@ class KiwiIOTest {
 
         @Test
         void shouldClose_Selector_WhenThrowsOnClose() throws IOException {
-            var socket = mock(Selector.class);
-            doThrow(new IOException("I cannot select")).when(socket).close();
-            assertThatCode(() -> KiwiIO.closeQuietly(socket)).doesNotThrowAnyException();
+            var selector = mock(Selector.class);
+            doThrow(new IOException("I cannot select")).when(selector).close();
+            assertThatCode(() -> KiwiIO.closeQuietly(selector)).doesNotThrowAnyException();
+            verify(selector).close();
         }
 
         @SuppressWarnings("ConstantValue")
@@ -194,6 +201,7 @@ class KiwiIOTest {
             var serverSocket = mock(ServerSocket.class);
             doThrow(new IOException("I cannot read")).when(serverSocket).close();
             assertThatCode(() -> KiwiIO.closeQuietly(serverSocket)).doesNotThrowAnyException();
+            verify(serverSocket).close();
         }
 
         @SuppressWarnings("ConstantValue")
@@ -235,6 +243,10 @@ class KiwiIOTest {
             doThrow(new IOException("I cannot read")).when(serverSocket).close();
 
             assertThatCode(() -> KiwiIO.closeQuietly(socket, selector, serverSocket)).doesNotThrowAnyException();
+
+            verify(socket).close();
+            verify(selector).close();
+            verify(serverSocket).close();
         }
 
         @SuppressWarnings("ConstantValue")
@@ -255,6 +267,7 @@ class KiwiIOTest {
             var xmlStreamReader = mock(XMLStreamReader.class);
             doThrow(new XMLStreamException("I cannot stream XML")).when(xmlStreamReader).close();
             assertThatCode(() -> KiwiIO.closeQuietly(xmlStreamReader)).doesNotThrowAnyException();
+            verify(xmlStreamReader).close();
         }
 
         @SuppressWarnings("ConstantValue")
@@ -266,8 +279,10 @@ class KiwiIOTest {
 
         @Test
         void shouldClose_XMLStreamWriter() throws XMLStreamException {
-            var xmlStreamWriter = XMLOutputFactory.newInstance().createXMLStreamWriter(new StringWriter());
+            var xmlStreamWriter = mock(XMLStreamWriter.class);
+            doNothing().when(xmlStreamWriter).close();
             assertThatCode(() -> KiwiIO.closeQuietly(xmlStreamWriter)).doesNotThrowAnyException();
+            verify(xmlStreamWriter).close();
         }
 
         @Test
@@ -275,6 +290,7 @@ class KiwiIOTest {
             var xmlStreamWriter = mock(XMLStreamWriter.class);
             doThrow(new XMLStreamException("I cannot stream XML")).when(xmlStreamWriter).close();
             assertThatCode(() -> KiwiIO.closeQuietly(xmlStreamWriter)).doesNotThrowAnyException();
+            verify(xmlStreamWriter).close();
         }
     }
 
@@ -404,6 +420,19 @@ class KiwiIOTest {
                     () -> assertThat(halter2.haltCalled).isTrue(),
                     () -> assertThat(halter3.haltCalled).isTrue()
             );
+        }
+
+        @Test
+        void shouldNotAllow_CloseableResource_WhenGivenExplicit_CloseMethodName() {
+            var halter1 = new Halter();
+            var halter2 = new Halter();
+            var terminator = new Terminator();
+            var terminatorResource = new CloseableResource(terminator, "terminate");
+
+            var closeMethodName = "halt";
+            assertThatIllegalArgumentException()
+                    .isThrownBy(() -> KiwiIO.closeObjectsQuietly(closeMethodName, halter1, halter2, terminatorResource))
+                    .withMessage("objects should not contain any instances of CloseableResource when a single closeMethodName (%s) is specified", closeMethodName);
         }
 
         @Test
