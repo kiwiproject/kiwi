@@ -297,6 +297,13 @@ class KiwiIOTest {
     @Nested
     class CloseObjectQuietly {
 
+        @Test
+        void shouldReturnDefaultCloseMethodNames() {
+            assertThat(KiwiIO.defaultCloseMethodNames())
+                    .describedAs("If this fails, be sure to also updated the javadoc when fixing this test!")
+                    .containsExactly("close", "stop", "shutdown", "shutdownNow");
+        }
+
         @ParameterizedTest
         @NullAndEmptySource
         void shouldRequireAtLeastOneCloseMethodName_ToCreateCloseableResource(List<String> closeMethodNames) {
@@ -317,6 +324,23 @@ class KiwiIOTest {
             var closeableResource = new CloseableResource(new Halter(), "halt");
 
             assertThat(closeableResource.closeMethodNames()).containsExactly("halt");
+        }
+
+        @ParameterizedTest
+        @NullAndEmptySource
+        @ValueSource(strings = {" ", "\t", "\n"})
+        void shouldNotAllow_BlankCloseMethodNames_WhenCreatingCloseableResource(String value) {
+            assertThatIllegalArgumentException()
+                    .isThrownBy(() -> new CloseableResource(null, value))
+                    .withMessage("closeMethodName must not be blank");
+        }
+
+        @Test
+        void shouldNotAllow_BlankCloseMethodNames_WhenCreatingCloseableResource() {
+            var closeMethodNames = List.of("close", "stop", "", "terminate");
+            assertThatIllegalArgumentException()
+                    .isThrownBy(() -> new CloseableResource(null, closeMethodNames))
+                    .withMessage("closeMethodNames must not be null or empty, or contain any blanks");
         }
 
         @Test
@@ -399,6 +423,16 @@ class KiwiIOTest {
         }
 
         @Test
+        void shouldClose_UsingCustomCloseMethod() {
+            var terminator = new Terminator();
+
+            assertThatCode(() -> KiwiIO.closeObjectQuietly("terminate", terminator))
+                    .doesNotThrowAnyException();
+
+            assertThat(terminator.terminated).isTrue();
+        }
+
+        @Test
         void shouldIgnore_ExceptionsOnClose_ForCustomCloseMethods() {
             var canceller = new ThrowingCanceller();
 
@@ -406,6 +440,16 @@ class KiwiIOTest {
                     .doesNotThrowAnyException();
 
             assertThat(canceller.cancelCalled).isTrue();
+        }
+
+        @Test
+        void shouldNotPermit_CloseableResource_WithCustomCloseMethod() {
+            var halter = new Halter();
+            var resource = new CloseableResource(halter, "halt");
+
+            assertThatIllegalArgumentException()
+                    .isThrownBy(() -> KiwiIO.closeObjectQuietly("stop", resource))
+                    .withMessage("object must not be a CloseableResource");
         }
 
         @Test
@@ -472,6 +516,13 @@ class KiwiIOTest {
         }
 
         @Test
+        void shouldRequire_NonNull_CloseableResource() {
+            assertThatIllegalArgumentException()
+                    .isThrownBy(() -> KiwiIO.closeResourceQuietly(null))
+                    .withMessage("closeableResource must not be null");
+        }
+
+        @Test
         void shouldClose_CloseableResources() {
             var closer = new Closer();
             var closerResource = new CloseableResource(closer, "close");
@@ -485,10 +536,10 @@ class KiwiIOTest {
             var terminator = new Terminator();
             var terminatorResource = new CloseableResource(terminator, "terminate");
 
-            KiwiIO.closeQuietly(closerResource);
-            KiwiIO.closeQuietly(stopperResource);
-            KiwiIO.closeQuietly(halterResource);
-            KiwiIO.closeQuietly(terminatorResource);
+            KiwiIO.closeResourceQuietly(closerResource);
+            KiwiIO.closeResourceQuietly(stopperResource);
+            KiwiIO.closeResourceQuietly(halterResource);
+            KiwiIO.closeResourceQuietly(terminatorResource);
 
             assertAll(
                     () -> assertThat(closer.closeCalled).isTrue(),
