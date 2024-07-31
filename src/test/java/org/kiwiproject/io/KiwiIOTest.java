@@ -281,8 +281,6 @@ class KiwiIOTest {
     @Nested
     class CloseObjectQuietly {
 
-        // TODO Negative tests (when close throws exception)
-
         @ParameterizedTest
         @NullAndEmptySource
         void shouldRequireAtLeastOneCloseMethodName_ToCreateCloseableResource(List<String> closeMethodNames) {
@@ -373,6 +371,25 @@ class KiwiIOTest {
             KiwiIO.closeObjectQuietly(closeableResource);
 
             assertThat(halter.haltCalled).isTrue();
+        }
+
+        @Test
+        void shouldIgnore_ExceptionsOnClose_ForDefaultCloseMethods() {
+            var stopper = new ThrowingStopper();
+
+            assertThatCode(() -> KiwiIO.closeObjectQuietly(stopper)).doesNotThrowAnyException();
+
+            assertThat(stopper.stopCalled).isTrue();
+        }
+
+        @Test
+        void shouldIgnore_ExceptionsOnClose_ForCustomCloseMethods() {
+            var canceller = new ThrowingCanceller();
+
+            assertThatCode(() -> KiwiIO.closeObjectQuietly("cancel", canceller))
+                    .doesNotThrowAnyException();
+
+            assertThat(canceller.cancelCalled).isTrue();
         }
 
         @Test
@@ -503,6 +520,26 @@ class KiwiIOTest {
             @SuppressWarnings("unused")
             void terminate() {
                 terminated = true;
+            }
+        }
+
+        static class ThrowingStopper {
+            boolean stopCalled;
+
+            @SuppressWarnings("unused")
+            void stop() throws Exception {
+                stopCalled = true;
+                throw new Exception("stop failed!");
+            }
+        }
+
+        static class ThrowingCanceller {
+            boolean cancelCalled;
+
+            @SuppressWarnings("unused")
+            void cancel() throws Exception {
+                cancelCalled = true;
+                throw new Exception("cancel failed!");
             }
         }
     }
