@@ -273,7 +273,7 @@ public class KiwiIO {
         }
 
         var objectType = object.getClass();
-        var typeName = object.getClass().getName();
+        var typeName = objectType.getName();
 
         closeMethodNames.stream()
                 .map(methodName -> tryClose(object, objectType, typeName, methodName))
