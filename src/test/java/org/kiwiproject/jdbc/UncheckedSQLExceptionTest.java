@@ -7,7 +7,7 @@ import org.junit.jupiter.api.Test;
 
 import java.sql.SQLException;
 
-@DisplayName("RuntimeSQLException")
+@DisplayName("UncheckedSQLException")
 class UncheckedSQLExceptionTest {
 
     @Test
