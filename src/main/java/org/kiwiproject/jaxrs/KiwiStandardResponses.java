@@ -320,6 +320,28 @@ public class KiwiStandardResponses {
     }
 
     /**
+     * Returns a 500 Internal Server Error response containing an {@link ErrorMessage} entity which uses
+     * {@code errorDetails} as the detailed error message.
+     *
+     * @param errorDetails the error message to use
+     * @return a 500 Internal Server Error response with {@code application/json} content type
+     */
+    public static Response standardInternalServerErrorResponse(String errorDetails) {
+        return standardInternalServerErrorResponseBuilder(errorDetails).build();
+    }
+
+    /**
+     * Returns a response builder with 500 Internal Server Error status and an {@link ErrorMessage} entity
+     * which uses {@code errorDetails} as the detailed error message.
+     *
+     * @param errorDetails the error message to use
+     * @return a response builder with the given status code and {@code application/json} content type
+     */
+    public static Response.ResponseBuilder standardInternalServerErrorResponseBuilder(String errorDetails) {
+        return standardErrorResponseBuilder(Response.Status.INTERNAL_SERVER_ERROR, errorDetails);
+    }
+
+    /**
      * Returns a response having the given status and an {@link ErrorMessage} entity which uses {@code errorDetails}
      * as the detailed error message.
      * <p>
