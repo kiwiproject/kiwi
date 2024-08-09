@@ -217,6 +217,81 @@ class KiwiResourcesTest {
     }
 
     @Nested
+    class VerifyExistenceAndReturn {
+
+        @Nested
+        class EntityArgument {
+
+            @Test
+            void shouldReturnEntity_WhenEntityNotNull() {
+                assertThat(KiwiResources.verifyExistenceAndReturn(ENTITY)).isSameAs(ENTITY);
+            }
+
+            @Test
+            void shouldThrow_WhenEntityIsNull() {
+                assertThatThrownBy(() -> KiwiResources.verifyExistenceAndReturn(NULL_ENTITY))
+                        .isExactlyInstanceOf(JaxrsNotFoundException.class)
+                        .hasMessage(defaultNotFoundMessage());
+            }
+        }
+
+        @Nested
+        class EntityTypeAndIdentifier {
+
+            @Test
+            void shouldReturnEntity_WhenEntityNotNull() {
+                assertThat(KiwiResources.verifyExistenceAndReturn(ENTITY, MyEntity.class, ID)).isSameAs(ENTITY);
+            }
+
+            @Test
+            void shouldThrow_WhenEntityIsNull() {
+                var message = JaxrsNotFoundException.buildMessage("MyEntity", ID);
+
+                assertThatThrownBy(() -> KiwiResources.verifyExistenceAndReturn((MyEntity) null, MyEntity.class, ID))
+                        .isExactlyInstanceOf(JaxrsNotFoundException.class)
+                        .hasMessage(message);
+            }
+        }
+
+        @Nested
+        class EntityAndNotFoundMessage {
+
+            @Test
+            void shouldReturnEntity_WhenEntityNotNull() {
+                assertThat(KiwiResources.verifyExistenceAndReturn(ENTITY, ENTITY_NOT_FOUND_MESSAGE)).isSameAs(ENTITY);
+            }
+
+            @Test
+            void shouldThrow_WhenEntityIsNull() {
+                assertThatThrownBy(() -> KiwiResources.verifyExistenceAndReturn(NULL_ENTITY, ENTITY_NOT_FOUND_MESSAGE))
+                        .isExactlyInstanceOf(JaxrsNotFoundException.class)
+                        .hasMessage(ENTITY_NOT_FOUND_MESSAGE);
+            }
+        }
+
+        @Nested
+        class EntityAndNotFoundMessageTemplateWithArgs {
+
+            @Test
+            void shouldReturnEntity_WhenEntityNotNull() {
+                assertThat(KiwiResources.verifyExistenceAndReturn(ENTITY, ENTITY_NOT_FOUND_MESSAGE_TEMPLATE_1, 42)).isSameAs(ENTITY);
+            }
+
+            @ParameterizedTest
+            @ValueSource(strings = {
+                    ENTITY_NOT_FOUND_MESSAGE_TEMPLATE_1,
+                    ENTITY_NOT_FOUND_MESSAGE_TEMPLATE_2
+            })
+            void shouldThrow_WhenEntityIsNull(String template) {
+                var arg = 84;
+                assertThatThrownBy(() -> KiwiResources.verifyExistenceAndReturn(NULL_ENTITY, template, arg))
+                        .isExactlyInstanceOf(JaxrsNotFoundException.class)
+                        .hasMessage(f(template, arg));
+            }
+        }
+    }
+
+    @Nested
     class NewResponse {
 
         @Test
