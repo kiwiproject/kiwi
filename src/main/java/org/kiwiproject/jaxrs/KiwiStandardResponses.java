@@ -335,7 +335,7 @@ public class KiwiStandardResponses {
      * which uses {@code errorDetails} as the detailed error message.
      *
      * @param errorDetails the error message to use
-     * @return a response builder with the given status code and {@code application/json} content type
+     * @return a response builder with a 500 status code and {@code application/json} content type
      */
     public static Response.ResponseBuilder standardInternalServerErrorResponseBuilder(String errorDetails) {
         return standardErrorResponseBuilder(Response.Status.INTERNAL_SERVER_ERROR, errorDetails);
