@@ -113,6 +113,7 @@ public class KiwiJdbc {
      * @return the converted Date or {@code null} if the column was {@code NULL}
      * @throws SQLException if there is a database problem
      */
+    @Nullable
     public static Date dateFromTimestamp(ResultSet rs, String columnName) throws SQLException {
         return dateFromTimestamp(rs.getTimestamp(columnName));
     }
@@ -123,6 +124,7 @@ public class KiwiJdbc {
      * @param timestamp the timestamp to convert
      * @return a {@link Date} or null if the timestamp is null
      */
+    @Nullable
     public static Date dateFromTimestamp(Timestamp timestamp) {
         return isNull(timestamp) ? null : Date.from(timestamp.toInstant());
     }
@@ -135,6 +137,7 @@ public class KiwiJdbc {
      * @return the converted Instant or {@code null} if the column was {@code NULL}
      * @throws SQLException if there is a database problem
      */
+    @Nullable
     public static Instant instantFromTimestamp(ResultSet rs, String columnName) throws SQLException {
         return instantFromTimestamp(rs.getTimestamp(columnName));
     }
@@ -145,6 +148,7 @@ public class KiwiJdbc {
      * @param timestamp the timestamp to convert
      * @return an Instant or {@code null} if the timestamp is {@code null}
      */
+    @Nullable
     public static Instant instantFromTimestamp(Timestamp timestamp) {
         return isNull(timestamp) ? null : timestamp.toInstant();
     }
@@ -157,6 +161,7 @@ public class KiwiJdbc {
      * @return the converted LocalDateTime or {@code null} if the column was {@code NULL}
      * @throws SQLException if there is a database problem
      */
+    @Nullable
     public static LocalDateTime localDateTimeFromTimestamp(ResultSet rs, String columnName) throws SQLException {
         return localDateTimeFromTimestamp(rs.getTimestamp(columnName));
     }
@@ -167,6 +172,7 @@ public class KiwiJdbc {
      * @param timestamp the timestamp to convert
      * @return a LocalDateTime or {@code null} if the timestamp is {@code null}
      */
+    @Nullable
     public static LocalDateTime localDateTimeFromTimestamp(Timestamp timestamp) {
         return isNull(timestamp) ? null : timestamp.toLocalDateTime();
     }
@@ -203,6 +209,7 @@ public class KiwiJdbc {
      * @return a UTC ZonedDateTime or {@code null} if the column was {@code NULL}
      * @throws SQLException if there is a database problem
      */
+    @Nullable
     public static ZonedDateTime utcZonedDateTimeFromTimestamp(ResultSet rs, String columnName)
             throws SQLException {
         return zonedDateTimeFromTimestamp(rs, columnName, ZoneOffset.UTC);
@@ -217,6 +224,7 @@ public class KiwiJdbc {
      * @return a ZonedDateTime in the specified zone, or {@code null} if the column was {@code NULL}
      * @throws SQLException if there is a database problem
      */
+    @Nullable
     public static ZonedDateTime zonedDateTimeFromTimestamp(ResultSet rs, String columnName, ZoneId zoneId)
             throws SQLException {
         return zonedDateTimeFromTimestamp(rs.getTimestamp(columnName), zoneId);
@@ -228,6 +236,7 @@ public class KiwiJdbc {
      * @param timestamp the timestamp to convert
      * @return a UTC ZonedDateTime or {@code null} if the timestamp is {@code null}
      */
+    @Nullable
     public static ZonedDateTime utcZonedDateTimeFromTimestamp(Timestamp timestamp) {
         return zonedDateTimeFromTimestamp(timestamp, ZoneOffset.UTC);
     }
@@ -251,6 +260,7 @@ public class KiwiJdbc {
      * @param zoneId    the time zone ID
      * @return a ZonedDateTime in the specified zone, or {@code null} if the timestamp is {@code null}
      */
+    @Nullable
     public static ZonedDateTime zonedDateTimeFromTimestamp(Timestamp timestamp, ZoneId zoneId) {
         return isNull(timestamp) ? null : ZonedDateTime.ofInstant(timestamp.toInstant(), zoneId);
     }
@@ -259,8 +269,9 @@ public class KiwiJdbc {
      * Returns a {@link Timestamp} from the given {@link Instant}.
      *
      * @param instant the Instant to convert
-     * @return an Instant or {@code null} if the instant is {@code null}
+     * @return a Timestamp or {@code null} if the instant is {@code null}
      */
+    @Nullable
     public static Timestamp timestampFromInstant(Instant instant) {
         return isNull(instant) ? null : Timestamp.from(instant);
     }
@@ -269,8 +280,9 @@ public class KiwiJdbc {
      * Returns a {@link Timestamp} from the given {@link ZonedDateTime}.
      *
      * @param zonedDateTime the ZonedDateTime to convert
-     * @return a ZonedDateTime or {@code null} if the zonedDateTime is {@code null}
+     * @return a Timestamp or {@code null} if the zonedDateTime is {@code null}
      */
+    @Nullable
     public static Timestamp timestampFromZonedDateTime(ZonedDateTime zonedDateTime) {
         return isNull(zonedDateTime) ? null : Timestamp.from(zonedDateTime.toInstant());
     }
@@ -284,6 +296,7 @@ public class KiwiJdbc {
      * @return a {@link Long} or {@code null}
      * @throws SQLException if there is a database problem
      */
+    @Nullable
     public static Long longValueOrNull(ResultSet rs, String columnName) throws SQLException {
         var value = rs.getLong(columnName);
         return rs.wasNull() ? null : value;
@@ -298,6 +311,7 @@ public class KiwiJdbc {
      * @return an {@link Integer} or {@code null}
      * @throws SQLException if there is a database problem
      */
+    @Nullable
     public static Integer intValueOrNull(ResultSet rs, String columnName) throws SQLException {
         var value = rs.getInt(columnName);
         return rs.wasNull() ? null : value;
@@ -309,9 +323,10 @@ public class KiwiJdbc {
      *
      * @param rs         the ResultSet
      * @param columnName the column name
-     * @return a {@link Long} or {@code null}
+     * @return a {@link Double} or {@code null}
      * @throws SQLException if there is a database problem
      */
+    @Nullable
     public static Double doubleValueOrNull(ResultSet rs, String columnName) throws SQLException {
         var value = rs.getDouble(columnName);
         return rs.wasNull() ? null : value;
@@ -329,6 +344,7 @@ public class KiwiJdbc {
      * @throws IllegalArgumentException if the value from the ResultSet is an invalid enum constant
      * @see Enum#valueOf(Class, String)
      */
+    @Nullable
     public static <T extends Enum<T>> T enumValueOrNull(ResultSet rs, String columnName, Class<T> enumType)
             throws SQLException {
         return enumValueOrEmpty(rs, columnName, enumType).orElse(null);
