@@ -16,6 +16,7 @@ import jakarta.ws.rs.core.MultivaluedMap;
 import jakarta.ws.rs.core.Response;
 import lombok.experimental.UtilityClass;
 import lombok.extern.slf4j.Slf4j;
+import org.checkerframework.checker.nullness.qual.NonNull;
 import org.kiwiproject.base.KiwiStrings;
 import org.kiwiproject.jaxrs.exception.JaxrsBadRequestException;
 import org.kiwiproject.jaxrs.exception.JaxrsNotFoundException;
@@ -67,6 +68,7 @@ public class KiwiResources {
      * @return the entity if the Optional contains a value
      * @throws JaxrsNotFoundException if the entity is empty
      */
+    @NonNull
     public static <T> T verifyExistence(Optional<T> resourceEntity) {
         verifyExistence(resourceEntity.orElse(null), null);
 
@@ -97,6 +99,7 @@ public class KiwiResources {
      * @return the entity if the Optional contains a value
      * @throws JaxrsNotFoundException if the entity is empty
      */
+    @NonNull
     public static <T> T verifyExistence(Optional<T> resourceEntity, Class<T> entityType, Object identifier) {
         var notFoundMessage = JaxrsNotFoundException.buildMessage(entityType.getSimpleName(), identifier);
         verifyExistence(resourceEntity.orElse(null), notFoundMessage);
@@ -145,6 +148,7 @@ public class KiwiResources {
      * @return the entity if the Optional contains a value
      * @throws JaxrsNotFoundException if the entity is empty
      */
+    @NonNull
     public static <T> T verifyExistence(Optional<T> resourceEntity, String notFoundMessage) {
         verifyExistence(resourceEntity.orElse(null), notFoundMessage);
 
@@ -163,6 +167,7 @@ public class KiwiResources {
      * @return the entity if the Optional contains a value
      * @throws JaxrsNotFoundException if the entity is empty
      */
+    @NonNull
     public static <T> T verifyExistence(Optional<T> resourceEntity, String notFoundMessageTemplate, Object... args) {
         verifyExistence(resourceEntity.orElse(null), notFoundMessageTemplate, args);
 
