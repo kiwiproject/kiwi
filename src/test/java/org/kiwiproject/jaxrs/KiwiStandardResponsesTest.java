@@ -1,6 +1,7 @@
 package org.kiwiproject.jaxrs;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
 import static org.kiwiproject.jaxrs.JaxrsTestHelper.assertAcceptedResponse;
 import static org.kiwiproject.jaxrs.JaxrsTestHelper.assertCreatedResponseWithLocation;
 import static org.kiwiproject.jaxrs.JaxrsTestHelper.assertJsonResponseType;
@@ -281,6 +282,15 @@ class KiwiStandardResponsesTest {
 
             assertResponseEntityHasOneErrorMessage(response, statusCode, "This is the error message. It is very helpful.");
             assertJsonResponseType(response);
+        }
+
+        @ParameterizedTest
+        @ValueSource(ints = {200, 202, 302, 304})
+        void shouldThrowIllegalArgument_WhenStatusCodeIsNotClientOrServerError(int statusCode) {
+            var status = Response.Status.fromStatusCode(statusCode);
+            assertThatIllegalArgumentException()
+                    .isThrownBy(() -> KiwiStandardResponses.standardErrorResponse(status, "This is not actually an error status!"))
+                    .withMessage("status %d is not a client error (4xx) or server error (5xx)", statusCode);
         }
     }
 

@@ -1,10 +1,12 @@
 package org.kiwiproject.jaxrs;
 
+import static com.google.common.base.Preconditions.checkArgument;
 import static java.util.Objects.nonNull;
 import static org.kiwiproject.base.KiwiStrings.f;
 
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
+import jakarta.ws.rs.core.Response.Status.Family;
 import lombok.experimental.UtilityClass;
 import org.checkerframework.checker.nullness.qual.Nullable;
 import org.kiwiproject.jaxrs.exception.ErrorMessage;
@@ -321,11 +323,12 @@ public class KiwiStandardResponses {
      * Returns a response having the given status and an {@link ErrorMessage} entity which uses {@code errorDetails}
      * as the detailed error message.
      * <p>
-     * Does not verify that the given status is actually an error status.
+     * Verifies that the given status is actually an error status (4xx or 5xx).
      *
      * @param status       the error status to use
      * @param errorDetails the error message to use
      * @return a response with the given status code and {@code application/json} content type
+     * @throws IllegalArgumentException if the given status is not a client or server error
      */
     public static Response standardErrorResponse(Response.Status status, String errorDetails) {
         return standardErrorResponseBuilder(status, errorDetails).build();
@@ -335,14 +338,20 @@ public class KiwiStandardResponses {
      * Returns a response builder having the given status and an {@link ErrorMessage} entity which uses
      * {@code errorDetails} as the detailed error message.
      * <p>
-     * Does not verify that the given status is actually an error status.
+     * Verifies that the given status is actually an error status (4xx or 5xx).
      *
      * @param status       the error status to use
      * @param errorDetails the error message to use
      * @return a response builder with the given status code and {@code application/json} content type
+     * @throws IllegalArgumentException if the given status is not a client or server error
      */
     public static Response.ResponseBuilder standardErrorResponseBuilder(Response.Status status, String errorDetails) {
-        return JaxrsExceptionMapper.buildResponseBuilder(new JaxrsException(errorDetails, status.getStatusCode()));
+        var family = status.getFamily();
+        var statusCode = status.getStatusCode();
+        checkArgument(family == Family.CLIENT_ERROR || family == Family.SERVER_ERROR,
+                "status %s is not a client error (4xx) or server error (5xx)", statusCode);
+
+        return JaxrsExceptionMapper.buildResponseBuilder(new JaxrsException(errorDetails, statusCode));
     }
 
     /**
