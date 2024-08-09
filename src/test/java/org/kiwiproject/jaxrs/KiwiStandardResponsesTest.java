@@ -272,6 +272,27 @@ class KiwiStandardResponsesTest {
     }
 
     @Nested
+    class StandardInternalServerErrorResponse {
+
+        @Test
+        void shouldReturnResponse_With500StatusAndErrorMessageEntity() {
+            var response = KiwiStandardResponses.standardInternalServerErrorResponse("This is the error message. It is very helpful.");
+
+            assertResponseEntityHasOneErrorMessage(response, 500, "This is the error message. It is very helpful.");
+            assertJsonResponseType(response);
+        }
+
+        @Test
+        void shouldReturnResponseBuilder_With500StatusAndErrorMessageEntity() {
+            var builder = KiwiStandardResponses.standardInternalServerErrorResponseBuilder("This is the error message. It is very helpful.");
+            var response = builder.build();
+
+            assertResponseEntityHasOneErrorMessage(response, 500, "This is the error message. It is very helpful.");
+            assertJsonResponseType(response);
+        }
+    }
+
+    @Nested
     class StandardErrorResponse {
 
         @ParameterizedTest
