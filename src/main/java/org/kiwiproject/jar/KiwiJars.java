@@ -126,8 +126,8 @@ public class KiwiJars {
      * @param manifestEntryName The name of the property to resolve
      * @param manifestFilter    An optional filter that can be used to filter down manifest files if there are more than one.
      * @return an {@link Optional} containing the resolved value or {@code Optional.empty()} if not
-     * @implNote If this code is called from a "fat-jar" with single manifest file, then the filter predicate is not needed. The predicate filter is
-     * really only needed if there are multiple jars loaded in the classpath all containing manifest files.
+     * @implNote If this code is called from a "fat-jar" with a single manifest file, then the filter predicate is unnecessary.
+     * The predicate filter is really only necessary if there are multiple jars loaded in the classpath all containing manifest files.
      */
     @SuppressWarnings("java:S2259")
     public static Optional<String> readSingleValueFromJarManifest(ClassLoader classLoader, String manifestEntryName, Predicate<URL> manifestFilter) {
@@ -206,8 +206,8 @@ public class KiwiJars {
      * @param manifestFilter        a predicate filter used to limit which jar files to search for a manifest file
      * @param manifestEntryNames    an array of names to resolve from the manifest
      * @return a {@code Map<String,String>} of resolved entries
-     * @implNote If this code is called from a "fat-jar" with single manifest file, then the filter predicate is not needed. The predicate filter is
-     * really only needed if there are multiple jars loaded in the classpath all containing manifest files.
+     * @implNote If this code is called from a "fat-jar" with a single manifest file, then the filter predicate is unnecessary.
+     * The predicate filter is really only necessary if there are multiple jars loaded in the classpath all containing manifest files.
      */
     public static Map<String, String> readValuesFromJarManifest(ClassLoader classLoader, Predicate<URL> manifestFilter, String... manifestEntryNames) {
         var entries = new HashMap<String, String>();

@@ -21,7 +21,7 @@ import java.util.Optional;
  * jackson-core, jackson-dataformat-xml, jackson-dataformat-yaml dependencies are present at runtime.
  * <p>
  * WARNING: Before using, please make sure you understand how Jackson actually does its detection. Hint: it's not
- * magic, and may not be as robust as you might like. For example the YAML detector will only report YAML if the
+ * magic, and may not be as robust as you might like. For example, the YAML detector will only report YAML if the
  * content starts with the formal YAML preamble "---". Use the "@see" links below for links to the various Jackson
  * classes that perform data format detection. The main class is {@link DataFormatDetector}, to which you supply
  * one or more detectors, which are {@link JsonFactory} and its subclasses.
@@ -48,7 +48,7 @@ public class KiwiJacksonDataFormats {
      * Is the given text JSON using the default {@link Charset}?
      *
      * @param text the String value to check
-     * @return {@code true} if text is JSON; {@code false} otherwise
+     * @return {@code true} if {@code text} is JSON; {@code false} otherwise
      */
     public static boolean isJson(String text) {
         return isJson(text, DEFAULT_CHARSET);
@@ -58,7 +58,7 @@ public class KiwiJacksonDataFormats {
      * Is the given text JSON using UTF-8 {@link Charset}?
      *
      * @param text the String value to check
-     * @return {@code true} if text is JSON; {@code false} otherwise
+     * @return {@code true} if {@code text} is JSON; {@code false} otherwise
      */
     public static boolean isJsonUtf8(String text) {
         return isJson(text, UTF_8);
@@ -69,7 +69,7 @@ public class KiwiJacksonDataFormats {
      *
      * @param text    the String value to check
      * @param charset the character set to use
-     * @return {@code true} if text is JSON; {@code false} otherwise
+     * @return {@code true} if {@code text} is JSON; {@code false} otherwise
      */
     public static boolean isJson(String text, Charset charset) {
         return isFormat(JacksonDataFormat.JSON, text, charset);
@@ -79,7 +79,7 @@ public class KiwiJacksonDataFormats {
      * Is the given text XML using the default {@link Charset}?
      *
      * @param text the String value to check
-     * @return {@code true} if text is XML; {@code false} otherwise
+     * @return {@code true} if {@code text} is XML; {@code false} otherwise
      */
     public static boolean isXml(String text) {
         return isXml(text, DEFAULT_CHARSET);
@@ -89,7 +89,7 @@ public class KiwiJacksonDataFormats {
      * Is the given text XML using UTF-8 {@link Charset}?
      *
      * @param text the String value to check
-     * @return {@code true} if text is XML; {@code false} otherwise
+     * @return {@code true} if {@code text} is XML; {@code false} otherwise
      */
     public static boolean isXmlUtf8(String text) {
         return isXml(text, UTF_8);
@@ -100,7 +100,7 @@ public class KiwiJacksonDataFormats {
      *
      * @param text    the String value to check
      * @param charset the character set to use
-     * @return {@code true} if text is XML; {@code false} otherwise
+     * @return {@code true} if {@code text} is XML; {@code false} otherwise
      */
     public static boolean isXml(String text, Charset charset) {
         return isFormat(JacksonDataFormat.XML, text, charset);
@@ -110,7 +110,7 @@ public class KiwiJacksonDataFormats {
      * Is the given text YAML using the default {@link Charset}?
      *
      * @param text the String value to check
-     * @return {@code true} if text is YAML; {@code false} otherwise
+     * @return {@code true} if {@code text} is YAML; {@code false} otherwise
      * @implNote Jackson does NOT consider the content YAML without "---" at the top of the file!
      */
     public static boolean isYaml(String text) {
@@ -121,7 +121,7 @@ public class KiwiJacksonDataFormats {
      * Is the given text YAML using UTF-8 {@link Charset}?
      *
      * @param text the String value to check
-     * @return {@code true} if text is YAML; {@code false} otherwise
+     * @return {@code true} if {@code text} is YAML; {@code false} otherwise
      * @implNote Jackson does NOT consider the content YAML without "---" at the top of the file!
      */
     public static boolean isYamlUtf8(String text) {
@@ -133,7 +133,7 @@ public class KiwiJacksonDataFormats {
      *
      * @param text    the String value to check
      * @param charset the character set to use
-     * @return {@code true} if text is YAML; {@code false} otherwise
+     * @return {@code true} if {@code text} is YAML; {@code false} otherwise
      * @implNote Jackson does NOT consider the content YAML without "---" at the top of the file!
      */
     public static boolean isYaml(String text, Charset charset) {
@@ -146,7 +146,7 @@ public class KiwiJacksonDataFormats {
      * @param matchFormat the format to match against
      * @param text        the String value to check
      * @param charset     the character set to use
-     * @return {@code true} if text is equal to {@code matchFormat}; {@code false} otherwise
+     * @return {@code true} if {@code text} is equal to {@code matchFormat}; {@code false} otherwise
      */
     public static boolean isFormat(JacksonDataFormat matchFormat, String text, Charset charset) {
         return detectFormat(text, charset)
@@ -155,7 +155,7 @@ public class KiwiJacksonDataFormats {
     }
 
     /**
-     * Detect data format of given text using the default {@link Charset}.
+     * Detect the data format of given text using the default {@link Charset}.
      *
      * @param text the String value to check
      * @return Optional containing detected format, or empty Optional if format was not
@@ -166,7 +166,7 @@ public class KiwiJacksonDataFormats {
     }
 
     /**
-     * Detect data format of given text using UTF-8 {@link Charset}.
+     * Detect the data format of given text using UTF-8 {@link Charset}.
      *
      * @param text the String value to check
      * @return Optional containing detected format, or empty Optional if format was not
@@ -177,7 +177,7 @@ public class KiwiJacksonDataFormats {
     }
 
     /**
-     * Detect data format of given text using the given {@link Charset}.
+     * Detect the data format of given text using the given {@link Charset}.
      *
      * @param text    the String value to check
      * @param charset the character set to use
@@ -193,7 +193,7 @@ public class KiwiJacksonDataFormats {
     }
 
     /**
-     * Detect data format of given text using given {@link Charset} and {@link DataFormatDetector}.
+     * Detect the data format of given text using given {@link Charset} and {@link DataFormatDetector}.
      * <p>
      * This method is an "escape hatch"; it allows detection of formats not supported in {@link JacksonDataFormat}
      * since it accepts a {@link DataFormatDetector} and it returns a String. Thus, since the caller supplies its own

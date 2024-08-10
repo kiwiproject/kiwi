@@ -538,7 +538,7 @@ public class KiwiHttpResponses {
      *
      * @param statusCode the status code
      * @return the reason phrase of the status code, or "Unknown" if the
-     * code is not known (it may or may not be a valid HTTP status code,
+     * code is not known (it may or may not be a valid HTTP status code
      * or could be a custom code)
      */
     public static String reasonPhraseOf(int statusCode) {

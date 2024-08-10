@@ -24,7 +24,7 @@ public class KiwiIterators {
 
     /**
      * Returns a <em>thread-safe</em> iterator that cycles indefinitely over the elements of {@code iterable}, base
-     * on Guava's {@link com.google.common.collect.Iterables#cycle(Iterable)}. The differences from Guava is that the
+     * on Guava's {@link com.google.common.collect.Iterables#cycle(Iterable)}. The difference from Guava is that the
      * returned iterator provides thread-safety; makes an immutable copy of the provided iterable; and does not
      * support element removal regardless of whether the original iterable does.
      * <p>

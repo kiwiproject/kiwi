@@ -83,7 +83,7 @@ public class KiwiEnums {
      * @param <E> the enum type
      * @param enumValue the enum to use for the comparison
      * @param value the value to use for the comparison, may be null
-     * @return if the enum name equals the value in case-insensitive manner, false otherwise
+     * @return if the enum name equals the value in a case-insensitive manner, false otherwise
      */
     public static <E extends Enum<E>> boolean equalsIgnoreCase(Enum<E> enumValue, @Nullable CharSequence value) {
         checkEnumNotNull(enumValue);
@@ -96,7 +96,7 @@ public class KiwiEnums {
 
     /**
      * Compares the given enum's {@link Enum#name() name} with the given value for
-     * inverse equality, i.e. they are not equal.
+     * inverse equality, i.e., they are not equal.
      *
      * @param <E> the enum type
      * @param enumValue the enum to use for the comparison
@@ -109,12 +109,12 @@ public class KiwiEnums {
 
     /**
      * Compares the given enum's {@link Enum#name() name} with the given value, ignoring case, for
-     * inverse equality, i.e. they are not equal.
+     * inverse equality, i.e., they are not equal.
      *
      * @param <E> the enum type
      * @param enumValue the enum to use for the comparison
      * @param value the value to use for the comparison, may be null
-     * @return true if the enum name does not equal the value in case-insensitive manner, false otherwise
+     * @return true if the enum name does not equal the value in a case-insensitive manner, false otherwise
      */
     public static <E extends Enum<E>> boolean notEqualsIgnoreCase(Enum<E> enumValue, @Nullable CharSequence value) {
         return !equalsIgnoreCase(enumValue, value);
@@ -141,7 +141,7 @@ public class KiwiEnums {
      * @param <E> the enum type
      * @param value the value to use for the comparison, may be null
      * @param enumValues the enums to use for the comparison
-     * @return true if the value equals the name of the enums in case-insensitive manner, false otherwise
+     * @return true if the value equals the name of the enums in a case-insensitive manner, false otherwise
      */
     @SafeVarargs
     public static <E extends Enum<E>> boolean equalsAnyIgnoreCase(@Nullable CharSequence value,

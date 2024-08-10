@@ -9,12 +9,12 @@ import java.net.URI;
 
 /**
  * Some utilities and constants for Jakarta XML Web Services. These make use of specific features in the
- * JDK/Apache CXF implementation in order to provide connect and read timeouts, as well as to provide an
+ * JDK/Apache CXF implementation to provide connect and read timeouts, as well as to provide an
  * {@link SSLSocketFactory}. See the implementation note for more details if you are not using the JDK/Apache CXF
  * implementations.
  *
  * @implNote Note specifically that these use Jakarta XML Web Services vendor extension features that are
- * available only when using the the JDK/Apache CXF implementations. Specifically, we are using constants in
+ * available only when using the JDK/Apache CXF implementations. Specifically, we are using constants in
  * {@link JAXWSProperties}. If you are not using the JDK implementation or Apache CXF, this will almost certainly
  * not work. For one thing you won't have JAXWSProperties in your classpath, so will most likely get
  * {@link NoClassDefFoundError} or {@link ClassNotFoundException} at runtime.
@@ -46,13 +46,13 @@ public class KiwiJaxWs {
     public static final int JAX_WS_DEFAULT_READ_TIMEOUT_MILLIS = 5_000;
 
     /**
-     * Configure a JDK (e.g. Apache CXF-based) web service class with the given service endpoint address, SSL socket
+     * Configure a JDK (e.g., Apache CXF-based) web service class with the given service endpoint address, SSL socket
      * factory, and default timeout values.
      *
      * @param clazz              the class type of the specified {@link BindingProvider}
      * @param bindingProvider    the {@link BindingProvider} to configure
      * @param serviceEndpointUri the target service endpoint address
-     * @param sslSocketFactory   the SSL socket factory to configure the web service to utilize when making secure calls
+     * @param sslSocketFactory   the SSL socket factory to configure the web service to use when making secure calls
      * @param <T>                the web service type
      * @return the configured web service
      * @see #JAX_WS_DEFAULT_CONNECT_TIMEOUT_MILLIS
@@ -68,13 +68,13 @@ public class KiwiJaxWs {
     }
 
     /**
-     * Configure a JDK (e.g. Apache CXF-based) web service class with the given service endpoint address, SSL socket
+     * Configure a JDK (e.g., Apache CXF-based) web service class with the given service endpoint address, SSL socket
      * factory, and specified connect and read timeouts (in milliseconds).
      *
      * @param clazz                the class type of the specified {@link BindingProvider}
      * @param bindingProvider      the {@link BindingProvider} to configure
      * @param serviceEndpointUri   the target service endpoint address
-     * @param sslSocketFactory     the SSL socket factory to configure the web service to utilize when making secure calls
+     * @param sslSocketFactory     the SSL socket factory to configure the web service to use when making secure calls
      * @param connectTimeoutMillis the connect timeout in milliseconds
      * @param readTimeoutMillis    the read timeout in milliseconds
      * @param <T>                  the web service type
@@ -99,11 +99,11 @@ public class KiwiJaxWs {
     }
 
     /**
-     * Configure a JDK (e.g. Apache CXF-based) web service {@link BindingProvider} request context with the given SSL
+     * Configure a JDK (e.g., Apache CXF-based) web service {@link BindingProvider} request context with the given SSL
      * socket factory. <em>This is a non-standard property specific to the reference implementation.</em>
      *
      * @param bindingProvider  the {@link BindingProvider} to configure
-     * @param sslSocketFactory the SSL socket factory to configure the web service to utilize when making secure calls
+     * @param sslSocketFactory the SSL socket factory to configure the web service to use when making secure calls
      * @see JAXWSProperties#SSL_SOCKET_FACTORY
      */
     public static void configureJdkWebServiceSslSocketFactory(BindingProvider bindingProvider,
@@ -114,7 +114,7 @@ public class KiwiJaxWs {
     }
 
     /**
-     * Configure a JDK (e.g. Apache CXF-based) web service {@link BindingProvider} request context with the default
+     * Configure a JDK (e.g., Apache CXF-based) web service {@link BindingProvider} request context with the default
      * connect timeout. <em>This is a non-standard property specific to the reference implementation.</em>
      *
      * @param bindingProvider the {@link BindingProvider} to configure
@@ -126,7 +126,7 @@ public class KiwiJaxWs {
     }
 
     /**
-     * Configure a JDK (e.g. Apache CXF-based) web service {@link BindingProvider} request context with the given
+     * Configure a JDK (e.g., Apache CXF-based) web service {@link BindingProvider} request context with the given
      * connect timeout in milliseconds.
      *
      * @param bindingProvider      the {@link BindingProvider} to configure
@@ -140,7 +140,7 @@ public class KiwiJaxWs {
     }
 
     /**
-     * Configure a JDK (e.g. Apache CXF-based) web service {@link BindingProvider} request context with the default
+     * Configure a JDK (e.g., Apache CXF-based) web service {@link BindingProvider} request context with the default
      * read timeout. <em>This is a non-standard property specific to the reference implementation.</em>
      *
      * @param bindingProvider the {@link BindingProvider} to configure
@@ -152,7 +152,7 @@ public class KiwiJaxWs {
     }
 
     /**
-     * Configure a JDK (e.g. Apache CXF-based) web service {@link BindingProvider} request context with the given
+     * Configure a JDK (e.g., Apache CXF-based) web service {@link BindingProvider} request context with the given
      * read timeout in milliseconds.
      *
      * @param bindingProvider   the {@link BindingProvider} to configure
@@ -166,7 +166,7 @@ public class KiwiJaxWs {
     }
 
     /**
-     * Configure a JDK (e.g. Apache CXF-based) web service {@link BindingProvider} request context with the given
+     * Configure a JDK (e.g., Apache CXF-based) web service {@link BindingProvider} request context with the given
      * service endpoint URI.
      *
      * @param bindingProvider    the {@link BindingProvider} to configure
@@ -180,7 +180,7 @@ public class KiwiJaxWs {
     }
 
     /**
-     * Configure a JDK (e.g. Apache CXF-based) web service {@link BindingProvider} request context with the given
+     * Configure a JDK (e.g., Apache CXF-based) web service {@link BindingProvider} request context with the given
      * service endpoint URI.
      *
      * @param bindingProvider    the {@link BindingProvider} to configure

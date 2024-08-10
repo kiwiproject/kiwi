@@ -63,8 +63,8 @@ public class KiwiJaxrsValidations {
 
     /**
      * Assert that the given object is valid using the default validation group and the specified property path
-     * map, which allows callers to translate property paths (e.g. firstName) to a human-readable
-     * names (e.g. First Name).
+     * map, which allows callers to translate property paths (e.g., firstName) to a human-readable
+     * names (e.g., First Name).
      *
      * @param id                   the unique identity or ID of the object being validated
      * @param obj                  the object to validate

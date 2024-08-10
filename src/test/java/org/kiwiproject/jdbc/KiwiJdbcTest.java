@@ -926,7 +926,7 @@ class KiwiJdbcTest {
 
             KiwiJdbc.nullSafeSetDouble(statement, parameterIndex, value);
 
-            // In this case it should be safe to verify the exact double value, since no calculation took place
+            // In this case, it should be safe to verify the exact double value, since no calculation took place
             verify(statement).setDouble(parameterIndex, value);
         }
 

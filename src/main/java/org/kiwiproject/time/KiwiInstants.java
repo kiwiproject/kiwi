@@ -18,7 +18,7 @@ import java.time.temporal.TemporalUnit;
  * <p>
  * The {@link Instant} class does not support all of the {@link ChronoUnit} values via the generic
  * {@link Instant#plus(long, TemporalUnit)} and {@link Instant#minus(long, TemporalUnit)} methods.
- * Specifically it only supports (as of this writing):
+ * Specifically, it only supports (as of this writing):
  * <ul>
  *     <li>{@link ChronoUnit#NANOS}</li>
  *     <li>{@link ChronoUnit#MICROS}</li>
@@ -78,10 +78,10 @@ public class KiwiInstants {
     }
 
     /**
-     * Return the value of the day of the month from {@code instant}.
+     * Return the day of the month from {@code instant}.
      *
      * @param instant the {@link Instant}
-     * @return the value of the day of the month
+     * @return the day of the month
      */
     public static int getDayOfMonth(Instant instant) {
         return toZonedDateTime(instant).getDayOfMonth();
@@ -101,7 +101,7 @@ public class KiwiInstants {
      * Return the value of the month (1-12) from {@code instant}.
      *
      * @param instant the {@link Instant}
-     * @return the value the month, i.e. 1-12
+     * @return the value the month, i.e., 1-12
      */
     public static int getMonthValue(Instant instant) {
         return getMonth(instant).getValue();
@@ -132,7 +132,7 @@ public class KiwiInstants {
      * Return an {@link Instant} that is the given number of {@code hours} before {@code instant}.
      *
      * @param instant the {@link Instant}
-     * @param hours   the amount of time to go backward in hours
+     * @param hours   the amount of time to go back, in hours
      * @return a new {@link Instant} appropriately adjusted
      */
     public static Instant minusHours(Instant instant, long hours) {
@@ -143,7 +143,7 @@ public class KiwiInstants {
      * Return an {@link Instant} that is the given number of {@code days} before {@code instant}.
      *
      * @param instant the {@link Instant}
-     * @param days    the amount of time to go backward in days
+     * @param days    the amount of time to go back, in days
      * @return a new {@link Instant} appropriately adjusted
      */
     public static Instant minusDays(Instant instant, long days) {
@@ -158,7 +158,7 @@ public class KiwiInstants {
      * Return an {@link Instant} that is the given number of {@code months} before {@code instant}.
      *
      * @param instant the {@link Instant}
-     * @param months  the amount of time to go backward in months
+     * @param months  the amount of time to go back, in months
      * @return a new {@link Instant} appropriately adjusted
      * @implNote uses {@link ZonedDateTime} (at {@link ZoneOffset#UTC}) to traverse by month
      */
@@ -170,7 +170,7 @@ public class KiwiInstants {
      * Return an {@link Instant} that is the given number of {@code years} before {@code instant}.
      *
      * @param instant the {@link Instant}
-     * @param years   the amount of time to go backward in years
+     * @param years   the amount of time to go back, in years
      * @return a new {@link Instant} appropriately adjusted
      * @implNote uses {@link ZonedDateTime} (at {@link ZoneOffset#UTC}) to traverse by month
      */
@@ -207,7 +207,7 @@ public class KiwiInstants {
      * Return an {@link Instant} that is the given number of {@code hours} after {@code instant}.
      *
      * @param instant the {@link Instant}
-     * @param hours   the amount of time to go forward in hours
+     * @param hours   the amount of time to go forward, in hours
      * @return a new {@link Instant} appropriately adjusted
      */
     public static Instant plusHours(Instant instant, long hours) {
@@ -218,7 +218,7 @@ public class KiwiInstants {
      * Return an {@link Instant} that is the given number of {@code days} after {@code instant}.
      *
      * @param instant the {@link Instant}
-     * @param days    the amount of time to go forward in days
+     * @param days    the amount of time to go forward, in days
      * @return a new {@link Instant} appropriately adjusted
      */
     public static Instant plusDays(Instant instant, long days) {
@@ -233,7 +233,7 @@ public class KiwiInstants {
      * Return an {@link Instant} that is the given number of {@code months} after {@code instant}.
      *
      * @param instant the {@link Instant}
-     * @param months  the amount of time to go forward in months
+     * @param months  the amount of time to go forward, in months
      * @return a new {@link Instant} appropriately adjusted
      * @implNote uses {@link ZonedDateTime} (at {@link ZoneOffset#UTC}) to traverse by month
      */
@@ -245,7 +245,7 @@ public class KiwiInstants {
      * Return an {@link Instant} that is the given number of {@code years} after {@code instant}.
      *
      * @param instant the {@link Instant}
-     * @param years   the amount of time to go forward in years
+     * @param years   the amount of time to go forward, in years
      * @return a new {@link Instant} appropriately adjusted
      * @implNote uses {@link ZonedDateTime} (at {@link ZoneOffset#UTC}) to traverse by month
      */

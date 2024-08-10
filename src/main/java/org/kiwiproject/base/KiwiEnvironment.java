@@ -17,8 +17,8 @@ import java.util.Properties;
 import java.util.concurrent.TimeUnit;
 
 /**
- * Interface that defines methods related to the external environment, for example getting the current time in
- * milliseconds, obtaining the process ID, and sleeping quietly for a specified time.
+ * Interface that defines methods related to the external environment, for example, getting the current time in
+ * milliseconds, getting the process ID, and sleeping quietly for a specified time.
  * <p>
  * The main advantage of this over simply using things like {@link System#currentTimeMillis()} is to allow for easier
  * testing. Since this is an interface, it can easily be replaced with a mock object in unit tests that deal with

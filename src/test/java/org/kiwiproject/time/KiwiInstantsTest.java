@@ -155,7 +155,7 @@ class KiwiInstantsTest {
         void setUp() {
             zdtNow = ZonedDateTime.ofInstant(now, ZoneOffset.UTC);
 
-            // Adjustment to handle months having different lengths (so tests pass at end of month)
+            // Adjustment to handle months having different lengths (so tests pass at the end of month)
             while (zdtNow.getDayOfMonth() > 28) {
                 zdtNow = zdtNow.minusDays(1);
             }

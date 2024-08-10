@@ -25,7 +25,7 @@ public class KiwiLists {
      *
      * @param items the list
      * @param <T>   the type of items in the list
-     * @return {@code true} if list is null or empty; {@code false} otherwise
+     * @return {@code true} if {@code list} is null or empty; {@code false} otherwise
      */
     public static <T> boolean isNullOrEmpty(List<T> items) {
         return items == null || items.isEmpty();
@@ -47,7 +47,7 @@ public class KiwiLists {
      *
      * @param items the list
      * @param <T>   the type of items in the list
-     * @return {@code true} if list is non-null and has exactly one item; {@code false} otherwise
+     * @return {@code true} if {@code list} is non-null and has exactly one item; {@code false} otherwise
      */
     public static <T> boolean hasOneElement(List<T> items) {
         return nonNull(items) && items.size() == 1;
@@ -93,12 +93,12 @@ public class KiwiLists {
     }
 
     /**
-     * Returns an {@link Optional} containing the first element in specified list of items, or an empty optional
+     * Returns an {@link Optional} containing the first element in the specified list of items, or an empty optional
      * if the list is null or empty.
      *
      * @param items the list
      * @param <T>   the type of items in the list
-     * @return Optional containing first element if exists, otherwise Optional.empty()
+     * @return Optional containing the first element if exists, otherwise Optional.empty()
      */
     public static <T> Optional<T> firstIfPresent(List<T> items) {
         return isNotNullOrEmpty(items) ? Optional.of(first(items)) : Optional.empty();
@@ -199,7 +199,7 @@ public class KiwiLists {
     }
 
     /**
-     * Returns an {@link Optional} containing the last element in specified list of items, or an empty optional
+     * Returns an {@link Optional} containing the last element in the specified list of items, or an empty optional
      * if the list is null or empty.
      *
      * @param items the list
@@ -267,8 +267,8 @@ public class KiwiLists {
     }
 
     /**
-     * Returns a new list with the same elements and the same size as the original, however the initial position in the list
-     * is now the element specified by the "startOffset" and the list wraps around through the contents to end with "startOffset" - 1
+     * Returns a new list with the same elements and the same size as the original. However, the initial position in the list
+     * is now the element specified by the "startOffset" and the list wraps around through the contents to end with ("startOffset" - 1).
      *
      * @param input       the original list
      * @param startOffset the desired offset to start the new list
