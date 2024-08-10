@@ -114,6 +114,7 @@ public class KiwiResources {
      * @return the entity, if it is not null
      * @throws JaxrsNotFoundException if the entity is null
      */
+    @NonNull
     public static <T> T verifyExistenceAndReturn(T resourceEntity, Class<T> entityType, Object identifier) {
         return verifyExistence(Optional.ofNullable(resourceEntity), entityType, identifier);
     }
