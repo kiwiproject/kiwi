@@ -200,7 +200,7 @@ public class KiwiReflection {
      * @param target    the target object in which the field resides
      * @param fieldName the field name
      * @param value     the new value
-     * @throws RuntimeReflectionException if any error occurs setting the field value
+     * @throws RuntimeReflectionException if any error occurs while setting the field value
      * @see Field#set(Object, Object)
      */
     public static void setFieldValue(Object target, String fieldName, Object value) {
@@ -216,7 +216,7 @@ public class KiwiReflection {
      * @param target the target object in which the field resides
      * @param field  the field to set
      * @param value  the new value
-     * @throws RuntimeReflectionException if any error occurs setting the field value
+     * @throws RuntimeReflectionException if any error occurs while setting the field value
      * @see Field#set(Object, Object)
      */
     public static void setFieldValue(Object target, Field field, Object value) {
@@ -623,7 +623,7 @@ public class KiwiReflection {
      * @param args       optionally, the method arguments
      * @param <T>        the return type parameter
      * @return result of calling the method (which could be {@code null}), cast to type {@code T}
-     * @throws RuntimeReflectionException if any error occurs invoking the method (excluding type cast errors)
+     * @throws RuntimeReflectionException if any error occurs while invoking the method (excluding type cast errors)
      * @throws ClassCastException         if the given return type is not correct
      */
     public static <T> T invokeExpectingReturn(Method method, Object target, Class<T> returnType, Object... args) {
@@ -637,7 +637,7 @@ public class KiwiReflection {
      * @param target the object on which to invoke the method
      * @param args   optionally, the method arguments
      * @return result of calling the method (which could be {@code null})
-     * @throws RuntimeReflectionException if any error occurs invoking the method
+     * @throws RuntimeReflectionException if any error occurs while invoking the method
      * @see Method#invoke(Object, Object...)
      */
     public static Object invokeExpectingReturn(Method method, Object target, Object... args) {
@@ -657,7 +657,7 @@ public class KiwiReflection {
      * @param method the method to invoke
      * @param target the object on which to invoke the method
      * @param args   optionally, the method arguments
-     * @throws RuntimeReflectionException if any error occurs invoking the method
+     * @throws RuntimeReflectionException if any error occurs while invoking the method
      * @see Method#invoke(Object, Object...)
      */
     public static void invokeVoidReturn(Method method, Object target, Object... args) {
@@ -677,7 +677,7 @@ public class KiwiReflection {
      * @param <T> the type of object
      * @param type the {@link Class} representing the object type
      * @return a new instance
-     * @throws RuntimeReflectionException if any error occurs invoking the constructor
+     * @throws RuntimeReflectionException if any error occurs while invoking the constructor
      * @throws IllegalArgumentException if a no-args constructor does not exist, is private, etc.
      * @see Class#getDeclaredConstructor(Class...)
      * @see java.lang.reflect.Constructor#newInstance(Object...)
@@ -702,7 +702,7 @@ public class KiwiReflection {
      * Create a new instance of the given type using {@code arguments} to determine the constructor
      * argument types, using the first matching constructor based on the argument types and actual
      * constructor parameters. A constructor will match if the constructor parameter type is assignable
-     * from the argument type. For example if a one-argument constructor accepts a {@link CharSequence} and
+     * from the argument type. For example, if a one-argument constructor accepts a {@link CharSequence} and
      * the actual argument type is {@link String}, the constructor matches since String is assignable to
      * CharSequence.
      * <p>
@@ -716,7 +716,7 @@ public class KiwiReflection {
      * @return a new instance
      * @throws IllegalArgumentException if no matching constructor was found for the given arguments
      * @throws NullPointerException if any of the arguments is {@code null}
-     * @throws RuntimeReflectionException if any error occurs invoking the constructor
+     * @throws RuntimeReflectionException if any error occurs while invoking the constructor
      * @see Class#getDeclaredConstructors()
      * @see java.lang.reflect.Constructor#newInstance(Object...)
      */
@@ -781,7 +781,7 @@ public class KiwiReflection {
 
     /**
      * This method is an alias for {@link #newInstance(Class, List, List)}, with the arguments as varargs, which
-     * may be more convenient in some situations. See that method's javadoc for more details, including the types
+     * may be more convenient in some situations. See that method's Javadoc for more details, including the types
      * of exceptions that can be thrown.
      *
      * @param <T> the type of object
@@ -813,7 +813,7 @@ public class KiwiReflection {
      * @return a new instance
      * @throws IllegalArgumentException if any of the arguments is null, if the length of parameter types and
      * arguments is different, or if no constructor exists with the given parameter types
-     * @throws RuntimeReflectionException if any error occurs invoking the constructor
+     * @throws RuntimeReflectionException if any error occurs while invoking the constructor
      * @see Class#getDeclaredConstructor(Class...)
      * @see java.lang.reflect.Constructor#newInstance(Object...)
      */

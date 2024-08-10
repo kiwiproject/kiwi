@@ -480,10 +480,10 @@ class KiwiRetryerTest {
 
             assertThatThrownBy(allFutures::join).isExactlyInstanceOf(CompletionException.class);
 
-            // First one should have succeeded
+            // The first one should have succeeded
             assertThat(future1).isCompletedWithValueMatching(response -> response.getStatus() == 200);
 
-            // Second one should have failed because of bad response status 500
+            // The second one should have failed because of bad response status 500
             var thrownByFuture2 = catchThrowable(future2::join);
             assertThat(thrownByFuture2)
                     .isExactlyInstanceOf(CompletionException.class)
@@ -496,7 +496,7 @@ class KiwiRetryerTest {
             assertThat(result2.getStatus()).isEqualTo(500);
             assertThat(result2.getEntity()).isEqualTo(2);
 
-            // Third one should have failed because of SocketTimeoutException
+            // The third one should have failed because of SocketTimeoutException
             var thrownByFuture3 = catchThrowable(future3::join);
             assertThat(thrownByFuture3)
                     .isExactlyInstanceOf(CompletionException.class)

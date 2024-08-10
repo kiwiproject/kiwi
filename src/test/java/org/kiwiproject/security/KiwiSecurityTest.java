@@ -393,7 +393,7 @@ class KiwiSecurityTest {
             }
 
             /**
-             * @implNote Per JavaDocs on {@link java.security.KeyStore#load(InputStream, char[])} the root cause of
+             * @implNote Per Javadocs on {@link java.security.KeyStore#load(InputStream, char[])} the root cause of
              * an incorrect password should be {@link UnrecoverableKeyException}
              */
             @Test

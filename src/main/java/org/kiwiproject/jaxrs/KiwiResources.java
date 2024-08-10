@@ -27,14 +27,14 @@ import java.util.Map;
 import java.util.Optional;
 
 /**
- * Static utilities for use in Jakarta REST resource classes. Contains utilities for verifying entities (e.g. obtained
+ * Static utilities for use in Jakarta REST resource classes. Contains utilities for verifying entities (e.g., obtained
  * from a service or data access class), factories for creating new responses, and for validating query parameters.
  *
  * @apiNote Some methods in this class accept {@link Optional} arguments, which we know is considered a code smell
  * by various people and analysis tools such as IntelliJ's inspections, Sonar, etc. However, we also like to return
  * {@link Optional} from data access code (e.g. a DAO "findById" method where the object might not exist if it was
  * recently deleted). In such cases, we can simply take the Optional returned by those finder methods and pass them
- * directly to the utilities provided here without needing to call additional methods, for example without needing to
+ * directly to the utilities provided here without needing to call additional methods, for example, without needing to
  * call {@code orElse(null)}. So, we acknowledge that it is generally not good to accept {@link Optional} arguments,
  * but we're trading off convenience in this class against "generally accepted" practice.
  * @see KiwiResponses
@@ -250,7 +250,7 @@ public class KiwiResources {
 
     /**
      * Creates a {@link Response.ResponseBuilder} having the given status and entity.
-     * You can further modify the returned build, e.g. add custom headers, set cookies. etc.
+     * You can further modify the returned build, e.g., add custom headers, set cookies. Etc.
      *
      * @param status the response status
      * @param entity the response entity
@@ -276,7 +276,7 @@ public class KiwiResources {
 
     /**
      * Creates a {@link Response.ResponseBuilder} having the given status, entity, and content type.
-     * You can further modify the returned build, e.g. add custom headers, set cookies. etc.
+     * You can further modify the returned build, e.g., add custom headers, set cookies. Etc.
      *
      * @param status      the response status
      * @param entity      the response entity
@@ -305,7 +305,7 @@ public class KiwiResources {
 
     /**
      * Creates a {@link Response.ResponseBuilder} having the given status, entity, and (single-valued) headers.
-     * You can further modify the returned build, e.g. add custom headers, set cookies. etc.
+     * You can further modify the returned build, e.g., add custom headers, set cookies. Etc.
      *
      * @param status              the response status
      * @param entity              the response entity
@@ -337,7 +337,7 @@ public class KiwiResources {
 
     /**
      * Creates a {@link Response.ResponseBuilder} having the given status, entity, and headers.
-     * You can further modify the returned build, e.g. add custom headers, set cookies. etc.
+     * You can further modify the returned build, e.g., add custom headers, set cookies. Etc.
      *
      * @param status  the response status
      * @param entity  the response entity
@@ -368,7 +368,7 @@ public class KiwiResources {
 
     /**
      * Creates a {@link Response.ResponseBuilder} having 201 Created status and a specified Location header and entity.
-     * You can further modify the returned build, e.g. add custom headers, set cookies. etc.
+     * You can further modify the returned build, e.g., add custom headers, set cookies. Etc.
      *
      * @param location the value for the Location header
      * @param entity   the response entity
@@ -390,7 +390,7 @@ public class KiwiResources {
 
     /**
      * Creates a {@link Response.ResponseBuilder} having 200 OK status and a specified entity.
-     * You can further modify the returned build, e.g. add custom headers, set cookies. etc.
+     * You can further modify the returned build, e.g., add custom headers, set cookies. Etc.
      *
      * @param entity the response entity
      * @return a 200 OK response builder
@@ -476,7 +476,7 @@ public class KiwiResources {
      * @param parameterName name of the parameter which should be present
      * @param <V>           the type of values in the multivalued map
      * @return the int value of the validated parameter
-     * @throws JaxrsBadRequestException if the specified parameter is not present with at least one value, or is
+     * @throws JaxrsBadRequestException if the specified parameter is not present with at least one value or is
      *                                  not an integer
      */
     public static <V> int validateOneIntParameter(MultivaluedMap<String, V> parameters,
@@ -499,7 +499,7 @@ public class KiwiResources {
      * @param parameterName name of the parameter which should be present
      * @param <V>           the type of values in the multivalued map
      * @return the int value of the validated parameter
-     * @throws JaxrsBadRequestException if the specified parameter is not present with only one value, or is
+     * @throws JaxrsBadRequestException if the specified parameter is not present with only one value or is
      *                                  not an integer
      */
     public static <V> int validateExactlyOneIntParameter(MultivaluedMap<String, V> parameters,
@@ -523,7 +523,7 @@ public class KiwiResources {
      * @param parameterName name of the parameter which should be present
      * @param <V>           the type of values in the multivalued map
      * @return an unmodifiable List containing the int values of the validated parameter
-     * @throws JaxrsBadRequestException if the specified parameter is not present with at least one value, or is
+     * @throws JaxrsBadRequestException if the specified parameter is not present with at least one value or is
      *                                  not an integer
      */
     public static <V> List<Integer> validateOneOrMoreIntParameters(MultivaluedMap<String, V> parameters,
@@ -548,13 +548,13 @@ public class KiwiResources {
 
     /**
      * Checks whether {@code parameters} contains parameter named {@code parameterName} that is a long or
-     * something that can be converted into a long.
+     * something that can be converted into a {@code long}.
      *
      * @param parameters    the parameters to check
      * @param parameterName name of the parameter which should be present
      * @param <V>           the type of values in the map
      * @return the long value of the validated parameter
-     * @throws JaxrsBadRequestException if the specified parameter is not present, or is not a long
+     * @throws JaxrsBadRequestException if the specified parameter is not present or is not a {@code long}
      */
     public static <V> long validateLongParameter(Map<String, V> parameters, String parameterName) {
         checkArgumentNotNull(parameters, PARAMETERS_MUST_NOT_BE_NULL);
@@ -568,15 +568,15 @@ public class KiwiResources {
 
     /**
      * Checks whether {@code parameters} contains a parameter named {@code parameterName} that has at least one
-     * value that can be converted into a long. If there is more than one value, then the first one returned
+     * value that can be converted into a {@code long}. If there is more than one value, then the first one returned
      * by {@link MultivaluedMap#getFirst(Object)} is returned.
      *
      * @param parameters    the multivalued parameters to check
      * @param parameterName name of the parameter which should be present
      * @param <V>           the type of values in the multivalued map
      * @return the long value of the validated parameter
-     * @throws JaxrsBadRequestException if the specified parameter is not present with at least one value, or is
-     *                                  not a long
+     * @throws JaxrsBadRequestException if the specified parameter is not present with at least one value or is
+     *                                  not a {@code long}
      */
     public static <V> long validateOneLongParameter(MultivaluedMap<String, V> parameters,
                                                     String parameterName) {
@@ -591,15 +591,15 @@ public class KiwiResources {
 
     /**
      * Checks whether {@code parameters} contains a parameter named {@code parameterName} that has exactly one
-     * value that can be converted into a long. If there is more than one value, this is considered a bad request
+     * value that can be converted into a {@code long}. If there is more than one value, this is considered a bad request
      * and a {@link JaxrsBadRequestException} is thrown.
      *
      * @param parameters    the multivalued parameters to check
      * @param parameterName name of the parameter which should be present
      * @param <V>           the type of values in the multivalued map
      * @return the long value of the validated parameter
-     * @throws JaxrsBadRequestException if the specified parameter is not present with at least one value, or is
-     *                                  not a long
+     * @throws JaxrsBadRequestException if the specified parameter is not present with at least one value or is
+     *                                  not a {@code long}
      */
     public static <V> long validateExactlyOneLongParameter(MultivaluedMap<String, V> parameters,
                                                            String parameterName) {
@@ -615,15 +615,15 @@ public class KiwiResources {
 
     /**
      * Checks whether {@code parameters} contains a parameter named {@code parameterName} that has at least one
-     * value that can be converted into a long. All the values must be convertible to long, and they are
+     * value that can be converted into a {@code long}. All the values must be convertible to long, and they are
      * all converted and returned in a List.
      *
      * @param parameters    the multivalued parameters to check
      * @param parameterName name of the parameter which should be present
      * @param <V>           the type of values in the multivalued map
      * @return an unmodifiable List containing the long values of the validated parameter
-     * @throws JaxrsBadRequestException if the specified parameter is not present with only one value, or is
-     *                                  not a long
+     * @throws JaxrsBadRequestException if the specified parameter is not present with only one value or is
+     *                                  not a {@code long}
      */
     public static <V> List<Long> validateOneOrMoreLongParameters(MultivaluedMap<String, V> parameters,
                                                                  String parameterName) {

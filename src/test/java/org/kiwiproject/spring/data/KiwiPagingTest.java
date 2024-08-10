@@ -55,7 +55,7 @@ class KiwiPagingTest {
             request.setPage(5);
             request.setLimit(25);
 
-            // These should be null by default, but be explicit anyway
+            // These should be null by default but be explicit anyway
             request.setPrimarySort(null);
             request.setSecondarySort(null);
 

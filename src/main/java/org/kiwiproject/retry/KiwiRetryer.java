@@ -277,7 +277,7 @@ public class KiwiRetryer<T> {
     /**
      * Invoke the retryer with the given ID and {@link Callable}.
      * <p>
-     * This method allows you to use different IDs with the same {@link KiwiRetryer} instance, for example if
+     * This method allows you to use different IDs with the same {@link KiwiRetryer} instance, for example, if
      * the same retryer is called in separate threads it will be useful to be able to distinguish between them
      * in logs.
      *

@@ -11,7 +11,7 @@ import java.util.Arrays;
 import java.util.Set;
 
 /**
- * Static utility methods for Spring Java-based configuration, i.e. Spring JavaConfig.
+ * Static utility methods for Spring Java-based configuration, i.e., Spring JavaConfig.
  */
 @UtilityClass
 public class KiwiSpringJavaConfigs {

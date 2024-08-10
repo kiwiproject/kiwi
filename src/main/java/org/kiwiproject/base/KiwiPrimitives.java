@@ -9,7 +9,7 @@ import java.util.OptionalInt;
 import java.util.OptionalLong;
 
 /**
- * Static utilities that operate on primitive values, and are not already provided by classes in Guava's
+ * Static utilities that operate on primitive values, and are not provided by classes in Guava's
  * {@link com.google.common.primitives} package.
  */
 @UtilityClass

@@ -7,7 +7,7 @@ import lombok.Getter;
 import lombok.experimental.UtilityClass;
 
 /**
- * Utilities related to searching and pagination. Supports both zero- and one-based page numbering but the
+ * Utilities related to searching and pagination. Supports both zero- and one-based page numbering, but the
  * default is one-based. Use the methods that accept {@link PageNumberingScheme} to work with either zero-
  * or one-based numbering.
  */
@@ -64,7 +64,7 @@ public class KiwiSearching {
     public static final int DEFAULT_PAGE_SIZE = 25;
 
     /**
-     * The rather opinionated value for default page size as a String, in order to support web framework annotations
+     * The rather opinionated value for default page size as a String, to support web framework annotations
      * like Jakarta REST's {@code jakarta.ws.rs.DefaultValue} that require a String.
      *
      * @implNote This <em>must</em> be a constant not an expression, otherwise trying to use it in an annotation like
@@ -105,7 +105,7 @@ public class KiwiSearching {
      *
      * @param pageNumber      the page number to check
      * @param numberingScheme the page numbering scheme to use
-     * @throws IllegalArgumentException if the page number is invalid according to the numbering scheme
+     * @throws IllegalArgumentException if the page number is invalid, according to the numbering scheme
      * @see PageNumberingScheme
      */
     public static void checkPageNumber(int pageNumber, PageNumberingScheme numberingScheme) {
@@ -122,7 +122,7 @@ public class KiwiSearching {
      *
      * @param pageNumber the page number (one-based)
      * @param pageSize   the page size
-     * @return the zero-based offset, e.g. for use in SQL queries using OFFSET and LIMIT
+     * @return the zero-based offset, e.g., for use in SQL queries using OFFSET and LIMIT
      * @throws IllegalArgumentException if the page number or size is invalid
      * @see PageNumberingScheme#ONE_BASED
      * @see #zeroBasedOffset(int, PageNumberingScheme, int)
@@ -140,7 +140,7 @@ public class KiwiSearching {
      *
      * @param pageNumber the page number (one-based)
      * @param pageSize   the page size
-     * @return the zero-based offset, e.g. for use in SQL queries using OFFSET and LIMIT
+     * @return the zero-based offset, e.g., for use in SQL queries using OFFSET and LIMIT
      * @see #zeroBasedOffset(int, int)
      */
     public static int zeroBasedOffsetForOneBasedPaging(int pageNumber, int pageSize) {
@@ -154,7 +154,7 @@ public class KiwiSearching {
      *
      * @param pageNumber the page number (zero-based)
      * @param pageSize   the page size
-     * @return the zero-based offset, e.g. for use in SQL queries using OFFSET and LIMIT
+     * @return the zero-based offset, e.g., for use in SQL queries using OFFSET and LIMIT
      */
     public static int zeroBasedOffsetForZeroBasedPaging(int pageNumber, int pageSize) {
         return zeroBasedOffset(pageNumber, PageNumberingScheme.ZERO_BASED, pageSize);
@@ -168,7 +168,7 @@ public class KiwiSearching {
      * @param pageNumber      the page number
      * @param numberingScheme the page numbering scheme to use
      * @param pageSize        the page size
-     * @return the zero-based offset, e.g. for use in SQL queries using OFFSET and LIMIT
+     * @return the zero-based offset, e.g., for use in SQL queries using OFFSET and LIMIT
      * @throws IllegalArgumentException if the page number or size is invalid
      * @see PageNumberingScheme
      */
