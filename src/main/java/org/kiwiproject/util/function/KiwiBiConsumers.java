@@ -14,7 +14,7 @@ public class KiwiBiConsumers {
      * Provides a type-consistent, no-op {@link BiConsumer}.
      *
      * @param <T> first type parameter of the BiConsumer
-     * @param <U> second  type parameter of the BiConsumer
+     * @param <U> second type parameter of the BiConsumer
      * @return the no-op BiConsumer
      */
     public static <T, U> BiConsumer<T, U> noOp() {

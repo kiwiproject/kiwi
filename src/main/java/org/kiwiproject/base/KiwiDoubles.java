@@ -5,7 +5,7 @@ import lombok.experimental.UtilityClass;
 
 /**
  * {@link Double} utilities. Mainly wrappers around existing method in {@link Double} and {@link DoubleMath} that
- * are (in our opinion anyway) easier to work with or read the code, e.g. return a boolean for comparisons instead
+ * are (in our opinion anyway) easier to work with or read the code, e.g., return a boolean for comparisons instead
  * of an int.
  */
 @UtilityClass

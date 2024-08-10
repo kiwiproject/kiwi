@@ -59,7 +59,7 @@ public class JSchSlf4jLogger implements com.jcraft.jsch.Logger {
      * Log the given message at the given level.
      * <p>
      * If provided an invalid level, a message will be logged about the invalid level, along with the given message,
-     * at the SLF4J ERROR level. This is intended to provide both information about the problem and provide
+     * at the SLF4J ERROR level. This is intended to provide information about the problem and provide
      * the original message, rather than throwing an exception or suppressing the message.
      *
      * @param level   one of the public constants in {@link com.jcraft.jsch.Logger}

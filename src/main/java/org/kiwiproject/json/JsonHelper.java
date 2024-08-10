@@ -61,12 +61,12 @@ import java.util.stream.Stream;
  * to find the first value in an array property {@code luckyNumbers}, the path is {@code luckyNumbers.[0]}.
  * Similarly, to find the 13th lucky number the path is {@code luckyNumbers.[12]}.
  * <p>
- * Paths for nested JSON objects  follow the syntax {@code objectName.propertyName}; for JSON that contains a
+ * Paths for nested JSON objects follow the syntax {@code objectName.propertyName}; for JSON that contains a
  * {@code homeAddress} object that contains a {@code zipCode}, the path is {@code homeAddress.zipCode}.
  *
  * @implNote This uses Jackson to perform JSON mapping to and from objects, so Jackson will need to be available
  * at runtime. In addition, if you use the no-args constructor, this relies on Dropwizard's {@link Jackson} class
- * which does a bunch of configuration on the default Jackson {@link ObjectMapper}. So you would also need
+ * which does a bunch of configuration on the default Jackson {@link ObjectMapper}. So, you would need
  * Dropwizard available at runtime as well, specifically {@code dropwizard-jackson}.
  */
 @Slf4j
@@ -179,7 +179,7 @@ public class JsonHelper {
 
     /**
      * Provides direct access to the underlying object mapper. Care should be taken when accessing the
-     * {@link ObjectMapper} directly, particularly if any changes are made to how objects are serialized/de-serialized.
+     * {@link ObjectMapper} directly, particularly if any changes are made to how objects are serialized/deserialized.
      *
      * @return the object mapper; any changes made to it will potentially change the behavior of this JsonHelper instance
      */
@@ -420,7 +420,7 @@ public class JsonHelper {
      * input JSON is blank
      *
      * @param json        the JSON content
-     * @param targetClass the  type of object to convert into
+     * @param targetClass the type of object to convert into
      * @param <T>         the object type
      * @return an Optional that may contain a converted object
      */
@@ -500,7 +500,7 @@ public class JsonHelper {
     /**
      * Parse the given object as JSON, then flatten all its properties to a map whose keys are the object property
      * names and whose values are converted to the given {@code valueClass} type. In practice, this will often
-     * just be {@code Object.class} but could be a more specific type, e.g. if you have a map containing student
+     * just be {@code Object.class} but could be a more specific type, e.g., if you have a map containing student
      * names and grades then the values could all be of type {@code Double}.
      * <p>
      * This also flattens arrays/collections and maps. Flattened arrays use the following syntax:
@@ -794,7 +794,7 @@ public class JsonHelper {
      * The returned map of differences has keys that are the properties that are different. The map values are
      * the values for the corresponding key/property in the first and second objects, respectively.
      * <p>
-     * NOTE: This is an expensive operation so be careful of using it in production code in areas where performance
+     * NOTE: This is an expensive operation, so be careful of using it in production code in areas where performance
      * is critical.
      *
      * @param object1      the first object
@@ -811,9 +811,9 @@ public class JsonHelper {
      * perspective of the first object in the given list.
      * <p>
      * The returned map of differences has keys that are the properties that are different. The map values are
-     * the values for the corresponding key/property in the first and subsequent objects, respectively.
+     * the values for the corresponding key/property in the first and later objects, respectively.
      * <p>
-     * NOTE: This is an expensive operation so be careful of using it in production code in areas where performance
+     * NOTE: This is an expensive operation, so be careful of using it in production code in areas where performance
      * is critical.
      *
      * @param objectList   the list of objects to compare; the first object is the reference object
@@ -833,9 +833,9 @@ public class JsonHelper {
      * perspective of the first JSON object in the given list.
      * <p>
      * The returned map of differences has keys that are the properties that are different. The map values are
-     * the values for the corresponding key/property in the first and subsequent objects, respectively.
+     * the values for the corresponding key/property in the first and later objects, respectively.
      * <p>
-     * NOTE: This is an expensive operation so be careful of using it in production code in areas where performance
+     * NOTE: This is an expensive operation, so be careful of using it in production code in areas where performance
      * is critical.
      *
      * @param listOfJson the list of JSON objects to compare
@@ -855,7 +855,7 @@ public class JsonHelper {
                     if (isNotNullOrEmpty(results)) {
                         var match = first(results);
                         if (!results.stream().allMatch(s -> StringUtils.equals(s, match))) {
-                            resultMap.put(path, new ArrayList<>(results));  // must use mutable list to handle nulls
+                            resultMap.put(path, new ArrayList<>(results));  // must use a mutable list to handle nulls
                         }
                     }
                 });
@@ -1051,7 +1051,7 @@ public class JsonHelper {
 
     /**
      * Parse the given object as JSON, and return a list containing the property paths in the object. The paths
-     * include arrays, collections and maps.
+     * include arrays, collections, and maps.
      * <p>
      * For details on the property path syntax, see {@link #toFlatMap(Object, Class)}.
      *
@@ -1105,7 +1105,7 @@ public class JsonHelper {
             var currentIndex = index.getAndIncrement();
             var currentPath = parentPrefix + f("[%s]", currentIndex);
             if (!arrayElement.isContainerNode()) {
-                // not a container (e.g. object or array), so add the path
+                // not a container (e.g., object or array), so add the path
                 paths.add(currentPath);
             }
             appendChildPaths(paths, arrayElement, currentPath + ".");

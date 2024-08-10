@@ -21,7 +21,7 @@ import java.util.Date;
  * we decided to split them into separate utilities. So if you are looking for utilities to parse strings into
  * date/time objects, see {@link KiwiDateTimeParsers}.
  * <p>
- * None of these are difficult to implement, but if you are constantly doing them, the time and code adds up
+ * None of these are difficult to implement, but if you are constantly doing them, the time and code necessary adds up
  * over time.
  * <p>
  * All methods throw {@link IllegalArgumentException} if {@code null} arguments are passed to them.
