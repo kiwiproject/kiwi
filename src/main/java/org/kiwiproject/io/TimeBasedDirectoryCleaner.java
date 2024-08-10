@@ -293,7 +293,7 @@ public class TimeBasedDirectoryCleaner implements Runnable {
     @VisibleForTesting
     @AllArgsConstructor
     @Getter
-    static class FileDeleteResult {
+    public static class FileDeleteResult {
 
         private final String absolutePath;
         private final boolean deleteWasAttempted;
