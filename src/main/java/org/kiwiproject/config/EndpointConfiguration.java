@@ -30,7 +30,7 @@ public class EndpointConfiguration {
 
     /**
      * Use this to uniquely identify an endpoint within a {@link SecureEndpointsConfiguration}, or to provide
-     * a way to find an {@link EndpointConfiguration} in any collection of them, e.g. using a
+     * a way to find an {@link EndpointConfiguration} in any collection of them, e.g., using a
      * {@link java.util.stream.Stream#filter(Predicate)} on a stream of endpoint configurations.
      *
      * @see SecureEndpointsConfiguration#getEndpointByTag(String)
@@ -39,7 +39,7 @@ public class EndpointConfiguration {
     private String tag;
 
     /**
-     * The connection scheme, e.g. https or https.
+     * The connection scheme, e.g., https or https.
      */
     private String scheme;
 
@@ -87,7 +87,7 @@ public class EndpointConfiguration {
      * instance that becomes the "parent" of this endpoint.
      *
      * @implNote This was implemented well before we started using Lombok, thus the manual builder code. Since there
-     * are some differences here, e.g. the constructor accepting the "parent" and the {@link #buildEndpoint()} method,
+     * are some differences here, e.g., the constructor accepting the "parent" and the {@link #buildEndpoint()} method,
      * not sure how feasible it is to refactor to use Lombok, or if it's worth bothering. In addition, we have left
      * the original setXxx() methods in here and added Lombok-style xxx() methods. While permissible, you
      * should be consistent in using all xxx() or all setXxx().
@@ -210,8 +210,8 @@ public class EndpointConfiguration {
     }
 
     /**
-     * Set the domain(s), which can be a single domain (e.g. example.org) or multiple domains separated by commas. If
-     * a comma-separated list of domains is specified, whitespace is allowed and trimmed. For example this is
+     * Set the domain(s), which can be a single domain (e.g., example.org) or multiple domains separated by commas. If
+     * a comma-separated list of domains is specified, whitespace is allowed and trimmed. For example, this is
      * valid: " domain-1.test , domain-2.test , domain-3.test " and results in the three domains "domain-1.test",
      * "domain-2.test", and "domain-3.test".
      *
@@ -236,7 +236,7 @@ public class EndpointConfiguration {
      * round-robin among the domains returned by {@link #getDomains()}.
      *
      * @return the URI as a {@link String}
-     * @implNote This currently builds URIs using simple string substitution, any leading or trailing slashes
+     * @implNote This currently builds URIs using simple string substitution; any leading or trailing slashes
      * on the domain are stripped.
      */
     public String getURI() {
@@ -271,7 +271,7 @@ public class EndpointConfiguration {
      * ever a (good) reason to change this to use an internal lock or similar, it will be relatively easy since
      * this method is private, thus not a part of the public API. This change was made because of an error we
      * encountered wherein we saw some {@link ArrayIndexOutOfBoundsException} occurring on the
-     * {@code domainList.get(index)} call. This cause was due to multiple threads accessing concurrently.
+     * {@code domainList.get(index)} call. The cause was due to multiple threads accessing it concurrently.
      */
     private synchronized String getNextDomain() {
         checkState(nonNull(domainList), "No domains have been set on this endpoint!");

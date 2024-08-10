@@ -18,7 +18,7 @@ import java.util.Map;
  * Dropwizard class of the same name.
  * <p>
  * Each instance contains the HTTP status (error) code; the error message; an optional identifier to identify the
- * specific item causing the error (e.g. a primary key); and an optional field/property name for cases when a specific
+ * specific item causing the error (e.g., a primary key); and an optional field/property name for cases when a specific
  * field causes the error.
  */
 @Getter

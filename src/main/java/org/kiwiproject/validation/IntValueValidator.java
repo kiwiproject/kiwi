@@ -6,7 +6,7 @@ import jakarta.validation.ConstraintValidator;
 import jakarta.validation.ConstraintValidatorContext;
 
 /**
- * Validates that a string value is an integer value, i.e. that it can be converted to an int or {@link Integer}.
+ * Validates that a string value is an integer value, i.e., that it can be converted to an int or {@link Integer}.
  */
 public class IntValueValidator implements ConstraintValidator<IntValue, CharSequence> {
 

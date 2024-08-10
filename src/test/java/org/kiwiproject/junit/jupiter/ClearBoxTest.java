@@ -13,7 +13,7 @@ import java.lang.annotation.Target;
  * to simulate.
  * <p>
  * This is also in kiwi-test as part of its public API. However, because we don't want to create a cycle between
- * kiwi and kiwi-test (or create yet another library that both depend on) it is duplicated here in kiwi.
+ * kiwi and kiwi-test (or create yet another library that both depend on), it is duplicated here in kiwi.
  */
 @Target({ElementType.ANNOTATION_TYPE, ElementType.METHOD})
 @Retention(RetentionPolicy.RUNTIME)

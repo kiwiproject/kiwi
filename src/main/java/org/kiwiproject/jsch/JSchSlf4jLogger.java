@@ -18,7 +18,7 @@ public class JSchSlf4jLogger implements com.jcraft.jsch.Logger {
     private final Logger slf4jLogger;
 
     /**
-     * Construct an instance with a default logger, e.g. for {@code org.kiwiproject.jsch.JSchSlf4jLogger}.
+     * Construct an instance with a default logger, e.g., for {@code org.kiwiproject.jsch.JSchSlf4jLogger}.
      * <p>
      * Usually you should use {@link #JSchSlf4jLogger(Logger)} in order to specify the SLF4J {@link Logger} explicitly
      * to control the logging level and logger name.

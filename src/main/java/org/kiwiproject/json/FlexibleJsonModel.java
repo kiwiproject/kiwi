@@ -9,7 +9,7 @@ import java.util.Map;
 
 /**
  * This class can be used as a base class for situations where there may be additional/unknown properties in
- * a JSON string that don't have a corresponding property in the class being de-serialized into. It uses Jackson's
+ * a JSON string that don't have a corresponding property in the class being deserialized into. It uses Jackson's
  * {@link JsonAnyGetter} and {@link JsonAnySetter} feature to get and set these "extra fields" in a property
  * named {@code extraFields}.
  * <p>
@@ -30,7 +30,7 @@ public abstract class FlexibleJsonModel {
     protected final Map<String, Object> extraFields = new HashMap<>();
 
     /**
-     * Returns the "extra" fields that were not explicitly defined as properties when this object was de-serialized
+     * Returns the "extra" fields that were not explicitly defined as properties when this object was deserialized
      * from JSON.
      *
      * @return the extra fields
@@ -41,7 +41,7 @@ public abstract class FlexibleJsonModel {
     }
 
     /**
-     * Add an "extra" field when de-serializing from JSON.
+     * Add an "extra" field when deserializing from JSON.
      *
      * @param key   the extra field name
      * @param value the value of the extra field

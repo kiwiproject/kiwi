@@ -29,7 +29,7 @@ public class JaxrsNotFoundException extends JaxrsException {
     }
 
     /**
-     * New instance with given message, cause, and 404 status code.
+     * New instance with the given message, cause, and 404 status code.
      *
      * @param message the message for this exception
      * @param cause   the cause of this exception

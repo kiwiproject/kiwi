@@ -11,7 +11,7 @@ import java.nio.ByteBuffer;
  * <p>
  * This utility was copied and enhanced from
  * <a href="https://github.com/edazdarevic/CIDRUtils">https://github.com/edazdarevic/CIDRUtils</a> which has not been
- * updated since 2019 and seems to be unmaintained.
+ * updated since 2019 and seems unmaintained.
  */
 public class CidrRange {
 
@@ -78,7 +78,7 @@ public class CidrRange {
     }
 
     /**
-     * Returns the network address for the CIDR.  For example: 192.168.100.15/24 will return 192.168.100.0.
+     * Returns the network address for the CIDR.  For example, 192.168.100.15/24 will return 192.168.100.0.
      *
      * @return The network address for the CIDR
      */
@@ -87,7 +87,7 @@ public class CidrRange {
     }
 
     /**
-     * Returns the broadcast address for the CIDR. For example: 192.168.100.15/24 will return 192.168.100.255.
+     * Returns the broadcast address for the CIDR. For example, 192.168.100.15/24 will return 192.168.100.255.
      *
      * @return The broadcast address for the CIDR
      */

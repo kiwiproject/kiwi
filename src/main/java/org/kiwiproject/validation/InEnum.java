@@ -19,9 +19,9 @@ import java.lang.annotation.Target;
  * The annotated element must have a value in the specified enum class.
  * <p>
  * For example, if you have a String property that you want to constrain to one of the values in an enum, you can
- * apply this annotation, and specify the enum class to validate against.
+ * apply this annotation and specify the enum class to validate against.
  * <p>
- * By default, does not permit null values. If the element being validated permits nulls, you can set
+ * By default, this does not permit null values. If the element being validated permits nulls, you can set
  * {@link #allowNull()} to {@code true}.
  * <p>
  * You can optionally perform case-insensitive validation using {@link #ignoreCase()} or specify a custom method
@@ -66,15 +66,15 @@ public @interface InEnum {
     boolean allowNull() default false;
 
     /**
-     * Whether to ignore case. By default, match is case-sensitive.
+     * Whether to ignore the case. By default, match is case-sensitive.
      *
-     * @return true to ignore case, false to perform a case-sensitive match.
+     * @return true to ignore the case, false to perform a case-sensitive match.
      */
     boolean ignoreCase() default false;
 
     /**
      * By default, {@link InEnum} uses the enum constants as the values to validate against. If there is a specific
-     * method in the enum which provides a String value that should be used for validation instead of the enum
+     * method in the enum that provides a String value to use for validation instead of the enum
      * constants, specify it here.
      * <p>
      * For example, if you have a {@code Season} enum with values like {@code FALL} and {@code SPRING}, but the

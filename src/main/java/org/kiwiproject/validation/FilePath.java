@@ -20,7 +20,7 @@ import java.lang.annotation.Target;
  * intended usage of this annotation with respect to the potential for
  * <a href="https://owasp.org/www-community/attacks/Path_Traversal">Path Traversal</a> attacks.
  * <p>
- * By default, does not permit null values. If the element being validated allows {@code null} values, you can
+ * By default, this does not permit null values. If the element being validated allows {@code null} values, you can
  * set {@link #allowNull()} to {@code true}.
  * <p>
  * Examples:
@@ -35,7 +35,7 @@ import java.lang.annotation.Target;
  *
  * @implNote This annotation is not intended to validate user input from client-side applications, because of the
  * possibility of <a href="https://owasp.org/www-community/attacks/Path_Traversal">Path Traversal</a> attacks. Instead,
- * the intended usage is to validate application configuration parameters, e.g. an application reads a local
+ * the intended usage is to validate application configuration parameters, e.g., an application reads a local
  * configuration file at startup. Even this is not 100% safe, since the configuration could come from a remote
  * location such as a configuration service, so users should understand the usage risks and mitigate when possible.
  */

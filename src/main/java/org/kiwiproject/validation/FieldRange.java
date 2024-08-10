@@ -12,16 +12,16 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.Target;
 
 /**
- * The annotated <em>type</em> must have two fields that define a valid range, i.e. in the simplest configuration
+ * The annotated <em>type</em> must have two fields that define a valid range, i.e., in the simplest configuration
  * {@link #startField()} must come before {@link #endField()}. You can have multiple {@link FieldRange} annotations
  * on a type, either as standalone annotations or inside a {@link FieldRanges} annotation.
  * <p>
  * The main restriction imposed by this annotation is that {@link #startField()} and {@link #endField()} must be
- * {@link Comparable}. It is also assumed that they are defined to both have the same type, e.g. both are Integer
+ * {@link Comparable}. It is also assumed that they are defined to both have the same type, e.g., both are Integer
  * or {@link java.time.Instant}. No guarantees are made if they are different types, and most likely unpredictable
  * results and/or exceptions will occur.
  * <p>
- * Note also that <em>direct field access using reflection</em> is used to obtain the start and end values as
+ * Note also that <em>direct field access using reflection</em> is used to get the start and end values as
  * currently implemented.
  * <p>
  * By default, null values are not allowed, and the range check is exclusive, meaning start cannot equal end. You can
@@ -44,7 +44,7 @@ import java.lang.annotation.Target;
  * Finally, assuming there are no minimum or maximum values specified and that the type being validated contains
  * only a <em>time</em> component, e.g. {@link java.time.LocalTime LocalTime}, then there is an edge case between
  * 12:00 AM (00:00) and 1:00 AM (01:00) that may result in unexpected validation failures. For example, if the first
- * time in the range is 11:56 PM (23:56) and the second is 12:15 AM (00:15), then without a date to indicate whether
+ * time in the range is 11:56 PM (23:56), and the second is 12:15 AM (00:15), then without a date to indicate whether
  * the times cross a midnight boundary, this range will be considered as invalid. The reason is simply that within a
  * single day (again because there is no date component to indicate otherwise), 12:15 AM always comes before 23:56 PM.
  */

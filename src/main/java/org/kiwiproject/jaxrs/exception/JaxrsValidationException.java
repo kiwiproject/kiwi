@@ -29,7 +29,7 @@ public class JaxrsValidationException extends JaxrsException {
      * Each map contained in {@code errorMessageMaps} must have entries with at least two keys:
      * {@link ErrorMessage#KEY_FIELD_NAME} and {@link ErrorMessage#KEY_MESSAGE}. In other words, the
      * maps should contain an entry whose key is {@link ErrorMessage#KEY_FIELD_NAME} and another entry
-     * whose key is {@link ErrorMessage#KEY_MESSAGE}. Any other entries are ignored. The value of these
+     * whose key is {@link ErrorMessage#KEY_MESSAGE}. Any other entries are ignored. The values of these
      * two entries become the field name and message in the resulting {@link ErrorMessage} objects.
      *
      * @param itemId           the unique ID of the item that caused this error
@@ -75,7 +75,7 @@ public class JaxrsValidationException extends JaxrsException {
      *
      * @param itemId               the unique ID of the item that caused this error
      * @param violations           the constraint violations to transform into {@link ErrorMessage} objects
-     * @param propertyPathMappings mappings from property path of a {@link ConstraintViolation} to the field name
+     * @param propertyPathMappings mappings from the property path of a {@link ConstraintViolation} to the field name
      *                             to use in the {@link ErrorMessage} objects
      */
     public JaxrsValidationException(String itemId,

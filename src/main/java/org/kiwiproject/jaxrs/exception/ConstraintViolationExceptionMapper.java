@@ -16,15 +16,15 @@ import java.util.Set;
  * here. But in reality, many web frameworks use 422 to indicate an input validation failure, which is how we are
  * using it here.
  * <p>
- * It is important to note that the {@link Response.Status} does <em>not</em> contain an enum constant for 422 status,
+ * It is important to note that the {@link Response.Status} does <em>not</em> contain an enum constant for status 422,
  * so that {@link Response.Status#fromStatusCode(int)} will return {@code null} when given 422.
  */
 @Provider
 public class ConstraintViolationExceptionMapper implements ExceptionMapper<ConstraintViolationException> {
 
     /**
-     * We have no way to obtain the item ID from a {@link ConstraintViolationException}. Instead, we will set
-     * it to null, which is not lovely but there's not much else we can do.
+     * We have no way to get the item ID from a {@link ConstraintViolationException}. Instead, we will set
+     * it to null, which is not lovely, but there's little else we can do.
      */
     private static final String ITEM_ID = null;
 

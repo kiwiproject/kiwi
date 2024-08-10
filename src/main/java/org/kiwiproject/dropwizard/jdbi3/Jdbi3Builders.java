@@ -24,7 +24,7 @@ import java.util.Arrays;
  * <p>
  * The {@link SqlObjectPlugin} is always installed, and is assumed to be on the classpath.
  * <p>
- * Note also that when installing plugins, JDBI ignores duplicates (e.g. if you attempt to install more than one
+ * Note also that when installing plugins, JDBI ignores duplicates (e.g., if you attempt to install more than one
  * {@link SqlObjectPlugin}) <em>only when the plugin is designed as a "single-install" plugin</em>. JDBI plugins
  * are "single-install" when they extend the package-private {@code JdbiPlugin.Singleton} class.
  */

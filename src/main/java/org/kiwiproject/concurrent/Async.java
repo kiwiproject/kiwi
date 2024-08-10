@@ -23,12 +23,12 @@ import java.util.function.Supplier;
 
 /**
  * Static utilities that work with {@link java.util.concurrent.CompletableFuture} and can make testing easier by
- * permitting selective (e.g. in unit tests) forcing of synchronous behavior for things that would normally
+ * permitting selective (e.g., in unit tests) forcing of synchronous behavior for things that would normally
  * execute asynchronously. This applies only to some methods, so read the method's documentation before assuming.
  * <p>
  * Use the {@code xxxAsync} methods when you need to control concurrent behavior and make things deterministic
- * during unit tests (e.g. blocking on futures). Note this does actually change the true behavior of the code under
- * test, since methods will execute synchronously, so use with care, caution, and understanding.
+ * during unit tests (e.g., blocking on futures). Note this does actually change the true behavior of the code under
+ * test, since methods will execute synchronously, so use them with care, caution, and understanding.
  *
  * @implNote the "asyncMode" flag is a STATIC variable and should only ever be changed during testing using the
  * {@link #setUnitTestAsyncMode(Mode)} method. Generally, you should set this before tests and reset after
