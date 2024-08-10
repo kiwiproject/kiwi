@@ -290,7 +290,6 @@ public class TimeBasedDirectoryCleaner implements Runnable {
         return FileDeleteResult.skipped(absolutePath);
     }
 
-    @VisibleForTesting
     @AllArgsConstructor
     @Getter
     public static class FileDeleteResult {
