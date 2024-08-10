@@ -247,7 +247,7 @@ class KiwiResourcesTest {
             void shouldThrow_WhenEntityIsNull() {
                 var message = JaxrsNotFoundException.buildMessage("MyEntity", ID);
 
-                assertThatThrownBy(() -> KiwiResources.verifyExistenceAndReturn((MyEntity) null, MyEntity.class, ID))
+                assertThatThrownBy(() -> KiwiResources.verifyExistenceAndReturn(null, MyEntity.class, ID))
                         .isExactlyInstanceOf(JaxrsNotFoundException.class)
                         .hasMessage(message);
             }
