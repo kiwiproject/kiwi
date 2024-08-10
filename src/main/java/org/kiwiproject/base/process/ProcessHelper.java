@@ -172,7 +172,7 @@ public class ProcessHelper {
      * process id (pid) and the matched command line.
      *
      * @param commandLine the full command line to match
-     * @return a list of {@link Pair} objects; each pair contains the pid as a Long and the associated full command
+     * @return a list of {@link Pair} objects; each pair contains the pid as a {@code Long} and the associated full command
      * @see Processes#pgrepParsedList(String)
      * @see Processes#wasPgrepFlagsCheckSuccessful()
      * @see Processes#getPgrepFlags()
@@ -187,7 +187,7 @@ public class ProcessHelper {
      *
      * @param user        the OS user (passed to the {@code -u} option)
      * @param commandLine the full command line to match
-     * @return a list of {@link Pair} objects; each pair contains the pid as a Long and the associated full command
+     * @return a list of {@link Pair} objects; each pair contains the pid as a {@code Long} and the associated full command
      * @see Processes#pgrepParsedList(String, String)
      * @see Processes#wasPgrepFlagsCheckSuccessful()
      * @see Processes#getPgrepFlags()
@@ -232,7 +232,7 @@ public class ProcessHelper {
      * @param action    the {@link KillTimeoutAction} to take if the process doesn't terminate within the allotted time
      * @return the exit code from the {@code kill} command, or {@code -1} if {@code action} is
      * {@link KillTimeoutAction#NO_OP} and the kill command times out
-     * @throws UncheckedIOException if an I/O error occurs killing the process
+     * @throws UncheckedIOException if an I/O error occurs while killing the process
      * @see Processes#kill(long, String, KillTimeoutAction)
      */
     public int kill(long processId, String signal, KillTimeoutAction action) {
@@ -249,7 +249,7 @@ public class ProcessHelper {
      * @param action    the {@link KillTimeoutAction} to take if the process doesn't terminate within the allotted time
      * @return the exit code from the {@code kill} command, or {@code -1} if {@code action} is
      * {@link KillTimeoutAction#NO_OP} and the kill command times out
-     * @throws UncheckedIOException if an I/O error occurs killing the process
+     * @throws UncheckedIOException if an I/O error occurs while killing the process
      * @see Processes#kill(long, String, long, TimeUnit, KillTimeoutAction)
      */
     public int kill(long processId, String signal, long timeout, TimeUnit unit, KillTimeoutAction action) {

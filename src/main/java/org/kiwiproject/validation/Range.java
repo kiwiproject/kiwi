@@ -17,14 +17,14 @@ import java.lang.annotation.Target;
 
 /**
  * The annotated element must be in the specified range, which can include both a minimum and maximum, only a minimum,
- * or only a maximum. When only minimum or maximum is specified, the range is open-ended on the non-specified side.
- * For example, if only a minimum is specified then there is no maximum applied in the constraint validation.
+ * or only a maximum. When only the minimum or maximum is specified, the range is open-ended on the non-specified side.
+ * For example, if only a minimum is specified, then there is no maximum applied in the constraint validation.
  * <p>
  * Null values are considered valid by default, but you can change this behavior using the {@link #allowNull()}
  * property.
  * <p>
  * Use {@link #min()} and {@link #max()} to specify the minimum and maximum values allowed in the range. These
- * are <em>inclusive</em> values, e.g. for a range with a minimum of 5 and maximum of 10, the values 5 and 10 are
+ * are <em>inclusive</em> values, e.g., for a range with a minimum of 5 and maximum of 10, the values 5 and 10 are
  * considered as part of the range. A valid range must contain a minimum, a maximum, or both. See the implementation
  * note below for why this can only be checked at runtime.
  * <p>
@@ -50,8 +50,8 @@ import java.lang.annotation.Target;
  * {@link IllegalStateException} is thrown at runtime during construction of the {@link RangeValidator}. This is
  * because this constraint supports various types and not just a single type like Hibernate Validator's {@code Range}
  * constraint annotation; that annotation supports only numeric types and therefore can set default values for
- * {@code min} and {@code max}. In contrast, there are no logical defaults which this constraint can provide so the
- * default must be an empty string for code to compile. The only place to verify a minimum or maximum exists is
+ * {@code min} and {@code max}. In contrast, there are no logical defaults that this constraint can provide, so the
+ * default must be an empty string for code to compile. The only place to verify that a minimum or maximum exists is
  * therefore when the {@link RangeValidator} is instantiated.
  */
 @Documented

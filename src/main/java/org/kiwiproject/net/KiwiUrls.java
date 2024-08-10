@@ -544,7 +544,7 @@ public class KiwiUrls {
      * Searches the {@code commaDelimitedUrls} for its domains, and if found, replaces all entries with
      * {@code replacementDomain}. The {@code commaDelimitedUrls} can be a standalone URL.
      *
-     * @param commaDelimitedUrls the comma delimited URLs to search
+     * @param commaDelimitedUrls the comma-delimited URLs to search
      * @param replacementDomain  the domain to replace if found
      * @return the updated comma-delimited URLs if a domain is found, otherwise {@code commaDelimitedUrls} unchanged
      * @implNote This method assumes that the domains are the same for all URLs in the {@code commaDelimitedUrls}; it only

@@ -41,7 +41,7 @@ public class LocalPortChecker {
     }
 
     /**
-     * Find the first open port starting at the given port inclusive, i.e. if {@code port} is 1024 then it is the first
+     * Find the first open port starting at the given port inclusive, i.e., if {@code port} is 1024 then it is the first
      * port checked. If no available port is found, return an empty {@link OptionalInt}.
      *
      * @param port the port to start from
@@ -58,7 +58,7 @@ public class LocalPortChecker {
     }
 
     /**
-     * Find the first open port above the given port (i.e. if port is 1024 then the first port to be
+     * Find the first open port above the given port (i.e., if port is 1024 then the first port to be
      * checked will be 1025). If no available port is found, return an empty {@link OptionalInt}.
      *
      * @param port the port to check above

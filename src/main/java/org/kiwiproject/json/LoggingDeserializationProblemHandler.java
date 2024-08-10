@@ -22,9 +22,9 @@ import java.util.function.BiConsumer;
  * <p>
  * Note that jackson-core and jackson-databind must be available at runtime.
  *
- * @implNote Currently the in-memory map will continue to grow unbounded. In the expected scenario, unknown properties
+ * @implNote Currently, the in-memory map will continue to grow unbounded. In the expected scenario, unknown properties
  * will be relatively rare, so we don't expect huge numbers of them. In addition, only unique unknown properties are
- * stored. The {@link #clearUnexpectedPaths()} method is provided to allow clearing all unexpected paths, for example
+ * stored. The {@link #clearUnexpectedPaths()} method is provided to allow clearing all unexpected paths, for example,
  * read the unexpected paths for analytics and then clear them.
  */
 @Slf4j
@@ -69,7 +69,7 @@ public class LoggingDeserializationProblemHandler extends DeserializationProblem
 
         notifyConsumer(beanOrClass, path);
 
-        return true;  // to indicate the problem is "resolved"
+        return true;  // to indicate that the problem is "resolved"
     }
 
     private void notifyConsumer(Object beanOrClass, String path) {

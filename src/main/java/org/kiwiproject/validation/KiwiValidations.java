@@ -43,7 +43,7 @@ public class KiwiValidations {
 
     /**
      * Creates a new, default {@link Validator} instance using the default validator factory provided by the
-     * underlying bean validation implementation, for example Hibernate Valdiator.
+     * underlying bean validation implementation, for example, Hibernate Validator.
      *
      * @return a new {@link Validator} instance
      */
@@ -340,7 +340,7 @@ public class KiwiValidations {
      * <p>
      * <strong>NOTE:</strong>
      * As of Hibernate Validator 6.2 and higher, expression language (EL) is <em>disabled</em> by default for
-     * custom violations. This means custom validator error messages that use EL will show the un-interpolated
+     * custom violations. This means custom validator error messages that use EL will show the uninterpolated
      * value in the message template, unless the custom validator has explicitly enabled EL. For example, given
      * a template: <code>"'${validatedValue}' is not a valid ACME, Inc. product code."</code>, the error message
      * will just be the template itself, so the user will see the literal <code>${validatedValue}</code> instead

@@ -67,7 +67,7 @@ public class Processes {
 
     /**
      * The command flags to use with the {@code pgrep} command for matching and printing the full command line.
-     * For example, to find the "sleep 25" process with pid 32332 we want pgrep to return results in the
+     * For example, to find the "sleep 25" process with pid 32332, we want pgrep to return results in the
      * format: "[pid] [full command]". For this example the expected result is: {@code 32332 sleep 25}.
      * <p>
      * However, there are differences in pgrep command line arguments between BSD-based systems (including macOS) and
@@ -179,7 +179,7 @@ public class Processes {
      * Use this method to determine if calling any of the pgrep methods in this class will work as expected.
      *
      * @return true if the pgrep check to determine the flags to use for full command matching was successful; false
-     * otherwise. If false you should NOT use any of the pgrep methods.
+     * otherwise. If false, you should NOT use any of the pgrep methods.
      * @see #getPgrepFlags()
      */
     public static boolean wasPgrepFlagsCheckSuccessful() {
@@ -225,7 +225,7 @@ public class Processes {
      * @implNote the {@link Process#pid()} method says it can throw {@link UnsupportedOperationException} if the
      * "implementation does not support this operation" but does not specify under what circumstances that can
      * happen, and I have not been able to find this information using Google, Bing, or DuckDuckGo. This method
-     * logs a warning along with the exception, so if this occurs check your logs for the possible reason.
+     * logs a warning along with the exception, so if this occurs, check your logs for a possible reason.
      */
     public static OptionalLong processIdOrEmpty(Process process) {
         checkArgumentNotNull(process);
@@ -472,7 +472,7 @@ public class Processes {
      * process id (pid) and the matched command line.
      *
      * @param commandLine the full command line to match
-     * @return a list of {@link Pair} objects; each pair contains the pid as a Long and the associated full command
+     * @return a list of {@link Pair} objects; each pair contains the pid as a {@code Long} and the associated full command
      * @see #pgrepParsedList(String, String)
      * @see #wasPgrepFlagsCheckSuccessful()
      * @see #getPgrepFlags()
@@ -487,7 +487,7 @@ public class Processes {
      *
      * @param user        the OS user (passed to the {@code -u} option)
      * @param commandLine the full command line to match
-     * @return a list of {@link Pair} objects; each pair contains the pid as a Long and the associated full command
+     * @return a list of {@link Pair} objects; each pair contains the pid as a {@code Long} and the associated full command
      * @see #wasPgrepFlagsCheckSuccessful()
      * @see #getPgrepFlags()
      */
@@ -558,7 +558,7 @@ public class Processes {
      * @param action    the {@link KillTimeoutAction} to take if the process doesn't terminate within the allotted time
      * @return the exit code from the {@code kill} command, or {@code -1} if {@code action} is
      * {@link KillTimeoutAction#NO_OP} and the kill command times out
-     * @throws UncheckedIOException if an I/O error occurs killing the process
+     * @throws UncheckedIOException if an I/O error occurs while killing the process
      */
     public static int kill(long processId, String signal, KillTimeoutAction action) {
         return kill(processId, signal, DEFAULT_KILL_TIMEOUT_SECONDS, TimeUnit.SECONDS, action);
@@ -589,7 +589,7 @@ public class Processes {
      * @param action    the {@link KillTimeoutAction} to take if the process doesn't terminate within the allotted time
      * @return the exit code from the {@code kill} command, or {@code -1} if {@code action} is
      * {@link KillTimeoutAction#NO_OP} and the kill command times out
-     * @throws UncheckedIOException if an I/O error occurs killing the process
+     * @throws UncheckedIOException if an I/O error occurs while killing the process
      */
     public static int kill(long processId, String signal, long timeout, TimeUnit unit, KillTimeoutAction action) {
         try {

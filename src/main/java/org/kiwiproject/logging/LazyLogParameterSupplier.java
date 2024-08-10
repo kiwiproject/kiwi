@@ -8,14 +8,14 @@ import lombok.experimental.UtilityClass;
 import java.util.function.Supplier;
 
 /**
- * Provides lazy evaluation of one or more replacement parameters in a logging statement, for example when
+ * Provides lazy evaluation of one or more replacement parameters in a logging statement, for example, when
  * using SLF4J. This is useful when one or more values might be relatively expensive to compute, such as
  * serializing an object to JSON for DEBUG logging but not wanting to incur to JSON serialization cost at
  * higher log levels.
  * <p>
- * While many log frameworks now provide a way to pass a {@link Supplier} as an argument, not all do (e.g. SLF4J
- * version 1.7.x and earlier) and not all provide as much flexibility as you might want in order to mix and match
- * lazy and non-lazy arguments. This simple class lets you mix and match lazy and non-lazy parameters whether the
+ * While many log frameworks now provide a way to pass a {@link Supplier} as an argument, not all do (e.g., SLF4J
+ * version 1.7.x and earlier), and not all provide as much flexibility as you might want to mix and match
+ * lazy and non-lazy arguments. This class lets you mix and match lazy and non-lazy parameters whether the
  * logging API supports this or not.
  * <p>
  * To use, just statically import methods from {@link LazyLogParameterSupplier} and use them to wrap one or more
@@ -57,7 +57,7 @@ public class LazyLogParameterSupplier {
      * LOG.debug("Foo JSON with id {} is: {}", foo.getId(), lazy(foo::toJson));
      * </pre>
      *
-     * @param original supplier of a replacement value that might be expensive to compute, e.g. serialize an
+     * @param original supplier of a replacement value, which might be expensive to compute, e.g., serialize an
      *                 object to JSON
      * @return a {@link Supplier} that wraps {@code original}
      */

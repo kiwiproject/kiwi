@@ -33,7 +33,7 @@ import java.util.Optional;
  * by various people and analysis tools such as IntelliJ's inspections, Sonar, etc. However, we also like to return
  * {@link Optional} from data access code (e.g. a DAO "findById" method where the object might not exist if it was
  * recently deleted). In such cases, we can simply take the Optional returned by those finder methods and pass them
- * directly to the utilities provided here without needing to call additional methods, for example without needing to
+ * directly to the utilities provided here without needing to call additional methods, for example, without needing to
  * call {@code orElse(null)}. So, we acknowledge that it is generally not good to accept {@link Optional} arguments,
  * but we're trading off convenience in this class against "generally accepted" practice.
  * @see KiwiResources
@@ -49,7 +49,7 @@ public class KiwiStandardResponses {
      * and value.
      *
      * @param identifierField the field which identifies the entity being looked up, e.g. "id"
-     * @param identifier      the value of the identifier field, e.g. 42  the value of the identifier field, e.g. 42
+     * @param identifier      the value of the identifier field, e.g., 42 the value of the identifier field, e.g., 42
      * @param entity          the entity or null
      * @param entityType      the entity type
      * @param <T>             the entity type
@@ -73,7 +73,7 @@ public class KiwiStandardResponses {
      * and value.
      *
      * @param identifierField the field which identifies the entity being looked up, e.g. "id"
-     * @param identifier      the value of the identifier field, e.g. 42
+     * @param identifier      the value of the identifier field, e.g., 42
      * @param entity          an Optional that may or may not contain an entity
      * @param entityType      the entity type
      * @param <T>             the entity type
@@ -91,7 +91,7 @@ public class KiwiStandardResponses {
      * a message stating that the entity was not found using the given identifier field and value.
      *
      * @param identifierField the field which identifies the entity being looked up, e.g. "id"
-     * @param identifier      the value of the identifier field, e.g. 42
+     * @param identifier      the value of the identifier field, e.g., 42
      * @param entity          the entity or null
      * @param <T>             the entity type
      * @return a 200 or 404 response with {@code application/json} content type
@@ -112,7 +112,7 @@ public class KiwiStandardResponses {
      * a message stating that the entity was not found using the given identifier field and value.
      *
      * @param identifierField the field which identifies the entity being looked up, e.g. "id"
-     * @param identifier      the value of the identifier field, e.g. 42
+     * @param identifier      the value of the identifier field, e.g., 42
      * @param entity          an Optional that may or may not contain an entity
      * @param <T>             the entity type
      * @return a 200 or 404 response with {@code application/json} content type

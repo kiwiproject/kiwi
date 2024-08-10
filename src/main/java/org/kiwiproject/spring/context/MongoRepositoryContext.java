@@ -113,7 +113,7 @@ public class MongoRepositoryContext {
     /**
      * Convenience method to initialize a new {@link MongoTemplate} from the given MongoDB connection string.
      * <p>
-     * The returned instance is configured with write concern set to {@link WriteConcern#ACKNOWLEDGED}.
+     * The returned instance is configured with the write-concern set to {@link WriteConcern#ACKNOWLEDGED}.
      * <p>
      * This method also registers
      * {@link org.kiwiproject.spring.data.KiwiMongoConverters.BsonUndefinedToNullStringConverter BsonUndefinedToNullStringConverter}

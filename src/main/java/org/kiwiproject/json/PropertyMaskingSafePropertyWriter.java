@@ -49,7 +49,7 @@ public class PropertyMaskingSafePropertyWriter extends BeanPropertyWriter {
     }
 
     /**
-     * Construct new instance wrapping the given {@link BeanPropertyWriter} using the given
+     * Construct new instance wrapping the {@link BeanPropertyWriter} using the
      * {@link PropertyMaskingOptions} to define properties to be masked, as well as replacement text for
      * masked fields and serialization errors.
      *
