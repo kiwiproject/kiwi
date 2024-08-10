@@ -389,7 +389,7 @@ public class KiwiJdbc {
      * @param rs         the ResultSet
      * @param columnName the column name
      * @param option     how to convert the long value into a boolean
-     * @return the converted value, determined using the conversion option
+     * @return the converted value, which is determined using the conversion option
      * @throws SQLException if there is any error getting the value from the database
      */
     public static boolean booleanFromLong(ResultSet rs, String columnName, BooleanConversionOption option)
@@ -419,7 +419,7 @@ public class KiwiJdbc {
      * @param rs         the ResultSet
      * @param columnName the column name
      * @param option     how to convert the int value into a boolean
-     * @return the converted value, determined using the conversion option
+     * @return the converted value, which is determined using the conversion option
      * @throws SQLException if there is any error getting the value from the database
      */
     public static boolean booleanFromInt(ResultSet rs, String columnName, BooleanConversionOption option)

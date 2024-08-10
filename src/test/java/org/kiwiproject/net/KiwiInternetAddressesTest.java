@@ -227,8 +227,8 @@ class KiwiInternetAddressesTest {
 
     /**
      * @implNote Turns out travis and very likely personal machines could have their hostname resolve to the
-     * loopback address.  This causes the default checks to fail because the equals method only checks the
-     * IP address and both getLocalHost and getLoopbackAddress are resolving to the same IP.
+     * loopback address.  This causes the default checks to fail because the equals method only checks that the
+     * IP address and both getLocalHost and getLoopbackAddress resolve to the same IP.
      */
     private InetAddress dummyInetAddress() {
         try {

@@ -24,7 +24,7 @@ public class KiwiDurationFormatters {
      * {@link #formatDurationWords(long)}.
      *
      * @param duration the Java duration to format
-     * @return the duration in words (e.g. 2 hours 5 minutes)
+     * @return the duration in words (e.g., 2 hours 5 minutes)
      */
     public static String formatDurationWords(Duration duration) {
         if (isNull(duration)) {
@@ -39,7 +39,7 @@ public class KiwiDurationFormatters {
      * and then calls {@link #formatDurationWords(long)}.
      *
      * @param duration the Dropwizard duration to format
-     * @return the duration in words (e.g. 1 minute 45 seconds)
+     * @return the duration in words (e.g., 1 minute 45 seconds)
      * @implNote You will need the Dropwizard Duration class available at runtime to call this method!
      */
     public static String formatDurationWords(io.dropwizard.util.Duration duration) {
@@ -56,7 +56,7 @@ public class KiwiDurationFormatters {
      * "0 days 7 hours 25 minutes 0 seconds" instead of just "7 hours 25 minutes"? (We cannot think of a good reason...)
      *
      * @param durationMillis the duration in milliseconds to format
-     * @return the duration in words (e.g. 10 minutes)
+     * @return the duration in words (e.g., 10 minutes)
      * @implNote The only real reason for this method to exist is, so we don't constantly have to pass the two
      * boolean arguments. Plus, boolean arguments are evil because what exactly does "true, false" tell you without
      * requiring you to look at the parameter documentation?

@@ -25,7 +25,7 @@ public class KiwiMultivaluedMaps {
 
     /**
      * Create a new {@link MultivaluedMap} from the given items, which are expected to be in alternating
-     * key/value pairs. This allows for keys to be repeated, i.e. so that a single key can have multiple values.
+     * key/value pairs. This allows for keys to be repeated, i.e., so that a single key can have multiple values.
      *
      * @param items the keys and values, e.g. key1, value1, key2, value2, ...
      * @return a new {@link MultivaluedMap}
@@ -58,7 +58,7 @@ public class KiwiMultivaluedMaps {
     /**
      * @param consumer BiConsumer that accepts the accumulator MultivaluedMap and a List of String which
      *                 contains a key/value pair
-     * @param items    the items to accumulate into a new MultivaluedMap, in pairs of items e.g. k1, v1, k2, v2, etc
+     * @param items    the items to accumulate into a new MultivaluedMap, in pairs of items e.g., k1, v1, k2, v2, etc.
      * @return the accumulating MultivaluedMap
      */
     private static MultivaluedMap<String, String> newMultivaluedMap(

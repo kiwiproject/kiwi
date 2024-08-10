@@ -31,7 +31,7 @@ public class KiwiMaps {
      * @param map the map
      * @param <K> the type of the keys in the map
      * @param <V> the type of the values in the map
-     * @return {@code true} if map is null or empty; {@code false} otherwise
+     * @return {@code true} if {@code map} is null or empty; {@code false} otherwise
      */
     public static <K, V> boolean isNullOrEmpty(Map<K, V> map) {
         return map == null || map.isEmpty();
@@ -43,7 +43,7 @@ public class KiwiMaps {
      * @param map the map
      * @param <K> the type of the keys in the map
      * @param <V> the type of the values in the map
-     * @return {@code true} if map is neither null nor empty; {@code false} otherwise
+     * @return {@code true} if {@code map} is neither null nor empty; {@code false} otherwise
      */
     public static <K, V> boolean isNotNullOrEmpty(Map<K, V> map) {
         return !isNullOrEmpty(map);

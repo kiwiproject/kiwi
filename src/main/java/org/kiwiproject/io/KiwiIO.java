@@ -39,7 +39,7 @@ import java.util.stream.Stream;
  * <p>
  * The {@code closeQuietly} methods that accept {@link Closeable} were copied directly from Apache Commons I/O and
  * the deprecation warnings and annotations removed. While they should not be used often, sometimes they might come in
- * handy, so we want to keep them around for posterity. Slight style modifications were made (e.g. replace {@code obj != null}
+ * handy, so we want to keep them around for posterity. Slight style modifications were made (e.g., replace {@code obj != null}
  * checks with {@code nonNull(obj}, etc.) as well as adding logging. Did not bother copying all the {@code closeQuietly}
  * methods that took a specific class such as {@link java.io.Reader}, {@link java.io.Writer}, {@link java.net.Socket}, etc.
  * They all implement {@link Closeable} and were probably only there because those specific classes pre-dated Java 5 when
@@ -110,7 +110,7 @@ public class KiwiIO {
      * <b>It should not be used to replace the close statement(s)
      * which should be present for the non-exceptional case.</b>
      * <br>
-     * It is only intended to simplify tidying up where normal processing has already failed
+     * It is only intended to simplify tidying up where normal processing has already failed,
      * and reporting close failure as well is not necessary or useful.
      * <p>
      * Example code:
@@ -572,7 +572,7 @@ public class KiwiIO {
     }
 
     /**
-     * Return a {@link Stream} of {@link String}s from the given {@link InputStream} using the specified {@link Charset}
+     * Return a {@link Stream} of {@link String}s from the {@link InputStream} using the specified {@link Charset}
      * for the String encoding.
      *
      * @param stream  the stream

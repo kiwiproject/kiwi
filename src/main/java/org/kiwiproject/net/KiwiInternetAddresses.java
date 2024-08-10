@@ -32,10 +32,10 @@ import java.util.function.Supplier;
  * the {@link com.google.common.net.InetAddresses} class, so if something is not in here, check there. This set of
  * utilities only contains things that are not in the JDK or Guava.
  * <p>
- * Note that some of the methods accept (e.g. as default value) or return {@link SimpleHostInfo}. This is because
+ * Note that some methods accept (e.g., as default value) or return {@link SimpleHostInfo}. This is because
  * the {@link InetAddress} class has no public constructors and can only be instantiated by its static factory
  * methods. As a result, if you want to specify your own custom host name and/or IP address as the default value, for
- * example to use a different host alias or subnet IP, then you must use the methods that work with {@link SimpleHostInfo}.
+ * example, to use a different host alias or subnet IP, then you must use the methods that work with {@link SimpleHostInfo}.
  * Otherwise, when working with {@link InetAddress} instances, using {@link InetAddress#getLoopbackAddress()} is about the
  * only other default value you could use.
  * <p>
@@ -212,7 +212,7 @@ public class KiwiInternetAddresses {
      * @param subnetCidrs   A list of CIDRs used to match against the machine's IP addresses.
      * @param ipScheme      Whether to filter by IPv4 or IPv6.
      * @return the first found matching IP address.
-     * @throws IllegalStateException if a matching IP address can not be found.
+     * @throws IllegalStateException if a matching IP address cannot be found.
      */
     public static String findFirstMatchingAddressOrThrow(List<String> subnetCidrs, IpScheme ipScheme) {
         return findFirstMatchingAddress(subnetCidrs, ipScheme).orElseThrow(() ->
@@ -226,7 +226,7 @@ public class KiwiInternetAddresses {
      * @param subnetCidrs   A list of CIDRs used to match against the machine's IP addresses.
      * @param ipAddresses   A list of IP addresses to search for a match.
      * @return the first found matching IP address.
-     * @throws IllegalStateException if a matching IP address can not be found.
+     * @throws IllegalStateException if a matching IP address cannot be found.
      */
     public static String findFirstMatchingAddressOrThrow(List<String> subnetCidrs, List<String> ipAddresses) {
         return findFirstMatchingAddress(subnetCidrs, ipAddresses).orElseThrow(() ->

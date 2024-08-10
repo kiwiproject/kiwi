@@ -26,7 +26,7 @@ public class KiwiMultimapCollectors {
      * @param supplier the Multimap to collect into
      * @param <K>      the key type of the Map.Entry objects
      * @param <V>      the value type of the Map.Entry objects
-     * @param <A>      the accumulator type, i.e. some kind of Multimap
+     * @param <A>      the accumulator type, i.e., some kind of Multimap
      * @return the collected Multimap
      */
     public static <K, V, A extends Multimap<K, V>> Collector<Map.Entry<K, V>, A, A> toMultimap(Supplier<A> supplier) {
