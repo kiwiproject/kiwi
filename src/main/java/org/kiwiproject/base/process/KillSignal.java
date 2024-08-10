@@ -49,7 +49,7 @@ public enum KillSignal {
     }
 
     /**
-     * Given a signal, prepend a leading dash if necessary, e.g. change "9" into "-9".
+     * Given a signal, prepend a leading dash if necessary, e.g., change "9" into "-9".
      *
      * @param signal the signal to modify
      * @return the possibly modified signal with a leading dash

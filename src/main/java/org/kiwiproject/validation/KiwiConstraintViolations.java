@@ -39,8 +39,8 @@ import java.util.function.Function;
  * ({@code org.hibernate.validator:hibernate-validator} must be available at runtime.
  * <p>
  * In addition, currently the "pretty" methods use the {@code #humanize} methods, which rely on {@link WordUtils} from
- * commons-text. So if you use any of these, you will need to ensure {@code org.apache.commons:commons-text} is
- * available at runtime.
+ * the <a href="https://commons.apache.org/proper/commons-text/">commons-text</a> library. So if you use any of these,
+ * you will need to ensure {@code org.apache.commons:commons-text} is available at runtime.
  */
 @UtilityClass
 public class KiwiConstraintViolations {

@@ -50,7 +50,7 @@ public class KiwiDropwizardLifecycles {
      * <p>
      * Useful when you have some external object that has a start method, but you don't want to clutter your
      * code by creating an anonymous inner class just to specify the start action. For example, if you have
-     * a monitoring class that needs to start when the application starts, you can ensure that happens
+     * a monitoring class that needs to start when the application starts, you can ensure that it happens
      * using code like:
      * <p>
      * {@code KiwiDropwizardLifecycles.manage(lifecycle, () -> monitor.start());}

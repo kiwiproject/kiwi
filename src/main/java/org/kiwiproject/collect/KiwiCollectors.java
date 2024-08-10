@@ -67,7 +67,7 @@ public class KiwiCollectors {
      * @param valueMapper a mapping function to produce values
      * @param <T>         the type of the input elements
      * @param <K>         the output type of the key mapping function
-     * @param <U>         the outptu type of the value mapping function
+     * @param <U>         the output type of the value mapping function
      * @return a {@link Collector} which collects elements into an {@link java.util.EnumMap} whose keys
      * are the result of applying key and value mapping functions.
      */
@@ -86,7 +86,7 @@ public class KiwiCollectors {
     }
 
     /**
-     * Returns a {@link Collector} that collects intoa {@link LinkedHashMap}.
+     * Returns a {@link Collector} that collects into a {@link LinkedHashMap}.
      *
      * @param keyMapper   a mapping function to produce keys
      * @param valueMapper a mapping function to produce values
@@ -116,8 +116,8 @@ public class KiwiCollectors {
      * @param u1 the first value supplied to the merge function
      * @param u2 the second value supplied to the merge function
      * @return a new {@link IllegalStateException} object
-     * @implNote There is not an easy way to obtain the actual duplicate key here, since the merge function is a
-     * {@link java.util.function.BinaryOperator} that accepts the two values needing to be merged. So unfortunately
+     * @implNote There is not an easy way to get the actual duplicate key here, since the merge function is a
+     * {@link java.util.function.BinaryOperator} that accepts the two values needing to be merged. So unfortunately,
      * the best we can easily do is report the values attempting to be merged, and let the person doing the
      * investigation hopefully backtrack to the duplicate key.
      */

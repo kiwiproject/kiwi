@@ -53,11 +53,11 @@ public @interface KiwiDeprecated {
     String[] replacedBy() default "";
 
     /**
-     * The issue number or other reference or descriptor which caused or is related to the deprecation, if any.
+     * The issue number or another reference or descriptor which caused or is related to the deprecation, if any.
      * <p>
      * For example, one or more JIRA issue numbers.
      *
-     * @return a reference to an issue, ticket, or other descriptor
+     * @return a reference to an issue, ticket, or another descriptor
      */
     String[] reference() default "";
 

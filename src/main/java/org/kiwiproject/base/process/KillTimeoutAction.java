@@ -10,7 +10,7 @@ import java.util.concurrent.TimeUnit;
 public enum KillTimeoutAction {
 
     /**
-     * The process will be forced killed (e.g. like a {@code kill -9}) after timeout
+     * The process will be forced killed (e.g., like a {@code kill -9}) after timeout
      */
     FORCE_KILL,
 

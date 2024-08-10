@@ -22,7 +22,7 @@ import java.util.Date;
  * The original JDK 1.0 {@link Date} class leaves, ahem, much to be desired, but there are still (unfortunately)
  * many classes, interfaces, and libraries that use it and probably won't be changed soon or ever. KiwiDate contains
  * some utilities to convert {@link Instant} objects to {@link Date} objects shifted by some amount of time, for
- * example if you need a Date that is 30 minutes from a given {@link Instant}.
+ * example, if you need a Date that is 30 minutes from a given {@link Instant}.
  * <p>
  * If you have a choice, you should always prefer the Java 8 date/time APIs (e.g. {@link Instant},
  * {@link java.time.LocalDateTime}, {@link java.time.ZonedDateTime}) in the {@code java.time} package

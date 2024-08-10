@@ -24,7 +24,7 @@ import java.util.GregorianCalendar;
  * <p>
  * All methods throw {@link IllegalArgumentException} if null values are passed into them.
  *
- * @implNote {@link Date}, according to its JavaDoc, is "intended to reflect coordinated universal time (UTC)"
+ * @implNote {@link Date}, according to its Javadoc, is "intended to reflect coordinated universal time (UTC)"
  * though "it may not do so exactly". The utilities in this class convert arguments to UTC before converting
  * to {@link Date} in order to reflect that intention.
  */

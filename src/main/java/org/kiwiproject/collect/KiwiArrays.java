@@ -24,7 +24,7 @@ public class KiwiArrays {
      *
      * @param items the array
      * @param <T>   the type of items in the array
-     * @return {@code true} if array is null or empty; {@code false} otherwise
+     * @return {@code true} if the array is null or empty; {@code false} otherwise
      */
     public static <T> boolean isNullOrEmpty(T[] items) {
         return items == null || items.length == 0;
@@ -46,7 +46,7 @@ public class KiwiArrays {
      *
      * @param items the array
      * @param <T>   the type of items in the array
-     * @return {@code true} if array is non-null and has exactly one item; {@code false} otherwise
+     * @return {@code true} if the array is non-null and has exactly one item; {@code false} otherwise
      */
     public static <T> boolean hasOneElement(T[] items) {
         return nonNull(items) && items.length == 1;
@@ -100,12 +100,12 @@ public class KiwiArrays {
     }
 
     /**
-     * Returns an {@link Optional} containing the first element in specified array of items, or an empty optional
+     * Returns an {@link Optional} containing the first element in the specified array of items, or an empty optional
      * if the array is null or empty.
      *
      * @param items the array
      * @param <T>   the type of items in the array
-     * @return Optional containing first element if exists, otherwise Optional.empty()
+     * @return Optional containing the first element if exists, otherwise Optional.empty()
      */
     public static <T> Optional<T> firstIfPresent(T[] items) {
         return isNotNullOrEmpty(items) ? Optional.of(first(items)) : Optional.empty();
@@ -206,7 +206,7 @@ public class KiwiArrays {
     }
 
     /**
-     * Returns an {@link Optional} containing the last element in specified array of items, or an empty optional
+     * Returns an {@link Optional} containing the last element in the specified array of items, or an empty optional
      * if the array is null or empty.
      *
      * @param items the array
@@ -255,7 +255,7 @@ public class KiwiArrays {
      * @param <T>        the type of items in the collection
      * @return a new array with only unique elements or null.
      */
-    @SuppressWarnings({"unchecked", "java:S1168"}) //Ignoring Sonar warning to return empty array since this method's name says it will return null
+    @SuppressWarnings({"unchecked", "java:S1168"}) //Ignoring Sonar warning to return an empty array since this method's name says it will return null
     public static <T> T[] distinctOrNull(T[] collection, Class<T> arrayType) {
         if (isNull(collection)) {
             return null;
@@ -267,8 +267,9 @@ public class KiwiArrays {
     }
 
     /**
-     * Returns a new array with the same elements and the same size as the original, however the initial position in the array
-     * is now the element specified by the "startOffset" and the array wraps around through the contents to end with "startOffset" - 1
+     * Returns a new array with the same elements and the same size as the original.
+     * However, the initial position in the array is now the element specified by the "startOffset"
+     * and the array wraps around through the contents to end with ("startOffset" - 1).
      *
      * @param input       the original array
      * @param startOffset the desired offset to start the new array

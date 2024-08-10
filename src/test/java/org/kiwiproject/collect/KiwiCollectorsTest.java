@@ -153,7 +153,7 @@ class KiwiCollectorsTest {
                     Pair::getRight
             ));
 
-            // Note: EnumMap ordering is based on order in which the enum constants are declared (see EnumMap JavaDocs)
+            // Note: EnumMap ordering is based on order in which the enum constants are declared (see EnumMap Javadocs)
             assertThat(seasonWordAssociations)
                     .isExactlyInstanceOf(EnumMap.class)
                     .hasSize(4)

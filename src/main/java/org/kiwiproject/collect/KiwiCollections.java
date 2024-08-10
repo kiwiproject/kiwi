@@ -25,7 +25,7 @@ public class KiwiCollections {
      *
      * @param collection the collection
      * @param <T>        the type of items in the collection
-     * @return {@code true} if collection is null or empty; {@code false} otherwise
+     * @return {@code true} if the collection is null or empty; {@code false} otherwise
      */
     public static <T> boolean isNullOrEmpty(Collection<T> collection) {
         return collection == null || collection.isEmpty();
@@ -36,7 +36,7 @@ public class KiwiCollections {
      *
      * @param collection the collection
      * @param <T>        the type of items in the collection
-     * @return {@code true} if collection is neither null nor empty; {@code false} otherwise
+     * @return {@code true} if the collection is neither null nor empty; {@code false} otherwise
      */
     public static <T> boolean isNotNullOrEmpty(Collection<T> collection) {
         return !isNullOrEmpty(collection);
@@ -47,7 +47,7 @@ public class KiwiCollections {
      *
      * @param collection the collection
      * @param <T>        the type of items in the collection
-     * @return {@code true} if collection is non-null and has exactly one item; {@code false}
+     * @return {@code true} if the collection is non-null and has exactly one item; {@code false}
      */
     public static <T> boolean hasOneElement(Collection<T> collection) {
         return nonNull(collection) && collection.size() == 1;
@@ -59,7 +59,7 @@ public class KiwiCollections {
      *
      * @param sequencedCollection the sequenced collection
      * @param <T>                 the type of elements in the collection
-     * @return {@link Optional} containing first element if exists, otherwise Optional.empty()
+     * @return {@link Optional} containing the first element if exists, otherwise Optional.empty()
      * @throws IllegalArgumentException if sequencedCollection is not a sequenced collection
      */
     public static <T> Optional<T> firstIfPresent(Collection<T> sequencedCollection) {
