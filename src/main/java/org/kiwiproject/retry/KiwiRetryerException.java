@@ -13,7 +13,7 @@ import java.util.OptionalInt;
  * <p>
  * A {@link RetryException} indicates that all attempts failed, while an {@link InterruptedException} occurs when
  * a thread is interrupted. Note specifically that failed attempts may have failed due to a specific result or
- * because an exception was thrown. In other words, a {@link Retryer} can be configured with result as well as
+ * because an exception was thrown. In other words, a {@link Retryer} can be configured with result and
  * exception predicates to trigger a retry.
  */
 public class KiwiRetryerException extends RuntimeException {
@@ -114,7 +114,7 @@ public class KiwiRetryerException extends RuntimeException {
      *
      * @return an Optional of the last failed Attempt
      */
-    @SuppressWarnings("java:S1452")  // suppress generic wildcard type, since it's in retrying-again like this
+    @SuppressWarnings("java:S1452")  // suppress the generic wildcard type, since it's in retrying-again like this
     public Optional<Attempt<?>> getLastAttempt() {
         return unwrapAsRetryException().map(RetryException::getLastFailedAttempt);
     }

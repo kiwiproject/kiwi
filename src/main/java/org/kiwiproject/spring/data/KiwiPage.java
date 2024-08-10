@@ -13,9 +13,9 @@ import lombok.ToString;
 import java.util.List;
 
 /**
- * Represents one page of an overall list of results.
+ * Represents one page from a list of results.
  * <p>
- * By default, pagination assumes a start page index of 0 (i.e. the page offset). You can change this
+ * By default, pagination assumes a start page index of 0 (i.e., the page offset). You can change this
  * by calling {@code setPagingStartsWith(int)} or {@code usingOneAsFirstPage()}.
  * <p>
  * You can also indicate whether a sort has been applied to the data by setting the {@link KiwiSort} via
@@ -35,10 +35,10 @@ public class KiwiPage<T> {
     private List<T> content;
 
     /**
-     * The size limit of the pagination, for example each page can have up to 25 items. The last page will often
+     * The size limit of the pagination, for example, each page can have up to 25 items. The last page will often
      * contain fewer items than this limit unless the total number of items is such that there is no remainder
-     * when dividing the total by the page size. e.g. if the total number of items is 100 and the page size is 20,
-     * then each of the 5 pages has exactly 20 items (the page size).
+     * when dividing the total by the page size. For example, if the total number of items is 100 and the page size is
+     * 20, then each of the five pages has exactly 20 items (the page size).
      */
     private long size;
 
@@ -63,7 +63,7 @@ public class KiwiPage<T> {
     private long totalElements;
 
     /**
-     * Describes any sort that is active for the pagination. Default value is null.
+     * Describes any sort that is active for the pagination. The default value is null.
      */
     private KiwiSort sort;
 
@@ -78,7 +78,7 @@ public class KiwiPage<T> {
      * If you need to add a sort or change {@code pagingStartsWith}, you can chain the {@link #addKiwiSort(KiwiSort)}
      * and {@link #usingOneAsFirstPage()} in a fluent style.
      *
-     * @param pageNum     the number of this page, can be 0 or 1-based (0 is the default)
+     * @param pageNum     the number of this page; it can be 0 or 1-based (0 is the default)
      * @param limit       the page size limit
      * @param total       the total number of elements in the overall result list
      * @param contentList the content on this page

@@ -97,15 +97,15 @@ public class KiwiSpringMongoQueries {
      * Add date restrictions to the given property.
      * <p>
      * Specify both start and end milliseconds (since the epoch) to create a closed range, or specify only start or
-     * end milliseconds to create an open-range. E.g. if only start milliseconds is specified, then the criteria
+     * end milliseconds to create an open-range. E.g., if only start milliseconds is specified, then the criteria
      * includes only dates that are equal to or after the given value, with no upper bound.
      * <p>
      * If both start and end milliseconds are null, the call is a no-op.
      *
      * @param query                    the MongoDB query on which to add the criteria
      * @param propertyName             the property name, which is expected to be of type {@link Date}
-     * @param startDateInclusiveMillis the start date, inclusive. May be null.
-     * @param endDateInclusiveMillis   the end date, inclusive. May be null.
+     * @param startDateInclusiveMillis the start date, inclusive; it may be null.
+     * @param endDateInclusiveMillis   the end date, inclusive; it may be null.
      */
     public static void addDateBounds(Query query,
                                      String propertyName,
@@ -222,7 +222,7 @@ public class KiwiSpringMongoQueries {
 
     /**
      * Add a partial or equal match criteria for the given property and match strings. Any of the match strings
-     * are considered to be a match, i.e. this effectively performs an <em>OR</em> operation.
+     * are considered to be a match, i.e., this effectively performs an <em>OR</em> operation.
      *
      * @param query        the MongoDB query on which to add the criteria
      * @param matchStrings the strings to match, using an <em>OR</em> operation

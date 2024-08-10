@@ -21,7 +21,7 @@ import java.util.Properties;
 public class KiwiProperties {
 
     /**
-     * Crates a <i>mutable</i> {@link Properties} instance by parsing the items argument in pairs.
+     * Crates a <i>mutable</i> {@link Properties} instance by parsing the {@code items} argument in pairs.
      * The items argument contains keys and values in the form:
      * <p>
      * <i>key-1, value-1, key-2, value-2, ... , key-N, value-N</i>
@@ -41,7 +41,7 @@ public class KiwiProperties {
     }
 
     /**
-     * Creates a <i>mutable</i> {@link Properties} instance by parsing the items argument in pairs.
+     * Creates a <i>mutable</i> {@link Properties} instance by parsing the {@code items} argument in pairs.
      * The items argument contains keys and values in the form:
      * <p>
      * <i>key-1, value-1, key-2, value-2, ... , key-N, value-N</i>
@@ -58,7 +58,7 @@ public class KiwiProperties {
     }
 
     /**
-     * Creates a <i>mutable</i> {@link Properties} instance by parsing the items argument in pairs from the list.
+     * Creates a <i>mutable</i> {@link Properties} instance by parsing the {@code items} argument in pairs from the list.
      *
      * @param items the items containing keys and values, in pairs
      * @return a new Properties instance with data from items
@@ -78,11 +78,11 @@ public class KiwiProperties {
      * @return a new Properties instance with data from the map
      * @throws NullPointerException if any of the items is null
      * @implNote The reason this method restricts the map keys and values to strings is because Properties is derived
-     * from {@link java.util.Hashtable} and the JavaDoc states:
+     * from {@link java.util.Hashtable} and the Javadoc states:
      * "Because {@code Properties} inherits from {@code Hashtable}, the {@code put} and {@code putAll} methods can be
      * applied to a {@code Properties} object. Their use is strongly discouraged as they allow the caller to insert
      * entries whose keys or values are not {@code Strings}. The {@code setProperty} method should be used instead."
-     * This of course is simply poor design (they should have used composition and hidden the internal storage details
+     * This, of course, is simply poor design (they should have used composition and hidden the internal storage details
      * instead of extending Hashtable).
      */
     public static Properties newProperties(Map<String, String> map) {
@@ -94,17 +94,17 @@ public class KiwiProperties {
 
     /**
      * Creates a <i>mutable</i> {@link Properties} instance from each key/value pair list inside the outer list.
-     * The items argument must contain keys and values in teh form:
+     * The {@code items} argument must contain keys and values in teh form:
      * <p>
      * <i>[ [key-1, value-1], [key-2, value-2], ... , [key-N, value-N]</i>
      * </p>
      *
-     * @param items the items list containing a series of two-items key/value pair lists
+     * @param items a list containing a series of two-items key/value pair lists
      * @return a new Properties instance with data from items
      * @throws NullPointerException if any of the items is null
      * @throws IllegalArgumentException if any of the key/value pair lists do not have at least two elements
      * @implNote only the first and second elements of the key/value pair sub-lists are used when creating the
-     * Properties instance. Thus while it does not make much sense, this method will not throw an exception if the
+     * Properties instance. Thus, while it makes little sense, this method will not throw an exception if the
      * sub-lists contain more than two elements.
      */
     public static Properties newPropertiesFromStringPairs(List<List<String>> items) {

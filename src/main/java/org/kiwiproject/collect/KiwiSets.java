@@ -17,7 +17,7 @@ public class KiwiSets {
      *
      * @param set the set
      * @param <T> the type of items in the set
-     * @return {@code true} if set is null or empty; {@code false} otherwise
+     * @return {@code true} if {@code set} is null or empty; {@code false} otherwise
      */
     public static <T> boolean isNullOrEmpty(Set<T> set) {
         return set == null || set.isEmpty();
@@ -28,7 +28,7 @@ public class KiwiSets {
      *
      * @param set the set
      * @param <T> the type of items in the set
-     * @return {@code true} if set is neither null nor empty; {@code false} otherwise
+     * @return {@code true} if {@code set} is neither null nor empty; {@code false} otherwise
      */
     public static <T> boolean isNotNullOrEmpty(Set<T> set) {
         return !isNullOrEmpty(set);
@@ -39,7 +39,7 @@ public class KiwiSets {
      *
      * @param set the set
      * @param <T> the type of items in the set
-     * @return {@code true} if set is non-null and has exactly one item; {@code false}
+     * @return {@code true} if {@code set} is non-null and has exactly one item; {@code false}
      */
     public static <T> boolean hasOneElement(Set<T> set) {
         return nonNull(set) && set.size() == 1;

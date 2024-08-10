@@ -44,7 +44,7 @@ public class KiwiPostgres {
     /**
      * Creates a new {@link PGobject} of the specified type and with the given value.
      *
-     * @param type  the type of object, e.g. json or jsonb
+     * @param type  the type of object, e.g., {@code json} or {@code jsonb}
      * @param value the value as a String
      * @return a new {@link PGobject}
      * @implNote We are catching the {@link SQLException} thrown by {@link PGobject#setType(String)} and wrapping

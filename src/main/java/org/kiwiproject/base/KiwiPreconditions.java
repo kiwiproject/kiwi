@@ -34,7 +34,7 @@ import java.util.function.Supplier;
  * @implNote Several methods in this class use Lombok {@link lombok.SneakyThrows} so that they do not need to declare
  * that they throw {@code Exception}s of type T, <em>for the case that T is a checked exception</em>. Read more details about
  * how this works in {@link lombok.SneakyThrows}. Most notably, this should give you more insight into how the JVM (versus
- * Java the language) actually work: <em>"The JVM does not check for the consistency of the checked exception system;
+ * Java the language) actually works: <em>"The JVM does not check for the consistency of the checked exception system;
  * javac does, and this annotation lets you opt out of its mechanism."</em>
  */
 @UtilityClass
@@ -601,7 +601,7 @@ public class KiwiPreconditions {
 
     /**
      * Ensures that a collection of items has an even count, throwing an {@link IllegalArgumentException} if
-     * items is null or there is an odd number of items.
+     * {@code items} is null or there is an odd number of items.
      *
      * @param items items to count
      * @param <T>   the object type
@@ -614,7 +614,7 @@ public class KiwiPreconditions {
 
     /**
      * Ensures that a collection of items has an even count, throwing an {@link IllegalArgumentException} if
-     * items is null or there is an odd number of items.
+     * {@code items} is null or there is an odd number of items.
      *
      * @param items items to count
      * @param <T>   the object type
@@ -678,7 +678,7 @@ public class KiwiPreconditions {
      * Ensures int {@code value} is a positive number (greater than zero).
      *
      * @param value the value to check for positivity
-     * @throws IllegalStateException if the value is not positive (e.g. greater than zero)
+     * @throws IllegalStateException if the value is not positive (e.g., greater than zero)
      * @see Preconditions#checkState(boolean, Object)
      */
     public static void checkPositive(int value) {
@@ -690,7 +690,7 @@ public class KiwiPreconditions {
      *
      * @param value        the value to check for positivity
      * @param errorMessage the error message to put in the exception if not positive
-     * @throws IllegalStateException if the value is not positive (e.g. greater than zero)
+     * @throws IllegalStateException if the value is not positive (e.g., greater than zero)
      * @see Preconditions#checkState(boolean, Object)
      */
     public static void checkPositive(int value, String errorMessage) {
@@ -704,7 +704,7 @@ public class KiwiPreconditions {
      * @param errorMessageTemplate a template for the exception message if value is not positive, according to how
      *                             {@link KiwiStrings#format(String, Object...)} handles placeholders
      * @param errorMessageArgs     the arguments to populate into the error message template
-     * @throws IllegalStateException if the value is not positive (e.g. greater than zero)
+     * @throws IllegalStateException if the value is not positive (e.g., greater than zero)
      * @see Preconditions#checkState(boolean, Object)
      */
     public static void checkPositive(int value, String errorMessageTemplate, Object... errorMessageArgs) {
@@ -717,7 +717,7 @@ public class KiwiPreconditions {
      * Ensures long {@code value} is a positive number (greater than zero).
      *
      * @param value the value to check for positivity
-     * @throws IllegalStateException if the value is not positive (e.g. greater than zero)
+     * @throws IllegalStateException if the value is not positive (e.g., greater than zero)
      * @see Preconditions#checkState(boolean, Object)
      */
     public static void checkPositive(long value) {
@@ -729,7 +729,7 @@ public class KiwiPreconditions {
      *
      * @param value        the value to check for positivity
      * @param errorMessage the error message to put in the exception if not positive
-     * @throws IllegalStateException if the value is not positive (e.g. greater than zero)
+     * @throws IllegalStateException if the value is not positive (e.g., greater than zero)
      * @see Preconditions#checkState(boolean, Object)
      */
     public static void checkPositive(long value, String errorMessage) {
@@ -743,7 +743,7 @@ public class KiwiPreconditions {
      * @param errorMessageTemplate a template for the exception message if value is not positive, according to how
      *                             {@link KiwiStrings#format(String, Object...)} handles placeholders
      * @param errorMessageArgs     the arguments to be substituted into the message template
-     * @throws IllegalStateException if the value is not positive (e.g. greater than zero)
+     * @throws IllegalStateException if the value is not positive (e.g., greater than zero)
      * @see Preconditions#checkState(boolean, Object)
      */
     public static void checkPositive(long value, String errorMessageTemplate, Object... errorMessageArgs) {
@@ -768,7 +768,7 @@ public class KiwiPreconditions {
      *
      * @param value        the value to check for positivity
      * @param errorMessage the error message to put in the exception if not positive
-     * @throws IllegalStateException if the value is not positive (e.g. greater than zero)
+     * @throws IllegalStateException if the value is not positive (e.g., greater than zero)
      * @see Preconditions#checkState(boolean, Object)
      */
     public static void checkPositiveOrZero(int value, String errorMessage) {
@@ -782,7 +782,7 @@ public class KiwiPreconditions {
      * @param errorMessageTemplate a template for the exception message if value is not zero or positive, according to how
      *                             {@link KiwiStrings#format(String, Object...)} handles placeholders
      * @param errorMessageArgs     the arguments to populate into the error message template
-     * @throws IllegalStateException if the value is not positive (e.g. greater than zero)
+     * @throws IllegalStateException if the value is not positive (e.g., greater than zero)
      * @see Preconditions#checkState(boolean, Object)
      */
     public static void checkPositiveOrZero(int value, String errorMessageTemplate, Object... errorMessageArgs) {
@@ -807,7 +807,7 @@ public class KiwiPreconditions {
      *
      * @param value        the value to check for positivity
      * @param errorMessage the error message to put in the exception if not positive
-     * @throws IllegalStateException if the value is not positive (e.g. greater than zero)
+     * @throws IllegalStateException if the value is not positive (e.g., greater than zero)
      * @see Preconditions#checkState(boolean, Object)
      */
     public static void checkPositiveOrZero(long value, String errorMessage) {
@@ -821,7 +821,7 @@ public class KiwiPreconditions {
      * @param errorMessageTemplate a template for the exception message if value is not zero or positive, according to how
      *                             {@link KiwiStrings#format(String, Object...)} handles placeholders
      * @param errorMessageArgs     the arguments to populate into the error message template
-     * @throws IllegalStateException if the value is not positive (e.g. greater than zero)
+     * @throws IllegalStateException if the value is not positive (e.g., greater than zero)
      * @see Preconditions#checkState(boolean, Object)
      */
     public static void checkPositiveOrZero(long value, String errorMessageTemplate, Object... errorMessageArgs) {
@@ -848,7 +848,7 @@ public class KiwiPreconditions {
      * @param value        the value to check for positivity
      * @param errorMessage the error message to put in the exception if not positive
      * @return the given value if positive
-     * @throws IllegalStateException if the value is not positive (e.g. greater than zero)
+     * @throws IllegalStateException if the value is not positive (e.g., greater than zero)
      * @see Preconditions#checkState(boolean, Object)
      */
     public static int requirePositive(int value, String errorMessage) {
@@ -864,7 +864,7 @@ public class KiwiPreconditions {
      *                             {@link KiwiStrings#format(String, Object...)} handles placeholders
      * @param errorMessageArgs     the arguments to populate into the error message template
      * @return the given value if positive
-     * @throws IllegalStateException if the value is not positive (e.g. greater than zero)
+     * @throws IllegalStateException if the value is not positive (e.g., greater than zero)
      * @see Preconditions#checkState(boolean, Object)
      */
     public static int requirePositive(int value, String errorMessageTemplate, Object... errorMessageArgs) {
@@ -890,7 +890,7 @@ public class KiwiPreconditions {
      * @param value        the value to check for positivity
      * @param errorMessage the error message to put in the exception if not positive
      * @return the given value if positive
-     * @throws IllegalStateException if the value is not positive (e.g. greater than zero)
+     * @throws IllegalStateException if the value is not positive (e.g., greater than zero)
      * @see Preconditions#checkState(boolean, Object)
      */
     public static long requirePositive(long value, String errorMessage) {
@@ -906,7 +906,7 @@ public class KiwiPreconditions {
      *                             {@link KiwiStrings#format(String, Object...)} handles placeholders
      * @param errorMessageArgs     the arguments to populate into the error message template
      * @return the given value if positive
-     * @throws IllegalStateException if the value is not positive (e.g. greater than zero)
+     * @throws IllegalStateException if the value is not positive (e.g., greater than zero)
      * @see Preconditions#checkState(boolean, Object)
      */
     public static long requirePositive(long value, String errorMessageTemplate, Object... errorMessageArgs) {
@@ -919,7 +919,7 @@ public class KiwiPreconditions {
      *
      * @param value the value to check for positivity or zero
      * @return the given value if positive or zero
-     * @throws IllegalStateException if the value is not positive zero
+     * @throws IllegalStateException if the value is not positive or zero
      */
     public static int requirePositiveOrZero(int value) {
         checkPositiveOrZero(value);
@@ -932,7 +932,7 @@ public class KiwiPreconditions {
      * @param value        the value to check for positivity
      * @param errorMessage the error message to put in the exception if not positive
      * @return the given value if positive or zero
-     * @throws IllegalStateException if the value is not positive (e.g. greater than zero)
+     * @throws IllegalStateException if the value is not positive (e.g., greater than zero)
      * @see Preconditions#checkState(boolean, Object)
      */
     public static int requirePositiveOrZero(int value, String errorMessage) {
@@ -948,7 +948,7 @@ public class KiwiPreconditions {
      *                             {@link KiwiStrings#format(String, Object...)} handles placeholders
      * @param errorMessageArgs     the arguments to populate into the error message template
      * @return the given value if positive or zero
-     * @throws IllegalStateException if the value is not positive (e.g. greater than zero)
+     * @throws IllegalStateException if the value is not positive (e.g., greater than zero)
      * @see Preconditions#checkState(boolean, Object)
      */
     public static int requirePositiveOrZero(int value, String errorMessageTemplate, Object... errorMessageArgs) {
@@ -961,7 +961,7 @@ public class KiwiPreconditions {
      *
      * @param value the value to check for positivity or zero
      * @return the given value if positive or zero
-     * @throws IllegalStateException if the value is not positive zero
+     * @throws IllegalStateException if the value is not positive or zero
      */
     public static long requirePositiveOrZero(long value) {
         checkPositiveOrZero(value);
@@ -974,7 +974,7 @@ public class KiwiPreconditions {
      * @param value        the value to check for positivity
      * @param errorMessage the error message to put in the exception if not positive
      * @return the given value if positive or zero
-     * @throws IllegalStateException if the value is not positive (e.g. greater than zero)
+     * @throws IllegalStateException if the value is not positive (e.g., greater than zero)
      * @see Preconditions#checkState(boolean, Object)
      */
     public static long requirePositiveOrZero(long value, String errorMessage) {
@@ -990,7 +990,7 @@ public class KiwiPreconditions {
      *                             {@link KiwiStrings#format(String, Object...)} handles placeholders
      * @param errorMessageArgs     the arguments to populate into the error message template
      * @return the given value if positive or zero
-     * @throws IllegalStateException if the value is not positive (e.g. greater than zero)
+     * @throws IllegalStateException if the value is not positive (e.g., greater than zero)
      * @see Preconditions#checkState(boolean, Object)
      */
     public static long requirePositiveOrZero(long value, String errorMessageTemplate, Object... errorMessageArgs) {

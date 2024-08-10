@@ -29,7 +29,7 @@ import java.util.Optional;
  * <p>
  * WARNING: This is a low-level utility class. As such, many of its methods have a large number of arguments. This
  * is simply a byproduct of the many different objects that are required by the JDK classes to create objects such
- * as {@link SSLContext}. It is intended that this class will be used by other, higher-level, utilities
+ * as {@link SSLContext}. It is intended that this class will be used by other, higher-level utilities
  * at higher levels of abstraction.
  */
 @UtilityClass
@@ -44,7 +44,7 @@ public class KiwiSecurity {
      * key and trust store types are {@link KeyStoreType#JKS}. Uses the default key and trust manager algorithms
      * as defined by {@link KeyManagerFactory} and {@link TrustManagerFactory}.
      * <p>
-     * If only the trust store is needed, supply {@code null} values for the {@code keyStorePath} and
+     * If only the trust store is necessary, supply {@code null} values for the {@code keyStorePath} and
      * {@code keyStorePassword}.
      *
      * @param keyStorePath       path to the key store
@@ -75,7 +75,7 @@ public class KiwiSecurity {
      * key and trust store types are {@link KeyStoreType#JKS}. Uses the default key and trust manager algorithms
      * as defined by {@link KeyManagerFactory} and {@link TrustManagerFactory}.
      * <p>
-     * If only the trust store is needed, supply {@code null} values for the {@code keyStorePath} and
+     * If only the trust store is necessary, supply {@code null} values for the {@code keyStorePath} and
      * {@code keyStorePassword}.
      *
      * @param keyStorePath       path to the key store
@@ -112,7 +112,7 @@ public class KiwiSecurity {
      * as defined by {@link KeyManagerFactory} and {@link TrustManagerFactory}. The key and trust store types should
      * be one of the algorithms defined in {@link KeyStoreType}.
      * <p>
-     * If only the trust store is needed, supply {@code null} values for the {@code keyStorePath} and
+     * If only the trust store is necessary, supply {@code null} values for the {@code keyStorePath} and
      * {@code keyStorePassword}.
      * <p>
      * WARNING: While public, this is very low-level and not generally intended for client code to call directly.
@@ -160,7 +160,7 @@ public class KiwiSecurity {
      * {@link TrustManagerFactory}. The key and trust store types should be one of the algorithms defined
      * in {@link KeyStoreType}.
      * <p>
-     * If only the trust store is needed, supply {@code null} values for the {@code keyStorePath} and
+     * If only the trust store is necessary, supply {@code null} values for the {@code keyStorePath} and
      * {@code keyStorePassword}.
      * <p>
      * WARNING: While public, this is very low-level and not generally intended for client code to call directly.
@@ -208,7 +208,7 @@ public class KiwiSecurity {
      * trust manager algorithms, and protocol. The key and trust store types should be one of the algorithms
      * defined in {@link KeyStoreType}.
      * <p>
-     * If only the trust store is needed, supply {@code null} values for the {@code keyStorePath} and
+     * If only the trust store is necessary, supply {@code null} values for the {@code keyStorePath} and
      * {@code keyStorePassword}.
      * <p>
      * WARNING: While public, this is very low-level and not generally intended for client code to call directly.
@@ -296,7 +296,7 @@ public class KiwiSecurity {
      * Return an {@link Optional} containing a {@link KeyStore} for the given {@link KeyStoreType}, path, and
      * password, or an empty {@link Optional} if either path or password is null.
      * <p>
-     * This method is intended to load an <em>existing</em> key store. If you need to programatically create a new
+     * This method is intended to load an <em>existing</em> key store. If you need to programmatically create a new
      * one, use the {@link KeyStore} API directly.
      * <p>
      * If the returned Optional contains a KeyStore, it has been successfully loaded.

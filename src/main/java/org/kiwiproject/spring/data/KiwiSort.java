@@ -80,7 +80,7 @@ public class KiwiSort {
     private boolean ascending;
 
     /**
-     * Create a new instance with ascending sort direction.
+     * Create a new instance with an ascending sort direction.
      * <p>
      * If you want to specify that the sort is not case-sensitive, you can immediately call the
      * {@link #ignoringCase()} in a fluent style.
@@ -93,7 +93,7 @@ public class KiwiSort {
     }
 
     /**
-     * Create a new instance with descending sort direction.
+     * Create a new instance with a descending sort direction.
      * <p>
      * If you want to specify that the sort is not case-sensitive, you can immediately call the
      * {@link #ignoringCase()} in a fluent style.
@@ -148,7 +148,7 @@ public class KiwiSort {
     }
 
     /**
-     * Specifies that the sort is <em>not</em> case-sensitive, i.e. it ignores case.
+     * Specifies that the sort is <em>not</em> case-sensitive, i.e., it ignores the case.
      *
      * @return this instance, for method chaining
      */

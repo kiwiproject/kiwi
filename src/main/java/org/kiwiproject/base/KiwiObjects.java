@@ -36,7 +36,7 @@ public class KiwiObjects {
      * @param second the second object supplier
      * @param rest   zero or more additional object suppliers
      * @param <T>    the type of objects
-     * @return the first non-null supplied object or null if all suppliers return null
+     * @return the first non-null object supplied, or null if all suppliers return null
      * @implNote once a non-null object is supplied, no further suppliers are called
      */
     @SafeVarargs
