@@ -53,7 +53,7 @@ import java.lang.annotation.Target;
 @Target({TYPE})
 @Retention(RUNTIME)
 @Repeatable(FieldRanges.class)
-@interface FieldRange {
+public @interface FieldRange {
 
     String message() default "{org.kiwiproject.validation.FieldRange.unknownError.message}";
 
