@@ -22,7 +22,7 @@ class InternalKiwiValidators {
     static final String TEMPLATE_REQUIRED = "{org.kiwiproject.validation.Required.message}";
 
     /**
-     * Convert a string representation of a "compare value" (for example a string representing a minimum or maximum)
+     * Convert a string representation of a "compare value" (for example, a string representing a minimum or maximum)
      * into an object of the same type as {@code value}.
      * <p>
      * If the "compare value" is blank (null, empty, or only whitespace) or {@code value} is {@code null}, then
@@ -31,7 +31,7 @@ class InternalKiwiValidators {
      * As a concrete example, the {@code compareValue} might be the String from a min() or max() in a validation
      * annotation such as {@link Range}. In order to compare with {@code value}, we need to convert that String to the
      * same type as {@code value}. Suppose we are given a compare value of "10" and {@code value} is a {@link Long}.
-     * In this case, "10" must is converted into a {@link Long}.
+     * In this case, "10" is converted into a {@link Long}.
      * <p>
      * The supported types are:
      * <ul>
@@ -52,7 +52,7 @@ class InternalKiwiValidators {
      * @implNote This is non-ideal with the massive if/else, but since we have to check each type we
      * support, I cannot think of a "better" or "cleaner" way to do this without it becoming so abstract that
      * it becomes unreadable. Interestingly, neither IntelliJ not Sonar is complaining...maybe we don't have the
-     * appropriate rules enabled. Suggestions for improvement welcome!
+     * appropriate rules enabled. Suggestions for improvement are welcome!
      */
     @SuppressWarnings("unchecked")
     static <T> Comparable<T> toComparableOrNull(String compareValue, Comparable<T> value) {

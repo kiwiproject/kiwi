@@ -65,7 +65,7 @@ public class BeanConverter<T> {
     }
 
     /**
-     * This conversion method takes two parameters and copies properties from one object to another
+     * This conversion method takes two parameters, and it copies properties from one object to another
      *
      * @param input  the object to copy the properties from
      * @param target the object to copy the properties too (destination)
@@ -83,14 +83,14 @@ public class BeanConverter<T> {
 
         var propertyNames = getPropertySet(input, inputWrapper);
 
-        // This can not be a foreach because if failOnError is true, the exceptions need to bubble.
+        // This cannot be a foreach because if failOnError is true, the exceptions need to bubble.
         for (String propName : propertyNames) {
             if (hasPropertyMapper(propName)) {
                 // custom mapper
                 var func = getPropertyMapper(propName);
                 func.apply(input);
             } else if (input != target) {
-                // only need to map simple properties if it's not the same object
+                // only need to map simple properties if it's a different object
                 var inputValue = readBeanValue(input, inputWrapper, propName);
                 writeBeanValue(target, targetWrapper, propName, inputValue);
 

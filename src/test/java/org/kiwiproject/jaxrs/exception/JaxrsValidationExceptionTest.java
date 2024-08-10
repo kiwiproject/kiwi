@@ -28,8 +28,8 @@ import java.util.TreeSet;
 /**
  * @implNote We are relying on the exact messages in the Beans Validation properties
  * file ({@code ValidationMessages.properties}). If the messages ever change, then this test will break.
- * It could be made more robust by looking the messages up in the properties file, but since the
- * messages changing seems unlikely, we are hard coding them in this test.
+ * It could be made more robust by looking the messages up in the properties file, but since it is
+ * unlikely the messages will change, we are hard coding them in this test.
  */
 @DisplayName("JaxrsValidationException")
 @ExtendWith(SoftAssertionsExtension.class)

@@ -30,7 +30,7 @@ public class JaxrsInternalServerErrorException extends JaxrsException {
     }
 
     /**
-     * New instance with given message, cause, and 500 status code.
+     * New instance with given message, cause, and a 500 status code.
      *
      * @param message the message for this exception
      * @param cause   the cause of this exception
@@ -40,7 +40,7 @@ public class JaxrsInternalServerErrorException extends JaxrsException {
     }
 
     /**
-     * New instance with the given message and field name, and 500 status code.
+     * New instance with the given message and field name, and a 500 status code.
      *
      * @param message   the message for this exception
      * @param fieldName the field/property name that caused this error
@@ -50,7 +50,7 @@ public class JaxrsInternalServerErrorException extends JaxrsException {
     }
 
     /**
-     * New instance with the given message, field name, item ID, and 500 status code.
+     * New instance with the given message, field name, item ID, and a 500 status code.
      *
      * @param message   the message for this exception
      * @param fieldName the field/property name that caused this error
@@ -61,7 +61,7 @@ public class JaxrsInternalServerErrorException extends JaxrsException {
     }
 
     /**
-     * New instance with the given message, field name, item ID, cause, and 500 status code.
+     * New instance with the given message, field name, item ID, cause, and a 500 status code.
      *
      * @param message   the message for this exception
      * @param fieldName the field/property name that caused this error

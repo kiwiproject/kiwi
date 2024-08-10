@@ -23,7 +23,7 @@ public class AsyncException extends RuntimeException {
     private final transient CompletableFuture<?> future;
 
     /**
-     * Construct instance with given message and future.
+     * Construct instance with the given message and future.
      *
      * @param message the exception message
      * @param future  the {@link CompletableFuture} that caused the error, may be null
@@ -34,7 +34,7 @@ public class AsyncException extends RuntimeException {
     }
 
     /**
-     * Construct instance with given message, cause, and future.
+     * Construct instance with the given message, cause, and future.
      *
      * @param message the exception message
      * @param cause   the original cause of the exception
@@ -50,7 +50,7 @@ public class AsyncException extends RuntimeException {
      *
      * @return true if this instance contains a CompletableFuture
      * @apiNote When a single asynchronous operation is performed and there is only one future, then callers can
-     * expect this to contain a CompletableFuture and return true. When multiple futures are acted upon (e.g. waiting
+     * expect this to contain a CompletableFuture and return true. When multiple futures are acted upon (e.g., waiting
      * for all to complete), callers should expect this instance not to contain a CompletableFuture and this method
      * to return false.
      */
@@ -59,7 +59,7 @@ public class AsyncException extends RuntimeException {
     }
 
     /**
-     * The future which causes the exception. May be null. Use {@link #hasFuture()} to check if this instance
+     * The future which causes the exception; it may be null. Use {@link #hasFuture()} to check if this instance
      * contains a future.
      *
      * @param <T> the generic type of the CompletableFuture

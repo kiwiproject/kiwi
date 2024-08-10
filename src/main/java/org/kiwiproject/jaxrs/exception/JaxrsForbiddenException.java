@@ -29,7 +29,7 @@ public class JaxrsForbiddenException extends JaxrsException {
     }
 
     /**
-     * New instance with given message, cause, and 403 status code.
+     * New instance with the given message, cause, and 403 status code.
      *
      * @param message the message for this exception
      * @param cause   the cause of this exception
@@ -39,7 +39,7 @@ public class JaxrsForbiddenException extends JaxrsException {
     }
 
     /**
-     * New instance with the given message and field name, and 403 status code.
+     * New instance with the given message and field name, and a 403 status code.
      *
      * @param message   the message for this exception
      * @param fieldName the field/property name that caused this error
@@ -49,7 +49,7 @@ public class JaxrsForbiddenException extends JaxrsException {
     }
 
     /**
-     * New instance with the given message, field name, item ID, and 403 status code.
+     * New instance with the given message, field name, item ID, and a 403 status code.
      *
      * @param message   the message for this exception
      * @param fieldName the field/property name that caused this error

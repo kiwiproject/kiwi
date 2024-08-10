@@ -80,7 +80,7 @@ public class JaxrsException extends RuntimeException {
     }
 
     /**
-     * New instance with given message and cause.
+     * New instance with the given message and cause.
      *
      * @param message the message for this exception
      * @param cause   the cause of this exception
@@ -140,7 +140,7 @@ public class JaxrsException extends RuntimeException {
     }
 
     /**
-     * New "aggregate" instance with given list of ErrorMessage objects. The {@code statusCode} can be
+     * New "aggregate" instance with the given list of ErrorMessage objects. The {@code statusCode} can be
      * {@code null} if a "rolled up" overall status is desired, or an explicit code be given to represent
      * all the errors. The message of this exception is taken from the first ErrorMessage.
      *
@@ -163,7 +163,7 @@ public class JaxrsException extends RuntimeException {
     }
 
     /**
-     * New "aggregate" instance with given list of JaxrsException objects.
+     * New "aggregate" instance with the given list of JaxrsException objects.
      *
      * @param exceptions the JaxrsException objects that caused this exception
      */
@@ -231,17 +231,17 @@ public class JaxrsException extends RuntimeException {
      * Calculates an overall status code as the "roll up" of the status codes in the ErrorMessage objects contained
      * in this exception.
      * <p>
-     * If there are no ErrorMessage objects a default status code is returned. If there is exactly one ErrorMessage,
+     * If there are no ErrorMessage objects, a default status code is returned. If there is exactly one ErrorMessage,
      * then its status code is returned.
      * <p>
      * If there are multiple ErrorMessage objects, and they all have the same status code, then the overall status
      * is just that status code.
      * <p>
      * Last, if there are multiple ErrorMessage objects, and some have different status codes, then the overall status
-     * is calculated to be the base status code (e.g. 400) of the highest error family (e.g. 4xx). For example, if
+     * is calculated to be the base status code (e.g., 400) of the highest error family (e.g., 4xx). For example, if
      * there are multiple 4xx errors then the overall status is considered as the base of the 4xx series, or 400.
      * Or if there are both 4xx and 5xx errors, the overall status is 500 (the base of the 5xx series). This is
-     * obviously a lossy "algorithm" and is meant as an overall indication of the error family. Inspection of all
+     * a lossy "algorithm" and is meant as an overall sign of the error family. Inspection of all
      * contained errors is required to fully determine the causes.
      *
      * @return the "rolled up" status code
