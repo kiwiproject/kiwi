@@ -57,10 +57,7 @@ class RetryLogger {
             case INFO -> logger.info(message, args);
             case WARN -> logger.warn(message, args);
             case ERROR -> logger.error(message, args);
-            default ->
-                // NOTE: Intentional fall-through from TRACE. Whenever move to JDK 14+ can use enhanced switch
-                //  when we won't need default since we'll be exhaustive on all Level values
-                    logger.trace(message, args);
+            case TRACE -> logger.trace(message, args);
         }
     }
 }
