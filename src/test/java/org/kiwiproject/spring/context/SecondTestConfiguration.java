@@ -4,7 +4,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 @Configuration
-public class SecondTestConfiguration {
+class SecondTestConfiguration {
 
     @Bean
     public SampleTestBean sampleTestBean3() {
