@@ -16,10 +16,10 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.Target;
 
 /**
- * Ensures that a value is provided (i.e. not null). Null values are always considered invalid. You can refine the
- * behavior by allowing blank or empty Strings, collections, maps, or other types of object to be considered valid.
+ * Ensures that a value is provided (i.e., not null). Null values are always considered invalid. You can refine the
+ * behavior by allowing blank or empty Strings, collections, maps, or other types of objects to be considered valid.
  * <p>
- * For {@link CharSequence} objects (e.g. regular String objects), use allowBlank to allow empty or whitespace-only
+ * For {@link CharSequence} objects (e.g., regular String objects), use allowBlank to allow empty or whitespace-only
  * Strings. It does not make sense to set allowEmpty to true but leave allowBlank as false, so in general when
  * annotating {@link CharSequence} objects, setting allowBlank to true is preferred, though it is also correct to
  * set both allowBlank and allowEmpty to true.
@@ -55,9 +55,9 @@ public @interface Required {
     boolean allowBlank() default false;
 
     /**
-     * Whether to allow an object to be "empty". For String values, just checks the value itself. For
+     * Whether to allow an object to be "empty". For String values, just check the value itself. For
      * anything else, attempts to find and call an {@code isEmpty()} method which allow this annotation to
-     * work on other types of objects, for example on {@link java.util.Collection} objects.
+     * work on other types of objects, for example, on {@link java.util.Collection} objects.
      *
      * @return true to allow an object to be empty, false otherwise
      */

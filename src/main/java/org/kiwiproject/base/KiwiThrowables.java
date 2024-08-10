@@ -39,7 +39,7 @@ public final class KiwiThrowables {
          * @return a new instance representing the "empty" ThrowableInfo
          * @apiNote This is currently not public, but this might change in the future. For now, we assume that the
          * singleton instance returned by {@link #emptyThrowableInfo()} is the correct method to use. This class is
-         * immutable so creating new instances instead of using the singleton instance doesn't seem to make sense.
+         * immutable, so creating new instances instead of using the singleton instance doesn't seem to make sense.
          */
         private static ThrowableInfo emptyInstance() {
             return new ThrowableInfo(null, null, null, null);
@@ -74,14 +74,14 @@ public final class KiwiThrowables {
         }
 
         /**
-         * @return true if the Throwable this instance came from was not null and contained a message, otherwise false
+         * @return true, if the Throwable this instance came from was not null and contained a message, otherwise false
          */
         public boolean hasMessage() {
             return isNotBlank(message);
         }
 
         /**
-         * @return true if the Throwable this instance came from was not null and had a cause, otherwise false
+         * @return true, if the Throwable this instance came from was not null and had a cause, otherwise false
          */
         public boolean hasCause() {
             return nonNull(cause);

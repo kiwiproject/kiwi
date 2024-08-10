@@ -49,7 +49,7 @@ class LocalDateTimeEpochTimeSerializerTest {
         var nowEpochMillisInUTC = nowInNewYork.atZone(ZoneId.of("UTC")).toInstant().toEpochMilli();
         assertThat(writer).hasToString(String.valueOf(nowEpochMillisInUTC));
 
-        // Sanity check the offset...
+        // Sanity checks the offset...
         var offsetSeconds = zoneOffset.getTotalSeconds();
         assertThat(nowEpochMillisInUTC - nowEpochMilliInNY)
                 .isEqualTo(Duration.ofSeconds(offsetSeconds).toMillis());
@@ -69,7 +69,7 @@ class LocalDateTimeEpochTimeSerializerTest {
         var nowEpochMillisInChicago = nowInNewYork.atZone(chicagoZoneId).toInstant().toEpochMilli();
         assertThat(writer).hasToString(String.valueOf(nowEpochMillisInChicago));
 
-        // Sanity check the offset...
+        // Sanity checks the offset...
         var expectedDiffInSeconds = diffInSecondsBetweenZones(nowInNewYork, newYorkZoneId, chicagoZoneId);
         assertThat(nowEpochMillisInChicago - nowEpochMilliInNY)
                 .isEqualTo(Duration.ofSeconds(expectedDiffInSeconds).toMillis());
@@ -95,7 +95,7 @@ class LocalDateTimeEpochTimeSerializerTest {
         var commentAsMap = objectMapper.readValue(json, Map.class);
         var createdAtEpochMilliInChicago = (long) commentAsMap.get("createdAt");
 
-        // Sanity check the offset...
+        // Sanity checks the offset...
         var expectedDiffInSeconds = diffInSecondsBetweenZones(createdAtInNewYork, newYorkZoneId, chicagoZoneId);
         assertThat(createdAtEpochMilliInChicago - createdAtEpochMilliInNY)
                 .isEqualTo(Duration.ofSeconds(expectedDiffInSeconds).toMillis());

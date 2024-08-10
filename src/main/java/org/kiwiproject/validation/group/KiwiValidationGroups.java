@@ -65,12 +65,12 @@ import java.util.Set;
  * var violations = KiwiValidationGroups.validateExistingObject(anExistingObject);
  * </pre>
  * Using this utility ensures objects are validated against all groups, unlike {@link jakarta.validation.GroupSequence}
- * whose behavior is to stop validating any subsequent groups once a group fails validation. For example, if the
+ * whose behavior is to stop validating any later groups once a group fails validation. For example, if the
  * sequence is {@code { Default.class, NewObject.class }} and a constraint fails for the {@code Default} group, then
- * the constraints for {@code NewObject} <em>will not be evaluated</em>. In general this is not the behavior we want or
+ * the constraints for {@code NewObject} <em>will not be evaluated</em>. In general, this is not the behavior we want or
  * expect.
  * <p>
- * To reiterate, this utility is opinionated and therfore limited in that it only knows about {@link NewObject} and
+ * To reiterate, this utility is opinionated and therefore limited in that it only knows about {@link NewObject} and
  * {@link ExistingObject}, and expects them to always be validated along with the {@link Default} group. We have
  * found this to be useful in enough situations to include it in kiwi. But if you need more flexibility, don't
  * use this and instead just pass specific validation groups manually to the validate method in {@link Validator}.

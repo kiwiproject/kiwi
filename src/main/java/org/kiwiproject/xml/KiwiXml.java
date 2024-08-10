@@ -209,7 +209,7 @@ public class KiwiXml {
      *
      * @param xml                 the XML to convert
      * @param clazz               type of object to convert into
-     * @param namespaceValidation should namespace validation be performed or not
+     * @param namespaceValidation should namespace validation be performed or not?
      * @param <T>                 the target type
      * @return a new instance of the specified type
      */
@@ -225,7 +225,7 @@ public class KiwiXml {
      *
      * @param xml                 the XML to convert
      * @param clazz               type of object to convert into
-     * @param namespaceValidation should namespace validation be performed or not
+     * @param namespaceValidation should namespace validation be performed or not?
      * @param ignoredNamespaces   list of namespaces to ignore
      * @param <T>                 the target type
      * @return a new instance of the specified type
@@ -259,7 +259,7 @@ public class KiwiXml {
      * @param xml   the input XML to compare
      * @param clazz the {@link Class} to compare; assumed to be annotated with {@link XmlType}
      * @param <T>   the type of the target class
-     * @return true if the XML namespace (e.g. xmlns) matches the namespace of the {@link XmlType} annotation
+     * @return true if the XML namespace (e.g., xmlns) matches the namespace of the {@link XmlType} annotation
      * on the given class
      * @throws XmlRuntimeException if something bad and unexpected happens. The thrown exception wraps a
      *                             {@link XMLStreamException} or other cause.
@@ -276,7 +276,7 @@ public class KiwiXml {
      * @param clazz             the {@link Class} to compare; assumed to be annotated with {@link XmlType}
      * @param ignoredNamespaces the namespaces to ignore
      * @param <T>               the type of the target class
-     * @return true if the XML namespace (e.g. xmlns) matches the namespace of the {@link XmlType} annotation
+     * @return true if the XML namespace (e.g., xmlns) matches the namespace of the {@link XmlType} annotation
      * on the given class
      * @throws XmlRuntimeException if something bad and unexpected happens. The thrown exception wraps a
      *                             {@link XMLStreamException} or other cause.
@@ -443,7 +443,7 @@ public class KiwiXml {
     }
 
     /**
-     * Removes tags from the given XML taking into account the full tag name (i.e. possibly including namespace).
+     * Removes tags from the given XML taking into account the full tag name (i.e., possibly including namespace).
      *
      * @param xml          the XML containing tags to be removed
      * @param tagsToRemove names of the tags to remove

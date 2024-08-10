@@ -35,7 +35,7 @@ If you are using kiwi's custom constraints _in addition to custom constraints pr
 this requires some additional configuration, otherwise only one of the `ContributorValidationMessages.properties`
 provided by each library will be found, and therefore the custom messages for some constraints won't be found
 during validation. To fix this, all `ContributorValidationMessages.properties` files must be combined into a
-single file, for example using the [Maven Shade plugin](https://maven.apache.org/plugins/maven-shade-plugin/) and an
+single file, for example, using the [Maven Shade plugin](https://maven.apache.org/plugins/maven-shade-plugin/) and an
 [AppendingTransformer](https://maven.apache.org/plugins/maven-shade-plugin/examples/resource-transformers.html#AppendingTransformer):
 
 ```xml

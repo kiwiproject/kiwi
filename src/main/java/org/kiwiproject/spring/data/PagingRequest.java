@@ -12,7 +12,7 @@ import org.kiwiproject.search.KiwiSearching.PageNumberingScheme;
 import org.springframework.data.domain.Sort;
 
 /**
- * Jakarta REST based implementation of {@link PagingParams}.
+ * Jakarta REST-based implementation of {@link PagingParams}.
  * <p>
  * Intended to be used in Jakarta REST resource classes with HTTP {@link jakarta.ws.rs.GET} endpoint methods having an
  * argument annotated with {@link jakarta.ws.rs.BeanParam}.
@@ -34,17 +34,18 @@ public class PagingRequest implements PagingParams {
 
     public static final int DEFAULT_MAX_LIMIT = 100;
 
-    // IMPLEMENTATION NOTE:
-    // For the @DefaultValue annotations using enums (e.g. Sort.Direction), we must use a constant value, meaning
-    // we cannot use the enum and call name(). And unfortunately, you cannot get around it even if you define a
-    // private static final String in this or any other class. The compiler error is always:
-    // "element value must be a constant expression"
+    /*
+     IMPLEMENTATION NOTE:
+     For the @DefaultValue annotations using enums (e.g., Sort.Direction), we must use a constant value, meaning
+     we cannot use the enum and call name(). And unfortunately, you cannot get around it even if you define a
+     private static final String in this or any other class. The compiler error is always:
+     "element value must be a constant expression"
+    */
 
     /**
      * The page number. Default is zero.
      * <p>
-     * Note this does not preclude using either zero or one-based page numbering, but other classes may require
-     * one or the other page numbering scheme.
+     * Note this does not preclude using either zero or one-based page numbering.
      */
     @QueryParam("page")
     @DefaultValue("0")

@@ -38,8 +38,8 @@ class LoggingDeserializationProblemHandlerTest {
     }
 
     /**
-     * The only reason for these tests without a handler is as a sanity check on the behavior we expect, so that if
-     * Dropwizard or Jackson ever change their defaults, these tests would presumably fail.
+     * The only reason for these tests without a handler is as a check on the behavior we expect, so that if
+     * Dropwizard or Jackson ever changes their defaults, these tests would presumably fail.
      */
     @Nested
     class WithNoProblemHandlerAssigned {

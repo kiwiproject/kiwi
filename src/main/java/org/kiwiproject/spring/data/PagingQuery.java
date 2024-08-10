@@ -92,7 +92,7 @@ public class PagingQuery extends Query {
     }
 
     /**
-     * Aggregates a page of results for the given type of object,  which is assumed to be mapped to a MongoDB
+     * Aggregates a page of results for the given type of object, which is assumed to be mapped to a MongoDB
      * collection. <strong>Please make sure to read the caveats and possible problems sections below.</strong>
      * <p><strong>Caveats and Possible Problems</strong></p>
      * Not all types of {@link AggregationOperation} will actually work here, which is why it is marked as beta.
@@ -107,7 +107,7 @@ public class PagingQuery extends Query {
      * <p><strong>Recommendations for New Code</strong></p>
      * Based on the above restrictions and potential usage problems, <strong>we strongly recommend avoiding this
      * method for new code</strong>, as its original purpose was very limited in scope, mainly to perform lookup (join)
-     * operations in order to return an "aggregate" page that contained model objects as well as their associated
+     * operations to return an "aggregate" page that contained model objects as well as their associated
      * objects. Unfortunately, since we have various usages of this method sprinkled across a few dozen Dropwizard
      * services, we cannot remove it until we find and replace all those usages (with something else that we have
      * not implemented as of now).
