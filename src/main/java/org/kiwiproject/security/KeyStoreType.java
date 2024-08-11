@@ -9,7 +9,7 @@ import lombok.Getter;
  * @implNote These are from the Java 11 documentation, specifically from "Java Security Standard Algorithm Names".
  * Also note that while that document lists the types in lower case, the JDK actually uppercases the protocol, so using
  * the actual uppercase enum names here works. At least, it works until and unless they add new protocols that contain
- * things like dots or underscores or other such characters that aren't allowed as enum names). In any case, the types
+ * things like dots or underscores or other such characters that aren't allowed as enum names. In any case, the types
  * are case-insensitive in the JDK. See the {@link java.security.Provider} class, in the constructor of the nested
  * (and private) {@code ServiceKey} class where the following LOC resides:
  * {@code algorithm = algorithm.toUpperCase(ENGLISH);}

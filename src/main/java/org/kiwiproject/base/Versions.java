@@ -88,17 +88,17 @@ public class Versions {
      * {@link Integer#signum(int)} function.)
      * <p>
      * When a segment is determined to be non-numeric, a case-insensitive string comparison is performed. When the
-     * number of segments in the version are different, then the general logic is that the <em>shorter</em> segment is
+     * number of segments in the version is different, then the general logic is that the <em>shorter</em> segment is
      * the higher version. This covers commons situations such as 1.0.0-SNAPSHOT, 1.0.0-alpha, and 1.0.0-beta.2, which
      * should all be <em>lower</em> versions than 1.0.0.
      *
      * @param left  the first version number (e.g. "1.2.3" or "2.0.0-alpha1")
      * @param right the second version number (e.g. "1.2.4" or "2.0.0-alpha2")
      * @return -1 if "left" is less than "right", 0 if the versions are equal, and 1 if "left" is higher than "right"
-     * @implNote The current implementation works best when versions have the same number of segments, e.g. comparing
-     * 2.1.0 vs 2.0.0. It also works fine with different number of segments when those different segments are numeric,
-     * such as 1.0.0 vs 1.0.0.42 (the latter is higher). It also handles most normal cases when the last segments are
-     * different and are non-numeric, e.g. 1.0.0 should be considered a higher version than 1.0.0-SNAPSHOT or
+     * @implNote The current implementation works best when versions have the same number of segments, e.g., comparing
+     * 2.1.0 vs. 2.0.0. It also works fine with different number of segments when those different segments are numeric,
+     * such as 1.0.0 vs. 1.0.0.42 (the latter is higher). It also handles most normal cases when the last segments are
+     * different and are non-numeric, e.g., 1.0.0 should be considered a higher version than 1.0.0-SNAPSHOT or
      * 1.0.0-alpha. There are various edge cases that might report results that might not be what you expect; for
      * example, should 2.0.0-beta.1 be a higher or lower version than 2.0.0-beta? Currently, 2.0.0-beta is reported as
      * the higher version due to the simple implementation. However, note that 2.0.0-beta1 would be reported as higher
@@ -127,17 +127,17 @@ public class Versions {
             return contextuallyCompare(leftParts[pos], rightParts[pos]);
         }
 
-        // one of the given version arguments is a substring of the other. e.g. 1.0.0-alpha1 contains 1.0.0
+        // one of the given version arguments is a substring of the other. e.g., 1.0.0-alpha1 contains 1.0.0
 
         // if all segments are numeric, then whichever is longer is the higher version,
-        // e.g. 3.0.1 > 3.0 and 2.5.10.1 > 2.5.10
+        // e.g., 3.0.1 > 3.0 and 2.5.10.1 > 2.5.10
         if (allAreNumericIn(leftParts) && allAreNumericIn(rightParts)) {
             return Integer.signum(leftParts.length - rightParts.length);
         }
 
         // Not all segments are numeric. These segments are assumed to contain things like alpha, beta, SNAPSHOT, etc.
         // Handle special cases such as alpha[.n], beta[.n], Mn (i.e. milestone, like M1, M2) in a generic manner such
-        // that whichever part is longer is considered the *lower* version. This simple logic means that 1.0.0.alpha1
+        // that whichever part is longer is considered the *lower* version. This logic means that 1.0.0.alpha1
         // is a lower version than 1.0.0, 2.5.0-SNAPSHOT is a lower version than 2.5.0, and so on.
         return Integer.signum(rightParts.length - leftParts.length);
     }

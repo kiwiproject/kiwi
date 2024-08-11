@@ -379,21 +379,21 @@ public class KiwiResources {
     }
 
     /**
-     * Builds a {@link Response} with 200 OK status and a specified entity.
+     * Builds a {@link Response} with {@code 200 OK} status and a specified entity.
      *
      * @param entity the response entity
-     * @return a 200 OK response
+     * @return a {@code 200 OK} response
      */
     public static Response okResponse(Object entity) {
         return okResponseBuilder(entity).build();
     }
 
     /**
-     * Creates a {@link Response.ResponseBuilder} having 200 OK status and a specified entity.
+     * Creates a {@link Response.ResponseBuilder} having  {@code 200 OK} status and a specified entity.
      * You can further modify the returned build, e.g., add custom headers, set cookies. Etc.
      *
      * @param entity the response entity
-     * @return a 200 OK response builder
+     * @return a  {@code 200 OK} response builder
      */
     public static Response.ResponseBuilder okResponseBuilder(Object entity) {
         return Response.ok(entity);

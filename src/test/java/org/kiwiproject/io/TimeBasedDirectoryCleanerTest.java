@@ -104,8 +104,8 @@ class TimeBasedDirectoryCleanerTest {
     }
 
     /**
-     * Ok, yes this is a test hack to ensure we cover the logUnableToDelete method at all logging levels.
-     * There is nothing to assert, and success is that there are no exceptions are thrown, I guess
+     * Ok, yes, this is a test hack to ensure we cover the logUnableToDelete method at all logging levels.
+     * There is nothing to assert, and success is that no exceptions are thrown, I guess.
      */
     @ParameterizedTest
     @EnumSource(Level.class)

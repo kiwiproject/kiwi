@@ -110,8 +110,8 @@ class TryLockerTest {
     }
 
     /**
-     * NOTE: THe ExecutorService should have the same number of threads as number of Suppliers in the tests.
-     * Since we are testing only 2 suppliers, that is the number of threads we need (more threads would also work
+     * NOTE: THe ExecutorService should have the same number of threads as the number of Suppliers in the tests.
+     * Since we are testing only two suppliers, that is the number of threads we need (more threads would also work,
      * but the extra threads would do nothing).
      */
     @Nested

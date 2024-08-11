@@ -41,7 +41,7 @@ public class YamlHelper {
 
     /**
      * Create a new instance using the given {@link ObjectMapper}, which <strong>must</strong> support the YAML
-     * format. Otherwise, it can be configured however you want.
+     * format. Otherwise, it can be configured like you want.
      *
      * @param objectMapper the {@link ObjectMapper} to use
      * @throws IllegalArgumentException if the object mapper is null or does not support YAML

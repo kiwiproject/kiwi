@@ -239,7 +239,7 @@ public class JaxrsException extends RuntimeException {
      * <p>
      * Last, if there are multiple ErrorMessage objects, and some have different status codes, then the overall status
      * is calculated to be the base status code (e.g., 400) of the highest error family (e.g., 4xx). For example, if
-     * there are multiple 4xx errors then the overall status is considered as the base of the 4xx series, or 400.
+     * there are multiple 4xx errors, then the overall status is considered as the base of the 4xx series, or 400.
      * Or if there are both 4xx and 5xx errors, the overall status is 500 (the base of the 5xx series). This is
      * a lossy "algorithm" and is meant as an overall sign of the error family. Inspection of all
      * contained errors is required to fully determine the causes.

@@ -38,7 +38,7 @@ import java.util.concurrent.atomic.AtomicLong;
  * <p>
  * NOTE: This class relies on classes in commons-io, so you will need to add it as a dependency to your project!
  *
- * @implNote This is intended to be run in a single thread, e.g. using a {@link java.util.concurrent.ScheduledExecutorService}
+ * @implNote This is intended to be run in a single thread, e.g., using a {@link java.util.concurrent.ScheduledExecutorService}
  * with one thread. Results are undefined (and probably bad) if multiple threads execute the same instance of this
  * class concurrently. Note also that accessing the delete error count, recent delete errors, etc. is thread-safe.
  */
@@ -108,7 +108,7 @@ public class TimeBasedDirectoryCleaner implements Runnable {
      * @param retentionThreshold  how long the directory contents should be retained before deletion
      * @param deleteErrorLogLevel the log level; should be a string corresponding to an SLF4J {@link Level}
      * @implNote No validation on whether the directoryPath points to a valid directory at this point; we assume it
-     * will exist at some point, e.g. if some other component creates it the first time it is written to, we don't want
+     * will exist at some point, e.g., if some other component creates it the first time it is written to, we don't want
      * to throw exceptions from here.
      */
     @Builder
@@ -267,7 +267,7 @@ public class TimeBasedDirectoryCleaner implements Runnable {
     }
 
     /**
-     * Attempt to delete if the file exists, which might not be the case if multiple cleaners in different JVMs are
+     * Attempt to delete the file if it exists, which might not be the case if multiple cleaners in different JVMs are
      * executing concurrently against a shared directory.
      *
      * @implNote We have only tested this on a Centos/RedHat based system. Some issues have been noticed with deleting files
@@ -339,7 +339,7 @@ public class TimeBasedDirectoryCleaner implements Runnable {
      * Log some kind of delete error/warning at the logging level this cleaner instance has been configured at.
      *
      * @implNote Quite annoyingly, the SLF4J API does not define a general "log" method that accepts a {@link Level}
-     * and only defines methods named after the level. As a result we have to use conditional logic shenanigans
+     * and only defines methods named after the level. As a result, we have to use conditional logic shenanigans
      * because we're definitely not going to use reflection for this. There is a JIRA ticket that has been around for a
      * long time, SLF4J-124, which was created in 2009, resolved as "Won't Fix", and then was re-opened at
      * some point (cannot tell when, unfortunately). As of 5/2019, it looks like they are targeting a 2.0 release to

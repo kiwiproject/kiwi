@@ -144,7 +144,7 @@ public class TlsContextConfiguration implements KeyAndTrustStoreConfigProvider {
      * in its constructors as arrays that are supposed to be null if you aren't specifying a specific list of them.
      * The HttpClient code does an explicit null check on the {@code supportedProtocols} in
      * {@link org.apache.hc.client5.http.ssl.SSLConnectionSocketFactory#createLayeredSocket(Socket, String, int, org.apache.hc.core5.http.protocol.HttpContext)}.
-     * You will need to look at the source code, as the JavaDoc doesn't mention this tidbit, nor do the constructors
+     * You will need to look at the source code, as the Javadoc doesn't mention this tidbit, nor do the constructors
      * since they don't have any documentation regarding their arguments. If you don't like reading source code of the
      * open-source tools you rely on, then please close this file, log out, and change careers.
      */

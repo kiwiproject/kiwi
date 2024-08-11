@@ -6,7 +6,7 @@ package org.kiwiproject.xml;
 public class XmlRuntimeException extends RuntimeException {
 
     /**
-     * Create instance with given message.
+     * Create an instance with the given message.
      *
      * @param message the message
      */
@@ -15,7 +15,7 @@ public class XmlRuntimeException extends RuntimeException {
     }
 
     /**
-     * Create instance with given message and cause.
+     * Create an instance with the given message and cause.
      *
      * @param message the message
      * @param cause   the cause

@@ -120,7 +120,7 @@ public class WebTargetHelper implements WebTarget {
     }
 
     /**
-     * Add the given query parameter only if name is not blank and value is not null.
+     * Add the given query parameter only if {@code name} is not blank and {@code value} is not null.
      *
      * @param name  the parameter name
      * @param value the parameter value
@@ -136,7 +136,7 @@ public class WebTargetHelper implements WebTarget {
     }
 
     /**
-     * Adds any non-null values to the given query parameter. If name is blank, this is a no-op.
+     * Adds any non-null values to the given query parameter. If {@code name} is blank, this is a no-op.
      *
      * @param name   the parameter name
      * @param values one or more parameter values
@@ -151,7 +151,7 @@ public class WebTargetHelper implements WebTarget {
     }
 
     /**
-     * Adds any non-null values to the given query parameter. If name is blank, this is a no-op.
+     * Adds any non-null values to the given query parameter. If {@code name} is blank, this is a no-op.
      *
      * @param name   the parameter name
      * @param values one or more parameter values
@@ -166,7 +166,7 @@ public class WebTargetHelper implements WebTarget {
     }
 
     /**
-     * Adds any non-null values to the given query parameter. If name is blank, this is a no-op.
+     * Adds any non-null values to the given query parameter. If {@code name} is blank, this is a no-op.
      *
      * @param name   the parameter name
      * @param stream containing one or more parameter values
@@ -218,7 +218,7 @@ public class WebTargetHelper implements WebTarget {
     }
 
     /**
-     * Adds any non-blank values to the given query parameter. If name is blank, this is a no-op.
+     * Adds any non-blank values to the given query parameter. If {@code name} is blank, this is a no-op.
      *
      * @param name   the parameter name
      * @param values one or more parameter values
@@ -233,7 +233,7 @@ public class WebTargetHelper implements WebTarget {
     }
 
     /**
-     * Adds any non-blank values to the given query parameter. If name is blank, this is a no-op.
+     * Adds any non-blank values to the given query parameter. If {@code name} is blank, this is a no-op.
      *
      * @param name   the parameter name
      * @param values one or more parameter values
@@ -248,7 +248,7 @@ public class WebTargetHelper implements WebTarget {
     }
 
     /**
-     * Adds any non-blank values to the given query parameter. If name is blank, this is a no-op.
+     * Adds any non-blank values to the given query parameter. If {@code name} is blank, this is a no-op.
      *
      * @param name   the parameter name
      * @param stream containing one or more parameter values
@@ -293,7 +293,7 @@ public class WebTargetHelper implements WebTarget {
 
         // NOTE: The above is effectively a foldLeft, which Java Streams does not have. The 3-arg reduce version is a lot
         // more difficult to understand than a simple loop with a mutable variable that we keep replacing. In addition,
-        // the "reduce" version cannot be strictly correct,  since we cannot define a combiner function which is "an
+        // the "reduce" version cannot be strictly correct, since we cannot define a combiner function which is "an
         // associative, non-interfering, stateless function for combining" two WebTargetHelper instances. Instead, we
         // would require it is only used on a sequential (non-parallel) stream. Regardless, the implementation is less
         // clear than just a loop with a mutable variable, which is why this is not using the streams API. While the
@@ -307,7 +307,7 @@ public class WebTargetHelper implements WebTarget {
     /**
      * Adds non-null query parameters from the given multivalued map. All map keys <strong>must</strong> be non-null.
      *
-     * @param parameters a multivalued representing the query parameters
+     * @param parameters a multivalued map representing the query parameters
      * @param <V>        the type of keys in the map
      * @return a new instance if parameters is not null or empty, otherwise this instance
      * @implNote See implementation note on {@link #queryParamsFromMap(Map)} for an explanation why this method is
@@ -320,9 +320,9 @@ public class WebTargetHelper implements WebTarget {
         }
 
         // NOTES:
-        // 1. This is effectively a foldLeft, which Java Streams does not have. See explanation in method above.
+        // 1. This is effectively a foldLeft, which Java Streams does not have. See explanation in the method above.
         // 2. To properly support the generic V type parameter, we unfortunately have to cast the entry value to
-        //    List<Object> in order to get the compiler to call queryParamFilterNotNull(String, List<Object>). If
+        //    List<Object> to get the compiler to call queryParamFilterNotNull(String, List<Object>). If
         //    the cast is not done, the compiler instead "thinks" the value is an Object and selects the
         //    queryParamFilterNotNull(String, Object...) method, which does not work as expected because the value
         //    of the MultivaluedMap is supposed to be a List<V>. The real reason this happens is that the type
@@ -343,14 +343,14 @@ public class WebTargetHelper implements WebTarget {
     // its superinterface Configurable. The general contracts in WebTarget are:
     //
     // 1. Methods that return WebTarget return a new instance
-    // 2. Methods from the Configurable superinterface return "this", i.e. the property method
-    //    and the register methods
-    // 3. Other methods that return different types (e.g. URI) simply return those types
+    // 2. Methods from the Configurable superinterface return "this", i.e., the property method
+    //    and the register method
+    // 3. Other methods that return different types (e.g., URI) simply return those types
     //
     // So, the methods in this class follow the above contracts, except that they return
     // WebTargetHelper instead of WebTarget and Configurable. Since WebTargetHelper
     // implements WebTarget, they fulfill the same contracts and can be cast if desired,
-    // though casting, e.g. to WebTarget, would eliminate the ability to chain the methods.
+    // though casting, e.g., to WebTarget, would eliminate the ability to chain the methods.
     // -------------------------------------------------------------------------------------------
 
     /**

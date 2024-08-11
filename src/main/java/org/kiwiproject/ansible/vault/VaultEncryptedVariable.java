@@ -112,7 +112,7 @@ class VaultEncryptedVariable {
     }
 
     // lines 3-N should be:
-    // <10 spaces><cipher text>
+    // <10-spaces><cipher text>
     private void parseRemainingLines(List<String> lines) {
         var remainingLines = subListFrom(lines, 3);
         remainingLines.forEach(line -> {
