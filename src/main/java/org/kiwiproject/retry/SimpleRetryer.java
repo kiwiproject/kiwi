@@ -68,7 +68,7 @@ public class SimpleRetryer {
     public static final int DEFAULT_MAX_ATTEMPTS = 3;
 
     /**
-     * Default retry delay time. This is a static value, i.e. there is no fancy exponential or linear backoff.
+     * Default retry delay time. This is a static value, i.e., there is no fancy exponential or linear backoff.
      */
     public static final long DEFAULT_RETRY_DELAY_TIME = 50;
 
@@ -132,9 +132,9 @@ public class SimpleRetryer {
     /**
      * Try to get an object.
      *
-     * @param supplier on success return the object; return {@code null} or throw exception if attempt failed
+     * @param supplier on success return the object; return {@code null} or throw exception if the attempt failed
      * @param <T>      the type of object
-     * @return an Optional which either contains a value, or is empty if all attempts failed
+     * @return an Optional which either contains a value or is empty if all attempts failed
      */
     public <T> Optional<T> tryGetObject(Supplier<T> supplier) {
         return tryGetObject(commonType, supplier);
@@ -144,9 +144,9 @@ public class SimpleRetryer {
      * Try to get an object.
      *
      * @param type     the type of object to return, used only in logging messages
-     * @param supplier on success return the object; return {@code null} or throw exception if attempt failed
+     * @param supplier on success return the object; return {@code null} or throw exception if the attempt failed
      * @param <T>      the type of object
-     * @return an Optional which either contains a value, or is empty if all attempts failed
+     * @return an Optional which either contains a value or is empty if all attempts failed
      */
     public <T> Optional<T> tryGetObject(Class<T> type, Supplier<T> supplier) {
         return tryGetObject(type.getSimpleName(), supplier);
@@ -156,9 +156,9 @@ public class SimpleRetryer {
      * Try to get an object.
      *
      * @param type     the type of object to return, used only in logging messages
-     * @param supplier on success return the object; return {@code null} or throw exception if attempt failed
+     * @param supplier on success return the object; return {@code null} or throw exception if the attempt failed
      * @param <T>      the type of object
-     * @return an Optional which either contains a value, or is empty if all attempts failed
+     * @return an Optional which either contains a value or is empty if all attempts failed
      */
     public <T> Optional<T> tryGetObject(String type, Supplier<T> supplier) {
         return SimpleRetries.tryGetObject(
@@ -173,7 +173,7 @@ public class SimpleRetryer {
     /**
      * Try to get an object.
      *
-     * @param supplier on success return the object; return {@code null} or throw exception if attempt failed
+     * @param supplier on success return the object; return {@code null} or throw exception if the attempt failed
      * @param <T>      the type of object
      * @return a {@link RetryResult}
      */
@@ -185,7 +185,7 @@ public class SimpleRetryer {
      * Try to get an object.
      *
      * @param type     the type of object to return, used only in logging messages
-     * @param supplier on success return the object; return {@code null} or throw exception if attempt failed
+     * @param supplier on success return the object; return {@code null} or throw exception if the attempt failed
      * @param <T>      the type of object
      * @return a {@link RetryResult}
      */
@@ -197,7 +197,7 @@ public class SimpleRetryer {
      * Try to get an object.
      *
      * @param type     the type of object to return, used only in logging messages
-     * @param supplier on success return the object; return {@code null} or throw exception if attempt failed
+     * @param supplier on success return the object; return {@code null} or throw exception if the attempt failed
      * @param <T>      the type of object
      * @return a {@link RetryResult}
      */

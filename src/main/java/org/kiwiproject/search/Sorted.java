@@ -6,8 +6,8 @@ package org.kiwiproject.search;
 public interface Sorted {
 
     /**
-     * Defines a general sort direction, which will usually by something like "asc" or "desc" but can be customized
-     * however an application likes.
+     * Defines a general sort direction, which will usually by something like "asc" or "desc" but it can be customized
+     * as an application likes.
      *
      * @return the sort direction
      */

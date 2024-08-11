@@ -4,7 +4,7 @@ package org.kiwiproject.reflect;
  * A custom runtime exception for wrapping (checked or unchecked) exceptions related to reflection.
  * <p>
  * There are no restrictions on the wrapped {@link Throwable}, but the <em>intent</em> is that they should be
- * some checked or unchecked exception that was thrown by a reflective operation, e.g. reflectively
+ * some checked or unchecked exception that was thrown by a reflective operation, e.g., reflectively
  * finding or invoking a method, or accessing a field.
  */
 @SuppressWarnings("unused")

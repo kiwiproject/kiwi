@@ -25,8 +25,8 @@ public class RetryResultLogger {
      *
      * @param result                    the result
      * @param logger                    the SLF4J logger to use
-     * @param actionDescriptionSupplier a {@link Supplier} that provides a description of the action that was attempted
-     *                                  for example "Create new order #12345" or "Update order #456"
+     * @param actionDescriptionSupplier a {@link Supplier} that provides a description of the action that was attempted,
+     *                                  for example, "Create new order #12345" or "Update order #456"
      * @param <T>                       the type held in the result
      * @see #logSummary(RetryResult, Logger, String)
      */
@@ -46,8 +46,8 @@ public class RetryResultLogger {
      *
      * @param result                    the result
      * @param logger                    the SLF4J logger to use
-     * @param actionDescriptionSupplier a {@link Supplier} that provides a description of the action that was attempted
-     *                                  for example "Create new order #12345" or "Update order #456"
+     * @param actionDescriptionSupplier a {@link Supplier} that provides a description of the action that was attempted,
+     *                                  for example, "Create new order #12345" or "Update order #456"
      * @param <T>                       the type held in the result
      */
     public static <T> void logSummaryIfHasErrorsOrMultipleAttempts(RetryResult<T> result,
@@ -71,7 +71,7 @@ public class RetryResultLogger {
 
     /**
      * Logs a high-level summary of the result. The log level is dependent on whether the result was successful
-     * or not, and whether there were any errors (e.g. a result was successful but took more than one attempt).
+     * or not, and whether there were any errors (e.g., a result was successful but took more than one attempt).
      * <p>
      * The log levels are:
      * <p>
@@ -83,8 +83,8 @@ public class RetryResultLogger {
      *
      * @param result            the result
      * @param logger            the SLF4J logger to use
-     * @param actionDescription a {@link Supplier} that provides a description of the action that was attempted
-     *                          for example "Create new order #12345" or "Update order #456"
+     * @param actionDescription a {@link Supplier} that provides a description of the action that was attempted,
+     *                          for example, "Create new order #12345" or "Update order #456"
      * @param <T>               the type held in the result
      */
     public static <T> void logSummary(RetryResult<T> result, Logger logger, String actionDescription) {

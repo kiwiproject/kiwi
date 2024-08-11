@@ -16,16 +16,16 @@ import java.util.Set;
 
 /**
  * Defines a result of one or more attempts to get some type of object. The list of errors should reflect the order
- * in which errors occurred, e.g. the first error should be the error for the first attempt, second error should be
+ * in which errors occurred, e.g., the first error should be the error for the first attempt, the second error should be
  * the error for the second attempt, etc.
  * <p>
- * A unique identifier is automatically assigned to new {@link RetryResult} instances for easy identification, e.g.
+ * A unique identifier is automatically assigned to new {@link RetryResult} instances for easy identification, e.g.,
  * when logging retry exceptions.
  * <p>
- * Note that there is nothing precluding a {@link RetryResult} from representing a failure but not actually have any
+ * Note that there is nothing precluding a {@link RetryResult} from representing a failure but not have any
  * errors. This could happen, for example, if retry code executes a {@link java.util.function.Supplier}
  * and that supplier is implemented to catch all exceptions and return {@code null} to force a retry. We generally
- * recommend to implement Suppliers to throw exceptions when errors occur. They will need to be subclasses of
+ * recommend implementing Suppliers to throw exceptions when errors occur. They will need to be subclasses of
  * {@link RuntimeException} since {@link java.util.function.Supplier} doesn't permit checked exceptions, plus we
  * generally prefer unchecked exceptions.
  *
@@ -143,7 +143,7 @@ public class RetryResult<T> {
      * Assumes there is at least one error, and returns the last one that was thrown regardless of the number
      * of attempts.
      * <p>
-     * You should check if there are any errors, e.g. using {@link #hasAnyErrors()}, before calling this method.
+     * You should check if there are any errors, e.g., using {@link #hasAnyErrors()}, before calling this method.
      * Alternatively consider using {@link #getLastErrorIfPresent}.
      *
      * @return the most recent exception that occurred

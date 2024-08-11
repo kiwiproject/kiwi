@@ -15,7 +15,7 @@ import java.util.function.Supplier;
 /**
  * Configuration for secure REST endpoints, including the configuration from an {@link SSLContextConfiguration}
  * as well as adding a collection of {@link EndpointConfiguration} instances. Supports programmatic creation
- * using a builder. Also supports construction from external configuration, e.g. from a YAML configuration file, using
+ * using a builder. Also supports construction from external configuration, e.g., from a YAML configuration file, using
  * the no-args constructor and setter methods.
  * <p>
  * As this is a configuration class that supports population from external configuration, it is mutable.
@@ -30,7 +30,7 @@ public class SecureEndpointsConfiguration extends SSLContextConfiguration {
     private List<EndpointConfiguration> endpoints;
 
     /**
-     * Create instance with empty collection of endpoints.
+     * Create instance with an empty collection of endpoints.
      */
     public SecureEndpointsConfiguration() {
         this.endpoints = new ArrayList<>();
