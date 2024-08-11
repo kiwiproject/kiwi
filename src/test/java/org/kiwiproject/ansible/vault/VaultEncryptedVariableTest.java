@@ -89,7 +89,7 @@ class VaultEncryptedVariableTest {
             @ParameterizedTest
             @ValueSource(strings = {
                     "db_password:: !vault |\n          $ANSIBLE_VAULT;1.1;AES256\n           63323...",  // 11 spaces
-                    "db_password:: !vault |\n          $ANSIBLE_VAULT;1.1;AES256\n          63323...\n           39373"  // 11 spaces in second line of encrypted content
+                    "db_password:: !vault |\n          $ANSIBLE_VAULT;1.1;AES256\n          63323...\n           39373"  // 11 spaces in the second line of encrypted content
             })
             void whenRemainingLinesStartsWithMoreThanTenSpaces(String input) {
                 assertThatIllegalArgumentException()

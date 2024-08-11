@@ -212,7 +212,7 @@ public class EndpointConfiguration {
     /**
      * Set the domain(s), which can be a single domain (e.g., example.org) or multiple domains separated by commas. If
      * a comma-separated list of domains is specified, whitespace is allowed and trimmed. For example, this is
-     * valid: " domain-1.test , domain-2.test , domain-3.test " and results in the three domains "domain-1.test",
+     * valid: {@code " domain-1.test , domain-2.test , domain-3.test "} and results in the three domains "domain-1.test",
      * "domain-2.test", and "domain-3.test".
      *
      * @param singleDomainOrCsv a single domain like example.org or a comma-delimited list of domains

@@ -53,7 +53,7 @@ public final class KiwiStreams {
      * Normally you must hard code the type of stream directly in the code using either
      * {@link Collection#stream()} or {@link Collection#parallelStream()}. This method
      * provides a simple way to determine how to process a stream at runtime, for
-     * example, based on number of elements or type of algorithm.
+     * example, based on the number of elements or type of algorithm.
      *
      * @param <T> the type of collection elements
      * @param collection the collection to stream

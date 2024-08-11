@@ -80,21 +80,21 @@ public @interface FieldRange {
     String endFieldLabel() default "";
 
     /**
-     * @return true if the start and end can be the same value; the default is false
+     * @return {@code true} if the start and end can be the same value; the default is false
      */
     boolean allowStartToEqualEnd() default false;
 
     /**
      * If true, the range only includes the end field. This is mainly useful when used with a max value.
      *
-     * @return true to define a range that only considers the end field
+     * @return {@code true} to define a range that only considers the end field
      */
     boolean allowNullStart() default false;
 
     /**
      * If true, the range only includes the start field. This is mainly useful when used with a min value.
      *
-     * @return true to define a range that only considers the start field
+     * @return {@code true} to define a range that only considers the start field
      */
     boolean allowNullEnd() default false;
 

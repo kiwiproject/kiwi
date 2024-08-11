@@ -148,7 +148,7 @@ public class TryLocker {
 
     /**
      * Execute the given {@code withLockSupplier} if the lock is obtained within the lock timeout period and return
-     * its value. Otherwise, return the valued supplied by {@code fallbackSupplier}.
+     * its value. Otherwise, return the value supplied by {@code fallbackSupplier}.
      *
      * @param withLockSupplier supplier to execute if lock is obtained
      * @param fallbackSupplier the supplier to execute if the lock is not obtained

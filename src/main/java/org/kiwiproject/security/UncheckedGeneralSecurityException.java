@@ -21,7 +21,7 @@ public class UncheckedGeneralSecurityException extends RuntimeException {
     /**
      * Constructs a new instance.
      *
-     * @param message the detail message, may be null
+     * @param message the detail message; may be null
      * @param cause   the {@link GeneralSecurityException}
      */
     public UncheckedGeneralSecurityException(String message, GeneralSecurityException cause) {

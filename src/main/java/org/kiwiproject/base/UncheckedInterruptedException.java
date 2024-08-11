@@ -11,7 +11,7 @@ public class UncheckedInterruptedException extends RuntimeException {
     /**
      * Constructs an instance of this class.
      *
-     * @param message the detail message, can be null
+     * @param message the detail message; can be null
      * @param cause   the {@code InterruptedException}
      * @throws NullPointerException if the cause is {@code null}
      */

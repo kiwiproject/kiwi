@@ -94,7 +94,7 @@ class TlsContextConfigurationTest {
         }
     }
 
-    @SuppressWarnings("WeakerAccess")  // must be public for Yaml to instantiate
+    @SuppressWarnings("WeakerAccess")  // must be public for YAML to instantiate
     @Getter
     @Setter
     public static class SampleAppConfig {

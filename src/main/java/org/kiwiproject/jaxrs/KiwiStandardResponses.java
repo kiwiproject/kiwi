@@ -44,7 +44,7 @@ import java.util.Optional;
 public class KiwiStandardResponses {
 
     /**
-     * Returns a 200 OK response if the entity is non-null. Otherwise, returns a 404 Not Found response with
+     * Returns a  {@code 200 OK} response if the entity is non-null. Otherwise, returns a 404 Not Found response with
      * a message stating that the entity having type "entityType" was not found using the given identifier field
      * and value.
      *
@@ -87,7 +87,7 @@ public class KiwiStandardResponses {
     }
 
     /**
-     * Returns a 200 OK response if the entity is non-null. Otherwise, returns a 404 Not Found response with
+     * Returns a {@code 200 OK} response if the entity is non-null. Otherwise, returns a 404 Not Found response with
      * a message stating that the entity was not found using the given identifier field and value.
      *
      * @param identifierField the field which identifies the entity being looked up, e.g. "id"
@@ -124,7 +124,7 @@ public class KiwiStandardResponses {
     }
 
     /**
-     * Returns a 200 OK response if the entity is non-null. Otherwise, returns a 404 Not Found response with
+     * Returns a {@code 200 OK} response if the entity is non-null. Otherwise, returns a 404 Not Found response with
      * the given detail message.
      *
      * @param entity          the entity or null
@@ -165,18 +165,18 @@ public class KiwiStandardResponses {
     }
 
     /**
-     * Returns a 201 Created response builder having the specified Location header and response entity.
+     * Returns a {@code 201 Created} response builder having the specified Location header and response entity.
      *
      * @param location the value for the Location header
      * @param entity   the new entity
-     * @return a 201 response builder with {@code application/json} content type
+     * @return a response builder with status code 201 and {@code application/json} content type
      */
     public static Response.ResponseBuilder standardPostResponseBuilder(URI location, Object entity) {
         return KiwiResources.createdResponseBuilder(location, entity).type(MediaType.APPLICATION_JSON);
     }
 
     /**
-     * Returns a 200 OK response having the specified response entity.
+     * Returns a {@code 200 OK} response having the specified response entity.
      *
      * @param entity the updated entity
      * @return a 200 response with {@code application/json} content type
@@ -186,17 +186,17 @@ public class KiwiStandardResponses {
     }
 
     /**
-     * Returns a 200 OK response builder having the specified response entity.
+     * Returns a {@code 200 OK} response builder having the specified response entity.
      *
      * @param entity the updated entity
-     * @return a 200 response builder with {@code application/json} content type
+     * @return a response builder with status code 200 and {@code application/json} content type
      */
     public static Response.ResponseBuilder standardPutResponseBuilder(Object entity) {
         return KiwiResources.okResponseBuilder(entity).type(MediaType.APPLICATION_JSON);
     }
 
     /**
-     * Returns a 200 OK response having the specified response entity.
+     * Returns a {@code 200 OK} response having the specified response entity.
      *
      * @param entity the updated/patched entity
      * @return a 200 response with {@code application/json} content type
@@ -206,17 +206,17 @@ public class KiwiStandardResponses {
     }
 
     /**
-     * Returns a 200 OK response builder having the specified response entity.
+     * Returns a {@code 200 OK} response builder having the specified response entity.
      *
      * @param entity the updated/patched entity
-     * @return a 200 response builder with {@code application/json} content type
+     * @return a response builder with status code 200 and {@code application/json} content type
      */
     public static Response.ResponseBuilder standardPatchResponseBuilder(Object entity) {
         return standardPutResponseBuilder(entity);
     }
 
     /**
-     * Returns a 204 No Content response for DELETE requests that do not return an entity.
+     * Returns a {@code 204 No Content} response for DELETE requests that do not return an entity.
      *
      * @return a 204 response with {@code application/json} content type
      */
@@ -227,14 +227,14 @@ public class KiwiStandardResponses {
     /**
      * Returns a 204 No Content response builder for DELETE requests that do not return an entity.
      *
-     * @return a 204 response builder with {@code application/json} content type
+     * @return a response builder with status code 204 and {@code application/json} content type
      */
     public static Response.ResponseBuilder standardDeleteResponseBuilder() {
         return Response.noContent().type(MediaType.APPLICATION_JSON);
     }
 
     /**
-     * Returns a 200 OK response for DELETE requests that return an entity.
+     * Returns a {@code 200 OK} response for DELETE requests that return an entity.
      *
      * @param deletedEntity the deleted entity
      * @return a 200 response with {@code application/json} content type
@@ -244,10 +244,10 @@ public class KiwiStandardResponses {
     }
 
     /**
-     * Returns a 200 OK response builder for DELETE requests that return an entity.
+     * Returns a {@code 200 OK} response builder for DELETE requests that return an entity.
      *
      * @param deletedEntity the deleted entity
-     * @return a 200 response builder with {@code application/json} content type
+     * @return a response builder with a 200 status code and {@code application/json} content type
      */
     public static Response.ResponseBuilder standardDeleteResponseBuilder(Object deletedEntity) {
         return Response.ok(deletedEntity).type(MediaType.APPLICATION_JSON);
@@ -265,18 +265,18 @@ public class KiwiStandardResponses {
     }
 
     /**
-     * Returns a 400 Bad Request response builder containing an {@link ErrorMessage} entity which uses
+     * Returns a {@code 400 Bad Request} response builder containing an {@link ErrorMessage} entity which uses
      * {@code errorDetails} as the detailed error message.
      *
      * @param errorDetails the error message to use
-     * @return a 400 response builder with {@code application/json} content type
+     * @return a response builder with status code 400 and {@code application/json} content type
      */
     public static Response.ResponseBuilder standardBadRequestResponseBuilder(String errorDetails) {
         return standardErrorResponseBuilder(Response.Status.BAD_REQUEST, errorDetails);
     }
 
     /**
-     * Returns a 401 Unauthorized response containing an {@link ErrorMessage} entity which uses {@code errorDetails}
+     * Returns a {@code 401 Unauthorized} response containing an {@link ErrorMessage} entity which uses {@code errorDetails}
      * as the detailed error message.
      *
      * @param errorDetails the error message to use
@@ -287,18 +287,18 @@ public class KiwiStandardResponses {
     }
 
     /**
-     * Returns a 401 Unauthorized response builder containing an {@link ErrorMessage} entity which uses
+     * Returns a {@code 401 Unauthorized} response builder containing an {@link ErrorMessage} entity which uses
      * {@code errorDetails} as the detailed error message.
      *
      * @param errorDetails the error message to use
-     * @return a 401 response builder with {@code application/json} content type
+     * @return a response builder with status code 401 and {@code application/json} content type
      */
     public static Response.ResponseBuilder standardUnauthorizedResponseBuilder(String errorDetails) {
         return standardErrorResponseBuilder(Response.Status.UNAUTHORIZED, errorDetails);
     }
 
     /**
-     * Returns a 404 Not Found response containing an {@link ErrorMessage} entity which uses {@code errorDetails}
+     * Returns a {@code 404 Not Found} response containing an {@link ErrorMessage} entity which uses {@code errorDetails}
      * as the detailed error message.
      *
      * @param errorDetails the error message to use
@@ -309,29 +309,29 @@ public class KiwiStandardResponses {
     }
 
     /**
-     * Returns a 404 Not Found response builder containing an {@link ErrorMessage} entity which uses
+     * Returns a {@code 404 Not Found} response builder containing an {@link ErrorMessage} entity which uses
      * {@code errorDetails} as the detailed error message.
      *
      * @param errorDetails the error message to use
-     * @return a 404 response builder with {@code application/json} content type
+     * @return a response builder with status code 404 and {@code application/json} content type
      */
     public static Response.ResponseBuilder standardNotFoundResponseBuilder(String errorDetails) {
         return standardErrorResponseBuilder(Response.Status.NOT_FOUND, errorDetails);
     }
 
     /**
-     * Returns a 500 Internal Server Error response containing an {@link ErrorMessage} entity which uses
+     * Returns a {@code 500 Internal Server Error} response containing an {@link ErrorMessage} entity which uses
      * {@code errorDetails} as the detailed error message.
      *
      * @param errorDetails the error message to use
-     * @return a 500 Internal Server Error response with {@code application/json} content type
+     * @return a {@code 500 Internal Server Error} response with {@code application/json} content type
      */
     public static Response standardInternalServerErrorResponse(String errorDetails) {
         return standardInternalServerErrorResponseBuilder(errorDetails).build();
     }
 
     /**
-     * Returns a response builder with 500 Internal Server Error status and an {@link ErrorMessage} entity
+     * Returns a response builder with {@code 500 Internal Server Error} status and an {@link ErrorMessage} entity
      * which uses {@code errorDetails} as the detailed error message.
      *
      * @param errorDetails the error message to use
@@ -377,7 +377,7 @@ public class KiwiStandardResponses {
     }
 
     /**
-     * Returns a 202 Accepted response having the specified response entity.
+     * Returns a {@code 202 Accepted} response having the specified response entity.
      * <p>
      * This generally applies to POST, PUT, and PATCH requests that might take a while and are processed asynchronously.
      *
@@ -389,12 +389,12 @@ public class KiwiStandardResponses {
     }
 
     /**
-     * Returns a 202 Accepted response builder having the specified response entity.
+     * Returns a {@code 202 Accepted} response builder having the specified response entity.
      * <p>
      * This generally applies to POST, PUT, and PATCH requests that might take a while and are processed asynchronously.
      *
      * @param entity the accepted entity
-     * @return a 202 response builder with {@code application/json} content type
+     * @return a response builder with status code 202 and {@code application/json} content type
      */
     public static Response.ResponseBuilder standardAcceptedResponseBuilder(Object entity) {
         return Response.accepted(entity).type(MediaType.APPLICATION_JSON);

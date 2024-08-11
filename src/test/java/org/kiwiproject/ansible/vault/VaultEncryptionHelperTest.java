@@ -51,7 +51,7 @@ class VaultEncryptionHelperTest {
 
     private static final String ENCRYPT_STRING_1_1_FORMAT = "ansible-vault/encrypt_string_1.1.txt";
 
-    // This is the variable name in the above encrypted file
+    // This is the variable name in the encrypted file
     private static final String VARIABLE_NAME = "db_password";
 
     @TempDir
@@ -481,7 +481,7 @@ class VaultEncryptionHelperTest {
 
             // Verify the command that was launched. This is more difficult here due to
             // the way we need to write the encrypt_string content to a temporary file
-            // which has a random component in its name to avoid possibility of file name
+            // which has a random component in its name to avoid the possibility of file name
             // collisions.
             verify(processHelper).launch(argThat(matchesExpectedCommand(encryptedFilePath)));
         }
@@ -499,7 +499,7 @@ class VaultEncryptionHelperTest {
                         .describedAs("Command until filename should be the same")
                         .isEqualTo(expectedPartsExcludingLast);
 
-                // Check file name, but ignore the random numbers in the middle of it
+                // Check the file name, but ignore the random numbers in the middle of it
                 var lastPart = KiwiLists.last(commandParts);
                 assertThat(lastPart)
                         .describedAs("File name should start with %s end with .txt", VARIABLE_NAME)

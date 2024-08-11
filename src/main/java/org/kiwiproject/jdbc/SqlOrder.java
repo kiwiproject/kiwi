@@ -9,7 +9,7 @@ import java.util.function.Supplier;
 /**
  * Simple enum that represents the values for SQL {@code ORDER BY} clauses.
  * <p>
- * This is useful in building queries, for example, when using JDBI and the SQL objects API you might
+ * This is useful in building queries, for example, when using JDBI and the SQL objects API, you might
  * need to add dynamic ordering based on user input but want to ensure no SQL injection attack is possible.
  * So you would accept user input and then use {@link #from(String)} to get a {@link SqlOrder} instance.
  * Then, you could use it in a JDBI {@code SqlQuery} annotation as one example.

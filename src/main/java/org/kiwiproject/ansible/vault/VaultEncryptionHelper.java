@@ -47,7 +47,7 @@ public class VaultEncryptionHelper {
      * Create an instance with the given vault configuration. Makes a copy of the given configuration, such that
      * changes to the supplied object are not seen by this instance.
      * <p>
-     * If the configuration needs to change, for example after a re-key operation, then simply construct a new
+     * If the configuration needs to change, for example, after a re-key operation, then construct a new
      * instance passing in the new {@link VaultConfiguration} object.
      *
      * @param configuration the vault configuration
@@ -298,7 +298,7 @@ public class VaultEncryptionHelper {
     }
 
     /**
-     * Wraps the ansible-vault encrypt_string command  using an optional vault ID label.
+     * Wraps the ansible-vault encrypt_string command using an optional vault ID label.
      *
      * @param vaultIdLabel the label of the vault (for use with the {@code --vault-id} argument
      * @param plainText    the plain text to encrypt

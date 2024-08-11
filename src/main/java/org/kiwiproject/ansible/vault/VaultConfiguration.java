@@ -12,9 +12,9 @@ import lombok.Setter;
  * Configuration class for creating ansible-vault commands. Can be constructed via the no-arg constructor, the all-args
  * constructor, or the builder. The builder is the preferred way to create an instance if done programmatically.
  * <p>
- * This is mutable in case it is used in injected configuration, e.g. in a Dropwizard configuration file.
+ * This is mutable in case it is used in injected configuration, e.g., in a Dropwizard configuration file.
  * <p>
- * Has beans validation annotations to support validation of external configuration, e.g. by Dropwizard's
+ * Has Jakarta Bean Validation annotations to support validation of external configuration, e.g., by Dropwizard's
  * normal validation. But also uses explicit validation in the all-args constructor used for the Lombok builder so
  * that invalid configurations cannot be constructed via the builder.
  */
