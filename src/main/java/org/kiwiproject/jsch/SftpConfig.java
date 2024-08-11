@@ -96,7 +96,7 @@ public class SftpConfig {
     private String knownHostsFile;
 
     /**
-     * Provides option to disable strict host key checking, equivalent to the
+     * Provides an option to disable strict host key checking, equivalent to the
      * {@code -o StrictHostKeyChecking=[yes|no]} option.
      * <p>
      * The default is false. See the {@code ssh_info} man page for more details.
@@ -120,7 +120,7 @@ public class SftpConfig {
      * @param host                      the remote host
      * @param user                      the SFTP username
      * @param password                  the SFTP password
-     * @param privateKeyFilePath        path to private key file
+     * @param privateKeyFilePath        path to the private key file
      * @param preferredAuthentications  comma-separated list of authentications to attempt
      * @param remoteBasePath            root directory of the remote SFTP location
      * @param errorPath                 local directory to write out any errors if SFTP fails
@@ -129,8 +129,8 @@ public class SftpConfig {
      * @param timeout                   the SFTP connection timeout
      * @implNote This is intentionally not using Lombok because using {@link lombok.AllArgsConstructor} together
      * with @{@link lombok.Builder} results in an all-args constructor that does not respect {@link lombok.Builder.Default}.
-     * As a result we need to handle the defaults ourselves. This is intended to be used during deserialization
-     * from an external configuration file (e.g. a Dropwizard YAML configuration file, or from JSON). Prefer the
+     * As a result, we need to handle the defaults ourselves. This is intended to be used during deserialization
+     * from an external configuration file (e.g., a Dropwizard YAML configuration file, or from JSON). Prefer the
      * builder when constructing programmatically.
      */
     // Suppress Sonar's "Methods should not have too many parameters". We need this for the builder and for

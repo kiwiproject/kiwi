@@ -62,7 +62,7 @@ public class SftpConnector {
      *
      * @param config The configuration used for setting up the connection
      * @return The initialized and opened sftp connection
-     * @apiNote This is a convenience method to not have to call connect after initialization.
+     * @apiNote This is a convenience method to not have to call {@code connect} after initialization.
      */
     public static SftpConnector setupAndOpenConnection(SftpConfig config) {
         return setupAndOpenConnection(new JSch(), config);

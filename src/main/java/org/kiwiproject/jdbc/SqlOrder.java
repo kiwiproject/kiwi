@@ -9,7 +9,7 @@ import java.util.function.Supplier;
 /**
  * Simple enum that represents the values for SQL {@code ORDER BY} clauses.
  * <p>
- * This is useful in building queries, for example when using JDBI and the SQL objects API you might
+ * This is useful in building queries, for example, when using JDBI and the SQL objects API you might
  * need to add dynamic ordering based on user input but want to ensure no SQL injection attack is possible.
  * So you would accept user input and then use {@link #from(String)} to get a {@link SqlOrder} instance.
  * Then, you could use it in a JDBI {@code SqlQuery} annotation as one example.
@@ -23,7 +23,7 @@ public enum SqlOrder {
      *
      * @param value the value to convert from
      * @return the SqlOrder enum corresponding to the given value
-     * @throws IllegalArgumentException if an invalid value is provided that does not map to a SqlOrder enum constant
+     * @throws IllegalArgumentException if an invalid value is provided but does not map to a SqlOrder enum constant
      */
     public static SqlOrder from(String value) {
         var trimmedValue = Optional.ofNullable(value).map(String::trim).orElse("");
@@ -61,7 +61,7 @@ public enum SqlOrder {
     /**
      * Return a string that can be used directly in a SQL {@code ORDER BY} clause.
      *
-     * @return a string that can be used in a SQL query
+     * @return a string that can be used in an SQL query
      */
     public String toSql() {
         return name();

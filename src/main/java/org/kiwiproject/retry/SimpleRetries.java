@@ -45,9 +45,9 @@ public class SimpleRetries {
      * @param maxAttempts    the maximum number of attempts to make before giving up
      * @param retryDelay     constant delay time between attempts
      * @param retryDelayUnit delay time unit between attempts
-     * @param supplier       on success return the object; return {@code null} or throw exception if attempt failed
+     * @param supplier       on success return the object; return {@code null} or throw exception if the attempt failed
      * @param <T>            the type of object
-     * @return an Optional which either contains a value, or is empty if all attempts failed
+     * @return an Optional which either contains a value or is empty if all attempts failed
      */
     public static <T> Optional<T> tryGetObject(int maxAttempts,
                                                long retryDelay, TimeUnit retryDelayUnit,
@@ -63,9 +63,9 @@ public class SimpleRetries {
      * @param retryDelay     constant delay time between attempts
      * @param retryDelayUnit delay time unit between attempts
      * @param environment    the {@link KiwiEnvironment} to use when sleeping between attempts
-     * @param supplier       on success return the object; return {@code null} or throw exception if attempt failed
+     * @param supplier       on success return the object; return {@code null} or throw exception if the attempt failed
      * @param <T>            the type of object
-     * @return an Optional which either contains a value, or is empty if all attempts failed
+     * @return an Optional which either contains a value or is empty if all attempts failed
      */
     public static <T> Optional<T> tryGetObject(int maxAttempts,
                                                long retryDelay, TimeUnit retryDelayUnit,
@@ -82,9 +82,9 @@ public class SimpleRetries {
      * @param retryDelay     constant delay time between attempts
      * @param retryDelayUnit delay time unit between attempts
      * @param type           the type of object we are attempting to return, used when logging attempts
-     * @param supplier       on success return the object; return {@code null} or throw exception if attempt failed
+     * @param supplier       on success return the object; return {@code null} or throw exception if the attempt failed
      * @param <T>            the type of object
-     * @return an Optional which either contains a value, or is empty if all attempts failed
+     * @return an Optional which either contains a value or is empty if all attempts failed
      */
     public static <T> Optional<T> tryGetObject(int maxAttempts,
                                                long retryDelay, TimeUnit retryDelayUnit,
@@ -102,9 +102,9 @@ public class SimpleRetries {
      * @param retryDelayUnit delay time unit between attempts
      * @param environment    the {@link KiwiEnvironment} to use when sleeping between attempts
      * @param type           the type of object we are attempting to return, used when logging attempts
-     * @param supplier       on success return the object; return {@code null} or throw exception if attempt failed
+     * @param supplier       on success return the object; return {@code null} or throw exception if the attempt failed
      * @param <T>            the type of object
-     * @return an Optional which either contains a value, or is empty if all attempts failed
+     * @return an Optional which either contains a value or is empty if all attempts failed
      */
     public static <T> Optional<T> tryGetObject(int maxAttempts,
                                                long retryDelay, TimeUnit retryDelayUnit,
@@ -124,9 +124,9 @@ public class SimpleRetries {
      * @param environment    the {@link KiwiEnvironment} to use when sleeping between attempts
      * @param type           the type of object we are attempting to return, used when logging attempts
      * @param level          the SLF4J log {@link Level} at which to log retries
-     * @param supplier       on success return the object; return {@code null} or throw exception if attempt failed
+     * @param supplier       on success return the object; return {@code null} or throw exception if the attempt failed
      * @param <T>            the type of object
-     * @return an Optional which either contains a value, or is empty if all attempts failed
+     * @return an Optional which either contains a value or is empty if all attempts failed
      */
     public static <T> Optional<T> tryGetObject(int maxAttempts,
                                                long retryDelay, TimeUnit retryDelayUnit,
@@ -184,7 +184,7 @@ public class SimpleRetries {
      * @param maxAttempts    the maximum number of attempts to make before giving up
      * @param retryDelay     constant delay time between attempts
      * @param retryDelayUnit delay time unit between attempts
-     * @param supplier       on success return the object; return {@code null} or throw exception if attempt failed
+     * @param supplier       on success return the object; return {@code null} or throw exception if the attempt failed
      * @param <T>            the type of object
      * @return a {@link RetryResult}
      */
@@ -202,7 +202,7 @@ public class SimpleRetries {
      * @param retryDelay     constant delay time between attempts
      * @param retryDelayUnit delay time unit between attempts
      * @param type           the type of object we are attempting to return, used when logging attempts
-     * @param supplier       on success return the object; return {@code null} or throw exception if attempt failed
+     * @param supplier       on success return the object; return {@code null} or throw exception if the attempt failed
      * @param <T>            the type of object
      * @return a {@link RetryResult}
      */
@@ -222,7 +222,7 @@ public class SimpleRetries {
      * @param retryDelayUnit delay time unit between attempts
      * @param environment    the {@link KiwiEnvironment} to use when sleeping between attempts
      * @param type           the type of object we are attempting to return, used when logging attempts
-     * @param supplier       on success return the object; return {@code null} or throw exception if attempt failed
+     * @param supplier       on success return the object; return {@code null} or throw exception if an attempt failed
      * @param <T>            the type of object
      * @return a {@link RetryResult}
      */
@@ -243,7 +243,7 @@ public class SimpleRetries {
      * @param retryDelayUnit delay time unit between attempts
      * @param environment    the {@link KiwiEnvironment} to use when sleeping between attempts
      * @param type           the type of object we are attempting to return, used when logging attempts
-     * @param supplier       on success return the object; return {@code null} or throw exception if attempt failed
+     * @param supplier       on success return the object; return {@code null} or throw exception if the attempt failed
      * @param <T>            the type of object
      * @return a {@link RetryResult}
      */
@@ -265,7 +265,7 @@ public class SimpleRetries {
      * @param environment    the {@link KiwiEnvironment} to use when sleeping between attempts
      * @param type           the type of object we are attempting to return, used when logging attempts
      * @param level          the SLF4J log {@link Level} at which to log retries
-     * @param supplier       on success return the object; return {@code null} or throw exception if attempt failed
+     * @param supplier       on success return the object; return {@code null} or throw exception if the attempt failed
      * @param <T>            the type of object
      * @return a {@link RetryResult}
      */

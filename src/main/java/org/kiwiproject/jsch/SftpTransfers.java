@@ -191,7 +191,7 @@ public class SftpTransfers {
 
     /**
      * Gets a file off of a remote server with the given path and given filename and returns an {@link InputStream}. This
-     * is useful if the remote file is binary and not a text based file.
+     * is useful if the remote file is binary and not a text-based file.
      * <p>
      * Note: The caller of this method is responsible for closing the stream.
      *

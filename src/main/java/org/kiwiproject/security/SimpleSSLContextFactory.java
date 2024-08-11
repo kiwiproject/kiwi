@@ -50,7 +50,7 @@ public class SimpleSSLContextFactory {
     private SSLContext sslContext;
 
     /**
-     * This is not strictly needed when creating {@link SSLContext}s. It is here only in case this factory
+     * This is not strictly necessary when creating {@link SSLContext}s. It is here only in case this factory
      * will be supplied to other code that makes HTTPS connections and needs to create {@link SSLContext}
      * instances AND also needs to know whether it should perform hostname verification when making HTTPS
      * requests.
@@ -59,7 +59,7 @@ public class SimpleSSLContextFactory {
     private final boolean verifyHostname;
 
     /**
-     * This is not strictly needed when creating {@link SSLContext}s. It is here only in case this factory
+     * This is not strictly necessary when creating {@link SSLContext}s. It is here only in case this factory
      * will be supplied to other code that makes HTTPS connections and needs to create {@link SSLContext}
      * instances AND also needs to know whether it should perform SNI host checking.
      */
@@ -344,7 +344,7 @@ public class SimpleSSLContextFactory {
      * Create/get a {@link SSLContext} instance for the key and trust store properties and protocol that this
      * {@link SimpleSSLContextFactory} instance was built with.
      *
-     * @return a new {@link SSLContext} instance when first called; all subsequent calls return the same cached instance
+     * @return a new {@link SSLContext} instance when first called; all later calls return the same cached instance
      * @implNote This is intended to be called infrequently, e.g., once when a service/app starts.
      * It is internally synchronized to ensure thread-safety when creating the {@link SSLContext}.
      */
@@ -362,7 +362,7 @@ public class SimpleSSLContextFactory {
      * Callers are responsible for securely handling the result, and not unnecessarily exposing it.
      *
      * @return a map containing the configuration of this factory
-     * @apiNote This is publicly exposed, but should not generally be needed except in tests, and perhaps debugging.
+     * @apiNote This is publicly exposed but should not generally be necessary except in tests, and perhaps debugging.
      * @implNote Uses {@link KiwiMaps#newHashMap(Object...)} because some values may be {@code null}, e.g., the key
      * store path, and wraps that using {@link Collections#unmodifiableMap(Map)} to prevent modification of the
      * returned map.

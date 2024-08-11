@@ -6,7 +6,7 @@ package org.kiwiproject.json;
 public class RuntimeJsonException extends RuntimeException {
 
     /**
-     * Create instance with given cause.
+     * Create an instance with the given cause.
      *
      * @param cause the cause
      */
@@ -15,7 +15,7 @@ public class RuntimeJsonException extends RuntimeException {
     }
 
     /**
-     * Create instance with given message and cause.
+     * Create an instance with the given message and cause.
      *
      * @param message the message
      * @param cause   the cause

@@ -15,7 +15,7 @@ import java.util.Map;
 /**
  * Builder class for easily constructing Spring ApplicationContext instances using either XML or annotation-based
  * configuration. The generated ApplicationContext instance is built by creating a parent context, which contains
- * registered singleton beans, and then a child context. This allows specific singletons, e.g. a data source or a
+ * registered singleton beans, and then a child context. This allows specific singletons, e.g., a data source or a
  * Dropwizard configuration object, to be accessible from the child context. The parent context beans can be referenced
  * in either XML or annotation configurations.
  * <p>
@@ -79,7 +79,7 @@ public class SpringContextBuilder {
     }
 
     /**
-     * Add a single Spring XML configuration location.
+     * Add a Spring XML configuration location.
      *
      * @param location the XML config location, e.g. {@code applicationContext.xml}
      * @return the builder instance
