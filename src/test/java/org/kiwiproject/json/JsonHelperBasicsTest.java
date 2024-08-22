@@ -343,6 +343,15 @@ class JsonHelperBasicsTest {
             var workAddress = (Map<String, Object>) sanitizedBob.get("workAddress");
             assertThat(workAddress).doesNotContainKeys("street1", "street2");
         }
+
+        @Test
+        void shouldHandleNullInput_WhenIgnoringPaths() {
+            var json = jsonHelper.toJsonIgnoringPaths(null, "username", "password");
+
+            assertThat(json)
+                    .describedAs("Null input should result in a literal \"null\" String value")
+                    .isEqualTo("null");
+        }
     }
 
     @Nested
@@ -514,6 +523,17 @@ class JsonHelperBasicsTest {
         @ValueSource(strings = {" ", "  ", "\t", " \n "})
         void shouldReturnEmptyOptional_WhenGivenBlankInput(String value) {
             assertThat(jsonHelper.toObjectOptional(value, Person.class)).isEmpty();
+        }
+
+        @Test
+        void shouldReturnDefaultObject_WhenGivenEmptyJson() {
+            assertThat(jsonHelper.toObjectOptional("{}", Person.class))
+                .describedAs("Return value should be the 'default' object")
+                .contains(new Person(null, null, 0));
+
+            assertThat(jsonHelper.toObjectOptional("{}", User.class))
+                .describedAs("Return value should be the 'default' object")
+                .contains(User.builder().luckyNumbers(null).build());
         }
     }
 
