@@ -319,6 +319,11 @@ public class JsonHelper {
 
     /**
      * Convert the given object to JSON, but ignoring (excluding) the given paths.
+     * <p>
+     * Note that if the input object is {@code null}, then the returned value is
+     * the string literal {@code "null"}. The reason is that a {@code null} object
+     * is represented as a {@link NullNode}, and its {@code toString} method returns
+     * the literal {@code "null"}.
      *
      * @param object       the object to convert
      * @param ignoredPaths the paths to ignore/exclude
