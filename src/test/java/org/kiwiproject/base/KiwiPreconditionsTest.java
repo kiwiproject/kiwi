@@ -1709,9 +1709,9 @@ class KiwiPreconditionsTest {
 
     static Stream<Arguments> instanceOfArguments() {
         return Stream.of(
-                Arguments.of(RandomStringUtils.random(5), Object.class),
-                Arguments.of(RandomStringUtils.random(15), String.class),
-                Arguments.of(RandomStringUtils.random(10), CharSequence.class),
+                Arguments.of(RandomStringUtils.secure().next(5), Object.class),
+                Arguments.of(RandomStringUtils.secure().next(15), String.class),
+                Arguments.of(RandomStringUtils.secure().next(10), CharSequence.class),
                 Arguments.of(random().nextLong(), Long.class),
                 Arguments.of(random().nextInt(), Integer.class),
                 Arguments.of(random().nextInt(), Number.class),
@@ -1723,7 +1723,7 @@ class KiwiPreconditionsTest {
 
     static Stream<Arguments> notInstanceOfArguments() {
         return Stream.of(
-                Arguments.of(RandomStringUtils.random(15), Long.class),
+                Arguments.of(RandomStringUtils.secure().next(15), Long.class),
                 Arguments.of(random().nextLong(), String.class),
                 Arguments.of(random().nextInt(), Collection.class),
                 Arguments.of(Instant.now(), Date.class),
