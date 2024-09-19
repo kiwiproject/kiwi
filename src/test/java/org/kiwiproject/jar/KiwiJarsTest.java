@@ -197,6 +197,14 @@ class KiwiJarsTest {
             assertThat(values).isEmpty();
         }
 
+        @SuppressWarnings("ConstantValue")
+        @Test
+        void shouldReturnEmptyMap_ForInvalidClassLoader() {
+            ClassLoader classLoader = null;
+            var values = KiwiJars.readValuesFromJarManifest(classLoader, "foo");
+
+            assertThat(values).isEmpty();
+        }
     }
 
     @Nested
