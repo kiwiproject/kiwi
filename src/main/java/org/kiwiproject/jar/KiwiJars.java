@@ -247,7 +247,7 @@ public class KiwiJars {
         try (var in = url.openStream()) {
             return Optional.of(new Manifest(in));
         } catch (Exception e) {
-            LOG.warn("Unable to read manifest", e);
+            LOG.warn("Unable to read manifest from URL: {}", url, e);
             return Optional.empty();
         }
     }
