@@ -27,6 +27,7 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.function.Predicate;
 import java.util.jar.Manifest;
+import java.util.regex.Pattern;
 import java.util.stream.StreamSupport;
 
 /**
@@ -35,6 +36,8 @@ import java.util.stream.StreamSupport;
 @Slf4j
 @UtilityClass
 public class KiwiJars {
+
+    private static final String QUOTED_FILE_SEPARATOR = Pattern.quote(File.separator);
 
     /**
      * Get the path components of the JAR file path that the given class lives in, or an empty list if the path
@@ -54,7 +57,7 @@ public class KiwiJars {
             var encodedJarPath = codeSource.getLocation().getPath();
             var decodedJarPath = URLDecoder.decode(encodedJarPath, StandardCharsets.UTF_8);
 
-            return newArrayList(decodedJarPath.trim().split(File.separator));
+            return newArrayList(decodedJarPath.trim().split(QUOTED_FILE_SEPARATOR));
         } catch (Exception e) {
             return logExceptionAndReturnEmptyList(e, classInJar);
         }
