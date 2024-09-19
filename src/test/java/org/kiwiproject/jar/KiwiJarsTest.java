@@ -201,7 +201,16 @@ class KiwiJarsTest {
         @Test
         void shouldReturnEmptyMap_ForInvalidClassLoader() {
             ClassLoader classLoader = null;
-            var values = KiwiJars.readValuesFromJarManifest(classLoader, "foo");
+            var values = KiwiJars.readValuesFromJarManifest(classLoader, "Main-Class");
+
+            assertThat(values).isEmpty();
+        }
+
+        @Test
+        void shouldReturnEmptyMap_WhenManifestCannotBeFound() {
+            var values = KiwiJars.readValuesFromJarManifest(this.getClass().getClassLoader(),
+                    url -> false,  // ensures manifest won't be found
+                    "Main-Class");
 
             assertThat(values).isEmpty();
         }
