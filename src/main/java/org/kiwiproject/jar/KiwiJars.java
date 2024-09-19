@@ -105,31 +105,33 @@ public class KiwiJars {
     }
 
     /**
-     * Resolves a given entry name from the manifest file (if found) in the current class loader.
+     * Get the value of a main attribute from the manifest file (if found) in the current class loader.
      *
-     * @param manifestEntryName The name of the property to resolve
+     * @param mainAttributeName The name of the main attribute to resolve
      * @return an {@link Optional} containing the resolved value or {@code Optional.empty()} if not
      */
-    public static Optional<String> readSingleValueFromJarManifest(String manifestEntryName) {
-        return readSingleValueFromJarManifest(KiwiJars.class.getClassLoader(), manifestEntryName, null);
+    public static Optional<String> readSingleValueFromJarManifest(String mainAttributeName) {
+        return readSingleValueFromJarManifest(KiwiJars.class.getClassLoader(), mainAttributeName, null);
     }
 
     /**
-     * Resolves a given entry name from the manifest file (if found) from the given class loader.
+     * Get the value of a main attribute from the manifest file (if found) from the given class loader.
      *
      * @param classLoader       The class loader to find the manifest file to search
-     * @param manifestEntryName The name of the property to resolve
+     * @param mainAttributeName The name of the main attribute to resolve
      * @return an {@link Optional} containing the resolved value or {@code Optional.empty()} if not
      */
-    public static Optional<String> readSingleValueFromJarManifest(ClassLoader classLoader, String manifestEntryName) {
-        return readSingleValueFromJarManifest(classLoader, manifestEntryName, null);
+    public static Optional<String> readSingleValueFromJarManifest(ClassLoader classLoader,
+                                                                  String mainAttributeName) {
+        return readSingleValueFromJarManifest(classLoader, mainAttributeName, null);
     }
 
     /**
-     * Resolves a given entry name from the manifest file (if found) from the given class loader.
+     * Get the value of a main attribute from the manifest file (if found) from the given class loader
+     * and filtering manifests using the given Predicate.
      *
      * @param classLoader       The class loader to find the manifest file to search
-     * @param manifestEntryName The name of the property to resolve
+     * @param mainAttributeName The name of the main attribute to resolve
      * @param manifestFilter    An optional filter that can be used to filter down manifest files if there are more than one.
      * @return an {@link Optional} containing the resolved value or {@code Optional.empty()} if not
      * @implNote If this code is called from a "fat-jar" with a single manifest file, then the filter predicate is unnecessary.
@@ -137,7 +139,7 @@ public class KiwiJars {
      */
     @SuppressWarnings("java:S2259")
     public static Optional<String> readSingleValueFromJarManifest(ClassLoader classLoader,
-                                                                  String manifestEntryName,
+                                                                  String mainAttributeName,
                                                                   @Nullable Predicate<URL> manifestFilter) {
         try {
             var manifest = findManifestOrNull(classLoader, manifestFilter);
@@ -145,63 +147,65 @@ public class KiwiJars {
                 return Optional.empty();
             }
 
-            var value = manifest.getMainAttributes().getValue(manifestEntryName);
+            var value = manifest.getMainAttributes().getValue(mainAttributeName);
             return Optional.ofNullable(value);
         } catch (Exception e) {
-            LOG.warn("Unable to locate {} from JAR", manifestEntryName, e);
+            LOG.warn("Unable to locate {} from JAR", mainAttributeName, e);
             return Optional.empty();
         }
     }
 
     /**
-     * Resolves all the given entry names from the manifest (if found) from the current class loader.
+     * Get the values of the given main attribute names from the manifest (if found) from the current class loader.
      *
-     * @param manifestEntryNames an array of names to resolve from the manifest
-     * @return a {@code Map<String,String>} of resolved entries
+     * @param mainAttributeNames an array of main attribute names to resolve from the manifest
+     * @return a {@code Map<String,String>} of resolved main attributes
      */
-    public static Map<String, String> readValuesFromJarManifest(String... manifestEntryNames) {
-        return readValuesFromJarManifest(KiwiJars.class.getClassLoader(), null, manifestEntryNames);
+    public static Map<String, String> readValuesFromJarManifest(String... mainAttributeNames) {
+        return readValuesFromJarManifest(KiwiJars.class.getClassLoader(), null, mainAttributeNames);
     }
 
     /**
-     * Resolves all the given entry names from the manifest (if found) from the given class loader.
+     * Get the values of the given main attribute names from the manifest (if found) from the given class loader.
      *
      * @param classLoader           the classloader to search for manifest files in
-     * @param manifestEntryNames    an array of names to resolve from the manifest
-     * @return a {@code Map<String,String>} of resolved entries
+     * @param mainAttributeNames    an array of names to resolve from the manifest
+     * @return a {@code Map<String,String>} of resolved main attributes
      */
-    public static Map<String, String> readValuesFromJarManifest(ClassLoader classLoader, String... manifestEntryNames) {
-        return readValuesFromJarManifest(classLoader, null, manifestEntryNames);
+    public static Map<String, String> readValuesFromJarManifest(ClassLoader classLoader,
+                                                                String... mainAttributeNames) {
+        return readValuesFromJarManifest(classLoader, null, mainAttributeNames);
     }
 
     /**
-     * Resolves all the given entry names from the manifest (if found) from the given class loader.
+     * Get the values of the given main attribute names from the manifest (if found) from the given class loader
+     * and filtering manifests using the given Predicate.
      *
      * @param classLoader           the classloader to search for manifest files in
      * @param manifestFilter        a predicate filter used to limit which jar files to search for a manifest file
-     * @param manifestEntryNames    an array of names to resolve from the manifest
-     * @return a {@code Map<String,String>} of resolved entries
+     * @param mainAttributeNames    an array of names to resolve from the manifest
+     * @return a {@code Map<String,String>} of resolved main attributes
      * @implNote If this code is called from a "fat-jar" with a single manifest file, then the filter predicate is unnecessary.
      * The predicate filter is really only necessary if there are multiple jars loaded in the classpath all containing manifest files.
      */
     public static Map<String, String> readValuesFromJarManifest(ClassLoader classLoader,
                                                                 @Nullable Predicate<URL> manifestFilter,
-                                                                String... manifestEntryNames) {
+                                                                String... mainAttributeNames) {
         try {
             var manifest = findManifestOrNull(classLoader, manifestFilter);
             if (isNull(manifest)) {
                 return Map.of();
             }
 
-            var uniqueManifestEntryNames = Set.of(manifestEntryNames);
+            var uniqueNames = Set.of(mainAttributeNames);
             return manifest.getMainAttributes()
                     .entrySet()
                     .stream()
-                    .filter(e -> uniqueManifestEntryNames.contains(String.valueOf(e.getKey())))
+                    .filter(e -> uniqueNames.contains(String.valueOf(e.getKey())))
                     .collect(toUnmodifiableMap(e -> String.valueOf(e.getKey()), e -> String.valueOf(e.getValue())));
 
         } catch (Exception e) {
-            LOG.warn("Unable to locate {} from JAR", Arrays.toString(manifestEntryNames), e);
+            LOG.warn("Unable to locate {} from JAR", Arrays.toString(mainAttributeNames), e);
             return Map.of();
         }
     }
