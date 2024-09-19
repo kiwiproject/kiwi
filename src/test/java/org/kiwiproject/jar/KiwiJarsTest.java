@@ -164,9 +164,10 @@ class KiwiJarsTest {
                     this.getClass().getClassLoader()
             );
 
-            var value = KiwiJars.readValuesFromJarManifest(classLoader, url -> url.getPath().contains("KiwiTestSample"), "Sample-Attribute", "Main-Class");
+            var values = KiwiJars.readValuesFromJarManifest(classLoader,
+                    url -> url.getPath().contains("KiwiTestSample"), "Sample-Attribute", "Main-Class");
 
-            assertThat(value).contains(
+            assertThat(values).contains(
                     entry("Sample-Attribute", "the-value"),
                     entry("Main-Class", "KiwiTestClass")
             );
@@ -174,23 +175,23 @@ class KiwiJarsTest {
 
         @Test
         void shouldReturnEmptyMapIfValuesCouldNotBeFoundInManifest_UsingClassLoaderAndPredicate() {
-            var value = KiwiJars.readValuesFromJarManifest(this.getClass().getClassLoader(), url -> true, "foo");
+            var values = KiwiJars.readValuesFromJarManifest(this.getClass().getClassLoader(), url -> true, "foo");
 
-            assertThat(value).isEmpty();
+            assertThat(values).isEmpty();
         }
 
         @Test
         void shouldReturnEmptyMapIfValuesCouldNotBeFoundInManifest_UsingClassLoader() {
-            var value = KiwiJars.readValuesFromJarManifest(this.getClass().getClassLoader(), "foo");
+            var values = KiwiJars.readValuesFromJarManifest(this.getClass().getClassLoader(), "foo");
 
-            assertThat(value).isEmpty();
+            assertThat(values).isEmpty();
         }
 
         @Test
         void shouldReturnEmptyMapIfValuesCouldNotBeFoundInManifest_UsingDefaultClassLoader() {
-            var value = KiwiJars.readValuesFromJarManifest("foo");
+            var values = KiwiJars.readValuesFromJarManifest("foo");
 
-            assertThat(value).isEmpty();
+            assertThat(values).isEmpty();
         }
 
     }
