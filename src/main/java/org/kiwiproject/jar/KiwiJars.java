@@ -5,6 +5,7 @@ import static com.google.common.base.Preconditions.checkState;
 import static com.google.common.collect.Lists.newArrayList;
 import static java.util.Collections.emptyList;
 import static java.util.Objects.isNull;
+import static java.util.stream.Collectors.toUnmodifiableMap;
 import static org.kiwiproject.base.KiwiPreconditions.checkArgumentNotNull;
 import static org.kiwiproject.collect.KiwiLists.isNotNullOrEmpty;
 import static org.kiwiproject.collect.KiwiLists.isNullOrEmpty;
@@ -12,16 +13,18 @@ import static org.kiwiproject.collect.KiwiLists.isNullOrEmpty;
 import com.google.common.annotations.VisibleForTesting;
 import lombok.experimental.UtilityClass;
 import lombok.extern.slf4j.Slf4j;
+import org.checkerframework.checker.nullness.qual.Nullable;
 
 import java.io.File;
+import java.io.IOException;
 import java.net.URL;
 import java.net.URLDecoder;
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 import java.util.function.Predicate;
 import java.util.jar.Manifest;
 import java.util.stream.StreamSupport;
@@ -130,52 +133,21 @@ public class KiwiJars {
      * The predicate filter is really only necessary if there are multiple jars loaded in the classpath all containing manifest files.
      */
     @SuppressWarnings("java:S2259")
-    public static Optional<String> readSingleValueFromJarManifest(ClassLoader classLoader, String manifestEntryName, Predicate<URL> manifestFilter) {
+    public static Optional<String> readSingleValueFromJarManifest(ClassLoader classLoader,
+                                                                  String manifestEntryName,
+                                                                  @Nullable Predicate<URL> manifestFilter) {
         try {
-
-            List<URL> urls;
-
-            if (isNull(manifestFilter)) {
-                var manifestUrl = Optional.ofNullable(classLoader.getResource("META-INF/MANIFEST.MF"));
-                urls = manifestUrl.map(List::of).orElse(null);
-            } else {
-                var urlIterator = classLoader.getResources("META-INF/MANIFEST.MF").asIterator();
-                Iterable<URL> urlIterable = () -> urlIterator;
-
-                urls = StreamSupport
-                        .stream((urlIterable).spliterator(), false)
-                        .filter(manifestFilter)
-                        .toList();
-            }
-
-            LOG.trace("Using manifest URL(s): {}", urls);
-
-            if (isNullOrEmpty(urls)) {
+            var manifest = findManifestOrNull(classLoader, manifestFilter);
+            if (isNull(manifest)) {
                 return Optional.empty();
             }
 
-            return urls.stream().map(url -> readEntry(url, manifestEntryName))
-                    .flatMap(Optional::stream)
-                    .findFirst();
-
+            var value = manifest.getMainAttributes().getValue(manifestEntryName);
+            return Optional.ofNullable(value);
         } catch (Exception e) {
             LOG.warn("Unable to locate {} from JAR", manifestEntryName, e);
             return Optional.empty();
         }
-    }
-
-    private static Optional<String> readEntry(URL url, String manifestEntryName) {
-        try (var in = url.openStream()) {
-            var manifest = new Manifest(in);
-            return readEntry(manifest, manifestEntryName);
-        } catch (Exception e) {
-            LOG.warn("Unable to read manifest", e);
-            return Optional.empty();
-        }
-    }
-
-    private static Optional<String> readEntry(Manifest manifest, String manifestEntryName) {
-        return Optional.ofNullable(manifest.getMainAttributes().getValue(manifestEntryName));
     }
 
     /**
@@ -209,14 +181,74 @@ public class KiwiJars {
      * @implNote If this code is called from a "fat-jar" with a single manifest file, then the filter predicate is unnecessary.
      * The predicate filter is really only necessary if there are multiple jars loaded in the classpath all containing manifest files.
      */
-    public static Map<String, String> readValuesFromJarManifest(ClassLoader classLoader, Predicate<URL> manifestFilter, String... manifestEntryNames) {
-        var entries = new HashMap<String, String>();
+    public static Map<String, String> readValuesFromJarManifest(ClassLoader classLoader,
+                                                                @Nullable Predicate<URL> manifestFilter,
+                                                                String... manifestEntryNames) {
+        try {
+            var manifest = findManifestOrNull(classLoader, manifestFilter);
+            if (isNull(manifest)) {
+                return Map.of();
+            }
 
-        Arrays.stream(manifestEntryNames).forEach(manifestEntryName -> {
-            var entry = readSingleValueFromJarManifest(classLoader, manifestEntryName, manifestFilter);
-            entry.ifPresent(value -> entries.put(manifestEntryName, value));
-        });
+            var uniqueManifestEntryNames = Set.of(manifestEntryNames);
+            return manifest.getMainAttributes()
+                    .entrySet()
+                    .stream()
+                    .filter(e -> uniqueManifestEntryNames.contains(String.valueOf(e.getKey())))
+                    .collect(toUnmodifiableMap(e -> String.valueOf(e.getKey()), e -> String.valueOf(e.getValue())));
 
-        return entries;
+        } catch (Exception e) {
+            LOG.warn("Unable to locate {} from JAR", Arrays.toString(manifestEntryNames), e);
+            return Map.of();
+        }
+    }
+
+    private static Manifest findManifestOrNull(ClassLoader classLoader,
+                                               @Nullable Predicate<URL> manifestFilter) throws IOException {
+
+        var urls = findManifestUrls(classLoader, manifestFilter);
+        if (isNullOrEmpty(urls)) {
+            LOG.warn("There are no manifest URLs!" +
+                    " The ClassLoader may have returned no resources or the manifestFilter did not match any URLs.");
+            return null;
+        }
+
+        return readFirstManifestOrNull(urls);
+    }
+
+    private static List<URL> findManifestUrls(ClassLoader classLoader,
+                                              @Nullable Predicate<URL> manifestFilter) throws IOException {
+        if (isNull(manifestFilter)) {
+            var manifestUrl = Optional.ofNullable(classLoader.getResource("META-INF/MANIFEST.MF"));
+            return manifestUrl.map(List::of).orElseGet(List::of);
+        }
+
+        var urlIterator = classLoader.getResources("META-INF/MANIFEST.MF").asIterator();
+        Iterable<URL> urlIterable = () -> urlIterator;
+
+        return StreamSupport
+                .stream((urlIterable).spliterator(), false)
+                .filter(manifestFilter)
+                .toList();
+    }
+
+    @VisibleForTesting
+    static Manifest readFirstManifestOrNull(List<URL> urls) {
+        LOG.trace("Using manifest URL(s): {}", urls);
+
+        return urls.stream()
+                .map(KiwiJars::readManifest)
+                .flatMap(Optional::stream)
+                .findFirst()
+                .orElse(null);
+    }
+
+    private static Optional<Manifest> readManifest(URL url) {
+        try (var in = url.openStream()) {
+            return Optional.of(new Manifest(in));
+        } catch (Exception e) {
+            LOG.warn("Unable to read manifest from URL: {}", url, e);
+            return Optional.empty();
+        }
     }
 }
