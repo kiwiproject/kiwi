@@ -232,7 +232,8 @@ public class KiwiJars {
                 .toList();
     }
 
-    private static Manifest readFirstManifestOrNull(List<URL> urls) {
+    @VisibleForTesting
+    static Manifest readFirstManifestOrNull(List<URL> urls) {
         LOG.trace("Using manifest URL(s): {}", urls);
 
         return urls.stream()

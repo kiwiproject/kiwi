@@ -13,9 +13,12 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.NullAndEmptySource;
 import org.kiwiproject.internal.Fixtures;
+import org.kiwiproject.junit.jupiter.ClearBoxTest;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.MalformedURLException;
+import java.net.URI;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.util.List;
@@ -194,5 +197,23 @@ class KiwiJarsTest {
             assertThat(values).isEmpty();
         }
 
+    }
+
+    @Nested
+    class ReadFirstManifestOrNull {
+
+        @ClearBoxTest
+        void shouldReturnNull_WhenUrlsIsEmpty() {
+            var manifest = KiwiJars.readFirstManifestOrNull(List.of());
+            assertThat(manifest).isNull();
+        }
+
+        @ClearBoxTest
+        void shouldReturnNull_WhenUrlIsInvalid() throws MalformedURLException {
+            var urls = List.of(URI.create("jar:file:/tmp/12345/jars/foo-1.0.0.jar!/META-INF/MANIFEST.MF").toURL());
+
+            var manifest = KiwiJars.readFirstManifestOrNull(urls);
+            assertThat(manifest).isNull();
+        }
     }
 }
