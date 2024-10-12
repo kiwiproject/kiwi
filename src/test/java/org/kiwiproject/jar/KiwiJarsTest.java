@@ -16,7 +16,7 @@ import org.kiwiproject.internal.Fixtures;
 import org.kiwiproject.junit.jupiter.ClearBoxTest;
 
 import java.io.File;
-import java.io.IOException;
+import java.io.UncheckedIOException;
 import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URL;
@@ -116,11 +116,8 @@ class KiwiJarsTest {
     class ReadSingleValueFromJarManifest {
 
         @Test
-        void shouldReadAnActualValueFromTheManifest_WithGivenClassLoaderAndPredicate() throws IOException {
-            var classLoader = new URLClassLoader(
-                    new URL[] {Fixtures.fixturePath("KiwiJars/KiwiTestSample.jar").toUri().toURL()},
-                    this.getClass().getClassLoader()
-            );
+        void shouldReadAnActualValueFromTheManifest_WithGivenClassLoaderAndPredicate() {
+            var classLoader = urlClassLoaderForKiwiTestSampleJar();
 
             var value = KiwiJars.readSingleValueFromJarManifest(classLoader, "Sample-Attribute", url -> url.getPath().contains("KiwiTestSample"));
 
@@ -161,11 +158,8 @@ class KiwiJarsTest {
     class ReadValuesFromJarManifest {
 
         @Test
-        void shouldReadActualValuesFromTheManifest_WithGivenClassLoaderAndPredicate() throws IOException {
-            var classLoader = new URLClassLoader(
-                    new URL[] {Fixtures.fixturePath("KiwiJars/KiwiTestSample.jar").toUri().toURL()},
-                    this.getClass().getClassLoader()
-            );
+        void shouldReadActualValuesFromTheManifest_WithGivenClassLoaderAndPredicate() {
+            var classLoader = urlClassLoaderForKiwiTestSampleJar();
 
             var values = KiwiJars.readValuesFromJarManifest(classLoader,
                     url -> url.getPath().contains("KiwiTestSample"), "Sample-Attribute", "Main-Class");
@@ -217,6 +211,58 @@ class KiwiJarsTest {
     }
 
     @Nested
+    class ReadAllMainAttributesFromJarManifest {
+
+        @Test
+        void shouldReturnAllValuesFromTheManifest_WithDefaultClassLoader() {
+            var values = KiwiJars.readAllMainAttributesFromJarManifest();
+
+            assertThat(values).isNotEmpty();
+        }
+
+        @Test
+        void shouldReturnAllValuesFromTheManifest_WithGivenClassLoader() {
+            var classLoader = urlClassLoaderForKiwiTestSampleJar();
+
+            var values = KiwiJars.readAllMainAttributesFromJarManifest(classLoader);
+
+            assertThat(values).isNotEmpty();
+        }
+
+        @Test
+        void shouldReturnAllValuesFromTheManifest_WithGivenClassLoaderAndPredicate() {
+            var classLoader = urlClassLoaderForKiwiTestSampleJar();
+
+            var values = KiwiJars.readAllMainAttributesFromJarManifest(classLoader,
+                    url -> url.getPath().contains("KiwiTestSample"));
+
+            assertThat(values).contains(
+                    entry("Manifest-Version", "1.0"),
+                    entry("Main-Class", "KiwiTestClass"),
+                    entry("Sample-Attribute", "the-value"),
+                    entry("Created-By", "11.0.2 (Oracle Corporation)")
+            );
+        }
+
+        @SuppressWarnings("ConstantValue")
+        @Test
+        void shouldReturnEmptyMap_ForInvalidClassLoader() {
+            ClassLoader classLoader = null;
+            var values = KiwiJars.readAllMainAttributesFromJarManifest(classLoader);
+
+            assertThat(values).isEmpty();
+        }
+
+        @Test
+        void shouldReturnEmptyMap_WhenManifestCannotBeFound() {
+            var values = KiwiJars.readAllMainAttributesFromJarManifest(this.getClass().getClassLoader(),
+                    url -> false);  // ensures manifest won't be found
+
+            assertThat(values).isEmpty();
+        }
+    }
+
+    @Nested
     class ReadFirstManifestOrNull {
 
         @ClearBoxTest
@@ -231,6 +277,17 @@ class KiwiJarsTest {
 
             var manifest = KiwiJars.readFirstManifestOrNull(urls);
             assertThat(manifest).isNull();
+        }
+    }
+
+    private static URLClassLoader urlClassLoaderForKiwiTestSampleJar() {
+        try {
+            return new URLClassLoader(
+                    new URL[] { Fixtures.fixturePath("KiwiJars/KiwiTestSample.jar").toUri().toURL() },
+                    KiwiJars.class.getClassLoader()
+            );
+        } catch (MalformedURLException e) {
+            throw new UncheckedIOException(e);
         }
     }
 }
