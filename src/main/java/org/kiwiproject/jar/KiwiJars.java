@@ -20,7 +20,6 @@ import java.io.IOException;
 import java.net.URL;
 import java.net.URLDecoder;
 import java.nio.charset.StandardCharsets;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -150,7 +149,7 @@ public class KiwiJars {
             var value = manifest.getMainAttributes().getValue(mainAttributeName);
             return Optional.ofNullable(value);
         } catch (Exception e) {
-            LOG.warn("Unable to locate {} from JAR", mainAttributeName, e);
+            LOG.warn("Unable to get main attribute {} from JAR manifest", mainAttributeName, e);
             return Optional.empty();
         }
     }
@@ -159,7 +158,7 @@ public class KiwiJars {
      * Get the values of the given main attribute names from the manifest (if found) from the current class loader.
      *
      * @param mainAttributeNames an array of main attribute names to resolve from the manifest
-     * @return a {@code Map<String,String>} of resolved main attributes
+     * @return a {@code Map<String, String>} of resolved main attributes
      */
     public static Map<String, String> readValuesFromJarManifest(String... mainAttributeNames) {
         return readValuesFromJarManifest(KiwiJars.class.getClassLoader(), null, mainAttributeNames);
@@ -170,7 +169,7 @@ public class KiwiJars {
      *
      * @param classLoader           the classloader to search for manifest files in
      * @param mainAttributeNames    an array of names to resolve from the manifest
-     * @return a {@code Map<String,String>} of resolved main attributes
+     * @return a {@code Map<String, String>} of resolved main attributes
      */
     public static Map<String, String> readValuesFromJarManifest(ClassLoader classLoader,
                                                                 String... mainAttributeNames) {
@@ -184,32 +183,79 @@ public class KiwiJars {
      * @param classLoader           the classloader to search for manifest files in
      * @param manifestFilter        a predicate filter used to limit which jar files to search for a manifest file
      * @param mainAttributeNames    an array of names to resolve from the manifest
-     * @return a {@code Map<String,String>} of resolved main attributes
+     * @return a {@code Map<String, String>} of resolved main attributes
      * @implNote If this code is called from a "fat-jar" with a single manifest file, then the filter predicate is unnecessary.
      * The predicate filter is really only necessary if there are multiple jars loaded in the classpath all containing manifest files.
      */
     public static Map<String, String> readValuesFromJarManifest(ClassLoader classLoader,
                                                                 @Nullable Predicate<URL> manifestFilter,
                                                                 String... mainAttributeNames) {
+
+        var uniqueNames = Set.of(mainAttributeNames);
+        return readMainAttributesFromJarManifest(classLoader,
+                entry -> uniqueNames.contains(entry.getKey()),
+                manifestFilter);
+    }
+
+    /**
+     * Get the values of all main attributes from the manifest (if found) from the current class loader.
+     *
+     * @return a {@code Map<String, String>} of all main attributes
+     */
+    public static Map<String, String> readAllMainAttributesFromJarManifest() {
+        return readAllMainAttributesFromJarManifest(KiwiJars.class.getClassLoader(), null);
+    }
+
+    /**
+     * Get the values of all main attributes from the manifest (if found) from the given class loader.
+     *
+     * @param classLoader the classloader to search for manifest files in
+     * @return a {@code Map<String, String>} of all main attributes
+     */
+    public static Map<String, String> readAllMainAttributesFromJarManifest(ClassLoader classLoader) {
+        return readAllMainAttributesFromJarManifest(classLoader, null);
+    }
+
+    /**
+     * Get the values of all main attributes from the manifest (if found) from the given class loader
+     * and filtering manifests using the given Predicate.
+     *
+     * @param classLoader    the classloader to search for manifest files in
+     * @param manifestFilter a predicate filter used to limit which jar files to search for a manifest file
+     * @return a {@code Map<String, String>} of all main attributes
+     */
+    public static Map<String, String> readAllMainAttributesFromJarManifest(ClassLoader classLoader,
+                                                                           @Nullable Predicate<URL> manifestFilter) {
+        return readMainAttributesFromJarManifest(classLoader, entry -> true, manifestFilter);
+    }
+
+    private static Map<String, String> readMainAttributesFromJarManifest(ClassLoader classLoader,
+                                                                         Predicate<Map.Entry<String, String>> entryPredicate,
+                                                                         @Nullable Predicate<URL> manifestFilter) {
         try {
             var manifest = findManifestOrNull(classLoader, manifestFilter);
             if (isNull(manifest)) {
                 return Map.of();
             }
 
-            var uniqueNames = Set.of(mainAttributeNames);
             return manifest.getMainAttributes()
                     .entrySet()
                     .stream()
-                    .filter(e -> uniqueNames.contains(String.valueOf(e.getKey())))
-                    .collect(toUnmodifiableMap(e -> String.valueOf(e.getKey()), e -> String.valueOf(e.getValue())));
-
+                    .map(KiwiJars::toEntryOfStringToString)
+                    .filter(entryPredicate)
+                    .collect(toUnmodifiableMap(Map.Entry::getKey, Map.Entry::getValue));
+            
         } catch (Exception e) {
-            LOG.warn("Unable to locate {} from JAR", Arrays.toString(mainAttributeNames), e);
+            LOG.warn("Unable to get main attributes from JAR manifest", e);
             return Map.of();
         }
     }
 
+    private static Map.Entry<String, String> toEntryOfStringToString(Map.Entry<Object, Object> e) {
+        return Map.entry(String.valueOf(e.getKey()), String.valueOf(e.getValue()));
+    }
+
+    @Nullable
     private static Manifest findManifestOrNull(ClassLoader classLoader,
                                                @Nullable Predicate<URL> manifestFilter) throws IOException {
 
@@ -240,14 +286,21 @@ public class KiwiJars {
     }
 
     @VisibleForTesting
+    @Nullable
     static Manifest readFirstManifestOrNull(List<URL> urls) {
         LOG.trace("Using manifest URL(s): {}", urls);
 
-        return urls.stream()
+        var manifest = urls.stream()
                 .map(KiwiJars::readManifest)
                 .flatMap(Optional::stream)
                 .findFirst()
                 .orElse(null);
+
+        if (isNull(manifest)) {
+            LOG.warn("Unable to get a manifest using URLs: {}", urls);
+        }
+
+        return manifest;
     }
 
     private static Optional<Manifest> readManifest(URL url) {
