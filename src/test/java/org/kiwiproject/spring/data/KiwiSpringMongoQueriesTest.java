@@ -2,6 +2,7 @@ package org.kiwiproject.spring.data;
 
 import static java.util.Comparator.comparing;
 import static java.util.Comparator.comparingDouble;
+import static java.util.Comparator.reverseOrder;
 import static org.apache.commons.lang3.StringUtils.containsAny;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.kiwiproject.collect.KiwiLists.first;
@@ -10,6 +11,7 @@ import static org.kiwiproject.spring.data.KiwiSpringMongoQueries.addInCriteriaFr
 import static org.kiwiproject.spring.data.KiwiSpringMongoQueries.addMultiplePartialOrEqualMatchCriteria;
 import static org.kiwiproject.spring.data.KiwiSpringMongoQueries.addPartialOrEqualMatchCriteria;
 import static org.kiwiproject.spring.data.OrderTestData.insertSampleOrders;
+import static org.kiwiproject.spring.util.MongoTestContainerHelpers.newMongoDBContainer;
 
 import lombok.extern.slf4j.Slf4j;
 import org.assertj.core.api.SoftAssertions;
@@ -20,19 +22,21 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.junit.jupiter.api.extension.RegisterExtension;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
 import org.junit.jupiter.params.provider.NullAndEmptySource;
 import org.kiwiproject.base.KiwiDoubles;
-import org.kiwiproject.junit.jupiter.MongoServerExtension;
 import org.kiwiproject.search.KiwiSearching;
 import org.kiwiproject.spring.data.KiwiSpringMongoQueries.PartialMatchType;
 import org.kiwiproject.time.KiwiInstants;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.SimpleMongoClientDatabaseFactory;
 import org.springframework.data.mongodb.core.query.Criteria;
+import org.testcontainers.containers.MongoDBContainer;
+import org.testcontainers.junit.jupiter.Container;
+import org.testcontainers.junit.jupiter.Testcontainers;
 
 import java.time.Instant;
 import java.util.List;
@@ -40,12 +44,13 @@ import java.util.function.Predicate;
 import java.util.stream.DoubleStream;
 
 @DisplayName("KiwiSpringMongoQueries")
+@Testcontainers(disabledWithoutDocker = true)
 @ExtendWith(SoftAssertionsExtension.class)
 @Slf4j
 class KiwiSpringMongoQueriesTest {
 
-    @RegisterExtension
-    static final MongoServerExtension MONGO_SERVER_EXTENSION = new MongoServerExtension();
+    @Container
+    static final MongoDBContainer MONGODB = newMongoDBContainer();
 
     private static MongoTemplate mongoTemplate;
 
@@ -54,7 +59,7 @@ class KiwiSpringMongoQueriesTest {
 
     @BeforeAll
     static void beforeAll() {
-        var connectionString = MONGO_SERVER_EXTENSION.getConnectionString();
+        var connectionString = MONGODB.getConnectionString() + "/test";
         var mongoClientDbFactory = new SimpleMongoClientDatabaseFactory(connectionString);
         mongoTemplate = new MongoTemplate(mongoClientDbFactory);
     }
@@ -113,12 +118,13 @@ class KiwiSpringMongoQueriesTest {
         softly.assertThat(orderPage.getSize()).isEqualTo(limit);
         softly.assertThat(orderPage.getSort()).isEqualTo(Sort.by(Sort.Direction.ASC, "customerId"));
 
-        var expectedOrders = storedOrders.stream()
-                .sorted(comparing(Order::getCustomerId))
+        var expectedCustomerIds = storedOrders.stream()
+                .map(Order::getCustomerId)
+                .sorted()
                 .limit(limit)
                 .toList();
 
-        softly.assertThat(orderPage.getContent()).isEqualTo(expectedOrders);
+        softly.assertThat(customerIds(orderPage)).isEqualTo(expectedCustomerIds);
     }
 
     @Test
@@ -172,12 +178,13 @@ class KiwiSpringMongoQueriesTest {
         softly.assertThat(orderPage.getSize()).isEqualTo(limit);
         softly.assertThat(orderPage.getSort()).isEqualTo(Sort.by(Sort.Direction.DESC, "customerId"));
 
-        var expectedOrders = storedOrders.stream()
-                .sorted(comparing(Order::getCustomerId).reversed())
+        var expectedCustomerIds = storedOrders.stream()
+                .map(Order::getCustomerId)
+                .sorted(reverseOrder())
                 .limit(limit)
                 .toList();
 
-        softly.assertThat(orderPage.getContent()).isEqualTo(expectedOrders);
+        softly.assertThat(customerIds(orderPage)).isEqualTo(expectedCustomerIds);
     }
 
     @Test
@@ -190,8 +197,8 @@ class KiwiSpringMongoQueriesTest {
         pagingParams.setLimit(limit);
         pagingParams.setPrimarySort("customerId");
         pagingParams.setPrimaryDirection(Sort.Direction.ASC);
-        pagingParams.setSecondarySort("status");
-        pagingParams.setSecondaryDirection(Sort.Direction.ASC);
+        pagingParams.setSecondarySort("amount");
+        pagingParams.setSecondaryDirection(Sort.Direction.DESC);
 
         var orderPage = KiwiSpringMongoQueries.paginate(mongoTemplate, pagingParams, Order.class);
 
@@ -201,10 +208,13 @@ class KiwiSpringMongoQueriesTest {
         softly.assertThat(orderPage.getNumberOfElements()).isEqualTo(limit);
         softly.assertThat(orderPage.getSize()).isEqualTo(limit);
         softly.assertThat(orderPage.getSort()).isEqualTo(
-                Sort.by(new Sort.Order(Sort.Direction.ASC, "customerId"), new Sort.Order(Sort.Direction.ASC, "status")));
+                Sort.by(new Sort.Order(Sort.Direction.ASC, "customerId"),
+                        new Sort.Order(Sort.Direction.DESC, "amount"))
+        );
 
         var expectedOrders = storedOrders.stream()
-                .sorted(comparing(Order::getCustomerId).thenComparing(Order::getStatus))
+                .sorted(comparing(Order::getCustomerId)
+                        .thenComparing(comparing(Order::getAmount).reversed()))
                 .skip(pageNumber * limit)
                 .limit(limit)
                 .toList();
@@ -445,13 +455,21 @@ class KiwiSpringMongoQueriesTest {
         softly.assertThat(orderPage.getSize()).isEqualTo(limit);
         softly.assertThat(orderPage.getSort()).isEqualTo(Sort.by(Sort.Direction.ASC, "customerId"));
 
-        var expectedOrders = storedOrders.stream()
+        var expectedCustomerIds = storedOrders.stream()
                 .filter(customerFilter)
-                .sorted(comparing(Order::getCustomerId))
+                .map(Order::getCustomerId)
+                .sorted()
                 .limit(limit)
                 .toList();
 
-        softly.assertThat(orderPage.getContent()).isEqualTo(expectedOrders);
+        softly.assertThat(customerIds(orderPage)).isEqualTo(expectedCustomerIds);
+    }
+
+    private static List<String> customerIds(Page<Order> orderPage) {
+        return orderPage.getContent()
+                .stream()
+                .map(Order::getCustomerId)
+                .toList();
     }
 
     @Test

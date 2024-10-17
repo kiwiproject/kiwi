@@ -1,28 +1,31 @@
 package org.kiwiproject.spring.data;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.kiwiproject.spring.util.MongoTestHelpers.newMongoTemplate;
+import static org.kiwiproject.spring.util.MongoTestContainerHelpers.newMongoDBContainer;
+import static org.kiwiproject.spring.util.MongoTestContainerHelpers.newMongoTemplate;
 
 import org.bson.BsonUndefined;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.RegisterExtension;
-import org.kiwiproject.junit.jupiter.MongoServerExtension;
 import org.springframework.data.mongodb.core.MongoTemplate;
+import org.testcontainers.containers.MongoDBContainer;
+import org.testcontainers.junit.jupiter.Container;
+import org.testcontainers.junit.jupiter.Testcontainers;
 
 @DisplayName("KiwiMongoConverters")
+@Testcontainers(disabledWithoutDocker = true)
 class KiwiMongoConvertersTest {
 
-    @RegisterExtension
-    static final MongoServerExtension MONGO_SERVER_EXTENSION = new MongoServerExtension();
+    @Container
+    static final MongoDBContainer MONGODB = newMongoDBContainer();
 
     private MongoTemplate mongoTemplate;
 
     @BeforeEach
     void setUp() {
-        mongoTemplate = newMongoTemplate(MONGO_SERVER_EXTENSION.getMongoServer());
+        mongoTemplate = newMongoTemplate(MONGODB);
     }
 
     @Nested

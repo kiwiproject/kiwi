@@ -3,11 +3,9 @@ package org.kiwiproject.spring.data;
 import static java.util.Comparator.comparing;
 import static java.util.Comparator.comparingDouble;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.kiwiproject.base.KiwiStrings.f;
 import static org.kiwiproject.spring.data.OrderTestData.ORDER_COLLECTION;
 import static org.kiwiproject.spring.data.OrderTestData.insertSampleOrders;
 
-import com.mongodb.client.MongoClients;
 import lombok.extern.slf4j.Slf4j;
 import org.assertj.core.api.SoftAssertions;
 import org.assertj.core.api.junit.jupiter.SoftAssertionsExtension;
@@ -22,9 +20,7 @@ import org.springframework.data.mongodb.core.aggregation.Aggregation;
 import org.springframework.data.mongodb.core.aggregation.AggregationOperation;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.testcontainers.containers.MongoDBContainer;
-import org.testcontainers.containers.wait.strategy.HostPortWaitStrategy;
 import org.testcontainers.junit.jupiter.Testcontainers;
-import org.testcontainers.utility.DockerImageName;
 
 import java.util.List;
 import java.util.function.Predicate;
@@ -42,9 +38,7 @@ import java.util.function.Predicate;
 @Testcontainers(disabledWithoutDocker = true)
 @ExtendWith(SoftAssertionsExtension.class)
 @Slf4j
-abstract class AbstractPagingQueryIntegrationTest {
-
-    static final int STANDARD_MONGODB_PORT = 27_017;
+public abstract class AbstractPagingQueryIntegrationTest {
 
     /**
      * Subclasses must set this in a {@code BeforeAll}.
@@ -53,32 +47,6 @@ abstract class AbstractPagingQueryIntegrationTest {
 
     List<Order> storedOrders;
     int storedOrderCount;
-
-    /**
-     * Subclasses should use this to create the test container, supplying the Docker image name for a specific
-     * version of Mongo.
-     */
-    @SuppressWarnings("resource")  // because Testcontainers closs it for us
-    static MongoDBContainer newMongoDBContainer(String dockerImageName) {
-        LOG.info("Create MongoDBcontainer for Docker image name: {}", dockerImageName);
-        return new MongoDBContainer(DockerImageName.parse(dockerImageName)).waitingFor(new HostPortWaitStrategy());
-    }
-
-    /**
-     * Subclassses should use this to create and set the static MongoTemplate field.
-     */
-    static MongoTemplate newMongoTemplate(MongoDBContainer container) {
-        var mongoClient = MongoClients.create(connectionStringFor(container));
-        return new MongoTemplate(mongoClient, "test");
-    }
-
-    private static String connectionStringFor(MongoDBContainer container) {
-        var host = container.getHost();
-        var port = container.getMappedPort(STANDARD_MONGODB_PORT);
-        var connectionString = f("mongodb://{}:{}", host, port);
-        LOG.info("Mongo connection string: {}", connectionString);
-        return connectionString;
-    }
 
     @BeforeEach
     void setUp() {

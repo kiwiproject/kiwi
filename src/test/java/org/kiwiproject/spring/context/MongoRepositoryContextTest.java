@@ -3,6 +3,8 @@ package org.kiwiproject.spring.context;
 import static java.util.stream.Collectors.toUnmodifiableSet;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatCode;
+import static org.kiwiproject.spring.util.MongoTestContainerHelpers.connectionStringFor;
+import static org.kiwiproject.spring.util.MongoTestContainerHelpers.newMongoDBContainer;
 
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -13,10 +15,8 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.RegisterExtension;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
-import org.kiwiproject.junit.jupiter.MongoServerExtension;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.event.AbstractMongoEventListener;
 import org.springframework.data.mongodb.core.mapping.event.AfterLoadEvent;
@@ -24,22 +24,26 @@ import org.springframework.data.mongodb.core.mapping.event.AfterSaveEvent;
 import org.springframework.data.mongodb.core.mapping.event.LoggingEventListener;
 import org.springframework.data.mongodb.core.mapping.event.MongoMappingEvent;
 import org.springframework.data.mongodb.repository.MongoRepository;
+import org.testcontainers.containers.MongoDBContainer;
+import org.testcontainers.junit.jupiter.Container;
+import org.testcontainers.junit.jupiter.Testcontainers;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
 @DisplayName("MongoRepositoryContext")
+@Testcontainers(disabledWithoutDocker = true)
 class MongoRepositoryContextTest {
 
-    @RegisterExtension
-    static final MongoServerExtension MONGO_SERVER_EXTENSION = new MongoServerExtension();
+    @Container
+    static final MongoDBContainer MONGODB = newMongoDBContainer();
 
     private MongoRepositoryContext mongoRepositoryContext;
 
     @BeforeEach
     void setUp() {
-        var connectionString = MONGO_SERVER_EXTENSION.getConnectionString();
+        var connectionString = connectionStringFor(MONGODB, "test");
         mongoRepositoryContext = new MongoRepositoryContext(connectionString);
     }
 
