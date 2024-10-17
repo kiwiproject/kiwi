@@ -9,12 +9,12 @@ import org.testcontainers.containers.MongoDBContainer;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
 
-@DisplayName("PagingQuery (Mongo 4)")
+@DisplayName("PagingQuery (Mongo Latest)")
 @Testcontainers(disabledWithoutDocker = true)
-class PagingQueryMongo4IntegrationTest extends AbstractPagingQueryIntegrationTest {
+class PagingQueryMongoLatestIntegrationTest extends AbstractPagingQueryIntegrationTest {
 
     @Container
-    static final MongoDBContainer MONGODB = newMongoDBContainer("mongo:4");
+    static final MongoDBContainer MONGODB = newMongoDBContainer("mongo:latest");
 
     @BeforeAll
     static void beforeAll() {

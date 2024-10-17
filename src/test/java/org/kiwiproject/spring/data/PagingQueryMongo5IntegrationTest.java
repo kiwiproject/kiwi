@@ -1,5 +1,8 @@
 package org.kiwiproject.spring.data;
 
+import static org.kiwiproject.spring.util.MongoTestContainerHelpers.newMongoDBContainer;
+import static org.kiwiproject.spring.util.MongoTestContainerHelpers.newMongoTemplate;
+
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.DisplayName;
 import org.testcontainers.containers.MongoDBContainer;

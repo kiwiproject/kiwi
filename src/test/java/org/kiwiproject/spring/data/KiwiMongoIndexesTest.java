@@ -2,7 +2,8 @@ package org.kiwiproject.spring.data;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.tuple;
-import static org.kiwiproject.spring.util.MongoTestHelpers.newMongoTemplate;
+import static org.kiwiproject.spring.util.MongoTestContainerHelpers.newMongoDBContainer;
+import static org.kiwiproject.spring.util.MongoTestContainerHelpers.newMongoTemplate;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -11,21 +12,23 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.RegisterExtension;
-import org.kiwiproject.junit.jupiter.MongoServerExtension;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.index.IndexInfo;
 import org.springframework.data.mongodb.core.mapping.Document;
+import org.testcontainers.containers.MongoDBContainer;
+import org.testcontainers.junit.jupiter.Container;
+import org.testcontainers.junit.jupiter.Testcontainers;
 
 import java.util.Collection;
 
 @DisplayName("KiwiMongoIndexes")
+@Testcontainers(disabledWithoutDocker = true)
 class KiwiMongoIndexesTest {
 
-    @RegisterExtension
-    static final MongoServerExtension MONGO_SERVER_EXTENSION = new MongoServerExtension();
+    @Container
+    static final MongoDBContainer MONGODB = newMongoDBContainer();
 
     private static final String PEOPLE_COLLECTION_NAME = "people";
 
@@ -33,7 +36,7 @@ class KiwiMongoIndexesTest {
 
     @BeforeEach
     void setUp() {
-        mongoTemplate = newMongoTemplate(MONGO_SERVER_EXTENSION.getMongoServer());
+        mongoTemplate = newMongoTemplate(MONGODB);
 
         mongoTemplate.createCollection(PEOPLE_COLLECTION_NAME);
     }
