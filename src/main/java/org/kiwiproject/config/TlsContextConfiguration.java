@@ -1,22 +1,22 @@
 package org.kiwiproject.config;
 
+import static java.util.Objects.isNull;
 import static org.kiwiproject.base.KiwiPreconditions.checkArgumentNotNull;
 
 import io.dropwizard.client.ssl.TlsConfiguration;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
-import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 import org.checkerframework.checker.nullness.qual.Nullable;
+import org.kiwiproject.base.KiwiBooleans;
 import org.kiwiproject.security.KeyAndTrustStoreConfigProvider;
 import org.kiwiproject.security.KeyStoreType;
 import org.kiwiproject.security.SSLContextProtocol;
 
+import java.beans.ConstructorProperties;
 import java.io.File;
 import java.net.Socket;
 import java.util.List;
@@ -31,9 +31,6 @@ import java.util.Optional;
  */
 @Getter
 @Setter
-@Builder
-@NoArgsConstructor
-@AllArgsConstructor(access = AccessLevel.PRIVATE)  // for Builder (b/c also need no-args constructor)
 @ToString(exclude = { "keyStorePassword", "trustStorePassword" })
 public class TlsContextConfiguration implements KeyAndTrustStoreConfigProvider {
 
@@ -43,8 +40,7 @@ public class TlsContextConfiguration implements KeyAndTrustStoreConfigProvider {
      * @see SSLContextProtocol
      */
     @NotBlank
-    @Builder.Default
-    private String protocol = SSLContextProtocol.TLS_1_2.value;
+    private String protocol;
 
     /**
      * The name of the JCE (Java Cryptography Extension) provider to use on the client side for cryptographic
@@ -71,8 +67,7 @@ public class TlsContextConfiguration implements KeyAndTrustStoreConfigProvider {
      * @see KeyStoreType
      */
     @NotBlank
-    @Builder.Default
-    private String keyStoreType = KeyStoreType.JKS.value;
+    private String keyStoreType;
 
     /**
      * The name of the provider for the key store, i.e., the value of {@code provider} to use when getting the
@@ -103,8 +98,7 @@ public class TlsContextConfiguration implements KeyAndTrustStoreConfigProvider {
      * @see KeyStoreType
      */
     @NotBlank
-    @Builder.Default
-    private String trustStoreType = KeyStoreType.JKS.value;
+    private String trustStoreType;
 
     /**
      * The name of the provider for the trust store, i.e., the value of {@code provider} to use when getting the
@@ -125,8 +119,7 @@ public class TlsContextConfiguration implements KeyAndTrustStoreConfigProvider {
     /**
      * Should host names be verified when establishing secure connections? Default is {@code true}.
      */
-    @Builder.Default
-    private boolean verifyHostname = true;
+    private boolean verifyHostname;
 
     /**
      * Whether the SNI (Server Name Indication) host check is disabled. Default is {@code false}
@@ -164,6 +157,92 @@ public class TlsContextConfiguration implements KeyAndTrustStoreConfigProvider {
      * keystore has multiple certificates to force use of a non-default certificate.
      */
     private String certAlias;
+
+    /**
+     * Create a new instance that can be configured via the setter methods.
+     * <p>
+     * When creating programmatically, consider using the {@link #builder()} instead.
+     */
+    public TlsContextConfiguration() {
+        // Call the all-args constructor so that the default values
+        // are respected. This avoids having to put default values
+        // on the fields too, which would duplicate the defaults
+        // that are set in the all-args constructor. Yes, the code
+        // is not as pretty, but there is less chance of changing
+        // one default value, and forgetting to change the other.
+        this(null,
+                null,
+                null,
+                null,
+                null,
+                null,
+                null,
+                null,
+                null,
+                null,
+                null,
+                null,
+                null,
+                null,
+                null,
+                null);
+    }
+
+    /**
+     * This all-arguments constructor is annotated with Lombok {@link Builder} to
+     * provide a Lombok-generated builder and to handle deserialization that uses
+     * this constructor despite it being private (Hi Jackson!). This allows us to ensure
+     * that the proper default values are set when we don't get a value, e.g., when
+     * the JSON or YAML does not specify a value. This is also why the arguments for
+     * boolean fields are Boolean, so that we can detect when we got a value.
+     * <p>
+     * It also uses the {@link ConstructorProperties} annotation to help deserializers
+     * like Jackson, which use the all-args constructor.
+     * <p>
+     * Note we suppress Sonar's rule (java:S107) about too many arguments as it cannot be
+     * avoided, and also IntelliJ's "unused" warning, since it is called reflectively
+     * during deserialization.
+     */
+    @SuppressWarnings({ "java:S107", "unused" })
+    @ConstructorProperties({
+            "protocol", "provider", "keyStorePath", "keyStorePassword", "keyStoreType", "keyStoreProvider",
+            "trustStorePath", "trustStorePassword", "trustStoreType", "trustStoreProvider",
+            "trustSelfSignedCertificates", "verifyHostname", "disableSniHostCheck", "supportedProtocols",
+            "supportedCiphers", "certAlias" })
+    @Builder
+    private TlsContextConfiguration(String protocol,
+                                    String provider,
+                                    String keyStorePath,
+                                    String keyStorePassword,
+                                    String keyStoreType,
+                                    String keyStoreProvider,
+                                    String trustStorePath,
+                                    String trustStorePassword,
+                                    String trustStoreType,
+                                    String trustStoreProvider,
+                                    Boolean trustSelfSignedCertificates,
+                                    Boolean verifyHostname,
+                                    Boolean disableSniHostCheck,
+                                    List<String> supportedProtocols,
+                                    List<String> supportedCiphers,
+                                    String certAlias) {
+        this.protocol = isNull(protocol) ? SSLContextProtocol.TLS_1_2.value : protocol;
+        this.provider = provider;
+        this.keyStorePath = keyStorePath;
+        this.keyStorePassword = keyStorePassword;
+        this.keyStoreType = isNull(keyStoreType) ? KeyStoreType.JKS.value : keyStoreType;
+        this.keyStoreProvider = keyStoreProvider;
+        this.trustStorePath = trustStorePath;
+        this.trustStorePassword = trustStorePassword;
+        this.trustStoreType = isNull(trustStoreType) ? KeyStoreType.JKS.value : trustStoreType;
+        this.trustStoreProvider = trustStoreProvider;
+        this.trustSelfSignedCertificates = KiwiBooleans.toBooleanOrFalse(trustSelfSignedCertificates);
+        this.verifyHostname = KiwiBooleans.toBooleanOrTrue(verifyHostname);
+        this.disableSniHostCheck = KiwiBooleans.toBooleanOrFalse(disableSniHostCheck);
+        this.supportedProtocols = supportedProtocols;
+        this.supportedCiphers = supportedCiphers;
+        this.certAlias = certAlias;
+    }
 
     /**
      * Given a Dropwizard {@link TlsConfiguration}, create a new {@link TlsContextConfiguration}.

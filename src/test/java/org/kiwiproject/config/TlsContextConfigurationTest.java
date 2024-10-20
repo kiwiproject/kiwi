@@ -3,22 +3,22 @@ package org.kiwiproject.config;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
 import static org.junit.jupiter.api.Assertions.assertAll;
-import static org.kiwiproject.util.YamlTestHelper.loadFromYaml;
 import static org.kiwiproject.validation.ValidationTestHelper.assertNoViolations;
 import static org.kiwiproject.validation.ValidationTestHelper.assertOnePropertyViolation;
 import static org.kiwiproject.validation.ValidationTestHelper.newValidator;
 
 import io.dropwizard.client.ssl.TlsConfiguration;
 import jakarta.validation.Validator;
-import lombok.Getter;
-import lombok.Setter;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.kiwiproject.security.KeyStoreType;
 import org.kiwiproject.security.SSLContextProtocol;
 import org.kiwiproject.security.SecureTestConstants;
+import org.kiwiproject.util.YamlTestHelper;
 
 import java.io.File;
 import java.util.List;
@@ -74,7 +74,7 @@ class TlsContextConfigurationTest {
 
         @BeforeEach
         void setUp() {
-            config = loadTlsContextConfiguration("TlsContextConfigurationTest/full-tls-config.yml");
+            config = loadTlsContextConfigurationSnakeYaml("TlsContextConfigurationTest/full-tls-config.yml");
         }
 
         @Test
@@ -94,20 +94,31 @@ class TlsContextConfigurationTest {
         }
     }
 
-    @SuppressWarnings("WeakerAccess")  // must be public for YAML to instantiate
-    @Getter
-    @Setter
+    @SuppressWarnings({"WeakerAccess", "unused"})  // must be public for SnakeYAML to instantiate
     public static class SampleAppConfig {
         private TlsContextConfiguration tlsConfig;
+
+        public TlsContextConfiguration getTlsConfig() {
+            return this.tlsConfig;
+        }
+
+        public void setTlsConfig(TlsContextConfiguration tlsConfig) {
+            this.tlsConfig = tlsConfig;
+        }
     }
 
+    /**
+     * The YAML deserialization tests here are done using both SnakeYAML and using
+     * the same mechanism that Dropwizard uses, which uses Jackson. The reason is
+     * that they actually deserialize a bit differently, so we need to make sure
+     * both work as expected.
+     */
     @Nested
     class FromYaml {
 
-        @Test
-        void shouldDeserializeMinimalConfig() {
-            var tlsConfig = loadTlsContextConfiguration("TlsContextConfigurationTest/minimal-tls-config.yml");
-
+        @ParameterizedTest
+        @MethodSource("org.kiwiproject.config.TlsContextConfigurationTest#minimalTlsContextConfigurations")
+        void shouldDeserializeMinimalConfig(TlsContextConfiguration tlsConfig) {
             assertDefaultValues(tlsConfig);
 
             assertAll(
@@ -118,10 +129,9 @@ class TlsContextConfigurationTest {
             );
         }
 
-        @Test
-        void shouldDeserializeMinimalWithNoKeyStorePropertiesConfig() {
-            var tlsConfig = loadTlsContextConfiguration("TlsContextConfigurationTest/minimal-no-key-props-tls-config.yml");
-
+        @ParameterizedTest
+        @MethodSource("org.kiwiproject.config.TlsContextConfigurationTest#minimalTlsContextConfigurationsWithoutKeyProperties")
+        void shouldDeserializeMinimalWithNoKeyStorePropertiesConfig(TlsContextConfiguration tlsConfig) {
             assertDefaultValues(tlsConfig);
 
             assertAll(
@@ -130,10 +140,9 @@ class TlsContextConfigurationTest {
             );
         }
 
-        @Test
-        void shouldDeserializeFullConfig() {
-            var tlsConfig = loadTlsContextConfiguration("TlsContextConfigurationTest/full-tls-config.yml");
-
+        @ParameterizedTest
+        @MethodSource("org.kiwiproject.config.TlsContextConfigurationTest#fullTlsContextConfigurations")
+        void shouldDeserializeFullConfig(TlsContextConfiguration tlsConfig) {
             assertAll(
                     () -> assertThat(tlsConfig.getProtocol()).isEqualTo("TLSv1.3"),
                     () -> assertThat(tlsConfig.getKeyStorePath()).isEqualTo("/path/to/keystore.pkcs12"),
@@ -150,6 +159,33 @@ class TlsContextConfigurationTest {
                     )
             );
         }
+    }
+
+    static List<TlsContextConfiguration> minimalTlsContextConfigurations() {
+        var filename = "TlsContextConfigurationTest/minimal-tls-config.yml";
+        return List.of(
+                loadTlsContextConfigurationSnakeYaml(filename),
+                loadTlsContextConfigurationDropwizard(filename),
+                loadTlsContextConfigurationJackson(filename)
+        );
+    }
+
+    static List<TlsContextConfiguration> minimalTlsContextConfigurationsWithoutKeyProperties() {
+        var filename = "TlsContextConfigurationTest/minimal-no-key-props-tls-config.yml";
+        return List.of(
+                loadTlsContextConfigurationSnakeYaml(filename),
+                loadTlsContextConfigurationJackson(filename),
+                loadTlsContextConfigurationDropwizard(filename)
+        );
+    }
+
+    static List<TlsContextConfiguration> fullTlsContextConfigurations() {
+        var filename = "TlsContextConfigurationTest/full-tls-config.yml";
+        return List.of(
+                loadTlsContextConfigurationSnakeYaml(filename),
+                loadTlsContextConfigurationDropwizard(filename),
+                loadTlsContextConfigurationJackson(filename)
+        );
     }
 
     private static void assertDefaultValues(TlsContextConfiguration config) {
@@ -403,7 +439,7 @@ class TlsContextConfigurationTest {
                 var dwTlsConfig = tlsConfig.toDropwizardTlsConfiguration();
 
                 // Note: Dropwizard TlsConfiguration does not contain disableSniHostCheck, so we cannot check it
-                
+
                 assertAll(
                         () -> assertThat(dwTlsConfig.getProtocol()).isEqualTo(protocol),
                         () -> assertThat(dwTlsConfig.getProvider()).isEqualTo("BC"),
@@ -503,8 +539,18 @@ class TlsContextConfigurationTest {
         }
     }
 
-    private static TlsContextConfiguration loadTlsContextConfiguration(String filename) {
-        var appConfig = loadFromYaml(filename, SampleAppConfig.class);
+    private static TlsContextConfiguration loadTlsContextConfigurationSnakeYaml(String filename) {
+        var appConfig = YamlTestHelper.loadFromYamlWithSnakeYaml(filename, SampleAppConfig.class);
+        return appConfig.getTlsConfig();
+    }
+
+    private static TlsContextConfiguration loadTlsContextConfigurationDropwizard(String filename) {
+        var appConfig = YamlTestHelper.loadFromYamlWithDropwizard(filename, SampleAppConfig.class);
+        return appConfig.getTlsConfig();
+    }
+
+    private static TlsContextConfiguration loadTlsContextConfigurationJackson(String filename) {
+        var appConfig = YamlTestHelper.loadFromYamlWithJackson(filename, SampleAppConfig.class);
         return appConfig.getTlsConfig();
     }
 }
