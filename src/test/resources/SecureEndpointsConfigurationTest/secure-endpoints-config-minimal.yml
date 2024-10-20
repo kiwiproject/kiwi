@@ -1,0 +1,28 @@
+secureEndpoints:
+  keyStorePath: /path/to/keystore.jks
+  keyStorePassword: ksPassWd
+  trustStorePath: /path/to/truststore.jks
+  trustStorePassword: tsPass100
+  endpoints:
+    - tag: getUsers
+      scheme: https
+      domain: user.everythingstore.com
+      port: 5678
+      path: /users
+    - tag: getOrders
+      scheme: https
+      domain: order.everythingstore.com
+      port: 7890
+      path: /orders
+    - tag: paymentGatewayValidate
+      scheme: https
+      domain: pay.pal.com
+      path: /validate
+      urlRewriteConfiguration:
+        pathPrefix: /pay-proxy
+    - tag: paymentGatewayCharge
+      scheme: https
+      domain: pay.pal.com
+      path: /charge
+      urlRewriteConfiguration:
+        pathPrefix: /pay-proxy

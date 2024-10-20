@@ -14,9 +14,12 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.kiwiproject.security.KeyStoreType;
 import org.kiwiproject.util.YamlTestHelper;
 
+import java.util.List;
 import java.util.stream.IntStream;
 
 @DisplayName("SecureEndpointsConfiguration")
@@ -31,11 +34,9 @@ class SecureEndpointsConfigurationTest {
     @Nested
     class FromYaml {
 
-        @Test
-        void shouldDeserializeWithEndpoints() {
-            var filename = "SecureEndpointsConfigurationTest/secure-endpoints-config.yml";
-            var secureEndpoints = loadFromYaml(filename);
-
+        @ParameterizedTest
+        @MethodSource("org.kiwiproject.config.SecureEndpointsConfigurationTest#configs")
+        void shouldDeserializeWithEndpoints(SecureEndpointsConfiguration secureEndpoints) {
             assertThat(secureEndpoints.getKeyStorePath()).isEqualTo("/path/to/keystore.pkcs12");
             assertThat(secureEndpoints.getKeyStorePassword()).isEqualTo("ksPassWd");
             assertThat(secureEndpoints.getKeyStoreType()).isEqualTo("PKCS12");
@@ -54,17 +55,31 @@ class SecureEndpointsConfigurationTest {
                             tuple("paymentGatewayCharge", "https://pay.pal.com/pay-proxy/charge"));
         }
 
-        @Test
-        void shouldDeserializeWithNoEndpoints() {
-            var filename = "SecureEndpointsConfigurationTest/secure-endpoints-config-no-endpoints.yml";
-            var secureEndpoints = loadFromYaml(filename);
+        @ParameterizedTest
+        @MethodSource("org.kiwiproject.config.SecureEndpointsConfigurationTest#minimalConfigs")
+        void shouldDeserializeWithMinimalConfigAndEndpoints(SecureEndpointsConfiguration secureEndpoints) {
+            assertThat(secureEndpoints.getKeyStorePath()).isEqualTo("/path/to/keystore.jks");
+            assertThat(secureEndpoints.getKeyStorePassword()).isEqualTo("ksPassWd");
+            assertThat(secureEndpoints.getKeyStoreType()).isEqualTo("JKS");
+            assertThat(secureEndpoints.getTrustStorePath()).isEqualTo("/path/to/truststore.jks");
+            assertThat(secureEndpoints.getTrustStorePassword()).isEqualTo("tsPass100");
+            assertThat(secureEndpoints.getTrustStoreType()).isEqualTo("JKS");
+            assertThat(secureEndpoints.getProtocol()).isNull();
+            assertThat(secureEndpoints.isVerifyHostname()).isTrue();
 
-            assertThat(secureEndpoints.getEndpoints()).isEmpty();
+            assertThat(secureEndpoints.getEndpoints())
+                    .extracting("tag", "URI")
+                    .containsExactly(
+                            tuple("getUsers", "https://user.everythingstore.com:5678/users"),
+                            tuple("getOrders", "https://order.everythingstore.com:7890/orders"),
+                            tuple("paymentGatewayValidate", "https://pay.pal.com/pay-proxy/validate"),
+                            tuple("paymentGatewayCharge", "https://pay.pal.com/pay-proxy/charge"));
         }
 
-        private SecureEndpointsConfiguration loadFromYaml(String filename) {
-            var appConfig = YamlTestHelper.loadFromYaml(filename, SampleAppConfig.class);
-            return appConfig.getSecureEndpoints();
+        @ParameterizedTest
+        @MethodSource("org.kiwiproject.config.SecureEndpointsConfigurationTest#configsWithoutEndpoints")
+        void shouldDeserializeWithNoEndpoints(SecureEndpointsConfiguration secureEndpoints) {
+            assertThat(secureEndpoints.getEndpoints()).isEmpty();
         }
     }
 
@@ -73,6 +88,48 @@ class SecureEndpointsConfigurationTest {
     @Setter
     public static class SampleAppConfig {
         private SecureEndpointsConfiguration secureEndpoints;
+    }
+
+    static List<SecureEndpointsConfiguration> minimalConfigs() {
+        var filename = "SecureEndpointsConfigurationTest/secure-endpoints-config-minimal.yml";
+        return List.of(
+                loadFromYamlSnakeYaml(filename),
+                loadFromYamlDropwizard(filename),
+                loadFromYamlJackson(filename)
+        );
+    }
+
+    static List<SecureEndpointsConfiguration> configs() {
+        var filename = "SecureEndpointsConfigurationTest/secure-endpoints-config.yml";
+        return List.of(
+                loadFromYamlSnakeYaml(filename),
+                loadFromYamlDropwizard(filename),
+                loadFromYamlJackson(filename)
+        );
+    }
+
+    static List<SecureEndpointsConfiguration> configsWithoutEndpoints() {
+        var filename = "SecureEndpointsConfigurationTest/secure-endpoints-config-no-endpoints.yml";
+        return List.of(
+                loadFromYamlSnakeYaml(filename),
+                loadFromYamlDropwizard(filename),
+                loadFromYamlJackson(filename)
+        );
+    }
+
+    private static SecureEndpointsConfiguration loadFromYamlSnakeYaml(String filename) {
+        var appConfig = YamlTestHelper.loadFromYamlWithSnakeYaml(filename, SampleAppConfig.class);
+        return appConfig.getSecureEndpoints();
+    }
+
+    private static SecureEndpointsConfiguration loadFromYamlDropwizard(String filename) {
+        var appConfig = YamlTestHelper.loadFromYamlWithDropwizard(filename, SampleAppConfig.class);
+        return appConfig.getSecureEndpoints();
+    }
+
+    private static SecureEndpointsConfiguration loadFromYamlJackson(String filename) {
+        var appConfig = YamlTestHelper.loadFromYamlWithJackson(filename, SampleAppConfig.class);
+        return appConfig.getSecureEndpoints();
     }
 
     @Nested
