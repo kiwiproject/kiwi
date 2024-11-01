@@ -828,7 +828,7 @@ public class KiwiResponses {
     }
 
     /**
-     * Given a {@link Response} Supplier, perform an action tha returns a result using one of the given functions.
+     * Given a {@link Response} Supplier, perform an action that returns a result using one of the given functions.
      * <p>
      * Ensures the response is closed after performing the action.
      *
@@ -855,7 +855,7 @@ public class KiwiResponses {
     }
 
     /**
-     * Given a {@link Response}, perform an action tha returns a result using the given function.
+     * Given a {@link Response}, perform an action that returns a result using the given function.
      * <p>
      * Ensures the response is closed after performing the action.
      *
