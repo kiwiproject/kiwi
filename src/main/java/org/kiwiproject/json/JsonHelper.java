@@ -57,7 +57,7 @@ import java.util.stream.Stream;
  * A bunch of utilities to make it easier to work with JSON.
  * <p>
  * One specific note on methods that accept paths. The syntax used to indicate array paths consists of the
- * array property name, followed by a period, followed by the array index in square brackets. For example, if
+ * array property name, followed by a period, followed by the array index in square brackets. For example,
  * to find the first value in an array property {@code luckyNumbers}, the path is {@code luckyNumbers.[0]}.
  * Similarly, to find the 13th lucky number the path is {@code luckyNumbers.[12]}.
  * <p>
