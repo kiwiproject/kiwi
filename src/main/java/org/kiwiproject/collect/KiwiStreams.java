@@ -19,7 +19,7 @@ public final class KiwiStreams {
     /**
      * Find the first object having the given {@code typeToFind} in a stream of objects.
      *
-     * @param stream        the stream of objects of some (unknown) type
+     * @param stream        the stream of objects containing some (unknown) type
      * @param typeToFind    the class of the object to find
      * @param <T>           the type token of the type we want to find
      * @return an Optional containing the first object of the given type, or empty
@@ -32,7 +32,7 @@ public final class KiwiStreams {
      * Find the first object having the given {@code typeToFind} and matching the supplied
      * predicate in a stream of objects.
      *
-     * @param stream        the stream of objects of some (unknown) type
+     * @param stream        the stream of objects containing some (unknown) type
      * @param typeToFind    the class of the object to find
      * @param predicate     the condition that must be satisfied for a match to occur
      * @param <T>           the type token of the type we want to find

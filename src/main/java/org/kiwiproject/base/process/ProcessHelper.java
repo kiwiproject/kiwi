@@ -257,7 +257,7 @@ public class ProcessHelper {
     }
 
     /**
-     * Equivalent to a {@code kill -9} (i.e. a {@code SIGKILL}).
+     * Equivalent to a {@code kill -9} (i.e., a {@code SIGKILL}).
      *
      * @param process the process to kill forcibly
      * @param timeout the time to wait for the process to be forcibly killed

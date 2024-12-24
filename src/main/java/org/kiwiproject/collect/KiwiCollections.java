@@ -124,7 +124,7 @@ public class KiwiCollections {
      * @param <T>                 the type of elements in the collection
      * @return the last element of the collection
      * @throws IllegalArgumentException if sequencedCollection is null, empty, or not a sequenced collection
-     * @implNote If {@code sequencedCollection} is a {@link LinkedHashSet}, there is no direct way to obtain the
+     * @implNote If {@code sequencedCollection} is a {@link LinkedHashSet}, there is no direct way to get the
      * last element. This implementation creates a {@link java.util.stream.Stream Stream} over the elements, skipping
      * until the last element.
      * @see #isSequenced(Collection)

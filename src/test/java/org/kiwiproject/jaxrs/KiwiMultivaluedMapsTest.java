@@ -32,9 +32,9 @@ class KiwiMultivaluedMapsTest {
 
         /**
          * @implNote As of AssertJ 3.20.0, the implementation of containsOnly was changed significantly in PR
-         * <a href="https://github.com/assertj/assertj-core/pull/2167/">2167</a> and as a result broke this test when
+         * <a href="https://github.com/assertj/assertj-core/pull/2167/">2167</a> and as a result, broke this test when
          * it used containsOnly to verify the map entries. Long story short, it is caused by the new AssertJ
-         * implementation cloning the MultivaluedMap in a way that it flattens it to a single-valued Map, and the
+         * implementation cloning the MultivaluedMap in a way that it flattens it to a single-valued Map. And, the
          * values (which are List) are wrapped inside another List, so the comparison completely fails.
          */
         @Test
@@ -69,9 +69,9 @@ class KiwiMultivaluedMapsTest {
 
         /**
          * @implNote As of AssertJ 3.20.0, the implementation of containsOnly was changed significantly in PR
-         * <a href="https://github.com/assertj/assertj-core/pull/2167/">2167</a> and as a result broke this test when
+         * <a href="https://github.com/assertj/assertj-core/pull/2167/">2167</a> and as a result, broke this test when
          * it used containsOnly to verify the map entries. Long story short, it is caused by the new AssertJ
-         * implementation cloning the MultivaluedMap in a way that it flattens it to a single-valued Map, and the
+         * implementation cloning the MultivaluedMap in a way that it flattens it to a single-valued Map. And, the
          * values (which are List) are wrapped inside another List, so the comparison completely fails.
          */
         @Test

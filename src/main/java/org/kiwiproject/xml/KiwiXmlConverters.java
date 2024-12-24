@@ -35,7 +35,7 @@ public class KiwiXmlConverters {
     }
 
     /**
-     * Create a new {@link XMLGregorianCalendar} in the default time zone that is initialized to the current date/time.
+     * Create a new {@link XMLGregorianCalendar} in the default time zone initialized to the current date/time.
      *
      * @return a new instance representing the current date/time
      */
@@ -44,7 +44,7 @@ public class KiwiXmlConverters {
     }
 
     /**
-     * Create a new {@link XMLGregorianCalendar} in UTC that is initialized to the current date/time.
+     * Create a new {@link XMLGregorianCalendar} in UTC initialized to the current date/time.
      *
      * @return a new instance representing the current date/time
      */
@@ -53,7 +53,7 @@ public class KiwiXmlConverters {
     }
 
     /**
-     * Create a new {@link XMLGregorianCalendar} in the given time zone that is initialized to the current date/time.
+     * Create a new {@link XMLGregorianCalendar} in the given time zone initialized to the current date/time.
      *
      * @param zoneId the time zone for the new GregorianCalendar instance
      * @return a new instance representing the current date/time

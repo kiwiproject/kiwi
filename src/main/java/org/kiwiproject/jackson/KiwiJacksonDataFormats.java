@@ -196,8 +196,8 @@ public class KiwiJacksonDataFormats {
      * Detect the data format of given text using given {@link Charset} and {@link DataFormatDetector}.
      * <p>
      * This method is an "escape hatch"; it allows detection of formats not supported in {@link JacksonDataFormat}
-     * since it accepts a {@link DataFormatDetector} and it returns a String. Thus, since the caller supplies its own
-     * custom {@link DataFormatDetector}, the formats that are supported are dictated entirely by that caller. And
+     * since it accepts a {@link DataFormatDetector} and it returns a String. Since the caller supplies its own
+     * custom {@link DataFormatDetector}, that caller dictates the formats that are supported. And
      * because it returns a String, it is not limited to the formats defined in the {@link JacksonDataFormat} enum.
      *
      * @param text     the String value to check

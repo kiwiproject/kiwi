@@ -363,7 +363,7 @@ public class KiwiLists {
     }
 
     /**
-     * Returns a view of the "first N" elements of the input list.
+     * Returns a view of the "first N" elements from the input list.
      * <p>
      * If the given number is larger than the size of the list, the entire list is returned, rather than throw
      * an exception. In this case, the input list is returned directly, i.e. {@code return items}.
@@ -386,7 +386,7 @@ public class KiwiLists {
     }
 
     /**
-     * Returns a view of the "last N" elements of the input list.
+     * Returns a view of the "last N" elements from the input list.
      * <p>
      * If the given number is larger than the size of the list, the entire list is returned, rather than throw
      * an exception. In this case, the input list is returned directly, i.e. {@code return items}.

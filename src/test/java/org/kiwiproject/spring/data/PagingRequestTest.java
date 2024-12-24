@@ -39,7 +39,7 @@ class PagingRequestTest {
      * @implNote Do NOT change {@code bootstrapLogging} back to true or remove it. Otherwise, ResourceExtension
      * basically resets all log levels to WARN, which then actually screws up other tests in addition to the fact
      * that you only see WARN-level logging from that point forward. Specifically, the LazyLogParameterSupplierTest
-     * and JSchSlf4jLoggerTest tests break in weird and totally unexpected ways with no clear reason.
+     * and JSchSlf4jLoggerTest tests break in odd and totally unexpected ways with no clear reason.
      */
     private static final ResourceExtension RESOURCES = ResourceExtension.builder()
             .bootstrapLogging(false)

@@ -295,7 +295,7 @@ public class WebTargetHelper implements WebTarget {
         // more difficult to understand than a simple loop with a mutable variable that we keep replacing. In addition,
         // the "reduce" version cannot be strictly correct, since we cannot define a combiner function which is "an
         // associative, non-interfering, stateless function for combining" two WebTargetHelper instances. Instead, we
-        // would require it is only used on a sequential (non-parallel) stream. Regardless, the implementation is less
+        // would require it be only used on a sequential (non-parallel) stream. Regardless, the implementation is less
         // clear than just a loop with a mutable variable, which is why this is not using the streams API. While the
         // lovely StreamEx library does have a foldLeft where the seed and accumulator have differing types, it is not
         // worth adding a hard dependency on that library for one function.

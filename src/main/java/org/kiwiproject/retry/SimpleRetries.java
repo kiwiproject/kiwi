@@ -27,8 +27,8 @@ import java.util.stream.IntStream;
  * another attempt will be made unless the maximum number of attempts has been reached.
  * <p>
  * While you can use this directly, consider using {@link SimpleRetryer}, which is more flexible because (1) you
- * can easily mock it in tests, and (2) it accepts common configuration options and makes the method calls
- * simpler because there are many fewer arguments.
+ * can easily mock it in tests, and (2) it accepts common configuration options and simplifies the method calls
+ * because there are many fewer arguments.
  */
 @SuppressWarnings("WeakerAccess")
 @UtilityClass
@@ -40,7 +40,7 @@ public class SimpleRetries {
     private static final String ATTEMPT_MSG_TEMPLATE = "Attempt {} of {} to obtain a(n) {} from supplier";
 
     /**
-     * Try to get an object, making up to {@code maxAttempts} attempts. Logs first attempt and retries at TRACE level.
+     * Try to get an object, making up to {@code maxAttempts} attempts. Logs the first attempt and retries at TRACE level.
      *
      * @param maxAttempts    the maximum number of attempts to make before giving up
      * @param retryDelay     constant delay time between attempts
@@ -56,7 +56,7 @@ public class SimpleRetries {
     }
 
     /**
-     * Try to get an object, making up to {@code maxAttempts} attempts. Logs first attempt and retries at TRACE level
+     * Try to get an object, making up to {@code maxAttempts} attempts. Logs the first attempt and retries at TRACE level
      * using "object" as the description.
      *
      * @param maxAttempts    the maximum number of attempts to make before giving up
@@ -75,7 +75,7 @@ public class SimpleRetries {
     }
 
     /**
-     * Try to get an object, making up to {@code maxAttempts} attempts. Logs first attempt and retries at TRACE level
+     * Try to get an object, making up to {@code maxAttempts} attempts. Logs the first attempt and retries at TRACE level
      * using the given {@code type} as the description.
      *
      * @param maxAttempts    the maximum number of attempts to make before giving up
@@ -94,7 +94,7 @@ public class SimpleRetries {
     }
 
     /**
-     * Try to get an object, making up to {@code maxAttempts} attempts. Logs first attempt and retries at TRACE
+     * Try to get an object, making up to {@code maxAttempts} attempts. Logs the first attempt and retries at TRACE
      * level, using the given {@code type} as the description.
      *
      * @param maxAttempts    the maximum number of attempts to make before giving up
@@ -178,7 +178,7 @@ public class SimpleRetries {
     }
 
     /**
-     * Try to get an object, making up to {@code maxAttempts} attempts. Logs first attempt and retries at TRACE level
+     * Try to get an object, making up to {@code maxAttempts} attempts. Logs the first attempt and retries at TRACE level
      * using "object" as the description.
      *
      * @param maxAttempts    the maximum number of attempts to make before giving up
@@ -195,7 +195,7 @@ public class SimpleRetries {
     }
 
     /**
-     * Try to get an object, making up to {@code maxAttempts} attempts. Logs first attempt and retries at TRACE level
+     * Try to get an object, making up to {@code maxAttempts} attempts. Logs the first attempt and retries at TRACE level
      * using the given {@code type} as the description.
      *
      * @param maxAttempts    the maximum number of attempts to make before giving up
@@ -214,7 +214,7 @@ public class SimpleRetries {
     }
 
     /**
-     * Try to get an object, making up to {@code maxAttempts} attempts. Logs first attempt and retries at TRACE level
+     * Try to get an object, making up to {@code maxAttempts} attempts. Logs the first attempt and retries at TRACE level
      * using the given {@code type} as the description.
      *
      * @param maxAttempts    the maximum number of attempts to make before giving up
@@ -235,7 +235,7 @@ public class SimpleRetries {
     }
 
     /**
-     * Try to get an object, making up to {@code maxAttempts} attempts. Logs first attempt and retries at TRACE level
+     * Try to get an object, making up to {@code maxAttempts} attempts. Logs the first attempt and retries at TRACE level
      * using the given {@code type} as the description.
      *
      * @param maxAttempts    the maximum number of attempts to make before giving up

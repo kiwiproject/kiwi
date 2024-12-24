@@ -253,7 +253,7 @@ public final class KiwiThrowables {
 
     /**
      * Simply wraps the Apache Commons' {@link ExceptionUtils#getStackTrace(Throwable)} method. Mainly here to make it
-     * easy to obtain a stack trace while staying in the same {@link KiwiThrowables} API.
+     * easy to get a stack trace while staying in the same {@link KiwiThrowables} API.
      *
      * @param throwable the {@link Throwable} instance
      * @return the stack trace of the {@code throwable}, or {@code null}
@@ -267,7 +267,7 @@ public final class KiwiThrowables {
 
     /**
      * Simply wraps the Apache Commons' {@link ExceptionUtils#getStackTrace(Throwable)} method. Mainly here to make it
-     * easy to obtain a stack trace while staying in the same {@link KiwiThrowables} API.
+     * easy to get a stack trace while staying in the same {@link KiwiThrowables} API.
      *
      * @param throwable the {@link Throwable} instance
      * @return the stack trace of the {@code throwable}, or {@code null}

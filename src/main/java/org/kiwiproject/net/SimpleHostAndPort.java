@@ -11,7 +11,7 @@ import lombok.Getter;
 
 /**
  * Inspired by Guava's {@link com.google.common.net.HostAndPort} but <strong>much</strong> simpler in implementation.
- * (Just go look at the code in {@link com.google.common.net.HostAndPort#fromString(String)} if you don't believe me.)
+ * (go look at the code in {@link com.google.common.net.HostAndPort#fromString(String)} if you don't believe me.)
  * Because it is much simpler, it also only handles a very specific host/port format, which is {@code host:port}.
  * <p>
  * It also does not attempt to validate anything about the host or port, e.g., it will happily accept a negative port

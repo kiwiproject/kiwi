@@ -163,7 +163,7 @@ public interface KiwiEnvironment {
 
     /**
      * Returns the process ID of the currently executing JVM. This method does not perform any error checking. Use
-     * {@link #tryGetCurrentPid()} for a version that returns an empty optional if it is unable to obtain the pid
+     * {@link #tryGetCurrentPid()} for a version that returns an empty optional if it is unable to get the pid
      * for any reason.
      *
      * @return the pid of the current process
@@ -173,7 +173,7 @@ public interface KiwiEnvironment {
     long currentPid();
 
     /**
-     * Tries to obtain the process ID of the currently executing JVM. If any problem occurs, it is caught and an
+     * Tries to get the process ID of the currently executing JVM. If any problem occurs, it is caught and an
      * empty optional is returned.
      *
      * @return an optional containing the pid of the current process, or empty if <em>any</em> problem occurred

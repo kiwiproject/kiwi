@@ -75,7 +75,7 @@ public class Processes {
      * CentOS/Red Hat 6 and 7. Specifically, some systems require {@code -fl} to match against and print out the full
      * command line with {@code pgrep}. Other implementations require {@code -fa} (or {@code -f --list-full}).
      * <p>
-     * See for example <a href="http://man7.org/linux/man-pages/man1/pgrep.1.html">Linux pgrep</a> and
+     * See, for example, <a href="http://man7.org/linux/man-pages/man1/pgrep.1.html">Linux pgrep</a> and
      * <a href="https://www.freebsd.org/cgi/man.cgi?query=pgrep&sektion=1">BSD pgrep</a> for more information.
      */
     private static final String PGREP_FULL_COMMAND_MATCH_AND_PRINT_FLAGS;
@@ -205,7 +205,7 @@ public class Processes {
      * to obtain Process pids, but since JDK 9 offers the {@link Process#pid()} method, that is no longer necessary.
      * This method is now a simple delegation to {@link Process#pid()} and you should now prefer that method.</em>
      *
-     * @param process the process to obtain the process id (pid) from
+     * @param process the process to get the process id (pid) from
      * @return the process id of {@code process}
      * @throws UnsupportedOperationException if the Process implementation does not support getting the pid
      * @see Process#pid()
@@ -219,7 +219,7 @@ public class Processes {
      * Get a process id, or "pid", if it is available from the {@link Process} implementation, wrapped inside
      * an OptionalLong. If the pid is not available for whatever reason, return an empty OptionalLong.
      *
-     * @param process the process to obtain the process id (pid) from
+     * @param process the process to get the process id (pid) from
      * @return an OptionalLong containing the process if of {@code process} or an empty OptionalLong if the
      * {@link Process} implementation does not support getting the pid for whatever reason.
      * @implNote the {@link Process#pid()} method says it can throw {@link UnsupportedOperationException} if the
@@ -617,7 +617,7 @@ public class Processes {
     }
 
     /**
-     * Equivalent to a {@code kill -9} (i.e. a {@code SIGKILL}).
+     * Equivalent to a {@code kill -9} (i.e., a {@code SIGKILL}).
      *
      * @param process the process to kill forcibly
      * @param timeout the time to wait for the process to be forcibly killed

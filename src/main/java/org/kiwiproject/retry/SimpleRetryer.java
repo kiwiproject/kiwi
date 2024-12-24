@@ -26,7 +26,7 @@ import java.util.function.Supplier;
  *     <tr>
  *          <td>environment</td>
  *          <td>a {@link DefaultEnvironment} instance</td>
- *          <td>mainly useful for testing, e.g. to supply a mock</td>
+ *          <td>mainly useful for testing, e.g., to supply a mock</td>
  *     </tr>
  *     <tr>
  *         <td>maxAttempts</td>

@@ -548,7 +548,7 @@ public class KiwiUrls {
      * @param replacementDomain  the domain to replace if found
      * @return the updated comma-delimited URLs if a domain is found, otherwise {@code commaDelimitedUrls} unchanged
      * @implNote This method assumes that the domains are the same for all URLs in the {@code commaDelimitedUrls}; it only
-     * checks the first URL to obtain the domain.
+     * checks the first URL to get the domain.
      */
     public static String replaceDomainsIn(String commaDelimitedUrls, String replacementDomain) {
         var urls = COMMA_SPLITTER.splitToList(commaDelimitedUrls);
@@ -619,7 +619,7 @@ public class KiwiUrls {
      * are the parameter names and values are the parameter values.
      * <p>
      * Note specifically that this method does <strong>not</strong> decode the query string parameters. It splits on
-     * literal &amp; characters to obtain the key/value pairs and then on the literal {@code =} to get the name and
+     * literal &amp; characters to get the key/value pairs, and then on the literal {@code =} to get the name and
      * value of each pair. If a parameter doesn't contain any value, its value is set to an empty string. For example,
      * in the query string {@code ?sorted&sortProp=}, both {@code sorted} and {@code sortProp} will have an empty
      * string as their value in the returned map.

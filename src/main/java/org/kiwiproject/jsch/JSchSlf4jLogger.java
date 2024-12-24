@@ -9,7 +9,7 @@ import org.slf4j.LoggerFactory;
  * Some implementation notes:
  * <ul>
  * <li>JSch's INFO level logging is very verbose, so we are treating it like DEBUG level</li>
- * <li>Jsch has both ERROR and FATAL levels, but SLF4J only has ERROR, so we treat both as ERROR in SLF4J</li>
+ * <li>Jsch has both ERROR and FATAL levels, but SLF4J only has ERROR, so we treat both of them as ERROR in SLF4J</li>
  * </ul>
  */
 public class JSchSlf4jLogger implements com.jcraft.jsch.Logger {

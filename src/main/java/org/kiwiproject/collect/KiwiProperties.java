@@ -94,7 +94,7 @@ public class KiwiProperties {
 
     /**
      * Creates a <i>mutable</i> {@link Properties} instance from each key/value pair list inside the outer list.
-     * The {@code items} argument must contain keys and values in teh form:
+     * The {@code items} argument must contain keys and values in the form:
      * <p>
      * <i>[ [key-1, value-1], [key-2, value-2], ... , [key-N, value-N]</i>
      * </p>

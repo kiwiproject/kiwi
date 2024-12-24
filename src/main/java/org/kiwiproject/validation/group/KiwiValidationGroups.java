@@ -16,11 +16,11 @@ import java.util.Set;
  * utility imposes. Specifically, it assumes you only need three validation groups:
  * <ol>
  *     <li>
- *         a group that should be included only when validating "new" objects (e.g. objects that have been
+ *         a group that should be included only when validating "new" objects (e.g., objects that have been
  *         instantiated but not yet persisted to some data store)
  *     </li>
  *     <li>
- *         a group that should be included only when validating "existing" objects (e.g. an object was retrieved
+ *         a group that should be included only when validating "existing" objects (e.g., an object was retrieved
  *         from an external data source and has been changed with new information
  *     </li>
  *     <li>
@@ -52,7 +52,7 @@ import java.util.Set;
  * // validate an existing object
  * var violations = validator.validate(anExistingObject, existingObjectGroups());
  * </pre>
- * For even more convenience, you can just use the various {@code validateXxx} methods, assuming as mentioned earlier
+ * For even more convenience, you can use the various {@code validateXxx} methods, assuming as mentioned earlier
  * that you have annotated your classes with Jakarta Beans Validator annotations. A typical example is using
  * annotations such as {@link jakarta.validation.constraints.NotNull} and {@link jakarta.validation.constraints.Null}
  * and setting {@link NewObject} and {@link ExistingObject} as the value of the {@code groups} property, as shown
@@ -73,7 +73,7 @@ import java.util.Set;
  * To reiterate, this utility is opinionated and therefore limited in that it only knows about {@link NewObject} and
  * {@link ExistingObject}, and expects them to always be validated along with the {@link Default} group. We have
  * found this to be useful in enough situations to include it in kiwi. But if you need more flexibility, don't
- * use this and instead just pass specific validation groups manually to the validate method in {@link Validator}.
+ * use this and instead pass specific validation groups manually to the validate method in {@link Validator}.
  */
 @UtilityClass
 public class KiwiValidationGroups {

@@ -363,7 +363,7 @@ public final class KiwiStrings {
      * and the resulting message will thus be very difficult to understand, as there will be more arguments than
      * {@code %s} placeholders.
      * <p>
-     * Generally you should pick one style and be consistent throughout your entire application. Since originally this
+     * Generally, you should pick one style and be consistent throughout your entire application. Since originally this
      * method only supported the Guava {@code %s}, this support was retained for obvious backward-compatibility reasons,
      * and the SLF4J {@code {}} style as added because we kept coming across instances where people are used to SLF4J
      * replacement parameter style and used that, thus making the message not interpolate correctly (though thanks to

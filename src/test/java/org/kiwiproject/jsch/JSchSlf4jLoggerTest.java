@@ -23,10 +23,10 @@ import java.nio.charset.StandardCharsets;
 
 /**
  * <em>IMPORTANT:</em>
- * In order to setup SLF4J loggers at the appropriate level, the {@code src/test/resources/logback-test.xml} contains five
- * loggers for the five different SLF4J log levels (TRACE, DEBUG, INFO, WARN, ERROR).
+ * In order to set up SLF4J loggers at the appropriate level, the {@code src/test/resources/logback-test.xml} contains
+ * five loggers for the five different SLF4J log levels (TRACE, DEBUG, INFO, WARN, ERROR).
  * <p>
- * The name format is: {@code jsch-logger-<level>} -- for example the DEBUG level logger is named
+ * The name format is: {@code jsch-logger-<level>} -- for example, the DEBUG level logger is named
  * {@code jsch-logger-DEBUG}. These loggers MUST exist for this test to work properly.
  */
 @DisplayName("JSchSlf4jLogger")

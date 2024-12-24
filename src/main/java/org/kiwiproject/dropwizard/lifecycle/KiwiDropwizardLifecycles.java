@@ -17,7 +17,7 @@ public class KiwiDropwizardLifecycles {
      * <p>
      * Useful when you have some external object that has start and stop methods, but you don't want to clutter your
      * code by creating an anonymous inner class just to specify the start and stop actions. For example, if you have
-     * an ActiveMQ {@code PooledConnectionFactory} (which has {@code start} and {@code stop} methods) you can simply
+     * an ActiveMQ {@code PooledConnectionFactory} (which has {@code start} and {@code stop} methods) you can
      * call this method:
      * <p>
      * {@code KiwiDropwizardLifecycles.manage(lifecycle, () -> factory.start(), () -> factory.stop());}

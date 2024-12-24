@@ -66,7 +66,7 @@ import java.util.function.Predicate;
  *          <td>retryIncrementTimeAmount</td>
  *          <td>200</td>
  *          <td>
- *              The subsequent retry increment amount for the default incrementing wait strategy.
+ *              The retry increment amount for the default incrementing wait strategy.
  *              This value will be ignored if an explicit {@link WaitStrategy} is defined.
  *          </td>
  *     </tr>
@@ -74,7 +74,7 @@ import java.util.function.Predicate;
  *          <td>retryIncrementTimeUnit</td>
  *          <td>{@link TimeUnit#MILLISECONDS}</td>
  *          <td>
- *              The subsequent retry increment {@link TimeUnit} for the default incrementing wait strategy.
+ *              The retry increment {@link TimeUnit} for the default incrementing wait strategy.
  *              This value will be ignored if an explicit {@link WaitStrategy} is defined.
  *          </td>
  *     </tr>
@@ -94,7 +94,7 @@ import java.util.function.Predicate;
  *     <tr>
  *          <td>exceptionLogLevel</td>
  *          <td>{@link Level#WARN}</td>
- *          <td>This log level controls the "sad path" messages (i.e. exceptions) that are logged by this retryer.</td>
+ *          <td>This log level controls the "sad path" messages (i.e., exceptions) that are logged by this retryer.</td>
  *     </tr>
  *     <tr>
  *          <td>retryOnAllExceptions</td>
@@ -142,12 +142,12 @@ import java.util.function.Predicate;
  * <p>
  * <strong>Background Information:</strong>
  * <p>
- * Originally this class was created to wrap the (now defunct) <a href="https://github.com/rholder/guava-retrying">guava-retrying</a>
+ * Originally, this class was created to wrap the (now defunct) <a href="https://github.com/rholder/guava-retrying">guava-retrying</a>
  * library and add various defaults and conveniences, as well as an easier way to handle RetryException and its causes.
  * The guava-retrying library stopped being maintained circa 2016, and was forked into
  * <a href="https://github.com/rhuffman/re-retrying">re-retrying</a>, which then stopped active development circa 2018.
- * So, in late 2020 we forked re-retrying as <a href="https://github.com/kiwiproject/retrying-again">retrying-again</a> in
- * order to keep it up to date at a minimum, and hopefully add some additional value where it makes sense. It is possible
+ * So, in late 2020 we forked re-retrying as <a href="https://github.com/kiwiproject/retrying-again">retrying-again</a>
+ * to keep it up to date at a minimum, and hopefully add some additional value where it makes sense. It is possible
  * we might simply move some of this functionality into retrying-again and then deprecate and remove this functionality from
  * kiwi. That would also allow us to use kiwi from retrying-again, which we currently cannot do without introducing a
  * circular dependency.

@@ -35,7 +35,7 @@ import java.util.function.Predicate;
  * they catch the various exceptions that can be thrown by the JDK methods and wrap them with a single
  * {@link RuntimeReflectionException}.
  * <p>
- * <strong>WARNING:</strong> Note that some of the methods bypass the Java accessibility mechanism and/or change the
+ * <strong>WARNING:</strong> Note that some methods bypass the Java accessibility mechanism and/or change the
  * visibility of a method or field. This makes Sonar very unhappy. See Sonar rule
  * <a href="https://rules.sonarsource.com/java/RSPEC-3011">java:S3011</a> for more details, as well as rule
  * <a href="https://wiki.sei.cmu.edu/confluence/x/_jZGBQ">SEC05-J</a> from the SEI CERT Oracle Secure Coding Standard.

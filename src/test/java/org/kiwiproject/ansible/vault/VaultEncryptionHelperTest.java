@@ -479,7 +479,7 @@ class VaultEncryptionHelperTest {
 
             var encryptedFilePath = Path.of(folder.toString(), VARIABLE_NAME + ".txt");
 
-            // Verify the command that was launched. This is more difficult here due to
+            // Verify the command that was launched. This is more challenging here due to
             // the way we need to write the encrypt_string content to a temporary file
             // which has a random component in its name to avoid the possibility of file name
             // collisions.
@@ -521,7 +521,7 @@ class VaultEncryptionHelperTest {
                     .isExactlyInstanceOf(VaultEncryptionException.class)
                     .hasMessage("ansible-vault returned non-zero exit code 1. Stderr: %s", errorOutput);
 
-            // Sanity check...
+            // Smoke test...
             verify(processHelper).launch(anyList());
         }
     }
@@ -564,7 +564,7 @@ class VaultEncryptionHelperTest {
     class WhichAnsibleVault {
 
         /**
-         * @implNote We can't assume ansible-vault will exist, so just verify that the result we get
+         * @implNote We can't assume ansible-vault will exist, so verify that the result we get
          * is the same as using {@link Processes#which(String)}.
          */
         @Test
@@ -578,7 +578,7 @@ class VaultEncryptionHelperTest {
     class WhichAnsibleVaultAsPath {
 
         /**
-         * @implNote We can't assume ansible-vault will exist, so just verify that the result we get
+         * @implNote We can't assume ansible-vault will exist, so verify that the result we get
          * is the same as using {@link Processes#whichAsPath(String)}
          */
         @Test
