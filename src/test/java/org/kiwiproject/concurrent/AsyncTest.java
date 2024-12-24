@@ -108,7 +108,7 @@ class AsyncTest {
 
             assertThat(future).isCompleted();
 
-            // sanity check that the count remains 1
+            // check that the count remains 1
             assertThat(task.getCurrentCount()).isOne();
         }
     }
