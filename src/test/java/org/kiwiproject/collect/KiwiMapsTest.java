@@ -29,6 +29,7 @@ import java.util.SortedMap;
 import java.util.TreeMap;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
+import java.util.function.Predicate;
 import java.util.function.Supplier;
 
 @DisplayName("KiwiMaps")
@@ -97,7 +98,7 @@ class KiwiMapsTest {
                 .isExactlyInstanceOf(LinkedHashMap.class)
                 .containsAllEntriesOf(newWordNumberMap());
         List<String> expectedKeys = Arrays.stream(items)
-                .filter(obj -> obj instanceof String)
+                .filter(isString())
                 .map(String.class::cast)
                 .toList();
         assertThat(linkedHashMap.keySet()).containsExactlyElementsOf(expectedKeys);
@@ -123,7 +124,7 @@ class KiwiMapsTest {
                 .isExactlyInstanceOf(TreeMap.class)
                 .containsAllEntriesOf(newWordNumberMap());
         List<String> expectedKeys = Arrays.stream(items)
-                .filter(obj -> obj instanceof String)
+                .filter(isString())
                 .map(String.class::cast)
                 .sorted()
                 .toList();
@@ -310,7 +311,7 @@ class KiwiMapsTest {
         Map<String, Integer> unmodifiableLinkedHashMap = KiwiMaps.newUnmodifiableLinkedHashMap(items);
         assertThat(unmodifiableLinkedHashMap).containsAllEntriesOf(newWordNumberMap());
         List<String> expectedKeys = Arrays.stream(items)
-                .filter(obj -> obj instanceof String)
+                .filter(isString())
                 .map(String.class::cast)
                 .toList();
         assertThat(unmodifiableLinkedHashMap.keySet()).containsExactlyElementsOf(expectedKeys);
@@ -339,7 +340,7 @@ class KiwiMapsTest {
         Map<String, Integer> unmodifiableTreeMap = KiwiMaps.newUnmodifiableTreeMap(items);
         assertThat(unmodifiableTreeMap).containsAllEntriesOf(newWordNumberMap());
         List<String> expectedKeys = Arrays.stream(items)
-                .filter(obj -> obj instanceof String)
+                .filter(isString())
                 .map(String.class::cast)
                 .sorted()
                 .toList();
@@ -348,6 +349,10 @@ class KiwiMapsTest {
         //noinspection DataFlowIssue
         assertThatThrownBy(() -> unmodifiableTreeMap.put("eight", 8))
                 .isInstanceOf(UnsupportedOperationException.class);
+    }
+
+    private static Predicate<Object> isString() {
+        return String.class::isInstance;
     }
 
     @Test
