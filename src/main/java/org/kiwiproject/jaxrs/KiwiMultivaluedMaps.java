@@ -84,7 +84,7 @@ public class KiwiMultivaluedMaps {
     public static Map<String, String> toSingleValuedParameterMap(MultivaluedMap<String, String> original) {
         checkArgumentNotNull(original, "original map cannot be null");
 
-        var singleValuedMap = Maps.<String, String>newHashMapWithExpectedSize(original.keySet().size());
+        var singleValuedMap = Maps.<String, String>newHashMapWithExpectedSize(original.size());
         for (var key : original.keySet()) {
             singleValuedMap.put(key, original.getFirst(key));
         }
