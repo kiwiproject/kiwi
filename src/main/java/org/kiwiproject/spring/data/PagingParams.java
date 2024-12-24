@@ -14,7 +14,7 @@ import org.springframework.data.domain.Sort;
  * then by first name ascending.
  * <p>
  * Note also that if there is only one sort, only the primary sort and direction should be set. If the primary
- * sort is not defined, but the secondary sort is defined, then the behavior is up to the implementation. e.g., it
+ * sort is not defined, but the secondary sort is defined, then the behavior is up to the implementation. E.g., it
  * may choose to ignore the secondary sort entirely, or it might treat the secondary sort as the primary one.
  * <p>
  * A page number and page size limit should always be specified. Sorting parameters are optional, but as mentioned

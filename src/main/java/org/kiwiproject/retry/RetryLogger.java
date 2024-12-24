@@ -33,7 +33,7 @@ class RetryLogger {
 
         checkArgument(currentAttempt > 0, "currentAttempt must be a positive integer");
 
-        // If this is the first attempt, just log the traffic at trace level regardless of the log level argument
+        // If this is the first attempt, log the traffic at trace level regardless of the log level argument
         if (currentAttempt == 1) {
             logger.trace(message, args);
             return;

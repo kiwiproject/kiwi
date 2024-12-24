@@ -15,7 +15,7 @@ import lombok.Setter;
  * As this is a configuration class generally intended to be populated from external configuration, it is mutable and
  * supports construction in a variety of ways - no argument constructor and setter methods, all-arguments
  * constructor, or a builder. Once constructed, it is intended to be read-only, though this cannot be enforced
- * and still have setter methods.
+ * and still have "setter" methods.
  */
 @Getter
 @Setter

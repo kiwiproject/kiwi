@@ -19,7 +19,7 @@ public class KiwiMultimapCollectors {
     /**
      * Given a stream of {@link Map.Entry} objects, collects to the {@link Multimap} specified in the
      * {@code supplier} argument. This lets you create any type of Multimap you want to collect into. Usually you
-     * will use a method reference as the supplier, e.g. {@code ArrayListMultimap:create}. You can easily get a
+     * will use a method reference as the supplier, e.g. {@code ArrayListMultimap:create}. You can get a
      * stream of Map.Entry objects by getting the map's {@link Map#entrySet()} and then calling stream on it, e.g.
      * {@code someMap.entrySet().stream()}.
      *

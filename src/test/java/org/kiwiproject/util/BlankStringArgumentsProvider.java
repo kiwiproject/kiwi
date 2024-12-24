@@ -57,11 +57,11 @@ public class BlankStringArgumentsProvider implements ArgumentsProvider {
             "\u2004", // THREE-PER-EM SPACE
             "\u2005", // FOUR-PER-EM SPACE
             "\u2006", // SIX-PER-EM SPACE
-            // U+2007 (FIGURE SPACE) is explicitly **NOT** considered whitespace per Character Javadocs
+            // U+2007 (FIGURE SPACE) is **NOT** considered whitespace per Character Javadocs
             "\u2008", // PUNCTUATION SPACE
             "\u2009", // THIN SPACE
             "\u200A", // HAIR SPACE
-            // U_202F (NARROW NO-BREAK SPACE) is explicitly **NOT** considered whitespace per Character Javadocs
+            // U_202F (NARROW NO-BREAK SPACE) is **NOT** considered whitespace per Character Javadocs
             "\u205F", // MEDIUM MATHEMATICAL SPACE
             "\u3000", // IDEOGRAPHIC SPACE
 

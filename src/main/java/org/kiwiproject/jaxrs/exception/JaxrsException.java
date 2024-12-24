@@ -203,7 +203,7 @@ public class JaxrsException extends RuntimeException {
     /**
      * Change the {@link ErrorMessage} objects contained in this exception.
      * <p>
-     * <strong>NOTE:</strong> If the given {@code errorMessages} is null or empty, it is ignored in order to
+     * <strong>NOTE:</strong> If the given {@code errorMessages} is null or empty, it is ignored to
      * prevent clearing out all errors.
      *
      * @param errorMessages the new {@link ErrorMessage}s to set

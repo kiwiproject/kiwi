@@ -13,8 +13,8 @@ import java.util.Map;
  * {@link JsonAnyGetter} and {@link JsonAnySetter} feature to get and set these "extra fields" in a property
  * named {@code extraFields}.
  * <p>
- * The general use case for this "extra fields" is when a service or application proxies data from a canonical source
- * where we don't want or need to know about every individual field, but where we still want to capture those fields,
+ * The general use case for this "extra fields" is when some service or application proxies data from a canonical source
+ * where we don't want or need to know about every field, but where we still want to capture those fields,
  * so we can store, display, etc. them. For example, a remote service that has a large number of properties, and
  * we only care about a few of them, but we might want to store all of them for analytics, debugging, etc.
  * <p>
@@ -30,7 +30,7 @@ public abstract class FlexibleJsonModel {
     protected final Map<String, Object> extraFields = new HashMap<>();
 
     /**
-     * Returns the "extra" fields that were not explicitly defined as properties when this object was deserialized
+     * Returns the "extra" fields not explicitly defined as properties when this object was deserialized
      * from JSON.
      *
      * @return the extra fields

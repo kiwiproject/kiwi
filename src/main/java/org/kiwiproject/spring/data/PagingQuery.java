@@ -76,8 +76,8 @@ public class PagingQuery extends Query {
      * @implNote Due to <a href="https://jira.spring.io/browse/DATAMONGO-1783">DATAMONGO-1783</a>, we have to create
      * a {@link Query} with the same criteria but which is not paginated; otherwise the count query is limited to the
      * limit specified on {@link Pageable} specified in the {@link #with(Pageable)} method. We don't quite understand
-     * why you would ever want to limit a count query, especially in the context of pagination, since you basically
-     * can get an incorrect result that is always limited to the specified count.
+     * why you would ever want to limit a count query, especially in the context of pagination, since you
+     * can get an incorrect result always limited to the specified count.
      */
     public <T> Page<T> findPage(Class<T> clazz) {
         checkArgumentNotNull(clazz);
@@ -106,10 +106,10 @@ public class PagingQuery extends Query {
      * thrown with the error: "{@code $sort stage must have at least one sort key}".
      * <p><strong>Recommendations for New Code</strong></p>
      * Based on the above restrictions and potential usage problems, <strong>we strongly recommend avoiding this
-     * method for new code</strong>, as its original purpose was very limited in scope, mainly to perform lookup (join)
+     * method for new code</strong>. Its original purpose was very limited in scope, mainly to perform lookup (join)
      * operations to return an "aggregate" page that contained model objects as well as their associated
-     * objects. Unfortunately, since we have various usages of this method sprinkled across a few dozen Dropwizard
-     * services, we cannot remove it until we find and replace all those usages (with something else that we have
+     * objects. Unfortunately, we have various usages of this method sprinkled across a few dozen Dropwizard
+     * services. So, we cannot remove it until we find and replace all those usages (with something else that we have
      * not implemented as of now).
      *
      * @param clazz          the domain/model class mapped to a Mongo collection

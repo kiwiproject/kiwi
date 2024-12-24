@@ -58,7 +58,7 @@ public class KiwiEnums {
             return Optional.empty();
         }
 
-        // First try the value as-is, then fallback to the value with leading & trailing whitespace stripped
+        // First try the value as-is, then fallback to the value with leading and trailing whitespace stripped
         return Optional.ofNullable(EnumUtils.getEnumIgnoreCase(enumClass, value))
             .or(() -> Optional.ofNullable(EnumUtils.getEnumIgnoreCase(enumClass, value.strip())));
     }

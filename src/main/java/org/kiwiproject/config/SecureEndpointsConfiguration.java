@@ -185,7 +185,7 @@ public class SecureEndpointsConfiguration extends SSLContextConfiguration {
     }
 
     /**
-     * Returns true if <strong>all</strong> of the endpoints in this configuration are secure.
+     * Returns true if <strong>all</strong> the endpoints in this configuration are secure.
      *
      * @return {@code true} if all endpoints are secure: {@code false} otherwise
      */

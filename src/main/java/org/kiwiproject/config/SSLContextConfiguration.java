@@ -143,7 +143,7 @@ public class SSLContextConfiguration implements KeyAndTrustStoreConfigProvider {
      * Convert this instance to a new {@link SSLContext}.
      * <p>
      * If you would rather not create a new instance every time, use {@link #toSimpleSSLContextFactory()}
-     * to obtain a factory that will always return the same {@link SSLContext} instance.
+     * to get a factory that will always return the same {@link SSLContext} instance.
      *
      * @return a new {@link SSLContext} instance
      * @implNote This will always create a new instance, first creating a new {@link SimpleSSLContextFactory}

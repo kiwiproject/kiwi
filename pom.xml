@@ -141,7 +141,7 @@
             The mongo driver to use is optional in Spring Data's POM.
             You have to choose either the mongodb-driver-sync
             or the mongodb-driver-reactivestreams as the driver.
-            The mongodb-driver-core is required by both of them.
+            Both of them require the mongodb-driver-core.
         -->
         <dependency>
             <groupId>org.mongodb</groupId>

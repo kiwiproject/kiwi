@@ -12,7 +12,7 @@ In general, we look first to either Google Guava or Apache Commons for utilities
 we need, or if what they have isn't exactly what we want, then we'll (probably) add it here.
 
 Almost all the dependencies in the POM have _provided_ scope, so that we don't bring in a ton of required dependencies.
-This downside to this is that you must specifically add any required dependencies to your own POM in order to use a
+This downside to this is that you must specifically add any required dependencies to your own POM to use a
 specific feature in Kiwi.
 
 The only required dependencies are guava, commons-lang3, and slf4j-api. If you use the Maven Enforcer plugin, you could therefore

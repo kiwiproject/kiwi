@@ -166,7 +166,7 @@ class KiwiDateTimeConvertersTest {
                     .setCalendarType("japanese")
                     .setFields(YEAR, 1, DAY_OF_YEAR, 1)
                     .build();
-            assertThat(calendar.getCalendarType()).isEqualTo("japanese");  // sanity check
+            assertThat(calendar.getCalendarType()).isEqualTo("japanese");
             var instant = KiwiDateTimeConverters.toInstantOrNull(calendar);
 
             assertThat(instant).isEqualTo(calendar.toInstant());

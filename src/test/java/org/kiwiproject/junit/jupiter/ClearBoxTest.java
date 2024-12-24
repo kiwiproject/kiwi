@@ -9,7 +9,7 @@ import java.lang.annotation.Target;
 
 /**
  * Indicator that a test is "clear box", generally used to indicate a test is calling a non-public API.
- * This is often useful when testing complex internal logic or exceptions that are difficult or near impossible
+ * This is often useful when testing complex internal logic or exceptions that are challenging or near impossible
  * to simulate.
  * <p>
  * This is also in kiwi-test as part of its public API. However, because we don't want to create a cycle between

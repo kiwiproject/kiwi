@@ -172,7 +172,7 @@ class KiwiHttpResponsesTest {
     }
 
     // This does NOT check the actual reason phrase, since it
-    // doesn't add much value to restate the values here.
+    // adds little value to restate the values here.
     // It only verifies that we send back a non-blank value.
     @ParameterizedTest
     @IntRangeSource(from = 100, to = 600, step = 1, closed = true)

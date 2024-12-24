@@ -112,7 +112,7 @@ public class RetryResult<T> {
     /**
      * Whether more than one attempt was made to retrieve the object.
      *
-     * @return true if the number of attempts is more than one
+     * @return true if the number of attempts is higher than one
      */
     public boolean hasMoreThanOneAttempt() {
         return getNumAttemptsMade() > 1;

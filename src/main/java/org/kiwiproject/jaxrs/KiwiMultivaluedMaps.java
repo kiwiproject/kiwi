@@ -27,7 +27,7 @@ public class KiwiMultivaluedMaps {
      * Create a new {@link MultivaluedMap} from the given items, which are expected to be in alternating
      * key/value pairs. This allows for keys to be repeated, i.e., so that a single key can have multiple values.
      *
-     * @param items the keys and values, e.g. key1, value1, key2, value2, ...
+     * @param items the keys and values, e.g., key1, value1, key2, value2, ...
      * @return a new {@link MultivaluedMap}
      * @implNote the actual type returned is currently a {@link MultivaluedHashMap}
      */
@@ -45,7 +45,7 @@ public class KiwiMultivaluedMaps {
      * one value per key, even if {@code items} contains multiple values per key. In that case, the <em>last</em>
      * value in {@code items} associated with a given key is the one that "wins" and stays in the returned map.
      *
-     * @param items the keys and values, e.g. key1, value1, key2, value2, ...
+     * @param items the keys and values, e.g., key1, value1, key2, value2, ...
      * @return a new {@link MultivaluedMap}
      * @implNote the actual type returned is currently a {@link MultivaluedHashMap}
      */

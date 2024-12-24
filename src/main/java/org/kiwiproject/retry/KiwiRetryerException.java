@@ -41,7 +41,7 @@ public class KiwiRetryerException extends RuntimeException {
      * Unwrap the given {@link KiwiRetryerException} to reveal the underlying exception that caused it.
      * <p>
      * Since it is possible for an {@link Attempt} to fail without an exception, this method returns an {@link Optional}
-     * to indicate there might not actually be an exception cause.
+     * to indicate there might not be an exception cause.
      *
      * @param kiwiRetryerEx the exception to unwrap
      * @return the unwrapped cause
@@ -59,7 +59,7 @@ public class KiwiRetryerException extends RuntimeException {
      * former does not unwrap the {@link RetryException}, whereas the latter (this method) does.
      * <p>
      * Since it is possible for an attempt to fail without an exception, this method returns an {@link Optional} to
-     * indicate there might not actually be an exception cause.
+     * indicate there might not be an exception cause.
      *
      * @param kiwiRetryerEx the exception to unwrap
      * @return the fully unwrapped cause
@@ -122,7 +122,7 @@ public class KiwiRetryerException extends RuntimeException {
     /**
      * If the underlying cause is a {@link RetryException} return the number of failed {@link Attempt}s.
      *
-     * @return an OptionalInt of the number of failed attempts
+     * @return an OptionalInt containing the number of failed attempts
      */
     public OptionalInt getNumberOfFailedAttempts() {
         return unwrapAsRetryException()

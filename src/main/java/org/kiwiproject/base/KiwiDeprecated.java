@@ -36,9 +36,9 @@ public @interface KiwiDeprecated {
     String since() default "";
 
     /**
-     * The anticipated version at which the annotated element will be removed.
+     * The upcoming version at which the annotated element will be removed.
      *
-     * @return the anticipated version when the annotated element will be removed
+     * @return the upcoming version when the annotated element will be removed
      */
     String removeAt() default "";
 
