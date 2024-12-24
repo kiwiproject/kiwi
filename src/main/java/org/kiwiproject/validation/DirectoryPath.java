@@ -87,7 +87,7 @@ public @interface DirectoryPath {
     /**
      * Whether this validator will attempt to create the directory if it does not exist.
      * <p>
-     * <strong>IMPORTANT: This is generally unexpected behavior (to have any side-effects during validation)</strong>.
+     * <strong>IMPORTANT: This is generally unexpected behavior (to have any side effects during validation)</strong>.
      * <p>
      * However, based on the use cases we have encountered, this is a <em>pragmatic</em> way to ensure directories are
      * present, and we have found the alternatives to be clumsy at best, overly complicated at worst. One common
