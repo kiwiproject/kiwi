@@ -20,6 +20,7 @@ import io.dropwizard.jdbi3.JdbiHealthCheck;
 import io.dropwizard.lifecycle.JettyManaged;
 import io.dropwizard.lifecycle.Managed;
 import io.dropwizard.lifecycle.setup.LifecycleEnvironment;
+import org.eclipse.jetty.util.component.LifeCycle;
 import org.h2.Driver;
 import org.jdbi.v3.core.Jdbi;
 import org.jdbi.v3.core.h2.H2DatabasePlugin;
@@ -28,6 +29,8 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
+
+import java.util.function.Function;
 
 @DisplayName("Jdbi3Builders")
 class Jdbi3BuildersTest {
@@ -121,7 +124,7 @@ class Jdbi3BuildersTest {
 
         var managedClasses = lifecycleEnvironment.getManagedObjects()
                 .stream()
-                .map(lifeCycle -> (JettyManaged) lifeCycle)
+                .map(toJettyManaged())
                 .map(JettyManaged::getManaged)
                 .map(Managed::getClass)
                 .toList();
@@ -240,7 +243,7 @@ class Jdbi3BuildersTest {
 
         var managedObjects = lifecycleEnvironment.getManagedObjects()
                 .stream()
-                .map(lifeCycle -> (JettyManaged) lifeCycle)
+                .map(toJettyManaged())
                 .map(JettyManaged::getManaged)
                 .toList();
         assertThat(managedObjects).containsExactly(managedDataSource);
@@ -248,6 +251,10 @@ class Jdbi3BuildersTest {
         assertThat(healthCheckRegistry.getHealthCheck(healthCheckName)).isInstanceOf(JdbiHealthCheck.class);
 
         verifyNoMoreInteractions(environment);
+    }
+
+    private static Function<LifeCycle, JettyManaged> toJettyManaged() {
+        return JettyManaged.class::cast;
     }
 
     @Nested
