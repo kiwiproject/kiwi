@@ -46,8 +46,8 @@ class VaultEncryptionHelperIntegrationTest {
     // Location expected on Linux; expected installed via yum, apt-get, etc.
     private static final String LINUX_ANSIBLE_PATH = "/usr/bin/" + ANSIBLE_VAULT_COMMAND;
 
-    // Dummy path; will cause JUnit assumption to be false
-    private static final String DUMMY_ANSIBLE_PATH = "/dummy/" + ANSIBLE_VAULT_COMMAND;
+    // Fake path; will cause JUnit assumption to be false
+    private static final String FAKE_ANSIBLE_PATH = "/fake/" + ANSIBLE_VAULT_COMMAND;
 
     private static final String PASSWORD = "password100";
 
@@ -65,7 +65,7 @@ class VaultEncryptionHelperIntegrationTest {
 
     @BeforeAll
     static void beforeAll() {
-        ansibleVaultFile = pathOfAnsibleVault().orElse(DUMMY_ANSIBLE_PATH);
+        ansibleVaultFile = pathOfAnsibleVault().orElse(FAKE_ANSIBLE_PATH);
         assumeTrue(Files.exists(Path.of(ansibleVaultFile)), () -> ANSIBLE_VAULT_COMMAND + " not found");
     }
 
