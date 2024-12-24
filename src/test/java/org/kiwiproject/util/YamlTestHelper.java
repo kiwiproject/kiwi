@@ -33,7 +33,7 @@ public class YamlTestHelper {
      * <a href="https://github.com/FasterXML/jackson-dataformats-text">Jackson</a>.
      */
     public static <T> T loadFromYamlWithDropwizard(String filename, Class<T> clazz) {
-        var factory = new YamlConfigurationFactory<T>(clazz, VALIDATOR, OBJECT_MAPPER, "dw");
+        var factory = new YamlConfigurationFactory<>(clazz, VALIDATOR, OBJECT_MAPPER, "dw");
         try {
             return factory.build(new ResourceConfigurationSourceProvider(), filename);
         } catch (Exception e) {
