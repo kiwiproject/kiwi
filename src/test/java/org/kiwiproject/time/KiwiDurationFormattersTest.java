@@ -13,8 +13,9 @@ class KiwiDurationFormattersTest {
 
     private static final String SEVEN_HOURS_TWENTY_FIVE_MINUTES = "7 hours 25 minutes";
 
+    @SuppressWarnings("removal")
     @Nested
-    class FormatDurationWords {
+    class FormatDurationWordsDeprecated {
 
         @Test
         void shouldFormatMilliseconds() {
@@ -44,6 +45,48 @@ class KiwiDurationFormattersTest {
         void shouldFormatNullDropwizardDuration_AsLiteralNull() {
             var words = KiwiDurationFormatters.formatDurationWords((io.dropwizard.util.Duration) null);
             assertThat(words).isEqualTo("null");
+        }
+    }
+
+    @Nested
+    class FormatJavaDurationWords {
+
+        @Test
+        void shouldFormatJavaDuration() {
+            var words = KiwiDurationFormatters.formatJavaDurationWords(Duration.ofMinutes(445));
+            assertThat(words).isEqualTo(SEVEN_HOURS_TWENTY_FIVE_MINUTES);
+        }
+
+        @Test
+        void shouldFormatNullJavaDuration_AsLiteralNull() {
+            var words = KiwiDurationFormatters.formatJavaDurationWords(null);
+            assertThat(words).isEqualTo("null");
+        }
+    }
+
+    @Nested
+    class FormatDropwizardDurationWords {
+
+        @Test
+        void shouldFormatDropwizardDuration() {
+            var words = KiwiDurationFormatters.formatDropwizardDurationWords(io.dropwizard.util.Duration.minutes(445));
+            assertThat(words).isEqualTo(SEVEN_HOURS_TWENTY_FIVE_MINUTES);
+        }
+
+        @Test
+        void shouldFormatNullDropwizardDuration_AsLiteralNull() {
+            var words = KiwiDurationFormatters.formatDropwizardDurationWords(null);
+            assertThat(words).isEqualTo("null");
+        }
+    }
+
+    @Nested
+    class FormatMillisecondsDurationWords {
+
+        @Test
+        void shouldFormatMilliseconds() {
+            var words = KiwiDurationFormatters.formatMillisecondDurationWords(Duration.ofMinutes(445).toMillis());
+            assertThat(words).isEqualTo(SEVEN_HOURS_TWENTY_FIVE_MINUTES);
         }
     }
 }
