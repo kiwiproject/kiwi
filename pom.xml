@@ -29,10 +29,10 @@
 
     <properties>
         <!-- Versions for required dependencies -->
-        <kiwi-bom.version>2.0.19</kiwi-bom.version>
+        <kiwi-bom.version>2.0.20</kiwi-bom.version>
 
         <!-- Versions for provided dependencies -->
-        <retrying-again.version>2.1.4</retrying-again.version>
+        <retrying-again.version>2.1.5</retrying-again.version>
 
         <!-- Versions for test dependencies -->
         <!-- nothing to see here...move along...move along... -->
