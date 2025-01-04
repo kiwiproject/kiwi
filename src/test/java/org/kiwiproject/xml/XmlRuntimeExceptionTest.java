@@ -22,7 +22,8 @@ class XmlRuntimeExceptionTest {
         var cause = new IOException("oops");
         assertThat(new XmlRuntimeException("bad Xml", cause))
                 .hasMessage("bad Xml")
-                .hasCauseReference(cause);
+                .cause()
+                .isSameAs(cause);
     }
 
     @Test
@@ -30,6 +31,7 @@ class XmlRuntimeExceptionTest {
         var cause = new IOException("the cause");
         assertThat(new XmlRuntimeException(cause))
                 .hasMessageContaining("the cause")
-                .hasCauseReference(cause);
+                .cause()
+                .isSameAs(cause);
     }
 }

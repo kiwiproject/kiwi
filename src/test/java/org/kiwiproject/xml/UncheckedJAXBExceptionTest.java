@@ -22,21 +22,24 @@ class UncheckedJAXBExceptionTest {
     @Test
     void shouldAcceptMessage() {
         assertThat(new UncheckedJAXBException("oops", cause))
-                .hasCauseReference(cause)
-                .hasMessage("oops");
+                .hasMessage("oops")
+                .cause()
+                .isSameAs(cause);
     }
 
     @Test
     void shouldAcceptMessageAndCause() {
         assertThat(new UncheckedJAXBException("bad XML", cause))
                 .hasMessage("bad XML")
-                .hasCauseReference(cause);
+                .cause()
+                .isSameAs(cause);
     }
 
     @Test
     void shouldAcceptCause() {
         assertThat(new UncheckedJAXBException(cause))
                 .hasMessageContaining(CAUSE_MESSAGE)
-                .hasCauseReference(cause);
+                .cause()
+                .isSameAs(cause);
     }
 }
