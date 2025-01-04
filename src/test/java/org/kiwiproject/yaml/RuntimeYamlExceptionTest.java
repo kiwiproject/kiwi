@@ -22,7 +22,8 @@ class RuntimeYamlExceptionTest {
         var cause = new IOException("oops");
         assertThat(new RuntimeYamlException("bad YAML", cause))
                 .hasMessage("bad YAML")
-                .hasCauseReference(cause);
+                .cause()
+                .isSameAs(cause);
     }
 
     @Test
@@ -30,6 +31,7 @@ class RuntimeYamlExceptionTest {
         var cause = new IOException("the cause");
         assertThat(new RuntimeYamlException(cause))
                 .hasMessageContaining("the cause")
-                .hasCauseReference(cause);
+                .cause()
+                .isSameAs(cause);
     }
 }
