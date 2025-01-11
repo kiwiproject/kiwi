@@ -16,6 +16,7 @@ import org.junit.jupiter.api.RepeatedTest;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.CsvSource;
 import org.junit.jupiter.params.provider.NullAndEmptySource;
 import org.junit.jupiter.params.provider.ValueSource;
 import org.kiwiproject.junit.jupiter.ClearBoxTest;
@@ -25,6 +26,7 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Set;
+import java.util.random.RandomGenerator;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
@@ -409,9 +411,112 @@ class KiwiListsTest {
         }
 
         @Test
-        void shouldWrapWhenOffsetIsBeyonfEndOfList() {
+        void shouldWrapWhenOffsetIsBeyondEndOfList() {
             assertThat(KiwiLists.newListStartingAtCircularOffset(newArrayList("zero", "one", "two", "three"), 4))
                     .containsExactly("zero", "one", "two", "three");
+        }
+    }
+
+    @Nested
+    class NextCircularListIndex {
+
+        @ParameterizedTest
+        @ValueSource(ints = { -100, -25, -5, -1, 0 })
+        void shouldRequirePositiveListSize(int listSize) {
+            assertThatIllegalArgumentException()
+                    .isThrownBy(() -> KiwiLists.nextCircularListIndex(0, listSize))
+                    .withMessage("listSize must be positive");
+        }
+
+        @ParameterizedTest
+        @CsvSource(textBlock = """            
+                1, 1
+                2, 1
+                2, 2
+                3, 2
+                4, 3
+                4, 4
+                10, 9
+                10, 10
+                20, 20
+                50, 49
+                100, 99
+                100, 100
+                
+                -1, 3
+                -4, 5
+                -5, 3
+                """)
+        void shouldRequireValidCurrentIndex(int currentIndex, int listSize) {
+            assertThatIllegalArgumentException()
+                    .isThrownBy(() -> KiwiLists.nextCircularListIndex(currentIndex, listSize))
+                    .withMessage("currentIndex must be in the range [0, %d]", (listSize - 1));
+        }
+
+        @RepeatedTest(10)
+        void shouldAlwaysReturnZero_ForListSizeOfOne() {
+            assertThat(KiwiLists.nextCircularListIndex(0, 1)).isZero();
+        }
+
+        @ParameterizedTest
+        @CsvSource(textBlock = """
+                0, 2, 1
+                1, 2, 0
+                
+                0, 3, 1
+                1, 3, 2
+                2, 3, 0
+                
+                0, 5, 1
+                1, 5, 2
+                2, 5, 3
+                3, 5, 4
+                4, 5, 0
+                
+                98, 100, 99
+                99, 100, 0
+                """)
+        void shouldReturnExpectedNextIndex(int currentIndex, int listSize, int expectedNextIndex) {
+            assertThat(KiwiLists.nextCircularListIndex(currentIndex, listSize))
+                    .isEqualTo(expectedNextIndex);
+        }
+
+        @RepeatedTest(10)
+        void shouldCycleThroughIndices_AndReturnToBeginningOfList() {
+            var random = RandomGenerator.getDefault();
+            var listSize = random.nextInt(3, 26);
+            var numLoops = random.nextInt(1, 5);
+            var numIterations = listSize * numLoops;
+            var maxIndex = listSize - 1;
+            var currentIndex = 0;
+
+            for (int i = 0; i < numIterations; i++) {
+                currentIndex = getAndAssertNextCircularIndex(currentIndex, listSize, maxIndex);
+            }
+
+            assertThat(currentIndex)
+                    .describedAs("After looping %d times through %d elements, we should be back at index 0",
+                            numIterations, listSize)
+                    .isZero();
+        }
+
+        private static int getAndAssertNextCircularIndex(int currentIndex, int listSize, int maxIndex) {
+            var nextIndex = KiwiLists.nextCircularListIndex(currentIndex, listSize);
+
+            if (currentIndex == maxIndex) {
+                assertThat(nextIndex)
+                        .describedAs("If we're at index %d of an %d element list, the next index should be 0",
+                                currentIndex, listSize)
+                        .isZero();
+            } else {
+                var expectedNextIndex = currentIndex + 1;
+                assertThat(nextIndex)
+                        .describedAs("If we're at index %d of an %d element list, the next index should be %d",
+                                currentIndex, listSize, expectedNextIndex)
+                        .isEqualTo(expectedNextIndex);
+            }
+
+            return nextIndex;
         }
     }
 
