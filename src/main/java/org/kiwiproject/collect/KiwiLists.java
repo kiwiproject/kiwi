@@ -281,6 +281,21 @@ public class KiwiLists {
     }
 
     /**
+     * Returns the next index in a circular list. When the current index is at the end of the list, it
+     * wraps around to the beginning of the list.
+     *
+     * @param currentIndex the current index of a circular list
+     * @param listSize the size of the list
+     * @return the index following the current index, which may wrap around to zero
+     */
+    public static int nextCircularListIndex(int currentIndex, int listSize) {
+        checkArgument(listSize > 0, "listSize must be positive");
+        checkArgument(currentIndex > -1 && currentIndex < listSize,
+                "currentIndex must be in the range [0, %s]", (listSize - 1));
+        return (currentIndex + 1) % listSize;
+    }
+
+    /**
      * Returns a view of the portion of the given list excluding the first element.
      * <p>
      * This method has the same semantics as {@link List#subList(int, int)} since it calls that method.
