@@ -29,6 +29,17 @@ import java.util.function.Supplier;
  * Use the {@code xxxAsync} methods when you need to control concurrent behavior and make things deterministic
  * during unit tests (e.g., blocking on futures). Note this does actually change the true behavior of the code under
  * test, since methods will execute synchronously, so use them with care, caution, and understanding.
+ * <p>
+ * In tests, you can call the {@link #setUnitTestAsyncMode(Mode)} method with {@link Mode#DISABLED} to force
+ * synchronous behavior when calling {@link Async} methods. This may be desirable in certain situations to make
+ * testing asynchronous code easier. Note that this is a global change, such that all calls to {@link Async} methods
+ * will then behave as synchronous calls and block until the operation is complete. So, when using this capability
+ * in tests, you need to be careful to reset the behavior after tests complete. This may also cause problems
+ * if tests are executed in parallel, and some tests use this feature, but some do not.
+ * <p>
+ * The <a href="https://github.com/kiwiproject/kiwi-test">kiwi-test</a> library provides a JUnit extension,
+ * <a href="https://javadoc.io/doc/org.kiwiproject/kiwi-test/latest/org/kiwiproject/test/junit/jupiter/AsyncModeDisablingExtension.html">AsyncModeDisablingExtension</a>,
+ * that disables asynchronous behavior in {@link Async} before each test, then re-enables it after each test.
  *
  * @implNote the "asyncMode" flag is a STATIC variable and should only ever be changed during testing using the
  * {@link #setUnitTestAsyncMode(Mode)} method. Generally, you should set this before tests and reset after
