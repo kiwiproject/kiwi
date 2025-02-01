@@ -35,6 +35,9 @@ import java.util.concurrent.TimeUnit;
 /**
  * Utility class for working with operating system processes.
  * <p>
+ * If you need to be able to mock any of the operations in this class in test code, consider using
+ * {@link ProcessHelper} instead.
+ * <p>
  * <em>Note that most of the methods are intended only for use on Unix/Linux operating systems.</em>
  *
  * @see ProcessHelper
