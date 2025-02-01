@@ -18,9 +18,11 @@ import java.util.concurrent.TimeUnit;
 import java.util.stream.Stream;
 
 /**
- * Wrapper class around the static utility functions in {@link Processes} that requires an instance, adn thus by using
- * an instance of this class instead of {@link Processes} directly, it will make it much easier to test code that deals
- * with processes.
+ * This is a wrapper class around the static utility functions in {@link Processes}. You need to create an instance
+ * of this class to use it.
+ * <p>
+ * Using an instance of this class instead of {@link Processes} directly will make
+ * it much easier to test code that deals with operating system processes.
  * <p>
  * <em>Note that most of the methods are intended only for use on Unix/Linux operating systems.</em>
  */
