@@ -35,6 +35,7 @@ public class KiwiDurationFormatters {
             replacedBy = "formatJavaDurationWords(java.time.Duration duration)",
             usageSeverity = KiwiDeprecated.Severity.SEVERE,
             removeAt = "5.0.0")
+    @SuppressWarnings("DeprecatedIsStillUsed")
     public static String formatDurationWords(java.time.Duration duration) {
         if (isNull(duration)) {
             return LITERAL_NULL;
@@ -72,6 +73,7 @@ public class KiwiDurationFormatters {
             replacedBy = "formatDropwizardDurationWords(io.dropwizard.util.Duration duration)",
             usageSeverity = KiwiDeprecated.Severity.SEVERE,
             removeAt = "5.0.0")
+    @SuppressWarnings("DeprecatedIsStillUsed")
     public static String formatDurationWords(Duration duration) {
         if (isNull(duration)) {
             return LITERAL_NULL;
@@ -114,6 +116,7 @@ public class KiwiDurationFormatters {
             replacedBy = "formatMillisecondDurationWords(long durationMillis)",
             usageSeverity = KiwiDeprecated.Severity.SEVERE,
             removeAt = "5.0.0")
+    @SuppressWarnings("DeprecatedIsStillUsed")
     public static String formatDurationWords(long durationMillis) {
         return DurationFormatUtils.formatDurationWords(
                 durationMillis,
