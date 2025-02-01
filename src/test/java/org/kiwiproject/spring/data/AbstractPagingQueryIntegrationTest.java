@@ -31,7 +31,7 @@ import java.util.function.Predicate;
  * method. This class provides convenience methods for these requirements.
  * <p>
  * Background: the code in {@link PagingQuery#aggregatePage(Class, AggregationOperation...)} blows up with a NPE
- * whenever executing it using the in-memory {@link de.bwaldvogel.mongo.MongoServer}, which is the main reason for
+ * whenever executing it using the in-memory {@code de.bwaldvogel.mongo.MongoServer}, which is the main reason for
  * using Testcontainers here. I have been unable to figure out exactly why it blows up, but it doesn't seem worth
  * pursuing for a test when Testcontainers is a perfectly good (and probably preferred) alternative.
  */
