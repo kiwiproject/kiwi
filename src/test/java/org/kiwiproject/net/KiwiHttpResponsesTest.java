@@ -11,7 +11,7 @@ import org.junitpioneer.jupiter.params.IntRangeSource;
 class KiwiHttpResponsesTest {
 
     @ParameterizedTest
-    @IntRangeSource(from = 0, to = 600, step = 1, closed = true)
+    @IntRangeSource(from = 0, to = 600, closed = true)
     void shouldPassStatusCodeChecks(int statusCode) {
         assertAll(
 
@@ -175,7 +175,7 @@ class KiwiHttpResponsesTest {
     // adds little value to restate the values here.
     // It only verifies that we send back a non-blank value.
     @ParameterizedTest
-    @IntRangeSource(from = 100, to = 600, step = 1, closed = true)
+    @IntRangeSource(from = 100, to = 600, closed = true)
     void shouldGetNonBlankReasonPhrase(int statusCode) {
         assertThat(KiwiHttpResponses.reasonPhraseOf(statusCode)).isNotBlank();
     }
