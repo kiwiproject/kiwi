@@ -40,7 +40,12 @@ import java.util.function.Supplier;
  * The <a href="https://github.com/kiwiproject/kiwi-test">kiwi-test</a> library provides a JUnit extension,
  * <a href="https://javadoc.io/doc/org.kiwiproject/kiwi-test/latest/org/kiwiproject/test/junit/jupiter/AsyncModeDisablingExtension.html">AsyncModeDisablingExtension</a>,
  * that disables asynchronous behavior in {@link Async} before each test, then re-enables it after each test.
+ * <p>
+ * Alternatively, you can use {@link AsyncHelper}, which will let you control asynchronous behavior in each
+ * instance or to use a mock instance in tests. Either of these avoids problems with multiple threads or
+ * running tests in parallel.
  *
+ * @see AsyncHelper
  * @implNote the "asyncMode" flag is a STATIC variable and should only ever be changed during testing using the
  * {@link #setUnitTestAsyncMode(Mode)} method. Generally, you should set this before tests and reset after
  * they have run. Note also this almost certainly will cause unexpected behavior if tests are run in parallel.
@@ -75,13 +80,17 @@ public class Async {
      */
     public static void setUnitTestAsyncMode(Mode mode) {
         checkArgumentNotNull(mode, "mode cannot be null");
+        logWarningWhenAsyncDisabled(mode);
+
+        Async.asyncMode = mode;
+    }
+
+    static void logWarningWhenAsyncDisabled(Mode mode) {
         if (mode == Mode.DISABLED) {
             LOG.warn("===================================================================");
             LOG.warn("------------ DISABLING ASYNC IS FOR TEST USE ONLY -----------------");
             LOG.warn("===================================================================");
         }
-
-        Async.asyncMode = mode;
     }
 
     /**
@@ -216,7 +225,11 @@ public class Async {
 
     @VisibleForTesting
     static <T> CompletableFuture<T> waitIfAsyncDisabled(CompletableFuture<T> future) {
-        if (asyncMode == Mode.DISABLED) {
+        return waitIfAsyncDisabled(future, Async.asyncMode);
+    }
+
+    static <T> CompletableFuture<T> waitIfAsyncDisabled(CompletableFuture<T> future, Async.Mode mode) {
+        if (mode == Mode.DISABLED) {
             LOG.warn("asyncMode = DISABLED; wait for the future!");
             try {
                 future.get();
@@ -253,7 +266,7 @@ public class Async {
     /**
      * Helper method that waits for a {@link CompletableFuture} up to a specified timeout.
      * <p>
-     * Note that {@link Mode} has no effect on this method.
+     * <em>Note that {@link Mode} has no effect on this method.</em>
      *
      * @param future  the CompletableFuture to wait for
      * @param timeout the value of the timeout in the given unit
@@ -269,7 +282,7 @@ public class Async {
      * Helper method that waits for a collection of {@link CompletableFuture} of type {@code T} up to a
      * specified timeout.
      * <p>
-     * Note that {@link Mode} has no effect on this method.
+     * <em>Note that {@link Mode} has no effect on this method.</em>
      *
      * @param futures the CompletableFuture instances to wait for
      * @param timeout the value of the timeout in the given unit
@@ -292,7 +305,7 @@ public class Async {
      * Helper method that waits for a collection of {@link CompletableFuture} with no explicit type up to a
      * specified timeout.
      * <p>
-     * Note that {@link Mode} has no effect on this method.
+     * <em>Note that {@link Async.Mode} has no effect on this method.</em>
      *
      * @param futures the CompletableFuture instances to wait for
      * @param timeout the value of the timeout in the given unit
@@ -316,7 +329,7 @@ public class Async {
      * Wraps a {@link CompletableFuture} with a timeout so that it can proceed asynchronously, but still have
      * a maximum duration. Uses the common fork join pool as the {@link ExecutorService}.
      * <p>
-     * Note that {@link Mode} has no effect on this method.
+     * <em>Note that {@link Async.Mode} has no effect on this method.</em>
      *
      * @param future  the CompletableFuture for which to apply the timeout
      * @param timeout the value of the timeout in the given unit
@@ -336,7 +349,7 @@ public class Async {
      * Wraps a {@link CompletableFuture} with a timeout so that it can proceed asynchronously, but still have
      * a maximum duration. Uses the given {@link ExecutorService}.
      * <p>
-     * Note that {@link Mode} has no effect on this method.
+     * <em>Note that {@link Async.Mode} has no effect on this method.</em>
      *
      * @param future   the CompletableFuture for which to apply the timeout
      * @param timeout  the value of the timeout in the given unit
