@@ -60,6 +60,7 @@ class SftpConfigTest {
             assertThat(config.getUser()).isNull();
             assertThat(config.getPassword()).isNull();
             assertThat(config.getPrivateKeyFilePath()).isNull();
+            assertThat(config.getKeyExchangeType()).isNull();
             assertThat(config.getRemoteBasePath()).isNull();
             assertThat(config.getErrorPath()).isNull();
             assertThat(config.getKnownHostsFile()).isNull();
@@ -79,7 +80,7 @@ class SftpConfigTest {
     }
 
     private static SftpConfig newConfigUsingAllArgsConstructor() {
-        return new SftpConfig(0, null, null, null, null, null, null, null, null, false, null);
+        return new SftpConfig(0, null, null, null, null, null, null, null, null, null, false, null);
     }
 
     @Nested
