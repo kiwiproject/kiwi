@@ -4,14 +4,18 @@ import static com.google.common.base.Preconditions.checkState;
 import static java.util.Objects.nonNull;
 import static org.apache.commons.lang3.StringUtils.isNotBlank;
 import static org.kiwiproject.base.KiwiPreconditions.requireNotNull;
+import static org.kiwiproject.jsch.KiwiJSchHelpers.detectKeyExchangeTypeForHost;
 
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.primitives.Ints;
 import com.jcraft.jsch.ChannelSftp;
+import com.jcraft.jsch.HostKeyRepository;
 import com.jcraft.jsch.JSch;
 import com.jcraft.jsch.JSchException;
 import com.jcraft.jsch.Session;
 import lombok.extern.slf4j.Slf4j;
+
+import java.util.Optional;
 
 /**
  * A simple wrapper around a {@link JSch} instance that handles connecting and disconnecting using the
@@ -84,7 +88,12 @@ public class SftpConnector {
      *     <li>User, host, and port (to create a {@link Session} via {@link JSch#getSession(String, String, int)})</li>
      *     <li>Session timeout ({@link Session#setTimeout(int)}</li>
      *     <li>PreferredAuthentications (via {@link Session#setConfig(String, String)})</li>
-     *     <li>Key exchange type (detected from known hosts, see {@link KiwiJSchHelpers}</li>
+     *     <li>
+     *         Key exchange type (Uses the value in {@link SftpConfig} if present. Otherwise, attempts to detect
+     *         the value from the known hosts file. See
+     *         {@link KiwiJSchHelpers#detectKeyExchangeTypeForHost(String, HostKeyRepository)}
+     *         and {@link KiwiJSchHelpers#setSessionKeyExchangeType(Session, String)}         )
+     *     </li>
      *     <li>Private key or password ({@link JSch#addIdentity(String)} or {@link Session#setPassword(String)}</li>
      *     <li>Enable/disable StrictHostKeyChecking (via {@link Session#setConfig(String, String)}, default is enabled)</li>
      * </ul>
@@ -106,12 +115,7 @@ public class SftpConnector {
             LOG.trace("Setting preferred authentications to: {}", config.getPreferredAuthentications());
             session.setConfig("PreferredAuthentications", config.getPreferredAuthentications());
 
-            LOG.trace("Detecting key exchange type with host");
-            KiwiJSchHelpers.detectKeyExchangeTypeForHost(config.getHost(),
-                    jsch.getHostKeyRepository())
-                    .ifPresentOrElse(
-                            keyExchangeType -> setSessionKeyExchangeType(session, keyExchangeType),
-                            () -> LOG.trace("Did not detect key exchange type for host: {}", config.getHost()));
+            setKeyExchangeTypeIfConfiguredOrDetected();
 
             addAuthToSession();
 
@@ -137,8 +141,35 @@ public class SftpConnector {
         }
     }
 
-    private void setSessionKeyExchangeType(Session session, String keyExchangeType) {
-        KiwiJSchHelpers.setSessionKeyExchangeType(session, keyExchangeType);
+    private void setKeyExchangeTypeIfConfiguredOrDetected() {
+        setKeyExchangeTypeIfConfiguredOrDetected(session);
+    }
+
+    @VisibleForTesting
+    void setKeyExchangeTypeIfConfiguredOrDetected(Session theSession) {
+        getOrDetectKeyExchangeType().ifPresent(keyExchangeType -> setSessionKeyExchangeType(theSession, keyExchangeType));
+    }
+
+    @VisibleForTesting
+    Optional<String> getOrDetectKeyExchangeType() {
+        var configuredKeyExchangeType = config.getKeyExchangeType();
+
+        if (isNotBlank(configuredKeyExchangeType)) {
+            LOG.trace("Using key exchange type from configuration: {}", configuredKeyExchangeType);
+            return Optional.of(configuredKeyExchangeType);
+        }
+
+        var keyExchangeTypeOptional = detectKeyExchangeTypeForHost(config.getHost(), jsch.getHostKeyRepository());
+
+        if (keyExchangeTypeOptional.isEmpty()) {
+            LOG.trace("Did not detect key exchange type in known hosts for host: {}", config.getHost());
+        }
+
+        return keyExchangeTypeOptional;
+    }
+
+    private void setSessionKeyExchangeType(Session theSession, String keyExchangeType) {
+        KiwiJSchHelpers.setSessionKeyExchangeType(theSession, keyExchangeType);
         LOG.debug("Set key exchange type [{}] for host {}", keyExchangeType, config.getHost());
     }
 

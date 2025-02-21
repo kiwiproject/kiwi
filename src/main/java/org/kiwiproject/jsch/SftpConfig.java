@@ -76,6 +76,13 @@ public class SftpConfig {
     private String preferredAuthentications = DEFAULT_PREFERRED_AUTHENTICATIONS;
 
     /**
+     * The key exchange type, for example, {@code "ssh-rsa"} or {@code "ecdsa-sha2-nistp256}.
+     * <p>
+     * There is no default value.
+     */
+    private String keyExchangeType;
+
+    /**
      * The root directory of the remote SFTP location, provided as a convenience to store the remote path in the same
      * place as the other SFTP properties.
      * <p>
@@ -122,6 +129,7 @@ public class SftpConfig {
      * @param password                  the SFTP password
      * @param privateKeyFilePath        path to the private key file
      * @param preferredAuthentications  comma-separated list of authentications to attempt
+     * @param keyExchangeType           the key exchange type to use
      * @param remoteBasePath            root directory of the remote SFTP location
      * @param errorPath                 local directory to write out any errors if SFTP fails
      * @param knownHostsFile            path to the known hosts file
@@ -138,7 +146,7 @@ public class SftpConfig {
     @SuppressWarnings({"java:S107"})
     @ConstructorProperties({
             "port", "host", "user", "password",
-            "privateKeyFilePath", "preferredAuthentications",
+            "privateKeyFilePath", "preferredAuthentications", "keyExchangeType",
             "remoteBasePath", "errorPath", "knownHostsFile",
             "disableStrictHostChecking", "timeout"
     })
@@ -148,6 +156,7 @@ public class SftpConfig {
                       String password,
                       String privateKeyFilePath,
                       String preferredAuthentications,
+                      String keyExchangeType,
                       String remoteBasePath,
                       String errorPath,
                       String knownHostsFile,
@@ -161,6 +170,7 @@ public class SftpConfig {
         this.privateKeyFilePath = privateKeyFilePath;
         this.preferredAuthentications =
                 isBlank(preferredAuthentications) ? DEFAULT_PREFERRED_AUTHENTICATIONS : preferredAuthentications;
+        this.keyExchangeType = isBlank(keyExchangeType) ? null : keyExchangeType;
         this.remoteBasePath = remoteBasePath;
         this.errorPath = errorPath;
         this.knownHostsFile = knownHostsFile;

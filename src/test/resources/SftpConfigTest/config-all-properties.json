@@ -3,6 +3,7 @@
   "host": "localhost",
   "user": "bob",
   "preferredAuthentications": "publickey",
+  "keyExchangeType": "ssh-rsa",
   "privateKeyFilePath": "/home/bob/.ssh/id_rsa",
   "knownHostsFile": "/home/bob/.ssh/known_hosts",
   "remoteBasePath": "/data_shared/development/my-service/remote-base-path",
