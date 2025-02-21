@@ -1,6 +1,7 @@
 package org.kiwiproject.jsch;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
 import static org.assertj.core.api.Assertions.assertThatIllegalStateException;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
@@ -19,6 +20,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
+import org.kiwiproject.util.BlankStringSource;
 
 @DisplayName("KiwiJSchHelpers")
 @ExtendWith(SoftAssertionsExtension.class)
@@ -35,6 +37,21 @@ class KiwiJSchHelpersTest {
 
     @Nested
     class DetectKeyExchangeTypeForHost {
+
+        @ParameterizedTest
+        @BlankStringSource
+        void shouldRequireHost(String host) {
+            assertThatIllegalArgumentException()
+                    .isThrownBy(() -> KiwiJSchHelpers.detectKeyExchangeTypeForHost(host, knownHosts))
+                    .withMessage("host must not be blank");
+        }
+
+        @Test
+        void shouldRequireKnownHosts() {
+            assertThatIllegalArgumentException()
+                    .isThrownBy(() -> KiwiJSchHelpers.detectKeyExchangeTypeForHost("server.test", null))
+                    .withMessage("knownHosts must not be null");
+        }
 
         @Test
         void shouldBeEmpty_WhenEmptyKnownHosts() {

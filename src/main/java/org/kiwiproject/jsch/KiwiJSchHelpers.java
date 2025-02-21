@@ -39,8 +39,8 @@ public class KiwiJSchHelpers {
      * @implNote Finds the <em>first</em> matching known host entry
      */
     public static Optional<String> detectKeyExchangeTypeForHost(String host, HostKeyRepository knownHosts) {
-        checkArgumentNotBlank(host);
-        checkArgumentNotNull(knownHosts);
+        checkArgumentNotBlank(host, "host must not be blank");
+        checkArgumentNotNull(knownHosts, "knownHosts must not be null");
 
         return Arrays.stream(knownHosts.getHostKey())
                 .filter(knownHost -> hostMatchesKnownHost(host, knownHost))
