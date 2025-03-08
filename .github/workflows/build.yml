@@ -27,7 +27,7 @@ jobs:
         uses: actions/setup-java@v4
         with:
           java-version: ${{ matrix.java_version }}
-          distribution: 'zulu'
+          distribution: 'temurin'
           check-latest: true
 
       # Cache all the things
