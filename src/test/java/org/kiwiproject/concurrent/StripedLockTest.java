@@ -138,10 +138,14 @@ class StripedLockTest {
         var recorder1 = new TaskRecorder("task1");
         var recorder2 = new TaskRecorder("task2");
 
+        var threadPool = Executors.newFixedThreadPool(2);
+
         var completableFutures = List.of(
-                Async.doAsync(() -> lock.runWithWriteLock(recorder1.id, () -> recorder1.runTask(task))),
-                Async.doAsync(() -> lock.runWithWriteLock(recorder2.id, () -> recorder2.runTask(task)))
+                Async.doAsync(() -> lock.runWithWriteLock(recorder1.id, () -> recorder1.runTask(task)), threadPool),
+                Async.doAsync(() -> lock.runWithWriteLock(recorder2.id, () -> recorder2.runTask(task)), threadPool)
         );
+
+        threadPool.shutdownNow();
 
         waitForAll(completableFutures);
 
@@ -175,7 +179,7 @@ class StripedLockTest {
         var recorder2 = new TaskRecorder("task2");
 
         // Well damn, this made this test pass...
-        var threadPool = Executors.newFixedThreadPool(10);
+        var threadPool = Executors.newFixedThreadPool(2);
 
         var completableFutures = List.of(
                 Async.doAsync(() -> lock.runWithReadLock(recorder1.id, () -> recorder1.runTask(task)), threadPool),
@@ -183,6 +187,8 @@ class StripedLockTest {
         );
 
         waitForAll(completableFutures);
+
+        threadPool.shutdownNow();
 
         logAndCheckExecutionTimes(recorder1, recorder2, true);
     }
@@ -197,12 +203,16 @@ class StripedLockTest {
         var recorder1 = new TaskRecorder("task1");
         var recorder2 = new TaskRecorder("task2");
 
+        var threadPool = Executors.newFixedThreadPool(2);
+
         var completableFutures = List.of(
-                Async.doAsync(() -> lock.supplyWithReadLock(recorder1.id, () -> recorder1.runTaskAndSupply(task1))),
-                Async.doAsync(() -> lock.supplyWithReadLock(recorder2.id, () -> recorder2.runTaskAndSupply(task2)))
+                Async.doAsync(() -> lock.supplyWithReadLock(recorder1.id, () -> recorder1.runTaskAndSupply(task1)), threadPool),
+                Async.doAsync(() -> lock.supplyWithReadLock(recorder2.id, () -> recorder2.runTaskAndSupply(task2)), threadPool)
         );
 
         waitForAll(completableFutures);
+
+        threadPool.shutdownNow();
 
         logAndCheckExecutionTimes(recorder1, recorder2, true);
 
@@ -241,12 +251,16 @@ class StripedLockTest {
         var recorder1 = new TaskRecorder("task1");
         var recorder2 = new TaskRecorder("task2");
 
+        var threadPool = Executors.newFixedThreadPool(2);
+
         var completableFutures = List.of(
-                Async.doAsync(() -> lock.supplyWithReadLock(recorder1.id, () -> recorder1.runTaskAndSupply(task1))),
-                Async.doAsync(() -> lock.supplyWithWriteLock(recorder2.id, () -> recorder2.runTaskAndSupply(task2)))
+                Async.doAsync(() -> lock.supplyWithReadLock(recorder1.id, () -> recorder1.runTaskAndSupply(task1)), threadPool),
+                Async.doAsync(() -> lock.supplyWithWriteLock(recorder2.id, () -> recorder2.runTaskAndSupply(task2)), threadPool)
         );
 
         waitForAll(completableFutures);
+
+        threadPool.shutdownNow();
 
         logAndCheckExecutionTimes(recorder1, recorder2, true);
 
