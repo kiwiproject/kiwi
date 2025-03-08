@@ -24,6 +24,7 @@ import java.time.Instant;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executors;
+import java.util.concurrent.ForkJoinPool;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Supplier;
@@ -42,6 +43,17 @@ class StripedLockTest {
             var stdout = KiwiIO.readLinesFromInputStreamOf(unameProc);
             LOG.info("OS info: {}", stdout);
         }, () -> LOG.warn("The uname command timed out!"));
+
+        var availableProcessors = Runtime.getRuntime().availableProcessors();
+        LOG.info("availableProcessors: {}", availableProcessors);
+
+        var commonPool = ForkJoinPool.commonPool();
+        LOG.info("ForkJoinPool Common Pool Parallelism: {}", commonPool.getParallelism());
+        LOG.info("ForkJoinPool Common Pool Active Thread Count: {}", commonPool.getActiveThreadCount());
+        LOG.info("ForkJoinPool Common Pool Running Thread Count: {}", commonPool.getRunningThreadCount());
+        LOG.info("ForkJoinPool Common Pool Queued Task Count: {}", commonPool.getQueuedTaskCount());
+        LOG.info("ForkJoinPool Common Pool Queued Submission Count: {}", commonPool.getQueuedSubmissionCount());
+        LOG.info("ForkJoinPool Common Pool Pool Size: {}", commonPool.getPoolSize());
     }
 
     @BeforeEach
@@ -154,9 +166,7 @@ class StripedLockTest {
         var recorder1 = new TaskRecorder("task1");
         var recorder2 = new TaskRecorder("task2");
 
-        // TODO: This is to ensure there are definitely more than enough threads to run two async tasks
-        //  and see whether the ForkJoinPool commonPool() implementation isn't causing this (which I
-        //  doubt but let's see anyway...)
+        // Well damn, this made this test pass...
         var threadPool = Executors.newFixedThreadPool(10);
 
         var completableFutures = List.of(
