@@ -44,6 +44,10 @@ class StripedLockTest {
             LOG.info("OS info: {}", stdout);
         }, () -> LOG.warn("The uname command timed out!"));
 
+        reportCommonPoolInfo();
+    }
+
+    private static void reportCommonPoolInfo() {
         var availableProcessors = Runtime.getRuntime().availableProcessors();
         LOG.info("availableProcessors: {}", availableProcessors);
 
@@ -127,6 +131,8 @@ class StripedLockTest {
 
     @Test
     void testRunWithLock_WhenNonBlocking_ForWriteAndWriteLocks() {
+        reportCommonPoolInfo();
+
         var lock = new StripedLock(2);
         var task = createRunnableTask();
         var recorder1 = new TaskRecorder("task1");
@@ -161,6 +167,8 @@ class StripedLockTest {
 
     @Test
     void testRunWithLock_WhenNonBlocking_ForReadAndReadLocks() {
+        reportCommonPoolInfo();
+
         var lock = new StripedLock(1);
         var task = createRunnableTask();
         var recorder1 = new TaskRecorder("task1");
@@ -181,6 +189,8 @@ class StripedLockTest {
 
     @Test
     void testSupplyWithLock_WhenNonBlocking_ForReadAndReadLocks() {
+        reportCommonPoolInfo();
+
         var lock = new StripedLock(1);
         var task1 = createSupplierTask(42L);
         var task2 = createSupplierTask(84L);
@@ -223,6 +233,8 @@ class StripedLockTest {
 
     @Test
     void testSupplyWithLock_WhenNonBlocking_ForReadAndWriteLocks() {
+        reportCommonPoolInfo();
+        
         var lock = new StripedLock(2);
         var task1 = createSupplierTask(42L);
         var task2 = createSupplierTask(84L);
