@@ -23,6 +23,7 @@ import org.kiwiproject.io.KiwiIO;
 import java.time.Instant;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Supplier;
@@ -153,9 +154,14 @@ class StripedLockTest {
         var recorder1 = new TaskRecorder("task1");
         var recorder2 = new TaskRecorder("task2");
 
+        // TODO: This is to ensure there are definitely more than enough threads to run two async tasks
+        //  and see whether the ForkJoinPool commonPool() implementation isn't causing this (which I
+        //  doubt but let's see anyway...)
+        var threadPool = Executors.newFixedThreadPool(10);
+
         var completableFutures = List.of(
-                Async.doAsync(() -> lock.runWithReadLock(recorder1.id, () -> recorder1.runTask(task))),
-                Async.doAsync(() -> lock.runWithReadLock(recorder2.id, () -> recorder2.runTask(task)))
+                Async.doAsync(() -> lock.runWithReadLock(recorder1.id, () -> recorder1.runTask(task)), threadPool),
+                Async.doAsync(() -> lock.runWithReadLock(recorder2.id, () -> recorder2.runTask(task)), threadPool)
         );
 
         waitForAll(completableFutures);
