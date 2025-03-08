@@ -238,10 +238,21 @@ class StripedLockTest {
     }
 
     private void logAndCheckExecutionTimes(TaskRecorder recorder1, TaskRecorder recorder2, boolean expectedOverlap) {
-        LOG.debug("task 1 execution time range: {}", recorder1.timeRange());
-        LOG.debug("task 2 execution time range: {}", recorder2.timeRange());
+        var range1 = recorder1.timeRange();
+        LOG.debug("task 1 execution time range: {}", range1);
 
-        assertThat(recorder1.overlaps(recorder2)).isEqualTo(expectedOverlap);
+        var range2 = recorder2.timeRange();
+        LOG.debug("task 2 execution time range: {}", range2);
+
+        var overlap = recorder1.overlaps(recorder2);
+        LOG.debug("task 1 and 2 overlap? {} (expecting: {})", overlap, expectedOverlap);
+
+        var description = expectedOverlap ?
+                "expected execution time ranges to overlap but they do not (range 1: %s ; range 2: %s)" :
+                "did not expect execution time ranges to overlap but they do (range 1: %s ; range 2: %s)";
+        assertThat(overlap)
+                .describedAs(description, range1, range2)
+                .isEqualTo(expectedOverlap);
     }
 
     static class TaskRecorder {
