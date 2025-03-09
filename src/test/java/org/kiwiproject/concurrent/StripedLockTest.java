@@ -8,7 +8,6 @@ import static org.kiwiproject.collect.KiwiLists.second;
 import com.google.common.collect.Range;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -17,14 +16,11 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.NullAndEmptySource;
 import org.kiwiproject.base.DefaultEnvironment;
 import org.kiwiproject.base.KiwiEnvironment;
-import org.kiwiproject.base.process.Processes;
-import org.kiwiproject.io.KiwiIO;
 
 import java.time.Instant;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executors;
-import java.util.concurrent.ForkJoinPool;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Supplier;
@@ -34,31 +30,6 @@ import java.util.function.Supplier;
 class StripedLockTest {
 
     private static final KiwiEnvironment ENV = new DefaultEnvironment();
-
-    @BeforeAll
-    static void beforeAll() {
-        var unameProc = Processes.launch("uname", "-a");
-        var exitCodeOpt = Processes.waitForExit(unameProc, 1, TimeUnit.SECONDS);
-        exitCodeOpt.ifPresentOrElse(exitCode -> {
-            var stdout = KiwiIO.readLinesFromInputStreamOf(unameProc);
-            LOG.info("OS info: {}", stdout);
-        }, () -> LOG.warn("The uname command timed out!"));
-
-        reportCommonPoolInfo();
-    }
-
-    private static void reportCommonPoolInfo() {
-        var availableProcessors = Runtime.getRuntime().availableProcessors();
-        LOG.info("availableProcessors: {}", availableProcessors);
-
-        var commonPool = ForkJoinPool.commonPool();
-        LOG.info("ForkJoinPool Common Pool Parallelism: {}", commonPool.getParallelism());
-        LOG.info("ForkJoinPool Common Pool Active Thread Count: {}", commonPool.getActiveThreadCount());
-        LOG.info("ForkJoinPool Common Pool Running Thread Count: {}", commonPool.getRunningThreadCount());
-        LOG.info("ForkJoinPool Common Pool Queued Task Count: {}", commonPool.getQueuedTaskCount());
-        LOG.info("ForkJoinPool Common Pool Queued Submission Count: {}", commonPool.getQueuedSubmissionCount());
-        LOG.info("ForkJoinPool Common Pool Pool Size: {}", commonPool.getPoolSize());
-    }
 
     @BeforeEach
     void setUp(TestInfo testInfo) {
@@ -131,25 +102,24 @@ class StripedLockTest {
 
     @Test
     void testRunWithLock_WhenNonBlocking_ForWriteAndWriteLocks() {
-        reportCommonPoolInfo();
-
         var lock = new StripedLock(2);
         var task = createRunnableTask();
         var recorder1 = new TaskRecorder("task1");
         var recorder2 = new TaskRecorder("task2");
 
         var threadPool = Executors.newFixedThreadPool(2);
+        try {
+            var completableFutures = List.of(
+                    Async.doAsync(() -> lock.runWithWriteLock(recorder1.id, () -> recorder1.runTask(task)), threadPool),
+                    Async.doAsync(() -> lock.runWithWriteLock(recorder2.id, () -> recorder2.runTask(task)), threadPool)
+            );
 
-        var completableFutures = List.of(
-                Async.doAsync(() -> lock.runWithWriteLock(recorder1.id, () -> recorder1.runTask(task)), threadPool),
-                Async.doAsync(() -> lock.runWithWriteLock(recorder2.id, () -> recorder2.runTask(task)), threadPool)
-        );
+            waitForAll(completableFutures);
 
-        waitForAll(completableFutures);
-
-        threadPool.shutdownNow();
-
-        logAndCheckExecutionTimes(recorder1, recorder2, true);
+            logAndCheckExecutionTimes(recorder1, recorder2, true);
+        } finally {
+            threadPool.shutdownNow();
+        }
     }
 
     @Test
@@ -171,32 +141,28 @@ class StripedLockTest {
 
     @Test
     void testRunWithLock_WhenNonBlocking_ForReadAndReadLocks() {
-        reportCommonPoolInfo();
-
         var lock = new StripedLock(1);
         var task = createRunnableTask();
         var recorder1 = new TaskRecorder("task1");
         var recorder2 = new TaskRecorder("task2");
 
-        // Well damn, this made this test pass...
         var threadPool = Executors.newFixedThreadPool(2);
+        try {
+            var completableFutures = List.of(
+                    Async.doAsync(() -> lock.runWithReadLock(recorder1.id, () -> recorder1.runTask(task)), threadPool),
+                    Async.doAsync(() -> lock.runWithReadLock(recorder2.id, () -> recorder2.runTask(task)), threadPool)
+            );
 
-        var completableFutures = List.of(
-                Async.doAsync(() -> lock.runWithReadLock(recorder1.id, () -> recorder1.runTask(task)), threadPool),
-                Async.doAsync(() -> lock.runWithReadLock(recorder2.id, () -> recorder2.runTask(task)), threadPool)
-        );
+            waitForAll(completableFutures);
 
-        waitForAll(completableFutures);
-
-        threadPool.shutdownNow();
-
-        logAndCheckExecutionTimes(recorder1, recorder2, true);
+            logAndCheckExecutionTimes(recorder1, recorder2, true);
+        } finally {
+            threadPool.shutdownNow();
+        }
     }
 
     @Test
     void testSupplyWithLock_WhenNonBlocking_ForReadAndReadLocks() {
-        reportCommonPoolInfo();
-
         var lock = new StripedLock(1);
         var task1 = createSupplierTask(42L);
         var task2 = createSupplierTask(84L);
@@ -204,20 +170,21 @@ class StripedLockTest {
         var recorder2 = new TaskRecorder("task2");
 
         var threadPool = Executors.newFixedThreadPool(2);
+        try {
+            var completableFutures = List.of(
+                    Async.doAsync(() -> lock.supplyWithReadLock(recorder1.id, () -> recorder1.runTaskAndSupply(task1)), threadPool),
+                    Async.doAsync(() -> lock.supplyWithReadLock(recorder2.id, () -> recorder2.runTaskAndSupply(task2)), threadPool)
+            );
 
-        var completableFutures = List.of(
-                Async.doAsync(() -> lock.supplyWithReadLock(recorder1.id, () -> recorder1.runTaskAndSupply(task1)), threadPool),
-                Async.doAsync(() -> lock.supplyWithReadLock(recorder2.id, () -> recorder2.runTaskAndSupply(task2)), threadPool)
-        );
+            waitForAll(completableFutures);
 
-        waitForAll(completableFutures);
+            logAndCheckExecutionTimes(recorder1, recorder2, true);
 
-        threadPool.shutdownNow();
-
-        logAndCheckExecutionTimes(recorder1, recorder2, true);
-
-        assertThat(first(completableFutures).getNow(-1L)).isEqualTo(42L);
-        assertThat(second(completableFutures).getNow(-1L)).isEqualTo(84L);
+            assertThat(first(completableFutures).getNow(-1L)).isEqualTo(42L);
+            assertThat(second(completableFutures).getNow(-1L)).isEqualTo(84L);
+        } finally {
+            threadPool.shutdownNow();
+        }
     }
 
     @Test
@@ -243,8 +210,6 @@ class StripedLockTest {
 
     @Test
     void testSupplyWithLock_WhenNonBlocking_ForReadAndWriteLocks() {
-        reportCommonPoolInfo();
-        
         var lock = new StripedLock(2);
         var task1 = createSupplierTask(42L);
         var task2 = createSupplierTask(84L);
@@ -252,20 +217,21 @@ class StripedLockTest {
         var recorder2 = new TaskRecorder("task2");
 
         var threadPool = Executors.newFixedThreadPool(2);
+        try {
+            var completableFutures = List.of(
+                    Async.doAsync(() -> lock.supplyWithReadLock(recorder1.id, () -> recorder1.runTaskAndSupply(task1)), threadPool),
+                    Async.doAsync(() -> lock.supplyWithWriteLock(recorder2.id, () -> recorder2.runTaskAndSupply(task2)), threadPool)
+            );
 
-        var completableFutures = List.of(
-                Async.doAsync(() -> lock.supplyWithReadLock(recorder1.id, () -> recorder1.runTaskAndSupply(task1)), threadPool),
-                Async.doAsync(() -> lock.supplyWithWriteLock(recorder2.id, () -> recorder2.runTaskAndSupply(task2)), threadPool)
-        );
+            waitForAll(completableFutures);
 
-        waitForAll(completableFutures);
+            logAndCheckExecutionTimes(recorder1, recorder2, true);
 
-        threadPool.shutdownNow();
-
-        logAndCheckExecutionTimes(recorder1, recorder2, true);
-
-        assertThat(first(completableFutures).getNow(-1L)).isEqualTo(42L);
-        assertThat(second(completableFutures).getNow(-1L)).isEqualTo(84L);
+            assertThat(first(completableFutures).getNow(-1L)).isEqualTo(42L);
+            assertThat(second(completableFutures).getNow(-1L)).isEqualTo(84L);
+        } finally {
+            threadPool.shutdownNow();
+        }
     }
 
     private Runnable createRunnableTask() {
