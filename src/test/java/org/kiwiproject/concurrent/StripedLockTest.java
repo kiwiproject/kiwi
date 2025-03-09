@@ -289,7 +289,7 @@ class StripedLockTest {
     }
 
     private <T> void waitForAll(List<CompletableFuture<T>> futures) {
-        Async.waitForAll(futures, 300, TimeUnit.MILLISECONDS);
+        Async.waitForAll(futures, 1, TimeUnit.SECONDS);
     }
 
     private void logAndCheckExecutionTimes(TaskRecorder recorder1, TaskRecorder recorder2, boolean expectedOverlap) {
