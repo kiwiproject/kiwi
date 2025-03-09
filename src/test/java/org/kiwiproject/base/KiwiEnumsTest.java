@@ -14,6 +14,8 @@ import org.junit.jupiter.params.provider.NullAndEmptySource;
 import org.junit.jupiter.params.provider.ValueSource;
 import org.kiwiproject.util.BlankStringSource;
 
+import java.util.Locale;
+
 @DisplayName("KiwiEnums")
 class KiwiEnumsTest {
 
@@ -306,5 +308,37 @@ class KiwiEnumsTest {
 
     enum Color {
         RED, ORANGE, YELLOW, GREEN, BLUE, INDIGO, VIOLET
+    }
+
+    @Nested
+    class LowercaseName {
+
+        enum DrinkType {
+            BEER, JUICE, SODA, WATER, WINE
+        }
+
+        enum OrderStatus {
+            PENDING_PAYMENT,
+            PROCESSING_ORDER,
+            SHIPPED_OUT,
+            DELIVERED_SUCCESSFULLY,
+            CANCELLED_BY_CUSTOMER,
+            RETURN_REQUESTED
+        }
+
+        // IntelliJ warning about "No implicit conversion found to convert 'Xyz' to 'Enum<E>' is NOT correct
+        @SuppressWarnings("JUnitMalformedDeclaration")
+        @ParameterizedTest
+        @EnumSource(Season.class)
+        @EnumSource(Color.class)
+        @EnumSource(DrinkType.class)
+        @EnumSource(OrderStatus.class)
+        <E extends Enum<E>> void shouldConvertTheEnumNamesToLowercase(Enum<E> enumValue) {
+            var value = KiwiEnums.lowercaseName(enumValue);
+
+            com.google.common.base.Enums.getIfPresent(Season.class, "winter");
+
+            assertThat(value).isEqualTo(enumValue.name().toLowerCase(Locale.ENGLISH));
+        }
     }
 }

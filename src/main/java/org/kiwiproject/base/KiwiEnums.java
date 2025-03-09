@@ -12,6 +12,7 @@ import org.checkerframework.checker.nullness.qual.Nullable;
 import org.kiwiproject.collect.KiwiArrays;
 
 import java.util.Arrays;
+import java.util.Locale;
 import java.util.Optional;
 
 /**
@@ -90,10 +91,6 @@ public class KiwiEnums {
         return enumValue.name().equalsIgnoreCase(stringOrNull(value));
     }
 
-    private static <E extends Enum<E>> void checkEnumNotNull(Enum<E> enumValue) {
-        checkArgumentNotNull(enumValue, "enumValue must not be null");
-    }
-
     /**
      * Compares the given enum's {@link Enum#name() name} with the given value for
      * inverse equality, i.e., they are not equal.
@@ -157,5 +154,35 @@ public class KiwiEnums {
     @SafeVarargs
     private static <E extends Enum<E>> void checkEnumsNotNullOrEmpty(Enum<E>... enumValues) {
         checkArgument(KiwiArrays.isNotNullOrEmpty(enumValues), "enumValues must not be null or empty");
+    }
+
+    /**
+     * Return the lowercase name of the enum value, using {@link Locale#ENGLISH} as the locale
+     * for the conversion.
+     *
+     * @param <E>       the enum type
+     * @param enumValue the enum value to lowercase
+     * @return the lowercase value of the enum value
+     * @see #lowercaseName(Enum, Locale)
+     */
+    public static <E extends Enum<E>> String lowercaseName(Enum<E> enumValue) {
+        return lowercaseName(enumValue, Locale.ENGLISH);
+    }
+
+    /**
+     * Return the lowercase name of the enum value.
+     *
+     * @param <E>       the enum type
+     * @param enumValue the enum value to lowercase
+     * @param locale    the Locale to use for the lowercase conversion
+     * @return the lowercase value of the enum value
+     */
+    public static <E extends Enum<E>> String lowercaseName(Enum<E> enumValue, Locale locale) {
+        checkEnumNotNull(enumValue);
+        return enumValue.name().toLowerCase(locale);
+    }
+
+    private static <E extends Enum<E>> void checkEnumNotNull(Enum<E> enumValue) {
+        checkArgumentNotNull(enumValue, "enumValue must not be null");
     }
 }
