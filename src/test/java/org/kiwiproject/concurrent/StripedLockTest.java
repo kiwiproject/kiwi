@@ -103,7 +103,7 @@ class StripedLockTest {
 
             waitForAll(completableFutures);
 
-            logAndCheckExecutionTimes(recorder1, recorder2, false);
+            logAndCheckExecutionTimes(recorder1, recorder2, TimeRanges.SHOULD_NOT_OVERLAP);
         }
 
         @Test
@@ -120,7 +120,7 @@ class StripedLockTest {
 
             waitForAll(completableFutures);
 
-            logAndCheckExecutionTimes(recorder1, recorder2, true);
+            logAndCheckExecutionTimes(recorder1, recorder2, TimeRanges.SHOULD_OVERLAP);
         }
 
         @Test
@@ -137,7 +137,7 @@ class StripedLockTest {
 
             waitForAll(completableFutures);
 
-            logAndCheckExecutionTimes(recorder1, recorder2, false);
+            logAndCheckExecutionTimes(recorder1, recorder2, TimeRanges.SHOULD_NOT_OVERLAP);
         }
 
         @Test
@@ -154,7 +154,7 @@ class StripedLockTest {
 
             waitForAll(completableFutures);
 
-            logAndCheckExecutionTimes(recorder1, recorder2, true);
+            logAndCheckExecutionTimes(recorder1, recorder2, TimeRanges.SHOULD_OVERLAP);
         }
 
         @Test
@@ -172,7 +172,7 @@ class StripedLockTest {
 
             waitForAll(completableFutures);
 
-            logAndCheckExecutionTimes(recorder1, recorder2, true);
+            logAndCheckExecutionTimes(recorder1, recorder2, TimeRanges.SHOULD_OVERLAP);
 
             assertThat(first(completableFutures).getNow(-1L)).isEqualTo(42L);
             assertThat(second(completableFutures).getNow(-1L)).isEqualTo(84L);
@@ -193,7 +193,7 @@ class StripedLockTest {
 
             waitForAll(completableFutures);
 
-            logAndCheckExecutionTimes(recorder1, recorder2, false);
+            logAndCheckExecutionTimes(recorder1, recorder2, TimeRanges.SHOULD_NOT_OVERLAP);
 
             assertThat(first(completableFutures).getNow(-1L)).isEqualTo(42L);
             assertThat(second(completableFutures).getNow(-1L)).isEqualTo(84L);
@@ -214,7 +214,7 @@ class StripedLockTest {
 
             waitForAll(completableFutures);
 
-            logAndCheckExecutionTimes(recorder1, recorder2, true);
+            logAndCheckExecutionTimes(recorder1, recorder2, TimeRanges.SHOULD_OVERLAP);
 
             assertThat(first(completableFutures).getNow(-1L)).isEqualTo(42L);
             assertThat(second(completableFutures).getNow(-1L)).isEqualTo(84L);
@@ -245,13 +245,27 @@ class StripedLockTest {
         Async.waitForAll(futures, 300, TimeUnit.MILLISECONDS);
     }
 
-    private void logAndCheckExecutionTimes(TaskRecorder recorder1, TaskRecorder recorder2, boolean expectedOverlap) {
+    enum TimeRanges {
+        SHOULD_OVERLAP(true), SHOULD_NOT_OVERLAP(false);
+
+        final boolean expectOverlap;
+
+        TimeRanges(boolean expectOverlap) {
+            this.expectOverlap = expectOverlap;
+        }
+    }
+
+    private void logAndCheckExecutionTimes(TaskRecorder recorder1,
+                                           TaskRecorder recorder2,
+                                           TimeRanges timeRanges) {
+
         var range1 = recorder1.timeRange();
         LOG.debug("task 1 execution time range: {}", range1);
 
         var range2 = recorder2.timeRange();
         LOG.debug("task 2 execution time range: {}", range2);
 
+        var expectedOverlap = timeRanges.expectOverlap;
         var overlap = recorder1.overlaps(recorder2);
         LOG.debug("task 1 and 2 overlap? {} (expecting: {})", overlap, expectedOverlap);
 
