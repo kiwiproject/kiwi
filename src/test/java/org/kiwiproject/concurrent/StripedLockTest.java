@@ -8,6 +8,7 @@ import static org.kiwiproject.collect.KiwiLists.second;
 import com.google.common.collect.Range;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -16,6 +17,8 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.NullAndEmptySource;
 import org.kiwiproject.base.DefaultEnvironment;
 import org.kiwiproject.base.KiwiEnvironment;
+import org.kiwiproject.base.process.Processes;
+import org.kiwiproject.io.KiwiIO;
 
 import java.time.Instant;
 import java.util.List;
@@ -31,6 +34,16 @@ import java.util.function.Supplier;
 class StripedLockTest {
 
     private static final KiwiEnvironment ENV = new DefaultEnvironment();
+
+    @BeforeAll
+    static void beforeAll() {
+        var unameProc = Processes.launch("uname", "-a");
+        var exitCodeOpt = Processes.waitForExit(unameProc, 1, TimeUnit.SECONDS);
+        exitCodeOpt.ifPresentOrElse(exitCode -> {
+            var stdout = KiwiIO.readLinesFromInputStreamOf(unameProc);
+            LOG.info("OS info: {}", stdout);
+        }, () -> LOG.warn("The uname command timed out!"));
+    }
 
     @ParameterizedTest
     @NullAndEmptySource
