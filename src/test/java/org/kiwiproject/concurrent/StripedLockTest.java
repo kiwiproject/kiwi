@@ -145,9 +145,9 @@ class StripedLockTest {
                 Async.doAsync(() -> lock.runWithWriteLock(recorder2.id, () -> recorder2.runTask(task)), threadPool)
         );
 
-        threadPool.shutdownNow();
-
         waitForAll(completableFutures);
+
+        threadPool.shutdownNow();
 
         logAndCheckExecutionTimes(recorder1, recorder2, true);
     }
@@ -289,7 +289,7 @@ class StripedLockTest {
     }
 
     private <T> void waitForAll(List<CompletableFuture<T>> futures) {
-        Async.waitForAll(futures, 1, TimeUnit.SECONDS);
+        Async.waitForAll(futures, 300, TimeUnit.MILLISECONDS);
     }
 
     private void logAndCheckExecutionTimes(TaskRecorder recorder1, TaskRecorder recorder2, boolean expectedOverlap) {
