@@ -12,7 +12,6 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.TestInfo;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.NullAndEmptySource;
 import org.kiwiproject.base.DefaultEnvironment;
@@ -32,16 +31,6 @@ import java.util.function.Supplier;
 class StripedLockTest {
 
     private static final KiwiEnvironment ENV = new DefaultEnvironment();
-
-    @BeforeEach
-    void setUp(TestInfo testInfo) {
-        LOG.info("--- BEGIN: {} ---", testInfo.getDisplayName());
-    }
-
-    @AfterEach
-    void tearDown(TestInfo testInfo) {
-        LOG.info("--- END: {} ---", testInfo.getDisplayName());
-    }
 
     @ParameterizedTest
     @NullAndEmptySource
