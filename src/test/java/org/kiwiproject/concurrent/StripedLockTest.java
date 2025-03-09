@@ -7,7 +7,10 @@ import static org.kiwiproject.collect.KiwiLists.second;
 
 import com.google.common.collect.Range;
 import lombok.extern.slf4j.Slf4j;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.NullAndEmptySource;
@@ -17,6 +20,8 @@ import org.kiwiproject.base.KiwiEnvironment;
 import java.time.Instant;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Supplier;
@@ -69,135 +74,151 @@ class StripedLockTest {
         assertThat(flag).isTrue();
     }
 
-    @Test
-    void testRunWithLock_WhenBlocking_ForWriteAndWriteLocks() {
-        var lock = new StripedLock(1);
-        var task = createRunnableTask();
-        var recorder1 = new TaskRecorder("task1");
-        var recorder2 = new TaskRecorder("task2");
+    @Nested
+    class WithMultipleConcurrentTasks {
 
-        var completableFutures = List.of(
-                Async.doAsync(() -> lock.runWithWriteLock(recorder1.id, () -> recorder1.runTask(task))),
-                Async.doAsync(() -> lock.runWithWriteLock(recorder2.id, () -> recorder2.runTask(task)))
-        );
+        private ExecutorService threadPool;
 
-        waitForAll(completableFutures);
+        @BeforeEach
+        void setUp() {
+            threadPool = Executors.newFixedThreadPool(2);
+        }
 
-        logAndCheckExecutionTimes(recorder1, recorder2, false);
-    }
+        @AfterEach
+        void tearDown() {
+            threadPool.shutdownNow();
+        }
 
-    @Test
-    void testRunWithLock_WhenNonBlocking_ForWriteAndWriteLocks() {
-        var lock = new StripedLock(2);
-        var task = createRunnableTask();
-        var recorder1 = new TaskRecorder("task1");
-        var recorder2 = new TaskRecorder("task2");
+        @Test
+        void testRunWithLock_WhenBlocking_ForWriteAndWriteLocks() {
+            var lock = new StripedLock(1);
+            var task = createRunnableTask();
+            var recorder1 = new TaskRecorder("task1");
+            var recorder2 = new TaskRecorder("task2");
 
-        var completableFutures = List.of(
-                Async.doAsync(() -> lock.runWithWriteLock(recorder1.id, () -> recorder1.runTask(task))),
-                Async.doAsync(() -> lock.runWithWriteLock(recorder2.id, () -> recorder2.runTask(task)))
-        );
+            var completableFutures = List.of(
+                    Async.doAsync(() -> lock.runWithWriteLock(recorder1.id, () -> recorder1.runTask(task)), threadPool),
+                    Async.doAsync(() -> lock.runWithWriteLock(recorder2.id, () -> recorder2.runTask(task)), threadPool)
+            );
 
-        waitForAll(completableFutures);
+            waitForAll(completableFutures);
 
-        logAndCheckExecutionTimes(recorder1, recorder2, true);
-    }
+            logAndCheckExecutionTimes(recorder1, recorder2, ExecutionTimes.SHOULD_NOT_OVERLAP);
+        }
 
-    @Test
-    void testRunWithLock_WhenBlocking_ForReadAndWriteLocks() {
-        var lock = new StripedLock(1);  // ensures blocking execution
-        var task = createRunnableTask();
-        var recorder1 = new TaskRecorder("task1");
-        var recorder2 = new TaskRecorder("task2");
+        @Test
+        void testRunWithLock_WhenNonBlocking_ForWriteAndWriteLocks() {
+            var lock = new StripedLock(2);
+            var task = createRunnableTask();
+            var recorder1 = new TaskRecorder("task1");
+            var recorder2 = new TaskRecorder("task2");
 
-        var completableFutures = List.of(
-                Async.doAsync(() -> lock.runWithWriteLock(recorder1.id, () -> recorder1.runTask(task))),
-                Async.doAsync(() -> lock.runWithReadLock(recorder2.id, () -> recorder2.runTask(task)))
-        );
+            var completableFutures = List.of(
+                    Async.doAsync(() -> lock.runWithWriteLock(recorder1.id, () -> recorder1.runTask(task)), threadPool),
+                    Async.doAsync(() -> lock.runWithWriteLock(recorder2.id, () -> recorder2.runTask(task)), threadPool)
+            );
 
-        waitForAll(completableFutures);
+            waitForAll(completableFutures);
 
-        logAndCheckExecutionTimes(recorder1, recorder2, false);
-    }
+            logAndCheckExecutionTimes(recorder1, recorder2, ExecutionTimes.SHOULD_OVERLAP);
+        }
 
-    @Test
-    void testRunWithLock_WhenNonBlocking_ForReadAndReadLocks() {
-        var lock = new StripedLock(1);
-        var task = createRunnableTask();
-        var recorder1 = new TaskRecorder("task1");
-        var recorder2 = new TaskRecorder("task2");
+        @Test
+        void testRunWithLock_WhenBlocking_ForReadAndWriteLocks() {
+            var lock = new StripedLock(1);  // ensures blocking execution
+            var task = createRunnableTask();
+            var recorder1 = new TaskRecorder("task1");
+            var recorder2 = new TaskRecorder("task2");
 
-        var completableFutures = List.of(
-                Async.doAsync(() -> lock.runWithReadLock(recorder1.id, () -> recorder1.runTask(task))),
-                Async.doAsync(() -> lock.runWithReadLock(recorder2.id, () -> recorder2.runTask(task)))
-        );
+            var completableFutures = List.of(
+                    Async.doAsync(() -> lock.runWithWriteLock(recorder1.id, () -> recorder1.runTask(task)), threadPool),
+                    Async.doAsync(() -> lock.runWithReadLock(recorder2.id, () -> recorder2.runTask(task)), threadPool)
+            );
 
-        waitForAll(completableFutures);
+            waitForAll(completableFutures);
 
-        logAndCheckExecutionTimes(recorder1, recorder2, true);
-    }
+            logAndCheckExecutionTimes(recorder1, recorder2, ExecutionTimes.SHOULD_NOT_OVERLAP);
+        }
 
-    @Test
-    void testSupplyWithLock_WhenNonBlocking_ForReadAndReadLocks() {
-        var lock = new StripedLock(1);
-        var task1 = createSupplierTask(42L);
-        var task2 = createSupplierTask(84L);
-        var recorder1 = new TaskRecorder("task1");
-        var recorder2 = new TaskRecorder("task2");
+        @Test
+        void testRunWithLock_WhenNonBlocking_ForReadAndReadLocks() {
+            var lock = new StripedLock(1);
+            var task = createRunnableTask();
+            var recorder1 = new TaskRecorder("task1");
+            var recorder2 = new TaskRecorder("task2");
 
-        var completableFutures = List.of(
-                Async.doAsync(() -> lock.supplyWithReadLock(recorder1.id, () -> recorder1.runTaskAndSupply(task1))),
-                Async.doAsync(() -> lock.supplyWithReadLock(recorder2.id, () -> recorder2.runTaskAndSupply(task2)))
-        );
+            var completableFutures = List.of(
+                    Async.doAsync(() -> lock.runWithReadLock(recorder1.id, () -> recorder1.runTask(task)), threadPool),
+                    Async.doAsync(() -> lock.runWithReadLock(recorder2.id, () -> recorder2.runTask(task)), threadPool)
+            );
 
-        waitForAll(completableFutures);
+            waitForAll(completableFutures);
 
-        logAndCheckExecutionTimes(recorder1, recorder2, true);
+            logAndCheckExecutionTimes(recorder1, recorder2, ExecutionTimes.SHOULD_OVERLAP);
+        }
 
-        assertThat(first(completableFutures).getNow(-1L)).isEqualTo(42L);
-        assertThat(second(completableFutures).getNow(-1L)).isEqualTo(84L);
-    }
+        @Test
+        void testSupplyWithLock_WhenNonBlocking_ForReadAndReadLocks() {
+            var lock = new StripedLock(1);
+            var task1 = createSupplierTask(42L);
+            var task2 = createSupplierTask(84L);
+            var recorder1 = new TaskRecorder("task1");
+            var recorder2 = new TaskRecorder("task2");
 
-    @Test
-    void testSupplyWithLock_WhenBlocking_ForWriteAndReadLocks() {
-        var lock = new StripedLock(1);
-        var task1 = createSupplierTask(42L);
-        var task2 = createSupplierTask(84L);
-        var recorder1 = new TaskRecorder("task1");
-        var recorder2 = new TaskRecorder("task2");
+            var completableFutures = List.of(
+                    Async.doAsync(() -> lock.supplyWithReadLock(recorder1.id, () -> recorder1.runTaskAndSupply(task1)), threadPool),
+                    Async.doAsync(() -> lock.supplyWithReadLock(recorder2.id, () -> recorder2.runTaskAndSupply(task2)), threadPool)
+            );
 
-        var completableFutures = List.of(
-                Async.doAsync(() -> lock.supplyWithWriteLock(recorder1.id, () -> recorder1.runTaskAndSupply(task1))),
-                Async.doAsync(() -> lock.supplyWithReadLock(recorder2.id, () -> recorder2.runTaskAndSupply(task2)))
-        );
+            waitForAll(completableFutures);
 
-        waitForAll(completableFutures);
+            logAndCheckExecutionTimes(recorder1, recorder2, ExecutionTimes.SHOULD_OVERLAP);
 
-        logAndCheckExecutionTimes(recorder1, recorder2, false);
+            assertThat(first(completableFutures).getNow(-1L)).isEqualTo(42L);
+            assertThat(second(completableFutures).getNow(-1L)).isEqualTo(84L);
+        }
 
-        assertThat(first(completableFutures).getNow(-1L)).isEqualTo(42L);
-        assertThat(second(completableFutures).getNow(-1L)).isEqualTo(84L);
-    }
+        @Test
+        void testSupplyWithLock_WhenBlocking_ForWriteAndReadLocks() {
+            var lock = new StripedLock(1);
+            var task1 = createSupplierTask(42L);
+            var task2 = createSupplierTask(84L);
+            var recorder1 = new TaskRecorder("task1");
+            var recorder2 = new TaskRecorder("task2");
 
-    @Test
-    void testSupplyWithLock_WhenNonBlocking_ForReadAndWriteLocks() {
-        var lock = new StripedLock(2);
-        var task1 = createSupplierTask(42L);
-        var task2 = createSupplierTask(84L);
-        var recorder1 = new TaskRecorder("task1");
-        var recorder2 = new TaskRecorder("task2");
+            var completableFutures = List.of(
+                    Async.doAsync(() -> lock.supplyWithWriteLock(recorder1.id, () -> recorder1.runTaskAndSupply(task1)), threadPool),
+                    Async.doAsync(() -> lock.supplyWithReadLock(recorder2.id, () -> recorder2.runTaskAndSupply(task2)), threadPool)
+            );
 
-        var completableFutures = List.of(
-                Async.doAsync(() -> lock.supplyWithReadLock(recorder1.id, () -> recorder1.runTaskAndSupply(task1))),
-                Async.doAsync(() -> lock.supplyWithWriteLock(recorder2.id, () -> recorder2.runTaskAndSupply(task2)))
-        );
+            waitForAll(completableFutures);
 
-        waitForAll(completableFutures);
+            logAndCheckExecutionTimes(recorder1, recorder2, ExecutionTimes.SHOULD_NOT_OVERLAP);
 
-        logAndCheckExecutionTimes(recorder1, recorder2, true);
+            assertThat(first(completableFutures).getNow(-1L)).isEqualTo(42L);
+            assertThat(second(completableFutures).getNow(-1L)).isEqualTo(84L);
+        }
 
-        assertThat(first(completableFutures).getNow(-1L)).isEqualTo(42L);
-        assertThat(second(completableFutures).getNow(-1L)).isEqualTo(84L);
+        @Test
+        void testSupplyWithLock_WhenNonBlocking_ForReadAndWriteLocks() {
+            var lock = new StripedLock(2);
+            var task1 = createSupplierTask(42L);
+            var task2 = createSupplierTask(84L);
+            var recorder1 = new TaskRecorder("task1");
+            var recorder2 = new TaskRecorder("task2");
+
+            var completableFutures = List.of(
+                    Async.doAsync(() -> lock.supplyWithReadLock(recorder1.id, () -> recorder1.runTaskAndSupply(task1)), threadPool),
+                    Async.doAsync(() -> lock.supplyWithWriteLock(recorder2.id, () -> recorder2.runTaskAndSupply(task2)), threadPool)
+            );
+
+            waitForAll(completableFutures);
+
+            logAndCheckExecutionTimes(recorder1, recorder2, ExecutionTimes.SHOULD_OVERLAP);
+
+            assertThat(first(completableFutures).getNow(-1L)).isEqualTo(42L);
+            assertThat(second(completableFutures).getNow(-1L)).isEqualTo(84L);
+        }
     }
 
     private Runnable createRunnableTask() {
@@ -224,11 +245,36 @@ class StripedLockTest {
         Async.waitForAll(futures, 300, TimeUnit.MILLISECONDS);
     }
 
-    private void logAndCheckExecutionTimes(TaskRecorder recorder1, TaskRecorder recorder2, boolean expectedOverlap) {
-        LOG.debug("task 1 execution time range: {}", recorder1.timeRange());
-        LOG.debug("task 2 execution time range: {}", recorder2.timeRange());
+    enum ExecutionTimes {
+        SHOULD_OVERLAP(true), SHOULD_NOT_OVERLAP(false);
 
-        assertThat(recorder1.overlaps(recorder2)).isEqualTo(expectedOverlap);
+        final boolean expectOverlap;
+
+        ExecutionTimes(boolean expectOverlap) {
+            this.expectOverlap = expectOverlap;
+        }
+    }
+
+    private void logAndCheckExecutionTimes(TaskRecorder recorder1,
+                                           TaskRecorder recorder2,
+                                           ExecutionTimes executionTimes) {
+
+        var range1 = recorder1.timeRange();
+        LOG.debug("task 1 execution time range: {}", range1);
+
+        var range2 = recorder2.timeRange();
+        LOG.debug("task 2 execution time range: {}", range2);
+
+        var expectedOverlap = executionTimes.expectOverlap;
+        var overlap = recorder1.overlaps(recorder2);
+        LOG.debug("task 1 and 2 overlap? {} (expecting: {})", overlap, expectedOverlap);
+
+        var description = expectedOverlap ?
+                "expected execution time ranges to overlap but they do not (range 1: %s ; range 2: %s)" :
+                "did not expect execution time ranges to overlap but they do (range 1: %s ; range 2: %s)";
+        assertThat(overlap)
+                .describedAs(description, range1, range2)
+                .isEqualTo(expectedOverlap);
     }
 
     static class TaskRecorder {
