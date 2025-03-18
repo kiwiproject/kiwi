@@ -5,6 +5,7 @@ import lombok.extern.slf4j.Slf4j;
 import java.sql.Time;
 import java.sql.Timestamp;
 import java.time.Clock;
+import java.time.Duration;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -170,6 +171,11 @@ public class DefaultEnvironment implements KiwiEnvironment {
     }
 
     @Override
+    public void sleep(Duration duration) throws InterruptedException {
+        TimeUnit.NANOSECONDS.sleep(duration.toNanos());
+    }
+
+    @Override
     public boolean sleepQuietly(long milliseconds) {
         try {
             sleep(milliseconds);
@@ -201,6 +207,18 @@ public class DefaultEnvironment implements KiwiEnvironment {
         } catch (InterruptedException e) {
             LOG.warn("Interrupted sleeping for {} milliseconds with {} nanos", millis, nanos);
             Thread.currentThread().interrupt();
+            return true;
+        }
+    }
+
+    @Override
+    public boolean sleepQuietly(Duration duration) {
+        try {
+            sleep(duration);
+            return false;
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            LOG.warn("Interrupted sleeping for {}", duration);
             return true;
         }
     }

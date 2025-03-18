@@ -22,6 +22,7 @@ import org.kiwiproject.collect.KiwiMaps;
 import java.sql.Time;
 import java.sql.Timestamp;
 import java.time.Clock;
+import java.time.Duration;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -322,6 +323,15 @@ class DefaultEnvironmentTest {
     }
 
     @Test
+    void shouldSleep_WithDuration() throws InterruptedException {
+        var sleepMillis = 50;
+        var start = System.currentTimeMillis();
+        env.sleep(Duration.ofMillis(sleepMillis));
+        var end = System.currentTimeMillis();
+        assertElapsedTimeInMillisMeetsMinimum(sleepMillis, start, end);
+    }
+
+    @Test
     void testSleepQuietly() {
         long sleepTime = 50;
         long start = System.currentTimeMillis();
@@ -395,6 +405,31 @@ class DefaultEnvironmentTest {
         assertThat(interrupted).isTrue();
 
         verify(envSpy).sleepQuietly(millis, nanos);
+    }
+
+    @Test
+    void shouldSleepQuietly_WithDuration() {
+        var sleepMillis = 50;
+        var start = System.currentTimeMillis();
+        var interrupted = env.sleepQuietly(Duration.ofMillis(sleepMillis));
+        var end = System.currentTimeMillis();
+        assertThat(interrupted).isFalse();
+        assertElapsedTimeInMillisMeetsMinimum(sleepMillis, start, end);
+    }
+
+    @Test
+    void shouldSleepQuietly_WithDuration_WhenThrowsInterruptedException() throws InterruptedException {
+        var envSpy = spy(env);
+        doThrow(new InterruptedException())
+                .when(envSpy)
+                .sleep(any(Duration.class));
+
+        var duration = Duration.ofMillis(50);
+        var interrupted = envSpy.sleepQuietly(duration);
+
+        assertThat(interrupted).isTrue();
+
+        verify(envSpy).sleepQuietly(duration);
     }
 
     /**
