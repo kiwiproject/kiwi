@@ -3,6 +3,7 @@ package org.kiwiproject.base;
 import java.sql.Time;
 import java.sql.Timestamp;
 import java.time.Clock;
+import java.time.Duration;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -241,6 +242,14 @@ public interface KiwiEnvironment {
     void sleep(long millis, int nanos) throws InterruptedException;
 
     /**
+     * Sleep for the specified amount of time.
+     *
+     * @param duration the amount of time to sleep
+     * @throws InterruptedException if interrupted
+     */
+    void sleep(Duration duration) throws InterruptedException;
+
+    /**
      * Sleep for the given number of milliseconds. Will never throw an {@link InterruptedException}.
      *
      * @param milliseconds the number of milliseconds to sleep
@@ -269,6 +278,14 @@ public interface KiwiEnvironment {
      * @see Thread#sleep(long, int)
      */
     boolean sleepQuietly(long millis, int nanos);
+
+    /**
+     * Sleep for the specified amount of time. Will never throw an {@link InterruptedException}.
+     *
+     * @param duration the amount of time to sleep
+     * @return false if the sleep was not interrupted, and true if it was interrupted
+     */
+    boolean sleepQuietly(Duration duration);
 
     /**
      * Gets the value of the specified environment variable.
