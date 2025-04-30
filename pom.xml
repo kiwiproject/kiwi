@@ -32,6 +32,7 @@
         <kiwi-bom.version>2.0.23</kiwi-bom.version>
 
         <!-- Versions for provided dependencies -->
+        <commons-validator.version>1.9.0</commons-validator.version>
         <retrying-again.version>2.1.6</retrying-again.version>
 
         <!-- Versions for test dependencies -->
@@ -52,7 +53,7 @@
                 <type>pom</type>
                 <scope>import</scope>
             </dependency>
-            
+
             <dependency>
                 <groupId>org.kiwiproject</groupId>
                 <artifactId>retrying-again</artifactId>
@@ -91,6 +92,13 @@
         <dependency>
             <groupId>commons-io</groupId>
             <artifactId>commons-io</artifactId>
+            <scope>provided</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>commons-validator</groupId>
+            <artifactId>commons-validator</artifactId>
+            <version>${commons-validator.version}</version>
             <scope>provided</scope>
         </dependency>
 
