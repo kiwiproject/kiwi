@@ -26,6 +26,7 @@ import java.net.ConnectException;
 import java.net.NoRouteToHostException;
 import java.net.SocketTimeoutException;
 import java.net.UnknownHostException;
+import java.util.List;
 import java.util.Locale;
 import java.util.function.Predicate;
 import java.util.stream.IntStream;
@@ -143,7 +144,7 @@ class KiwiRetryerPredicatesTest {
         }
 
         @Override
-        public String generateDisplayNameForNestedClass(Class<?> nestedClass) {
+        public String generateDisplayNameForNestedClass(List<Class<?>> enclosingInstanceTypes, Class<?> nestedClass) {
             return f("The {} predicate returns", stripTrailingTestSuffix(nestedClass));
         }
 
@@ -154,7 +155,9 @@ class KiwiRetryerPredicatesTest {
         // Generates display name like: "true when the expected exception is the root cause" from
         // method names that have the format: <camelCaseConditionDescription>_[shouldBeTrue|shouldBeFalse]
         @Override
-        public String generateDisplayNameForMethod(Class<?> testClass, Method testMethod) {
+        public String generateDisplayNameForMethod(List<Class<?>> enclosingInstanceTypes,
+                                                   Class<?> testClass,
+                                                   Method testMethod) {
             var methodName = testMethod.getName();
             var parts = methodName.split("_");
 
