@@ -46,7 +46,7 @@ import java.util.stream.Stream;
  *         .queryParamIfNotBlank("sort", sort)
  *         .queryParamIfNotBlank("page", page)
  *         .queryParamIfNotBlank("limit", limit)
- *         .queryParamFilterNotBlank("langs", languages)
+ *         .queryParamFilterNotBlank("lang", languages)
  *         .request()
  *         .get();
  * </pre>
@@ -109,7 +109,7 @@ public class WebTargetHelper implements WebTarget {
      * @param name  the parameter name
      * @param value the parameter value
      * @return a new instance
-     * @throws IllegalArgumentException if name is blank or value is null
+     * @throws IllegalArgumentException if {@code name} is blank or {@code value} is null
      */
     public WebTargetHelper queryParamRequireNotNull(String name, Object value) {
         checkArgumentNotBlank(name, "name cannot be blank");
@@ -124,7 +124,7 @@ public class WebTargetHelper implements WebTarget {
      *
      * @param name  the parameter name
      * @param value the parameter value
-     * @return a new instance if name and value are not blank, otherwise this instance
+     * @return a new instance if {@code name} and {@code value} are not blank, otherwise this instance
      */
     public WebTargetHelper queryParamIfNotNull(String name, Object value) {
         if (isBlank(name) || isNull(value)) {
@@ -140,7 +140,7 @@ public class WebTargetHelper implements WebTarget {
      *
      * @param name   the parameter name
      * @param values one or more parameter values
-     * @return a new instance if name is not blank and values is not null or empty, otherwise this instance
+     * @return a new instance if {@code name} is not blank and {@code values} is not null or empty, otherwise this instance
      */
     public WebTargetHelper queryParamFilterNotNull(String name, Object... values) {
         if (isBlank(name) || isNullOrEmpty(values)) {
@@ -155,7 +155,7 @@ public class WebTargetHelper implements WebTarget {
      *
      * @param name   the parameter name
      * @param values one or more parameter values
-     * @return a new instance if name is not blank and values is not null or empty, otherwise this instance
+     * @return a new instance if {@code name} is not blank and {@code values} is not null or empty, otherwise this instance
      */
     public WebTargetHelper queryParamFilterNotNull(String name, List<Object> values) {
         if (isBlank(name) || isNullOrEmpty(values)) {
@@ -170,7 +170,7 @@ public class WebTargetHelper implements WebTarget {
      *
      * @param name   the parameter name
      * @param stream containing one or more parameter values
-     * @return a new instance if name is not blank and stream is not null, otherwise this instance
+     * @return a new instance if {@code name} is not blank and {@code stream} is not null, otherwise this instance
      */
     public WebTargetHelper queryParamFilterNotNull(String name, Stream<Object> stream) {
         if (isBlank(name) || isNull(stream)) {
@@ -191,7 +191,7 @@ public class WebTargetHelper implements WebTarget {
      * @param name  the parameter name
      * @param value the parameter value
      * @return this instance
-     * @throws IllegalArgumentException if name or value is blank
+     * @throws IllegalArgumentException if {@code name} or {@code value} is blank
      */
     public WebTargetHelper queryParamRequireNotBlank(String name, String value) {
         checkArgumentNotBlank(name, "name cannot be blank");
@@ -202,11 +202,11 @@ public class WebTargetHelper implements WebTarget {
     }
 
     /**
-     * Add the given query parameter only if both name and value are not blank.
+     * Add the given query parameter only if both {@code name} and {@code value} are not blank.
      *
      * @param name  the parameter name
      * @param value the parameter value
-     * @return a new instance if name is and value are not blank, otherwise this instance
+     * @return a new instance if {@code name} is and {@code value} are not blank, otherwise this instance
      */
     public WebTargetHelper queryParamIfNotBlank(String name, String value) {
         if (isBlank(name) || isBlank(value)) {
@@ -222,7 +222,7 @@ public class WebTargetHelper implements WebTarget {
      *
      * @param name   the parameter name
      * @param values one or more parameter values
-     * @return a new instance if name is not blank and values is not null or empty, otherwise this instance
+     * @return a new instance if {@code name} is not blank and {@code values} is not null or empty, otherwise this instance
      */
     public WebTargetHelper queryParamFilterNotBlank(String name, String... values) {
         if (isBlank(name) || isNullOrEmpty(values)) {
@@ -237,7 +237,7 @@ public class WebTargetHelper implements WebTarget {
      *
      * @param name   the parameter name
      * @param values one or more parameter values
-     * @return a new instance if name is not blank and values is not null or empty, otherwise this instance
+     * @return a new instance if {@code name} is not blank and {@code values} is not null or empty, otherwise this instance
      */
     public WebTargetHelper queryParamFilterNotBlank(String name, List<String> values) {
         if (isBlank(name) || isNullOrEmpty(values)) {
@@ -252,7 +252,7 @@ public class WebTargetHelper implements WebTarget {
      *
      * @param name   the parameter name
      * @param stream containing one or more parameter values
-     * @return a new instance if name is not blank and stream is not null, otherwise this instance
+     * @return a new instance if {@code name} is not blank and {@code stream} is not null, otherwise this instance
      */
     public WebTargetHelper queryParamFilterNotBlank(String name, Stream<String> stream) {
         if (isBlank(name) || isNull(stream)) {
@@ -272,7 +272,7 @@ public class WebTargetHelper implements WebTarget {
      *
      * @param parameters a map representing the query parameters
      * @param <V>        the type of keys in the map
-     * @return a new instance if parameters is not null or empty, otherwise this instance
+     * @return a new instance if {@code parameters} is not null or empty, otherwise this instance
      * @implNote This method is distinct from {@link #queryParamsFromMultivaluedMap(MultivaluedMap)} because the
      * {@link MultivaluedMap} interface extends the regular Java {@link Map} and under certain circumstances this
      * method will be called even when the argument is actually a {@link MultivaluedMap}. By having separate and
@@ -293,11 +293,11 @@ public class WebTargetHelper implements WebTarget {
 
         // NOTE: The above is effectively a foldLeft, which Java Streams does not have. The 3-arg reduce version is a lot
         // more difficult to understand than a simple loop with a mutable variable that we keep replacing. In addition,
-        // the "reduce" version cannot be strictly correct, since we cannot define a combiner function which is "an
-        // associative, non-interfering, stateless function for combining" two WebTargetHelper instances. Instead, we
+        // the "reduce" version cannot be strictly correct, since we cannot define a 'combiner' function which is an
+        // "associative, non-interfering, stateless function for combining" two WebTargetHelper instances. Instead, we
         // would require it be only used on a sequential (non-parallel) stream. Regardless, the implementation is less
         // clear than just a loop with a mutable variable, which is why this is not using the streams API. While the
-        // lovely StreamEx library does have a foldLeft where the seed and accumulator have differing types, it is not
+        // lovely StreamEx library does have a 'foldLeft' where the seed and accumulator have differing types, it is not
         // worth adding a hard dependency on that library for one function.
         // See https://stackoverflow.com/questions/24308146/why-is-a-combiner-needed-for-reduce-method-that-converts-type-in-java-8
 
@@ -309,7 +309,7 @@ public class WebTargetHelper implements WebTarget {
      *
      * @param parameters a multivalued map representing the query parameters
      * @param <V>        the type of keys in the map
-     * @return a new instance if parameters is not null or empty, otherwise this instance
+     * @return a new instance if {@code parameters} is not null or empty, otherwise this instance
      * @implNote See implementation note on {@link #queryParamsFromMap(Map)} for an explanation why this method is
      * named separately and distinctly.
      */
@@ -320,7 +320,7 @@ public class WebTargetHelper implements WebTarget {
         }
 
         // NOTES:
-        // 1. This is effectively a foldLeft, which Java Streams does not have. See explanation in the method above.
+        // 1. This is effectively a 'foldLeft', which Java Streams does not have. See explanation in the method above.
         // 2. To properly support the generic V type parameter, we unfortunately have to cast the entry value to
         //    List<Object> to get the compiler to call queryParamFilterNotNull(String, List<Object>). If
         //    the cast is not done, the compiler instead "thinks" the value is an Object and selects the
@@ -344,7 +344,7 @@ public class WebTargetHelper implements WebTarget {
     //
     // 1. Methods that return WebTarget return a new instance
     // 2. Methods from the Configurable superinterface return "this", i.e., the property method
-    //    and the register method
+    //    and register methods
     // 3. Other methods that return different types (e.g., URI) simply return those types
     //
     // So, the methods in this class follow the above contracts, except that they return
