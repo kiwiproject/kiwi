@@ -18,6 +18,7 @@ import jakarta.ws.rs.client.WebTarget;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.MultivaluedHashMap;
 import jakarta.ws.rs.core.MultivaluedMap;
+import lombok.Value;
 import org.glassfish.jersey.client.filter.CsrfProtectionFilter;
 import org.glassfish.jersey.client.filter.EncodingFeature;
 import org.junit.jupiter.api.AfterAll;
@@ -184,104 +185,170 @@ class WebTargetHelperTest {
     }
 
     @Nested
-    class QueryParamFilterNotNull {
+    class QueryParamFilterNotNull_WhenVarargs {
 
-        @Nested
-        class WhenArray {
+        @ParameterizedTest
+        @NullAndEmptySource
+        void shouldReturnSameInstanceWithNoQuery_WhenNameIsBlank(String name) {
+            var newWebTarget = withWebTarget(originalWebTarget)
+                    .queryParamFilterNotNull(name, 1, 2, 3);
 
-            @ParameterizedTest
-            @NullAndEmptySource
-            void shouldReturnSameInstanceWithNoQuery_WhenNameIsBlank(String name) {
-                var newWebTarget = withWebTarget(originalWebTarget)
-                        .queryParamFilterNotNull(name, 1, 2, 3);
-
-                assertIsOriginalWebTargetAndHasNoQuery(newWebTarget);
-            }
-
-            @ParameterizedTest
-            @NullAndEmptySource
-            void shouldReturnSameInstanceWithNoQuery_WhenNullOrEmpty(Object[] values) {
-                var newWebTarget = withWebTarget(originalWebTarget)
-                        .queryParamFilterNotNull("foo", values);
-
-                assertIsOriginalWebTargetAndHasNoQuery(newWebTarget);
-            }
-
-            @Test
-            void shouldIncludeOnlyNonNullValues() {
-                var newWebTarget = withWebTarget(originalWebTarget)
-                        .queryParamFilterNotNull("lottoNumbers", 42, 84, null, null, 252);
-
-                assertThat(newWebTarget.getUri()).hasQuery("lottoNumbers=42&lottoNumbers=84&lottoNumbers=252");
-            }
+            assertIsOriginalWebTargetAndHasNoQuery(newWebTarget);
         }
 
-        @Nested
-        class WhenList {
+        @ParameterizedTest
+        @NullAndEmptySource
+        void shouldReturnSameInstanceWithNoQuery_WhenNullOrEmpty(Object[] values) {
+            var newWebTarget = withWebTarget(originalWebTarget)
+                    .queryParamFilterNotNull("foo", values);
 
-            @ParameterizedTest
-            @NullAndEmptySource
-            void shouldReturnSameInstanceWithNoQuery_WhenNameIsBlank(String name) {
-                var newWebTarget = withWebTarget(originalWebTarget)
-                        .queryParamFilterNotNull(name, List.of(1, 2, 3));
-
-                assertIsOriginalWebTargetAndHasNoQuery(newWebTarget);
-            }
-
-            @ParameterizedTest
-            @NullAndEmptySource
-            void shouldReturnSameInstanceWithNoQuery_WhenNullOrEmpty(List<Object> values) {
-                var newWebTarget = withWebTarget(originalWebTarget)
-                        .queryParamFilterNotNull("foo", values);
-
-                assertIsOriginalWebTargetAndHasNoQuery(newWebTarget);
-            }
-
-            @Test
-            void shouldIncludeOnlyNonNullValues() {
-                var newWebTarget = withWebTarget(originalWebTarget)
-                        .queryParamFilterNotNull("lottoNumbers", newArrayList(42, 84, null, null, 252));
-
-                assertThat(newWebTarget.getUri()).hasQuery("lottoNumbers=42&lottoNumbers=84&lottoNumbers=252");
-            }
+            assertIsOriginalWebTargetAndHasNoQuery(newWebTarget);
         }
 
-        @Nested
-        class WhenStream {
+        @Test
+        void shouldIncludeOnlyNonNullValues() {
+            var newWebTarget = withWebTarget(originalWebTarget)
+                    .queryParamFilterNotNull("lottoNumbers", 42, 84, null, null, 252);
 
-            @ParameterizedTest
-            @NullAndEmptySource
-            void shouldReturnSameInstanceWithNoQuery_WhenNameIsBlank(String name) {
-                var newWebTarget = withWebTarget(originalWebTarget)
-                        .queryParamFilterNotNull(name, Stream.of(1, 2, 3));
+            assertThat(newWebTarget.getUri()).hasQuery("lottoNumbers=42&lottoNumbers=84&lottoNumbers=252");
+        }
+    }
 
-                assertIsOriginalWebTargetAndHasNoQuery(newWebTarget);
-            }
+    @SuppressWarnings("removal")
+    @Nested
+    class QueryParamFilterNotNull_WhenList_DEPRECATED {
 
-            @ParameterizedTest
-            @NullSource
-            void shouldReturnSameInstanceWithNoQuery_WhenNull(Stream<Object> values) {
-                var newWebTarget = withWebTarget(originalWebTarget)
-                        .queryParamFilterNotNull("foo", values);
+        @ParameterizedTest
+        @NullAndEmptySource
+        void shouldReturnSameInstanceWithNoQuery_WhenNameIsBlank(String name) {
+            var newWebTarget = withWebTarget(originalWebTarget)
+                    .queryParamFilterNotNull(name, List.of(1, 2, 3));
 
-                assertIsOriginalWebTargetAndHasNoQuery(newWebTarget);
-            }
+            assertIsOriginalWebTargetAndHasNoQuery(newWebTarget);
+        }
 
-            @Test
-            void shouldReturnNewInstance_WhenEmpty() {
-                var newWebTarget = withWebTarget(originalWebTarget)
-                        .queryParamFilterNotNull("foo", Stream.of());
+        @ParameterizedTest
+        @NullAndEmptySource
+        void shouldReturnSameInstanceWithNoQuery_WhenNullOrEmpty(List<Object> values) {
+            var newWebTarget = withWebTarget(originalWebTarget)
+                    .queryParamFilterNotNull("foo", values);
 
-                assertNotOriginalWebTargetAndNoQuery(newWebTarget);
-            }
+            assertIsOriginalWebTargetAndHasNoQuery(newWebTarget);
+        }
 
-            @Test
-            void shouldIncludeOnlyNonNullValues() {
-                var newWebTarget = withWebTarget(originalWebTarget)
-                        .queryParamFilterNotNull("lottoNumbers", Stream.of(42, 84, null, null, 252));
+        @Test
+        void shouldIncludeOnlyNonNullValues() {
+            var newWebTarget = withWebTarget(originalWebTarget)
+                    .queryParamFilterNotNull("lottoNumbers", newArrayList(42, 84, null, null, 252));
 
-                assertThat(newWebTarget.getUri()).hasQuery("lottoNumbers=42&lottoNumbers=84&lottoNumbers=252");
-            }
+            assertThat(newWebTarget.getUri()).hasQuery("lottoNumbers=42&lottoNumbers=84&lottoNumbers=252");
+        }
+    }
+
+    @SuppressWarnings("removal")
+    @Nested
+    class QueryParamFilterNotNull_WhenStream_DEPRECATED {
+
+        @ParameterizedTest
+        @NullAndEmptySource
+        void shouldReturnSameInstanceWithNoQuery_WhenNameIsBlank(String name) {
+            var newWebTarget = withWebTarget(originalWebTarget)
+                    .queryParamFilterNotNull(name, Stream.of(1, 2, 3));
+
+            assertIsOriginalWebTargetAndHasNoQuery(newWebTarget);
+        }
+
+        @ParameterizedTest
+        @NullSource
+        void shouldReturnSameInstanceWithNoQuery_WhenNull(Stream<Object> values) {
+            var newWebTarget = withWebTarget(originalWebTarget)
+                    .queryParamFilterNotNull("foo", values);
+
+            assertIsOriginalWebTargetAndHasNoQuery(newWebTarget);
+        }
+
+        @Test
+        void shouldReturnNewInstance_WhenEmpty() {
+            var newWebTarget = withWebTarget(originalWebTarget)
+                    .queryParamFilterNotNull("foo", Stream.of());
+
+            assertNotOriginalWebTargetAndNoQuery(newWebTarget);
+        }
+
+        @Test
+        void shouldIncludeOnlyNonNullValues() {
+            var newWebTarget = withWebTarget(originalWebTarget)
+                    .queryParamFilterNotNull("lottoNumbers", Stream.of(42, 84, null, null, 252));
+
+            assertThat(newWebTarget.getUri()).hasQuery("lottoNumbers=42&lottoNumbers=84&lottoNumbers=252");
+        }
+    }
+
+    @Nested
+    class QueryParamFilterListNotNull {
+
+        @ParameterizedTest
+        @NullAndEmptySource
+        void shouldReturnSameInstanceWithNoQuery_WhenNameIsBlank(String name) {
+            var newWebTarget = withWebTarget(originalWebTarget)
+                    .queryParamFilterListNotNull(name, List.of(1, 2, 3));
+
+            assertIsOriginalWebTargetAndHasNoQuery(newWebTarget);
+        }
+
+        @ParameterizedTest
+        @NullAndEmptySource
+        void shouldReturnSameInstanceWithNoQuery_WhenNullOrEmpty(List<Object> values) {
+            var newWebTarget = withWebTarget(originalWebTarget)
+                    .queryParamFilterListNotNull("foo", values);
+
+            assertIsOriginalWebTargetAndHasNoQuery(newWebTarget);
+        }
+
+        @Test
+        void shouldIncludeOnlyNonNullValues() {
+            var newWebTarget = withWebTarget(originalWebTarget)
+                    .queryParamFilterListNotNull("lottoNumbers", newArrayList(42, 84, null, null, 252));
+
+            assertThat(newWebTarget.getUri()).hasQuery("lottoNumbers=42&lottoNumbers=84&lottoNumbers=252");
+        }
+    }
+
+    @Nested
+    class QueryParamFilterStreamNotNull {
+
+        @ParameterizedTest
+        @NullAndEmptySource
+        void shouldReturnSameInstanceWithNoQuery_WhenNameIsBlank(String name) {
+            var newWebTarget = withWebTarget(originalWebTarget)
+                    .queryParamFilterStreamNotNull(name, Stream.of(1, 2, 3));
+
+            assertIsOriginalWebTargetAndHasNoQuery(newWebTarget);
+        }
+
+        @ParameterizedTest
+        @NullSource
+        void shouldReturnSameInstanceWithNoQuery_WhenNull(Stream<Object> values) {
+            var newWebTarget = withWebTarget(originalWebTarget)
+                    .queryParamFilterStreamNotNull("foo", values);
+
+            assertIsOriginalWebTargetAndHasNoQuery(newWebTarget);
+        }
+
+        @Test
+        void shouldReturnNewInstance_WhenEmpty() {
+            var newWebTarget = withWebTarget(originalWebTarget)
+                    .queryParamFilterStreamNotNull("foo", Stream.of());
+
+            assertNotOriginalWebTargetAndNoQuery(newWebTarget);
+        }
+
+        @Test
+        void shouldIncludeOnlyNonNullValues() {
+            var newWebTarget = withWebTarget(originalWebTarget)
+                    .queryParamFilterStreamNotNull("lottoNumbers", Stream.of(42, 84, null, null, 252));
+
+            assertThat(newWebTarget.getUri()).hasQuery("lottoNumbers=42&lottoNumbers=84&lottoNumbers=252");
         }
     }
 
@@ -363,107 +430,316 @@ class WebTargetHelperTest {
     }
 
     @Nested
-    class QueryParamFilterNotBlank {
+    class QueryParamFilterNotBlank_WhenVarargs {
 
-        @Nested
-        class WhenArray {
+        @ParameterizedTest
+        @NullAndEmptySource
+        void shouldReturnSameInstanceWithNoQuery_WhenNameIsBlank(String name) {
+            var newWebTarget = withWebTarget(originalWebTarget)
+                    .queryParamFilterNotBlank(name, "a", "b", "c");
 
-            @ParameterizedTest
-            @NullAndEmptySource
-            void shouldReturnSameInstanceWithNoQuery_WhenNameIsBlank(String name) {
-                var newWebTarget = withWebTarget(originalWebTarget)
-                        .queryParamFilterNotBlank(name, "a", "b", "c");
-
-                assertIsOriginalWebTargetAndHasNoQuery(newWebTarget);
-            }
-
-            @ParameterizedTest
-            @NullAndEmptySource
-            void shouldReturnSameInstance_WhenNullOrEmpty(String[] values) {
-                var newWebTarget = withWebTarget(originalWebTarget)
-                        .queryParamFilterNotBlank("foo", values);
-
-                assertIsOriginalWebTargetAndHasNoQuery(newWebTarget);
-            }
-
-            @Test
-            void shouldIncludeOnlyNonBlankValues() {
-                var newWebTarget = withWebTarget(originalWebTarget)
-                        .queryParamFilterNotBlank("lottoNumbers",
-                                "42", "", "84", null, "  ", null, "252", "\t  \n");
-
-                assertThat(newWebTarget.getUri()).hasQuery("lottoNumbers=42&lottoNumbers=84&lottoNumbers=252");
-            }
+            assertIsOriginalWebTargetAndHasNoQuery(newWebTarget);
         }
 
-        @Nested
-        class WhenList {
+        @ParameterizedTest
+        @NullAndEmptySource
+        void shouldReturnSameInstance_WhenNullOrEmpty(String[] values) {
+            var newWebTarget = withWebTarget(originalWebTarget)
+                    .queryParamFilterNotBlank("foo", values);
 
-            @ParameterizedTest
-            @NullAndEmptySource
-            void shouldReturnSameInstanceWithNoQuery_WhenNameIsBlank(String name) {
-                var newWebTarget = withWebTarget(originalWebTarget)
-                        .queryParamFilterNotBlank(name, List.of("a", "b", "c"));
-
-                assertIsOriginalWebTargetAndHasNoQuery(newWebTarget);
-            }
-
-            @ParameterizedTest
-            @NullAndEmptySource
-            void shouldReturnSameInstance_WhenNullOrEmpty(List<String> values) {
-                var newWebTarget = withWebTarget(originalWebTarget)
-                        .queryParamFilterNotBlank("foo", values);
-
-                assertIsOriginalWebTargetAndHasNoQuery(newWebTarget);
-            }
-
-            @Test
-            void shouldIncludeOnlyNonBlankValues() {
-                var newWebTarget = withWebTarget(originalWebTarget)
-                        .queryParamFilterNotBlank("lottoNumbers",
-                                newArrayList("42", "", "84", null, "  ", null, "252", "\t  \n"));
-
-                assertThat(newWebTarget.getUri()).hasQuery("lottoNumbers=42&lottoNumbers=84&lottoNumbers=252");
-            }
+            assertIsOriginalWebTargetAndHasNoQuery(newWebTarget);
         }
 
-        @Nested
-        class WhenStream {
+        @Test
+        void shouldIncludeOnlyNonBlankValues() {
+            var newWebTarget = withWebTarget(originalWebTarget)
+                    .queryParamFilterNotBlank("lottoNumbers",
+                            "42", "", "84", null, "  ", null, "252", "\t  \n");
 
-            @ParameterizedTest
-            @NullAndEmptySource
-            void shouldReturnSameInstanceWithNoQuery_WhenNameIsBlank(String name) {
-                var newWebTarget = withWebTarget(originalWebTarget)
-                        .queryParamFilterNotBlank(name, Stream.of("a", "b", "c"));
+            assertThat(newWebTarget.getUri()).hasQuery("lottoNumbers=42&lottoNumbers=84&lottoNumbers=252");
+        }
+    }
 
-                assertIsOriginalWebTargetAndHasNoQuery(newWebTarget);
+    @SuppressWarnings("removal")
+    @Nested
+    class QueryParamFilterNotBlank_WhenList_DEPRECATED {
+
+        @ParameterizedTest
+        @NullAndEmptySource
+        void shouldReturnSameInstanceWithNoQuery_WhenNameIsBlank(String name) {
+            var newWebTarget = withWebTarget(originalWebTarget)
+                    .queryParamFilterNotBlank(name, List.of("a", "b", "c"));
+
+            assertIsOriginalWebTargetAndHasNoQuery(newWebTarget);
+        }
+
+        @ParameterizedTest
+        @NullAndEmptySource
+        void shouldReturnSameInstance_WhenNullOrEmpty(List<String> values) {
+            var newWebTarget = withWebTarget(originalWebTarget)
+                    .queryParamFilterNotBlank("foo", values);
+
+            assertIsOriginalWebTargetAndHasNoQuery(newWebTarget);
+        }
+
+        @Test
+        void shouldIncludeOnlyNonBlankValues() {
+            var newWebTarget = withWebTarget(originalWebTarget)
+                    .queryParamFilterNotBlank("lottoNumbers",
+                            newArrayList("42", "", "84", null, "  ", null, "252", "\t  \n"));
+
+            assertThat(newWebTarget.getUri()).hasQuery("lottoNumbers=42&lottoNumbers=84&lottoNumbers=252");
+        }
+    }
+
+    @SuppressWarnings("removal")
+    @Nested
+    class QueryParamFilterNotBlank_WhenStream_DEPRECATED {
+
+        @ParameterizedTest
+        @NullAndEmptySource
+        void shouldReturnSameInstanceWithNoQuery_WhenNameIsBlank(String name) {
+            var newWebTarget = withWebTarget(originalWebTarget)
+                    .queryParamFilterNotBlank(name, Stream.of("a", "b", "c"));
+
+            assertIsOriginalWebTargetAndHasNoQuery(newWebTarget);
+        }
+
+        @ParameterizedTest
+        @NullSource
+        void shouldReturnSameInstance_WhenNull(Stream<String> values) {
+            var newWebTarget = withWebTarget(originalWebTarget)
+                    .queryParamFilterNotBlank("foo", values);
+
+            assertIsOriginalWebTargetAndHasNoQuery(newWebTarget);
+        }
+
+        @Test
+        void shouldReturnNewInstance_WhenEmpty() {
+            var newWebTarget = withWebTarget(originalWebTarget)
+                    .queryParamFilterNotBlank("foo", Stream.of());
+
+            assertNotOriginalWebTargetAndNoQuery(newWebTarget);
+        }
+
+        @Test
+        void shouldIncludeOnlyNonBlankValues() {
+            var newWebTarget = withWebTarget(originalWebTarget)
+                    .queryParamFilterNotBlank("lottoNumbers",
+                            Stream.of("42", "", "84", null, "  ", null, "252", "\t  \n"));
+
+            assertThat(newWebTarget.getUri()).hasQuery("lottoNumbers=42&lottoNumbers=84&lottoNumbers=252");
+        }
+    }
+
+    @Nested
+    class QueryParamFilterObjectsNotBlank {
+
+        @ParameterizedTest
+        @NullAndEmptySource
+        void shouldReturnSameInstanceWithNoQuery_WhenNameIsBlank(String name) {
+            var newWebTarget = withWebTarget(originalWebTarget)
+                    .queryParamFilterObjectsNotBlank(name, "a", "b", "c");
+
+            assertIsOriginalWebTargetAndHasNoQuery(newWebTarget);
+        }
+
+        @ParameterizedTest
+        @NullAndEmptySource
+        void shouldReturnSameInstance_WhenNullOrEmpty(Object[] values) {
+            var newWebTarget = withWebTarget(originalWebTarget)
+                    .queryParamFilterObjectsNotBlank("foo", values);
+
+            assertIsOriginalWebTargetAndHasNoQuery(newWebTarget);
+        }
+
+        @Test
+        void shouldIncludeOnlyNonBlankValues() {
+            var newWebTarget = withWebTarget(originalWebTarget)
+                    .queryParamFilterObjectsNotBlank("lottoNumbers",
+                            "42", "", "84", null, "  ", null, "252", "\t  \n");
+
+            assertThat(newWebTarget.getUri()).hasQuery("lottoNumbers=42&lottoNumbers=84&lottoNumbers=252");
+        }
+
+        @Test
+        void shouldIncludeOnlyNonBlankValues_CharSequenceOrStringifiedValues() {
+            class Weird {
+                @Override
+                public String toString() {
+                    return "";
+                }
             }
 
-            @ParameterizedTest
-            @NullSource
-            void shouldReturnSameInstance_WhenNull(Stream<String> values) {
-                var newWebTarget = withWebTarget(originalWebTarget)
-                        .queryParamFilterNotBlank("foo", values);
-
-                assertIsOriginalWebTargetAndHasNoQuery(newWebTarget);
+            class BadActor {
+                @Override
+                public String toString() {
+                    return null;
+                }
             }
 
-            @Test
-            void shouldReturnNewInstance_WhenEmpty() {
-                var newWebTarget = withWebTarget(originalWebTarget)
-                        .queryParamFilterNotBlank("foo", Stream.of());
+            @Value
+            class Result<T> {
+                T value;
 
-                assertNotOriginalWebTargetAndNoQuery(newWebTarget);
+                @Override
+                public String toString() {
+                    return value == null ? null : value.toString();
+                }
             }
 
-            @Test
-            void shouldIncludeOnlyNonBlankValues() {
-                var newWebTarget = withWebTarget(originalWebTarget)
-                        .queryParamFilterNotBlank("lottoNumbers",
-                                Stream.of("42", "", "84", null, "  ", null, "252", "\t  \n"));
+            var weird = new Weird();
+            var badActor = new BadActor();
+            CharSequence cs = "168";
+            var result = new Result<>(294);
+            var builder = new StringBuilder().append("3").append("3").append("6");
+            var newWebTarget = withWebTarget(originalWebTarget)
+                    .queryParamFilterObjectsNotBlank("num",
+                            42,
+                            "",
+                            "84",
+                            null,
+                            badActor,
+                            weird,
+                            "  ",
+                            126.0,
+                            null,
+                            cs,
+                            252,
+                            "\t  \n",
+                            result,
+                            "",
+                            builder,
+                            "\r\n");
 
-                assertThat(newWebTarget.getUri()).hasQuery("lottoNumbers=42&lottoNumbers=84&lottoNumbers=252");
+            assertThat(newWebTarget.getUri()).hasQuery(
+                    "num=42&num=84&num=126.0&num=168&num=252&num=294&num=336");
+        }
+    }
+
+    @Nested
+    class QueryParamFilterListNotBlank {
+
+        @ParameterizedTest
+        @NullAndEmptySource
+        void shouldReturnSameInstanceWithNoQuery_WhenNameIsBlank(String name) {
+            var newWebTarget = withWebTarget(originalWebTarget)
+                    .queryParamFilterListNotBlank(name, List.of("a", "b", "c"));
+
+            assertIsOriginalWebTargetAndHasNoQuery(newWebTarget);
+        }
+
+        @ParameterizedTest
+        @NullAndEmptySource
+        void shouldReturnSameInstance_WhenNullOrEmpty(List<String> values) {
+            var newWebTarget = withWebTarget(originalWebTarget)
+                    .queryParamFilterListNotBlank("foo", values);
+
+            assertIsOriginalWebTargetAndHasNoQuery(newWebTarget);
+        }
+
+        @Test
+        void shouldIncludeOnlyNonBlankValues() {
+            var newWebTarget = withWebTarget(originalWebTarget)
+                    .queryParamFilterListNotBlank("lottoNumbers",
+                            newArrayList("42", "", "84", null, "  ", null, "252", "\t  \n"));
+
+            assertThat(newWebTarget.getUri()).hasQuery("lottoNumbers=42&lottoNumbers=84&lottoNumbers=252");
+        }
+    }
+
+    @Nested
+    class QueryParamFilterStreamNotBlank {
+
+        @ParameterizedTest
+        @NullAndEmptySource
+        void shouldReturnSameInstanceWithNoQuery_WhenNameIsBlank(String name) {
+            var newWebTarget = withWebTarget(originalWebTarget)
+                    .queryParamFilterStreamNotBlank(name, Stream.of("a", "b", "c"));
+
+            assertIsOriginalWebTargetAndHasNoQuery(newWebTarget);
+        }
+
+        @ParameterizedTest
+        @NullSource
+        void shouldReturnSameInstance_WhenNull(Stream<String> values) {
+            var newWebTarget = withWebTarget(originalWebTarget)
+                    .queryParamFilterStreamNotBlank("foo", values);
+
+            assertIsOriginalWebTargetAndHasNoQuery(newWebTarget);
+        }
+
+        @Test
+        void shouldReturnNewInstance_WhenEmpty() {
+            var newWebTarget = withWebTarget(originalWebTarget)
+                    .queryParamFilterStreamNotBlank("foo", Stream.of());
+
+            assertNotOriginalWebTargetAndNoQuery(newWebTarget);
+        }
+
+        @Test
+        void shouldIncludeOnlyNonBlankValues() {
+            var newWebTarget = withWebTarget(originalWebTarget)
+                    .queryParamFilterStreamNotBlank("lottoNumbers",
+                            Stream.of("42", "", "84", null, "  ", null, "252", "\t  \n"));
+
+            assertThat(newWebTarget.getUri()).hasQuery("lottoNumbers=42&lottoNumbers=84&lottoNumbers=252");
+        }
+
+        @Test
+        void shouldIncludeOnlyNonBlankValues_CharSequenceOrStringifiedValues() {
+            class Weird {
+                @Override
+                public String toString() {
+                    return "";
+                }
             }
+
+            class BadActor {
+                @Override
+                public String toString() {
+                    return null;
+                }
+            }
+
+            @Value
+            class Result<T> {
+                T value;
+
+                @Override
+                public String toString() {
+                    return value == null ? null : value.toString();
+                }
+            }
+
+            var weird = new Weird();
+            var badActor = new BadActor();
+            CharSequence cs = "168";
+            var result = new Result<>(294);
+            var builder = new StringBuilder().append("3").append("3").append("6");
+            var stream = Stream.of(
+                    42,
+                    "",
+                    "84",
+                    null,
+                    badActor,
+                    weird,
+                    "  ",
+                    126.0,
+                    null,
+                    cs,
+                    252,
+                    "\t  \n",
+                    result,
+                    "",
+                    builder,
+                    "\r\n");
+            var newWebTarget = withWebTarget(originalWebTarget)
+                    .queryParamFilterStreamNotBlank("num", stream);
+
+            assertThat(newWebTarget.getUri()).hasQuery(
+                    "num=42&num=84&num=126.0&num=168&num=252&num=294&num=336"
+            );
         }
     }
 
