@@ -13,7 +13,7 @@ import static org.kiwiproject.time.KiwiInstants.plusMonths;
 import static org.kiwiproject.time.KiwiInstants.plusYears;
 
 import lombok.experimental.UtilityClass;
-import org.checkerframework.checker.nullness.qual.Nullable;
+import org.jspecify.annotations.Nullable;
 
 import java.time.Instant;
 import java.util.Date;

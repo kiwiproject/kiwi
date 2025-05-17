@@ -8,7 +8,7 @@ import static org.kiwiproject.base.KiwiPreconditions.checkArgumentNotNull;
 import com.google.common.base.Enums;
 import lombok.experimental.UtilityClass;
 import org.apache.commons.lang3.EnumUtils;
-import org.checkerframework.checker.nullness.qual.Nullable;
+import org.jspecify.annotations.Nullable;
 import org.kiwiproject.collect.KiwiArrays;
 
 import java.util.Arrays;

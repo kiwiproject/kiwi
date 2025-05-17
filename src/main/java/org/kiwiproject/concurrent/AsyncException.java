@@ -2,7 +2,7 @@ package org.kiwiproject.concurrent;
 
 import static java.util.Objects.nonNull;
 
-import org.checkerframework.checker.nullness.qual.Nullable;
+import org.jspecify.annotations.Nullable;
 
 import java.util.concurrent.CompletableFuture;
 
