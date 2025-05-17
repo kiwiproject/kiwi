@@ -3,8 +3,8 @@ package org.kiwiproject.base;
 import static org.kiwiproject.base.KiwiPreconditions.checkArgumentNotNull;
 
 import lombok.experimental.UtilityClass;
-import org.checkerframework.checker.nullness.qual.NonNull;
-import org.checkerframework.checker.nullness.qual.Nullable;
+import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.Nullable;
 
 import java.math.BigDecimal;
 import java.util.Optional;

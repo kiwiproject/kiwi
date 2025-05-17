@@ -7,7 +7,7 @@ import static org.kiwiproject.base.KiwiPreconditions.checkArgumentNotNull;
 import static org.kiwiproject.base.KiwiStrings.format;
 
 import lombok.experimental.UtilityClass;
-import org.checkerframework.checker.nullness.qual.Nullable;
+import org.jspecify.annotations.Nullable;
 import org.kiwiproject.base.KiwiPrimitives;
 import org.kiwiproject.base.KiwiPrimitives.BooleanConversionOption;
 import org.kiwiproject.base.KiwiStrings;

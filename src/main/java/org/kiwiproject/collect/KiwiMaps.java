@@ -8,7 +8,7 @@ import static org.kiwiproject.base.KiwiStrings.f;
 
 import com.google.common.annotations.Beta;
 import lombok.experimental.UtilityClass;
-import org.checkerframework.checker.nullness.qual.Nullable;
+import org.jspecify.annotations.Nullable;
 
 import java.util.Collection;
 import java.util.Collections;

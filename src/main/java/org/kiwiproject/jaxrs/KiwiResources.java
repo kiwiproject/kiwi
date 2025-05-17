@@ -16,7 +16,7 @@ import jakarta.ws.rs.core.MultivaluedMap;
 import jakarta.ws.rs.core.Response;
 import lombok.experimental.UtilityClass;
 import lombok.extern.slf4j.Slf4j;
-import org.checkerframework.checker.nullness.qual.NonNull;
+import org.jspecify.annotations.NonNull;
 import org.kiwiproject.base.KiwiStrings;
 import org.kiwiproject.jaxrs.exception.JaxrsBadRequestException;
 import org.kiwiproject.jaxrs.exception.JaxrsNotFoundException;

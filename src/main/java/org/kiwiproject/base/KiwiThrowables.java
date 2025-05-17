@@ -10,7 +10,7 @@ import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.experimental.UtilityClass;
 import org.apache.commons.lang3.exception.ExceptionUtils;
-import org.checkerframework.checker.nullness.qual.Nullable;
+import org.jspecify.annotations.Nullable;
 
 import java.util.Optional;
 

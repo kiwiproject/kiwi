@@ -11,7 +11,7 @@ import static org.kiwiproject.collect.KiwiLists.isNotNullOrEmpty;
 import static org.kiwiproject.collect.KiwiLists.isNullOrEmpty;
 
 import jakarta.ws.rs.WebApplicationException;
-import org.checkerframework.checker.nullness.qual.Nullable;
+import org.jspecify.annotations.Nullable;
 import org.kiwiproject.collect.KiwiMaps;
 import org.kiwiproject.collect.KiwiSets;
 

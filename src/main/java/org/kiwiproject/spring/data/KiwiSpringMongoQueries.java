@@ -8,7 +8,7 @@ import static org.kiwiproject.base.KiwiPreconditions.checkArgumentNotNull;
 import lombok.experimental.UtilityClass;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.BooleanUtils;
-import org.checkerframework.checker.nullness.qual.Nullable;
+import org.jspecify.annotations.Nullable;
 import org.kiwiproject.base.KiwiStrings;
 import org.kiwiproject.util.function.KiwiBiConsumers;
 import org.springframework.data.domain.Page;

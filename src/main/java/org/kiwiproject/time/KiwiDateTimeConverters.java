@@ -4,7 +4,7 @@ import static java.util.Objects.isNull;
 import static org.kiwiproject.base.KiwiPreconditions.checkArgumentNotNull;
 
 import lombok.experimental.UtilityClass;
-import org.checkerframework.checker.nullness.qual.Nullable;
+import org.jspecify.annotations.Nullable;
 
 import java.time.Instant;
 import java.time.LocalDate;

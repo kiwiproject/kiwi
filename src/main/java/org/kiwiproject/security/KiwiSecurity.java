@@ -7,7 +7,7 @@ import static org.kiwiproject.base.KiwiPreconditions.checkArgumentNotNull;
 
 import lombok.experimental.UtilityClass;
 import lombok.extern.slf4j.Slf4j;
-import org.checkerframework.checker.nullness.qual.Nullable;
+import org.jspecify.annotations.Nullable;
 
 import javax.net.ssl.KeyManager;
 import javax.net.ssl.KeyManagerFactory;

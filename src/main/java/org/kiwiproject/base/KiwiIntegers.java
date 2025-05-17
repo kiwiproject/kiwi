@@ -3,7 +3,7 @@ package org.kiwiproject.base;
 import static java.util.Objects.isNull;
 
 import lombok.experimental.UtilityClass;
-import org.checkerframework.checker.nullness.qual.Nullable;
+import org.jspecify.annotations.Nullable;
 
 /**
  * Utilities for working with {@link Integer} wrapper objects.

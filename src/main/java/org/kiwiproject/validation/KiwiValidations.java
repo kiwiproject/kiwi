@@ -15,7 +15,7 @@ import jakarta.validation.Validator;
 import jakarta.validation.groups.Default;
 import lombok.experimental.UtilityClass;
 import lombok.extern.slf4j.Slf4j;
-import org.checkerframework.checker.nullness.qual.Nullable;
+import org.jspecify.annotations.Nullable;
 import org.kiwiproject.base.KiwiStrings;
 import org.kiwiproject.reflect.KiwiReflection;
 

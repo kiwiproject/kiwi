@@ -8,7 +8,7 @@ import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 import jakarta.ws.rs.core.Response.Status.Family;
 import lombok.experimental.UtilityClass;
-import org.checkerframework.checker.nullness.qual.Nullable;
+import org.jspecify.annotations.Nullable;
 import org.kiwiproject.jaxrs.exception.ErrorMessage;
 import org.kiwiproject.jaxrs.exception.JaxrsException;
 import org.kiwiproject.jaxrs.exception.JaxrsExceptionMapper;
