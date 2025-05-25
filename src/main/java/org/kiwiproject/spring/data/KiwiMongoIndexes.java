@@ -21,7 +21,7 @@ public class KiwiMongoIndexes {
      * @param clazz         the entity/document class representing the mapped MongoDB collection
      * @param direction     the sort direction for all specified properties
      * @param properties    the properties for which to add an index
-     * @see org.springframework.data.mongodb.core.index.IndexOperations#ensureIndex(IndexDefinition)
+     * @see org.springframework.data.mongodb.core.index.IndexOperations#createIndex(IndexDefinition)
      */
     public static void ensureIndices(MongoTemplate mongoTemplate,
                                      Class<?> clazz,
@@ -29,7 +29,7 @@ public class KiwiMongoIndexes {
                                      String... properties) {
 
         Stream.of(properties).forEach(prop ->
-                mongoTemplate.indexOps(clazz).ensureIndex(new Index(prop, direction)));
+                mongoTemplate.indexOps(clazz).createIndex(new Index(prop, direction)));
     }
 
     /**
@@ -39,7 +39,7 @@ public class KiwiMongoIndexes {
      * @param collectionName the MongoDB collection name
      * @param direction      the sort direction for all specified properties
      * @param properties     the properties for which to add an index
-     * @see org.springframework.data.mongodb.core.index.IndexOperations#ensureIndex(IndexDefinition)
+     * @see org.springframework.data.mongodb.core.index.IndexOperations#createIndex(IndexDefinition)
      */
     public static void ensureIndices(MongoTemplate mongoTemplate,
                                      String collectionName,
@@ -47,6 +47,6 @@ public class KiwiMongoIndexes {
                                      String... properties) {
 
         Stream.of(properties).forEach(prop ->
-                mongoTemplate.indexOps(collectionName).ensureIndex(new Index(prop, direction)));
+                mongoTemplate.indexOps(collectionName).createIndex(new Index(prop, direction)));
     }
 }
