@@ -112,8 +112,8 @@ public class KiwiSecurity {
      * as defined by {@link KeyManagerFactory} and {@link TrustManagerFactory}. The key and trust store types should
      * be one of the algorithms defined in {@link KeyStoreType}.
      * <p>
-     * If only the trust store is necessary, supply {@code null} values for the {@code keyStorePath} and
-     * {@code keyStorePassword}.
+     * If only the trust store is necessary, supply {@code null} values for the {@code keyStorePath},
+     * {@code keyStorePassword}, and {@code keyStoreType}.
      * <p>
      * WARNING: While public, this is very low-level and not generally intended for client code to call directly.
      * We recommend using {@link #createSslContext(String, String, String, String, SSLContextProtocol)}
@@ -139,7 +139,7 @@ public class KiwiSecurity {
      */
     public static SSLContext createSslContext(@Nullable String keyStorePath,
                                               @Nullable String keyStorePassword,
-                                              String keyStoreType,
+                                              @Nullable String keyStoreType,
                                               String trustStorePath,
                                               String trustStorePassword,
                                               String trustStoreType,
@@ -160,8 +160,8 @@ public class KiwiSecurity {
      * {@link TrustManagerFactory}. The key and trust store types should be one of the algorithms defined
      * in {@link KeyStoreType}.
      * <p>
-     * If only the trust store is necessary, supply {@code null} values for the {@code keyStorePath} and
-     * {@code keyStorePassword}.
+     * If only the trust store is necessary, supply {@code null} values for the {@code keyStorePath},
+     * {@code keyStorePassword}, and {@code keyStoreType}.
      * <p>
      * WARNING: While public, this is very low-level and not generally intended for client code to call directly.
      * We recommend using {@link #createSslContext(String, String, String, String, SSLContextProtocol)}
@@ -187,7 +187,7 @@ public class KiwiSecurity {
      */
     public static SSLContext createSslContext(@Nullable String keyStorePath,
                                               @Nullable String keyStorePassword,
-                                              String keyStoreType,
+                                              @Nullable String keyStoreType,
                                               String trustStorePath,
                                               String trustStorePassword,
                                               String trustStoreType,
@@ -208,8 +208,8 @@ public class KiwiSecurity {
      * trust manager algorithms, and protocol. The key and trust store types should be one of the algorithms
      * defined in {@link KeyStoreType}.
      * <p>
-     * If only the trust store is necessary, supply {@code null} values for the {@code keyStorePath} and
-     * {@code keyStorePassword}.
+     * If only the trust store is necessary, supply {@code null} values for the {@code keyStorePath},
+     * {@code keyStorePassword}, {@code keyStoreType}, and {@code keyManagerAlgorithm}.
      * <p>
      * WARNING: While public, this is very low-level and not generally intended for client code to call directly.
      * We recommend using {@link #createSslContext(String, String, String, String, SSLContextProtocol)}
@@ -235,8 +235,8 @@ public class KiwiSecurity {
      * @see SSLContextProtocol
      * @see KeyStoreType
      */
-    // Suppress Sonar's "Methods should not have too many parameters" as this is intentionally a low-level class
-    // and unfortunately creating an SSLContext from scratch requires a large number of objects, parameters, etc.
+    // Suppress Sonar's "Methods should not have too many parameters" as this is intentionally a low-level class,
+    // and unfortunately, creating an SSLContext from scratch requires a large number of objects, parameters, etc.
     @SuppressWarnings("java:S107")
     public static SSLContext createSslContext(@Nullable String keyStorePath,
                                               @Nullable String keyStorePassword,
