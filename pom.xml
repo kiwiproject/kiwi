@@ -9,7 +9,7 @@
     </parent>
 
     <artifactId>kiwi</artifactId>
-    <version>4.10.1-SNAPSHOT</version>
+    <version>4.11.0</version>
     <packaging>jar</packaging>
 
     <name>${project.groupId}:${project.artifactId}</name>
@@ -24,7 +24,7 @@
         <connection>scm:git:https://github.com/kiwiproject/kiwi.git</connection>
         <developerConnection>scm:git:git@github.com:kiwiproject/kiwi.git</developerConnection>
         <url>https://github.com/kiwiproject/kiwi</url>
-        <tag>HEAD</tag>
+        <tag>v4.11.0</tag>
     </scm>
 
     <properties>
