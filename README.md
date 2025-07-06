@@ -1,4 +1,4 @@
-### Kiwi
+# Kiwi
 [![Build](https://github.com/kiwiproject/kiwi/actions/workflows/build.yml/badge.svg?branch=main)](https://github.com/kiwiproject/kiwi/actions/workflows/build.yml?query=branch%3Amain)
 [![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=kiwiproject_kiwi&metric=alert_status)](https://sonarcloud.io/dashboard?id=kiwiproject_kiwi)
 [![Coverage](https://sonarcloud.io/api/project_badges/measure?project=kiwiproject_kiwi&metric=coverage)](https://sonarcloud.io/dashboard?id=kiwiproject_kiwi)
@@ -18,7 +18,7 @@ specific feature in Kiwi.
 The only required dependencies are guava, commons-lang3, and slf4j-api. If you use the Maven Enforcer plugin, you could therefore
 run into dependency convergence errors if the kiwi versions are different from the ones you're using.
 
-#### Validation Annotations
+## Validation Annotations
 
 As of kiwi 3.4.0, the validation annotations in the `org.kiwiproject.kiwi.validation` package use Java's
 [ServiceLoader](https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/util/ServiceLoader.html) mechanism.
