@@ -12,14 +12,41 @@ import org.jspecify.annotations.Nullable;
 import org.kiwiproject.collect.KiwiArrays;
 
 import java.util.Arrays;
+import java.util.List;
 import java.util.Locale;
 import java.util.Optional;
+import java.util.stream.Stream;
 
 /**
  * Static utilities for working with {@link Enum}.
  */
 @UtilityClass
 public class KiwiEnums {
+
+    /**
+     * Returns a list of the constants in the specified enum type.
+     *
+     * @param <E>       the type of the enum
+     * @param enumClass the enum class; must not be null
+     * @return a list containing all the constants of the specified enum type
+     * @throws IllegalArgumentException if the provided class is null or not an enum type
+     */
+    public static <E extends Enum<E>> List<E> listOf(Class<E> enumClass) {
+        return streamOf(enumClass).toList();
+    }
+
+    /**
+     * Returns a stream of constants in the specified enum type.
+     *
+     * @param <E>       the type of the enum
+     * @param enumClass the enum class; must not be null
+     * @return a stream containing all the constants of the specified enum type
+     * @throws IllegalArgumentException if the provided class is null or not an enum type
+     */
+    public static <E extends Enum<E>> Stream<E> streamOf(Class<E> enumClass) {
+        checkEnumClass(enumClass);
+        return Stream.of(enumClass.getEnumConstants());
+    }
 
     /**
      * Return an optional enum constant for the given enum type and value. This performs an exact match of the enum
@@ -33,7 +60,7 @@ public class KiwiEnums {
      * type to a Java Optional. Unlike Guava, it permits blank values, in which case an empty Optional is returned.
      */
     public static <E extends Enum<E>> Optional<E> getIfPresent(Class<E> enumClass, @Nullable String value) {
-        checkArgumentNotNull(enumClass);
+        checkEnumClass(enumClass);
         if (isBlank(value)) {
             return Optional.empty();
         }
@@ -54,7 +81,7 @@ public class KiwiEnums {
      * whitespace.
      */
     public static <E extends Enum<E>> Optional<E> getIfPresentIgnoreCase(Class<E> enumClass, @Nullable String value) {
-        checkArgumentNotNull(enumClass);
+        checkEnumClass(enumClass);
         if (isBlank(value)) {
             return Optional.empty();
         }
@@ -62,6 +89,11 @@ public class KiwiEnums {
         // First try the value as-is, then fallback to the value with leading and trailing whitespace stripped
         return Optional.ofNullable(EnumUtils.getEnumIgnoreCase(enumClass, value))
             .or(() -> Optional.ofNullable(EnumUtils.getEnumIgnoreCase(enumClass, value.strip())));
+    }
+
+    private static <E extends Enum<E>> void checkEnumClass(Class<E> enumClass) {
+        checkArgumentNotNull(enumClass, "enumClass must not be null");
+        checkArgument(enumClass.isEnum(), "%s is not an enum", enumClass);
     }
 
     /**
