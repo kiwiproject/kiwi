@@ -14,7 +14,9 @@ import org.junit.jupiter.params.provider.NullAndEmptySource;
 import org.junit.jupiter.params.provider.ValueSource;
 import org.kiwiproject.util.BlankStringSource;
 
+import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 
 @DisplayName("KiwiEnums")
 class KiwiEnumsTest {
@@ -382,6 +384,82 @@ class KiwiEnumsTest {
                     () -> {
                         var value = KiwiEnums.lowercaseName(enumValue, Locale.JAPANESE);
                         assertThat(value).isEqualTo(enumValue.name().toLowerCase(Locale.JAPANESE));
+                    }
+            );
+        }
+    }
+
+    @Nested
+    class ListOf {
+
+        @Test
+        void shouldThrowIllegalArgumentWhenEnumClassIsNull() {
+            assertThatIllegalArgumentException()
+                    .isThrownBy(() -> KiwiEnums.listOf(null))
+                    .withMessage("enumClass must not be null");
+        }
+
+        /**
+         * @implNote This declares the argument type to be a class E that extends Enum, which works due
+         * to type erasure. None of the arguments are classes that extend Enum since the point of
+         * this test is to ensure we don't allow classes that aren't Enums.
+         */
+        @ParameterizedTest
+        @ValueSource(classes = { Object.class, String.class, Map.class, List.class })
+        <E extends Enum<E>> void shouldRequireEnumClasses(Class<E> clazz) {
+            assertThatIllegalArgumentException()
+                    .isThrownBy(() -> KiwiEnums.listOf(clazz))
+                    .withMessage("%s is not an enum", clazz);
+        }
+
+        @Test
+        void shouldReturnListOfEnumConstants() {
+            assertAll(
+                    () -> {
+                        var seasons = KiwiEnums.listOf(Season.class);
+                        assertThat(seasons).containsExactly(Season.FALL, Season.WINTER, Season.SPRING, Season.SUMMER);
+                    },
+                    () -> {
+                        var colors = KiwiEnums.listOf(Color.class);
+                        assertThat(colors).containsExactly(Color.RED, Color.ORANGE, Color.YELLOW, Color.GREEN, Color.BLUE, Color.INDIGO, Color.VIOLET);
+                    }
+            );
+        }
+    }
+
+    @Nested
+    class StreamOf {
+
+        @Test
+        void shouldThrowIllegalArgumentWhenEnumClassIsNull() {
+            assertThatIllegalArgumentException()
+                    .isThrownBy(() -> KiwiEnums.streamOf(null))
+                    .withMessage("enumClass must not be null");
+        }
+
+        /**
+         * @implNote This declares the argument type to be a class E that extends Enum, which works due
+         * to type erasure. None of the arguments are classes that extend Enum since the point of
+         * this test is to ensure we don't allow classes that aren't Enums.
+         */
+        @ParameterizedTest
+        @ValueSource(classes = { Object.class, String.class, Map.class, List.class })
+        <E extends Enum<E>> void shouldRequireEnumClasses(Class<E> clazz) {
+            assertThatIllegalArgumentException()
+                    .isThrownBy(() -> KiwiEnums.streamOf(clazz))
+                    .withMessage("%s is not an enum", clazz);
+        }
+
+        @Test
+        void shouldReturnStreamOfEnumConstants() {
+            assertAll(
+                    () -> {
+                        var seasons = KiwiEnums.streamOf(Season.class).toList();
+                        assertThat(seasons).containsExactly(Season.FALL, Season.WINTER, Season.SPRING, Season.SUMMER);
+                    },
+                    () -> {
+                        var colors = KiwiEnums.streamOf(Color.class).toList();
+                        assertThat(colors).containsExactly(Color.RED, Color.ORANGE, Color.YELLOW, Color.GREEN, Color.BLUE, Color.INDIGO, Color.VIOLET);
                     }
             );
         }
