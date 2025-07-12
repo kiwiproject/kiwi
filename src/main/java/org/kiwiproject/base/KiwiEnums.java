@@ -27,7 +27,7 @@ public class KiwiEnums {
      *
      * @param <E> the enum type
      * @param enumClass the enum class
-     * @param value the string value to compare against, may be blank
+     * @param value the string value to compare against; may be blank
      * @return an Optional that may contain an {@link Enum} constant or be empty
      * @implNote This wraps Guava's {@link Enums#getIfPresent(Class, String)} and adapts the Guava Optional return
      * type to a Java Optional. Unlike Guava, it permits blank values, in which case an empty Optional is returned.
@@ -47,7 +47,7 @@ public class KiwiEnums {
      *
      * @param <E> the enum type
      * @param enumClass the enum class
-     * @param value the string value to compare against, may be blank
+     * @param value the string value to compare against; may be blank
      * @return an Optional that may contain an {@link Enum} constant or be empty
      * @implNote This wraps Apache Commons' {@link EnumUtils#getEnumIgnoreCase(Class, String)} but returns
      * am Optional instead of null if no enum constant is found. In addition, it ignores leading and trailing
@@ -69,7 +69,7 @@ public class KiwiEnums {
      *
      * @param <E> the enum type
      * @param enumValue the enum to use for the comparison
-     * @param value the value to use for the comparison, may be null
+     * @param value the value to use for the comparison; may be null
      * @return true if the enum name equals the value, false otherwise
      */
     public static <E extends Enum<E>> boolean equals(Enum<E> enumValue, @Nullable CharSequence value) {
@@ -79,11 +79,11 @@ public class KiwiEnums {
 
     /**
      * Compares the given enum's {@link Enum#name() name} with the given value, ignoring
-     * case, for equality.
+     * the case, for equality.
      *
      * @param <E> the enum type
      * @param enumValue the enum to use for the comparison
-     * @param value the value to use for the comparison, may be null
+     * @param value the value to use for the comparison; may be null
      * @return if the enum name equals the value in a case-insensitive manner, false otherwise
      */
     public static <E extends Enum<E>> boolean equalsIgnoreCase(Enum<E> enumValue, @Nullable CharSequence value) {
@@ -97,7 +97,7 @@ public class KiwiEnums {
      *
      * @param <E> the enum type
      * @param enumValue the enum to use for the comparison
-     * @param value the value to use for the comparison, may be null
+     * @param value the value to use for the comparison; may be null
      * @return true if the enum name does not equal the value, false otherwise
      */
     public static <E extends Enum<E>> boolean notEquals(Enum<E> enumValue, @Nullable CharSequence value) {
@@ -105,12 +105,12 @@ public class KiwiEnums {
     }
 
     /**
-     * Compares the given enum's {@link Enum#name() name} with the given value, ignoring case, for
+     * Compares the given enum's {@link Enum#name() name} with the given value, ignoring the case, for
      * inverse equality, i.e., they are not equal.
      *
      * @param <E> the enum type
      * @param enumValue the enum to use for the comparison
-     * @param value the value to use for the comparison, may be null
+     * @param value the value to use for the comparison; may be null
      * @return true if the enum name does not equal the value in a case-insensitive manner, false otherwise
      */
     public static <E extends Enum<E>> boolean notEqualsIgnoreCase(Enum<E> enumValue, @Nullable CharSequence value) {
@@ -121,7 +121,7 @@ public class KiwiEnums {
      * Checks whether the given value matches the {@link Enum#name() name} of the given enums.
      *
      * @param <E> the enum type
-     * @param value the value to use for the comparison, may be null
+     * @param value the value to use for the comparison; may be null
      * @param enumValues the enums to use for the comparison
      * @return true if the value equals the name of the enums, false otherwise
      */
@@ -133,10 +133,10 @@ public class KiwiEnums {
 
     /**
      * Checks whether the given value matches the {@link Enum#name() name} of the given
-     * enums, ignoring case.
+     * enums, ignoring the case.
      *
      * @param <E> the enum type
-     * @param value the value to use for the comparison, may be null
+     * @param value the value to use for the comparison; may be null
      * @param enumValues the enums to use for the comparison
      * @return true if the value equals the name of the enums in a case-insensitive manner, false otherwise
      */
