@@ -176,9 +176,11 @@ public class KiwiEnums {
      * @param enumValue the enum value to lowercase
      * @param locale    the Locale to use for the lowercase conversion
      * @return the lowercase value of the enum value
+     * @throws IllegalArgumentException if enumValue or locale is null
      */
     public static <E extends Enum<E>> String lowercaseName(Enum<E> enumValue, Locale locale) {
         checkEnumNotNull(enumValue);
+        checkArgumentNotNull(locale, "locale must not be null");
         return enumValue.name().toLowerCase(locale);
     }
 

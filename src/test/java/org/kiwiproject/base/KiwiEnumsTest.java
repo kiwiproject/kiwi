@@ -326,7 +326,7 @@ class KiwiEnumsTest {
             RETURN_REQUESTED
         }
 
-        // IntelliJ warning about "No implicit conversion found to convert 'Xyz' to 'Enum<E>' is NOT correct
+        // IntelliJ warning about "No implicit conversion found to convert 'Xyz' to 'Enum<E>' is NOT correct"
         @SuppressWarnings("JUnitMalformedDeclaration")
         @ParameterizedTest
         @EnumSource(Season.class)
@@ -335,10 +335,55 @@ class KiwiEnumsTest {
         @EnumSource(OrderStatus.class)
         <E extends Enum<E>> void shouldConvertTheEnumNamesToLowercase(Enum<E> enumValue) {
             var value = KiwiEnums.lowercaseName(enumValue);
-
-            com.google.common.base.Enums.getIfPresent(Season.class, "winter");
-
             assertThat(value).isEqualTo(enumValue.name().toLowerCase(Locale.ENGLISH));
+        }
+
+        @Test
+        void shouldNotAllowNullEnumValue() {
+            assertThatIllegalArgumentException()
+                    .isThrownBy(() -> KiwiEnums.lowercaseName(null))
+                    .withMessage("enumValue must not be null");
+        }
+
+        @Test
+        void shouldNotAllowNullEnumValueWithLocale() {
+            assertThatIllegalArgumentException()
+                    .isThrownBy(() -> KiwiEnums.lowercaseName(null, Locale.ENGLISH))
+                    .withMessage("enumValue must not be null");
+        }
+
+        @Test
+        void shouldNotAllowNullLocale() {
+            assertThatIllegalArgumentException()
+                    .isThrownBy(() -> KiwiEnums.lowercaseName(Season.FALL, null))
+                    .withMessage("locale must not be null");
+        }
+
+        @SuppressWarnings("JUnitMalformedDeclaration")
+        @ParameterizedTest
+        @EnumSource(Season.class)
+        @EnumSource(Color.class)
+        @EnumSource(DrinkType.class)
+        @EnumSource(OrderStatus.class)
+        <E extends Enum<E>> void shouldConvertTheEnumNamesToLowercaseWithSpecificLocale(Enum<E> enumValue) {
+            assertAll(
+                    () -> {
+                        var value = KiwiEnums.lowercaseName(enumValue, Locale.ENGLISH);
+                        assertThat(value).isEqualTo(enumValue.name().toLowerCase(Locale.ENGLISH));
+                    },
+                    () -> {
+                        var value = KiwiEnums.lowercaseName(enumValue, Locale.FRENCH);
+                        assertThat(value).isEqualTo(enumValue.name().toLowerCase(Locale.FRENCH));
+                    },
+                    () -> {
+                        var value = KiwiEnums.lowercaseName(enumValue, Locale.GERMAN);
+                        assertThat(value).isEqualTo(enumValue.name().toLowerCase(Locale.GERMAN));
+                    },
+                    () -> {
+                        var value = KiwiEnums.lowercaseName(enumValue, Locale.JAPANESE);
+                        assertThat(value).isEqualTo(enumValue.name().toLowerCase(Locale.JAPANESE));
+                    }
+            );
         }
     }
 }
