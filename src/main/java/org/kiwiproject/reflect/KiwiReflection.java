@@ -16,6 +16,7 @@ import com.google.common.primitives.Primitives;
 import lombok.experimental.UtilityClass;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.Strings;
 import org.kiwiproject.base.KiwiStrings;
 
 import java.lang.reflect.Field;
@@ -541,7 +542,7 @@ public class KiwiReflection {
         checkArgumentNotNull(targetClass, "targetClass cannot be null");
         methodType.validateParameterCount(params);
 
-        var strippedFieldName = StringUtils.remove(fieldName, UNDERSCORE);
+        var strippedFieldName = Strings.CS.remove(fieldName, UNDERSCORE);
         var capitalizedFieldName = StringUtils.capitalize(strippedFieldName);
         var methodName = KiwiStrings.format(methodType.template, capitalizedFieldName);
 

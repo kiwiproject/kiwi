@@ -18,7 +18,7 @@ import jakarta.xml.bind.PropertyException;
 import jakarta.xml.bind.annotation.XmlType;
 import lombok.experimental.UtilityClass;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.Strings;
 import org.kiwiproject.io.KiwiIO;
 
 import javax.xml.namespace.QName;
@@ -295,7 +295,7 @@ public class KiwiXml {
             var clazzNamespace = blankToNull(getNameAndNamespace(clazz).get(NAMESPACE_KEY));
             classNamespace = filterIgnoredNamespaces(ignoredNamespaces, clazzNamespace);
 
-            if (StringUtils.equals(xmlns, classNamespace)) {
+            if (Strings.CS.equals(xmlns, classNamespace)) {
                 LOG.trace("Return true for xmlns: {} and classNamespace: {}", xmlns, classNamespace);
                 return true;
             }

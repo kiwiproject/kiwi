@@ -3,7 +3,6 @@ package org.kiwiproject.spring.data;
 import static java.util.Comparator.comparing;
 import static java.util.Comparator.comparingDouble;
 import static java.util.Comparator.reverseOrder;
-import static org.apache.commons.lang3.StringUtils.containsAny;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.kiwiproject.collect.KiwiLists.first;
 import static org.kiwiproject.spring.data.KiwiSpringMongoQueries.addDateBounds;
@@ -14,6 +13,7 @@ import static org.kiwiproject.spring.data.OrderTestData.insertSampleOrders;
 import static org.kiwiproject.spring.util.MongoTestContainerHelpers.newMongoDBContainer;
 
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.Strings;
 import org.assertj.core.api.SoftAssertions;
 import org.assertj.core.api.junit.jupiter.SoftAssertionsExtension;
 import org.junit.jupiter.api.AfterEach;
@@ -539,7 +539,7 @@ class KiwiSpringMongoQueriesTest {
                                 pagingQuery, List.of("a12", "b45"), "customerId", PartialMatchType.PARTIAL_MATCH));
 
         // Note the predicate here uses capital A and B
-        Predicate<Order> customerFilter = order -> containsAny(order.getCustomerId(), "A12", "B45");
+        Predicate<Order> customerFilter = order -> Strings.CS.containsAny(order.getCustomerId(), "A12", "B45");
         var expectedTotalElements = storedOrders.stream()
                 .filter(customerFilter)
                 .count();
@@ -577,7 +577,7 @@ class KiwiSpringMongoQueriesTest {
                         KiwiSpringMongoQueries.addMultiplePartialOrEqualMatchCriteria(
                                 pagingQuery, List.of("A123", "A129", "D012"), "customerId", PartialMatchType.EQUAL_MATCH));
 
-        Predicate<Order> customerFilter = order -> containsAny(order.getCustomerId(), "A123", "A129", "D012");
+        Predicate<Order> customerFilter = order -> Strings.CS.containsAny(order.getCustomerId(), "A123", "A129", "D012");
         var expectedTotalElements = storedOrders.stream()
                 .filter(customerFilter)
                 .count();
@@ -626,7 +626,7 @@ class KiwiSpringMongoQueriesTest {
                         // A124 does not exist
                         addInCriteriaFromCsv(pagingQuery, "A124, A129, B456", "customerId"));
 
-        Predicate<Order> customerFilter = order -> containsAny(order.getCustomerId(), "A129", "B456");
+        Predicate<Order> customerFilter = order -> Strings.CS.containsAny(order.getCustomerId(), "A129", "B456");
         var expectedTotalElements = storedOrders.stream()
                 .filter(customerFilter)
                 .count();
