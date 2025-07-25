@@ -5,6 +5,7 @@ import static org.kiwiproject.base.KiwiPreconditions.checkArgumentNotBlank;
 
 import lombok.experimental.UtilityClass;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.Strings;
 
 import java.util.Arrays;
 
@@ -169,7 +170,7 @@ public class Versions {
 
     private static int compareString(String leftPart, String rightPart) {
         // Both args should be lowercase, so can compare exactly
-        var result = StringUtils.compare(leftPart, rightPart);
+        var result = Strings.CS.compare(leftPart, rightPart);
         return Integer.compare(result, 0);
     }
 

@@ -32,7 +32,7 @@ import com.google.common.collect.Lists;
 import io.dropwizard.jackson.Jackson;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.ArrayUtils;
-import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.Strings;
 import org.apache.commons.lang3.tuple.Pair;
 import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.Nullable;
@@ -859,7 +859,7 @@ public class JsonHelper {
                             .toList();
                     if (isNotNullOrEmpty(results)) {
                         var match = first(results);
-                        if (!results.stream().allMatch(s -> StringUtils.equals(s, match))) {
+                        if (!results.stream().allMatch(s -> Strings.CS.equals(s, match))) {
                             resultMap.put(path, new ArrayList<>(results));  // must use a mutable list to handle nulls
                         }
                     }
