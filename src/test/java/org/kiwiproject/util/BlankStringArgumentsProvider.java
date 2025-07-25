@@ -5,6 +5,7 @@ import static com.google.common.collect.Lists.newArrayList;
 import org.junit.jupiter.api.extension.ExtensionContext;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.ArgumentsProvider;
+import org.junit.jupiter.params.support.ParameterDeclarations;
 
 import java.util.List;
 import java.util.stream.Stream;
@@ -90,7 +91,7 @@ public class BlankStringArgumentsProvider implements ArgumentsProvider {
      * exhausted.
      */
     @Override
-    public Stream<? extends Arguments> provideArguments(ExtensionContext context) {
+    public Stream<? extends Arguments> provideArguments(ParameterDeclarations parameters, ExtensionContext context) {
         return BLANK_STRINGS.stream()
                 .map(Arguments::of);
     }
