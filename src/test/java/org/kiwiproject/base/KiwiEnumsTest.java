@@ -25,7 +25,7 @@ class KiwiEnumsTest {
     class GetIfPresent {
 
         @Test
-        void shouldThrowIllegalArgumentWhenEnumClasIsNull() {
+        void shouldThrowIllegalArgumentWhenEnumClassIsNull() {
             assertThatIllegalArgumentException()
                     .isThrownBy(() -> KiwiEnums.getIfPresent(null, "WINTER"));
         }
@@ -62,7 +62,7 @@ class KiwiEnumsTest {
     class GetIfPresentIgnoreCase {
 
         @Test
-        void shouldThrowIllegalArgumentWhenEnumClasIsNull() {
+        void shouldThrowIllegalArgumentWhenEnumClassIsNull() {
             assertThatIllegalArgumentException()
                     .isThrownBy(() -> KiwiEnums.getIfPresentIgnoreCase(null, "FALL"));
         }
@@ -70,7 +70,7 @@ class KiwiEnumsTest {
         @ParameterizedTest
         @BlankStringSource
         void shouldReturnEmptyOptionalWhenGivenBlankInput(String input) {
-            assertThat(KiwiEnums.getIfPresent(Season.class, input)).isEmpty();
+            assertThat(KiwiEnums.getIfPresentIgnoreCase(Season.class, input)).isEmpty();
         }
 
         @ParameterizedTest
@@ -108,8 +108,111 @@ class KiwiEnumsTest {
         }
     }
 
-    enum Season {
-        FALL, WINTER, SPRING, SUMMER
+    @Nested
+    class GetIfPresentFuzzy {
+
+        @Test
+        void shouldThrowIllegalArgumentWhenEnumClassIsNull() {
+            assertThatIllegalArgumentException()
+                    .isThrownBy(() -> KiwiEnums.getIfPresentFuzzy(null, "FALL"));
+        }
+
+        @ParameterizedTest
+        @BlankStringSource
+        void shouldReturnEmptyOptionalWhenGivenBlankInput(String input) {
+            assertThat(KiwiEnums.getIfPresentFuzzy(Season.class, input)).isEmpty();
+        }
+
+        @ParameterizedTest
+        @CsvSource({
+            "FALL, FALL",
+            "fall, FALL",
+            "Fall, FALL ",
+            "winter, WINTER ",
+            " '  winter', WINTER ",
+            " 'spring  ', SPRING",
+            "Spring, SPRING",
+            "SuMmEr, SUMMER",
+            " '  summer  ', SUMMER",
+            " '\nSUMMER\t\t', SUMMER",
+            " '  \tsummer  \t\t\r\n', SUMMER",
+            " '\t\r\n\r\nFall\r\n\r\n\f\t  \t', FALL"
+        })
+        void shouldReturnOptionalContainingEnumConstantIgnoringCaseAndLeadingAndTrailingWhitespace(String input, Season expectedSeason) {
+            assertThat(KiwiEnums.getIfPresentFuzzy(Season.class, input)).containsSame(expectedSeason);
+        }
+
+        @ParameterizedTest
+        @CsvSource({
+            "PENDING_PAYMENT, PENDING_PAYMENT",
+            "processing_order, PROCESSING_ORDER",
+            "CANCELLED_BY_CUSTOMER, CANCELLED_BY_CUSTOMER",
+            "Cancelled_by_Customer, CANCELLED_BY_CUSTOMER"
+        })
+        void shouldReturnOptionalContainingEnumConstant_WhenMatchesExactIgnoringCase(String input, OrderStatus expectedOrderStatus) {
+            assertThat(KiwiEnums.getIfPresentFuzzy(OrderStatus.class, input)).containsSame(expectedOrderStatus);
+        }
+
+        @ParameterizedTest
+        @CsvSource({
+            "' PENDING PAYMENT ', PENDING_PAYMENT",
+            "PENDING____PAYMENT, PENDING_PAYMENT",
+            "'\r\n\t   SHIPPED     \r\n\t  OUT\r\n\t\t    ', SHIPPED_OUT",
+            "shipped-out, SHIPPED_OUT",
+            "shipped__out, SHIPPED_OUT",
+            "'  shipped - out ' , SHIPPED_OUT",
+            "delivered.successfully, DELIVERED_SUCCESSFULLY",
+            "' Delivered...--...Successfully  ', DELIVERED_SUCCESSFULLY",
+            "'cancelled by customer', CANCELLED_BY_CUSTOMER",
+        })
+        void shouldReturnOptionalContainingEnumConstant_WhenMatchesAfterNormalizingInput(String input, OrderStatus expectedOrderStatus) {
+             assertThat(KiwiEnums.getIfPresentFuzzy(OrderStatus.class, input)).containsSame(expectedOrderStatus);
+        }
+
+        @ParameterizedTest
+        @CsvSource({
+            "pendingPayment, PENDING_PAYMENT",
+            "PendingPayment, PENDING_PAYMENT",
+            "' PendingPayment ' , PENDING_PAYMENT",
+            "ProcessingOrder, PROCESSING_ORDER",
+            "returnRequested, RETURN_REQUESTED",
+            "\r\nreturnRequested\t, RETURN_REQUESTED",
+            "ShippedOut, SHIPPED_OUT"
+        })
+        void shouldReturnOptionalContainingEnumConstant_WhenMatchesForCamelCase(String input, OrderStatus expectedOrderStatus) {
+             assertThat(KiwiEnums.getIfPresentFuzzy(OrderStatus.class, input)).containsSame(expectedOrderStatus);
+        }
+
+        @ParameterizedTest
+        @CsvSource({
+            "'Irish stepdance', IRISH_DANCE",
+            "'Irish Stepdance', IRISH_DANCE",
+            "'irish stepdance', IRISH_DANCE",
+            "futbol, SOCCER",
+            "Futbol, SOCCER",
+            "FUTBOL, SOCCER",
+            "'American football', FOOTBALL",
+             "'American Football', FOOTBALL",
+        })
+        void shouldReturnOptionalContainingEnumConstant_WhenMatchesToString(String input, Sport expectedSport) {
+            assertThat(KiwiEnums.getIfPresentFuzzy(Sport.class, input)).containsSame(expectedSport);
+        }
+
+        @ParameterizedTest
+        @ValueSource(strings = {
+            "_winter_",
+            "the summer",
+            "AUTUMN",
+            "foo",
+            "SUM_MER",
+            "_SUMMER_",
+            "Win.ter",
+            "bar",
+            "baz"
+        })
+        void shouldReturnEmptyOptionalWhenNoMatchingEnumConstantExists(String input) {
+            assertThat(KiwiEnums.getIfPresentFuzzy(Season.class, input)).isEmpty();
+        }
     }
 
     @Nested
@@ -308,25 +411,10 @@ class KiwiEnumsTest {
         }
     }
 
-    enum Color {
-        RED, ORANGE, YELLOW, GREEN, BLUE, INDIGO, VIOLET
-    }
+   
 
     @Nested
     class LowercaseName {
-
-        enum DrinkType {
-            BEER, JUICE, SODA, WATER, WINE
-        }
-
-        enum OrderStatus {
-            PENDING_PAYMENT,
-            PROCESSING_ORDER,
-            SHIPPED_OUT,
-            DELIVERED_SUCCESSFULLY,
-            CANCELLED_BY_CUSTOMER,
-            RETURN_REQUESTED
-        }
 
         // IntelliJ warning about "No implicit conversion found to convert 'Xyz' to 'Enum<E>' is NOT correct"
         @SuppressWarnings("JUnitMalformedDeclaration")
@@ -462,6 +550,44 @@ class KiwiEnumsTest {
                         assertThat(colors).containsExactly(Color.RED, Color.ORANGE, Color.YELLOW, Color.GREEN, Color.BLUE, Color.INDIGO, Color.VIOLET);
                     }
             );
+        }
+    }
+
+    enum Color {
+        RED, ORANGE, YELLOW, GREEN, BLUE, INDIGO, VIOLET
+    }
+
+    enum DrinkType {
+        BEER, JUICE, SODA, WATER, WINE
+    }
+
+    enum OrderStatus {
+        PENDING_PAYMENT,
+        PROCESSING_ORDER,
+        SHIPPED_OUT,
+        DELIVERED_SUCCESSFULLY,
+        CANCELLED_BY_CUSTOMER,
+        RETURN_REQUESTED
+    }
+
+    enum Season {
+        FALL, WINTER, SPRING, SUMMER
+    }
+
+    enum Sport {
+        IRISH_DANCE("Irish stepdance"),
+        SOCCER("futbol"),
+        FOOTBALL("American football");
+
+        final String value;
+
+        Sport(String value) {
+            this.value = value;
+        }
+
+        @Override
+        public String toString() {
+            return value;
         }
     }
 }
