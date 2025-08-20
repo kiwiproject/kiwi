@@ -26,4 +26,13 @@ public interface PaginatedResult {
      * @return the page size
      */
     int getPageSize();
+
+    /**
+     * The total number of pages.
+     *
+     * @return the total page count
+     */
+    default int getTotalPages() {
+        return KiwiSearching.numberOfPages(getTotalCount(), getPageSize());
+    }
 }
