@@ -468,12 +468,71 @@ class KiwiUrlsTest {
 
     @ParameterizedTest
     @CsvSource(value = {
+            "'', ''",
             "http://localhost:7003/status/, http://localhost:7003/status",
             "http://localhost:7003/status, http://localhost:7003/status",
             "   http://localhost:7003/status   , http://localhost:7003/status"
     })
     void testStripTrailingSlash(String originalUrl, String strippedUrl) {
         assertThat(KiwiUrls.stripTrailingSlash(originalUrl)).isEqualTo(strippedUrl);
+    }
+
+    @Nested
+    class StripLeadingAndTrailingSlash {
+
+        @Test
+        void shouldThrowIllegalArgument_WhenUrlIsNull() {
+            assertThatIllegalArgumentException()
+                    .isThrownBy(() -> KiwiUrls.stripLeadingAndTrailingSlash(null))
+                    .withMessage("url must not be null");
+        }
+
+        @ParameterizedTest
+        @CsvSource(textBlock = """
+            '', ''
+            ' ', ''
+            '  \t\t\r', ''
+            /, ''
+            //, ''
+            /a/, a
+            /a, a
+            a/, a
+            /a/b/, a/b
+            /a/b, a/b
+            a/b/, a/b
+            /a/b/c/, a/b/c
+            '  /a/  ', a
+            '  /a/b  ', a/b
+            '  \t\t /a/b \r  ', a/b
+            http://localhost:7003/status/, http://localhost:7003/status
+            /status/, status
+            /status, status
+            status/, status
+            /consul-healthcheck/, consul-healthcheck
+            /consul-healthcheck, consul-healthcheck
+            consul-healthcheck/, consul-healthcheck
+            /consul/status/, consul/status
+            /consul/status, consul/status
+            consul/status/, consul/status
+            """)
+        void shouldStripLeadingAndTrailingSlash(String originalUrl, String strippedUrl) {
+            assertThat(KiwiUrls.stripLeadingAndTrailingSlash(originalUrl)).isEqualTo(strippedUrl);
+        }
+
+        @ParameterizedTest
+        @CsvSource(textBlock = """
+            ///, /
+            ///foo//, //foo/
+            //a//, /a/
+            //a, /a
+            a//, a/
+            //a/b//, /a/b/
+            //a/b, /a/b
+            /a/b//, a/b/
+            """)
+        void shouldOnlyRemoveOneSlashOnEitherSide(String originalUrl, String strippedUrl) {
+            assertThat(KiwiUrls.stripLeadingAndTrailingSlash(originalUrl)).isEqualTo(strippedUrl);
+        }
     }
 
     @Nested
