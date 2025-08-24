@@ -217,6 +217,24 @@ class KiwiUrlsTest {
     }
 
     @ParameterizedTest
+    @CsvSource(textBlock = """
+            ws, 80
+            wss, 443
+            """)
+    void shouldExtractAll_UsingWebSocketSchemes(String scheme, int expectedPort) {
+        var url = f("{}://some-websocket-endpoint.acme.com/a-path", scheme);
+        var components = KiwiUrls.extractAllFrom(url);
+
+        assertAll(
+                () -> assertThat(components.getScheme()).isEqualTo(scheme),
+                () -> assertThat(components.getSubDomainName()).isEqualTo("some-websocket-endpoint"),
+                () -> assertThat(components.getDomainName()).isEqualTo("acme.com"),
+                () -> assertThat(components.getPort()).contains(expectedPort),
+                () -> assertThat(components.getPath()).contains("/a-path")
+        );
+    }
+
+    @ParameterizedTest
     @ValueSource(strings = { "a", "aa", "odd" })
     void shouldExtractAll_UsingUnhandledScheme(String scheme) {
         var url = f("{}://some-server.acme.com/a-path", scheme);

@@ -51,6 +51,8 @@ public class KiwiUrls {
     public static final String HTTP_PROTOCOL = "http";
     public static final String HTTPS_PROTOCOL = "https";
     public static final String SFTP_PROTOCOL = "sftp";
+    public static final String WS_PROTOCOL = "ws";
+    public static final String WSS_PROTOCOL = "wss";
 
     /**
      * FYI, this "?<word>" section in the regular expression below allows us to create "named groups" for pattern
@@ -341,6 +343,40 @@ public class KiwiUrls {
      * <li>port = 8080</li>
      * <li>path = "a-news-article"</li>
      * </ul>
+     * <p>
+     * For URLs that do not have an explicit port, this method recognizes a few common protocols.
+     * These include:
+     * <table>
+     *     <caption>Default ports for recognized protocols:</caption>
+     *     <tr>
+     *         <th>Protocol/Scheme</th>
+     *         <th>Default Port</th>
+     *     </tr>
+     *     <tr>
+     *         <td>http</td>
+     *         <td>80</td>
+     *     </tr>
+     *     <tr>
+     *         <td>https</td>
+     *         <td>443</td>
+     *     </tr>
+     *     <tr>
+     *         <td>ftp</td>
+     *         <td>21</td>
+     *     </tr>
+     *     <tr>
+     *         <td>sftp</td>
+     *         <td>22</td>
+     *     </tr>
+     *     <tr>
+     *         <td>ws</td>
+     *         <td>80</td>
+     *     </tr>
+     *     <tr>
+     *         <td>wss</td>
+     *         <td>443</td>
+     *     </tr>
+     * </table>
      *
      * @param url the URL to analyze
      * @return the {@link Components} found or an "empty" {@link Components} object if the URL was invalid
@@ -649,8 +685,8 @@ public class KiwiUrls {
 
     private static int defaultPortForScheme(String scheme) {
         return switch (scheme) {
-            case HTTPS_PROTOCOL -> 443;
-            case HTTP_PROTOCOL -> 80;
+            case HTTPS_PROTOCOL, WSS_PROTOCOL -> 443;
+            case HTTP_PROTOCOL, WS_PROTOCOL -> 80;
             case SFTP_PROTOCOL -> 22;
             case FTP_PROTOCOL -> 21;
             default -> UNKNOWN_PORT;
