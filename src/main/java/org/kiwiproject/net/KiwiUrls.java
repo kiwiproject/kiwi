@@ -383,13 +383,56 @@ public class KiwiUrls {
     }
 
     /**
-     * Trims {@code url} and, if present, strips the trailing slash
+     * Trims {@code url} and removes at most one leading slash and at most one trailing slash.
+     * <p>
+     * Examples:
+     * <ul>
+     *   <li>{@code "/foo"} → {@code "foo"}</li>
+     *   <li>{@code "foo/"} → {@code "foo"}</li>
+     *   <li>{@code "/foo/"} → {@code "foo"}</li>
+     *   <li>{@code "/foo/bar"} → {@code "foo/bar"}</li>
+     *   <li>{@code "/foo/bar/"} → {@code "foo/bar"}</li>
+     *   <li>{@code "///foo//"} → {@code "//foo/"}</li>
+     *   <li>{@code "/"} → {@code ""}</li>
+     *   <li>{@code "foo"} → {@code "foo"}</li>
+     * </ul>
+     * @param url the URL
+     * @return the URL minus at most one leading and at most one trailing slash
+     */
+    public static String stripLeadingAndTrailingSlash(String url) {
+        checkArgumentNotNull(url, "url must not be null");
+
+        var trimmedUrl = url.strip();
+
+        if (trimmedUrl.isEmpty()) {
+            return trimmedUrl;
+        }
+
+        // Calculate indices for substring
+        var startIndex = trimmedUrl.startsWith("/") ? 1 : 0;
+        var length = trimmedUrl.length();
+        var endIndex = trimmedUrl.endsWith("/") ? (length - 1) : length;
+
+        // If the url is just "/" (after stripping), endIndex will be less than startIndex, so return ""
+        if (endIndex < startIndex) {
+            return "";
+        }
+
+        return trimmedUrl.substring(startIndex, endIndex);
+    }
+
+    /**
+     * Trims {@code url} and, if present, strips the trailing slash.
      *
      * @param url the URL
      * @return the URL minus any trailing slash
      */
     public static String stripTrailingSlash(String url) {
         var trimmedUrl = url.strip();
+
+        if (trimmedUrl.isEmpty()) {
+            return trimmedUrl;
+        }
 
         if (trimmedUrl.endsWith("/")) {
             return trimmedUrl.substring(0, trimmedUrl.length() - 1);
@@ -399,7 +442,7 @@ public class KiwiUrls {
     }
 
     /**
-     * Trims each URL in {@code urls} and strips any trailing slashes
+     * Trims each URL in {@code urls} and strips a trailing slash from each one.
      *
      * @param urls a list of URLs
      * @return a list of URLs matching the input URLs minus any trailing slash
