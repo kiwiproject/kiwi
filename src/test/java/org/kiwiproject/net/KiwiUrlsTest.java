@@ -9,6 +9,8 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.assertj.core.api.Assertions.catchThrowable;
 import static org.assertj.guava.api.Assertions.assertThat;
 import static org.assertj.guava.api.Assertions.entry;
+import static org.junit.jupiter.api.Assertions.assertAll;
+import static org.kiwiproject.base.KiwiStrings.f;
 
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.BeforeEach;
@@ -178,6 +180,56 @@ class KiwiUrlsTest {
         assertThat(components.getDomainName()).isEqualTo("xxx.prod");
         assertThat(components.getPort()).contains(8080);
         assertThat(components.getPath()).isEmpty();
+    }
+
+    @ParameterizedTest
+    @CsvSource(textBlock = """
+            http, 80
+            https, 443
+            """)
+    void shouldExtractAll_UsingHttpSchemes(String scheme, int expectedPort) {
+        var url = f("{}://prod-server-8.xxx.prod", scheme);
+        var components = KiwiUrls.extractAllFrom(url);
+
+        assertThat(components.getScheme()).isEqualTo(scheme);
+        assertThat(components.getSubDomainName()).isEqualTo("prod-server-8");
+        assertThat(components.getDomainName()).isEqualTo("xxx.prod");
+        assertThat(components.getPort()).contains(expectedPort);
+        assertThat(components.getPath()).isEmpty();
+    }
+
+    @ParameterizedTest
+    @CsvSource(textBlock = """
+            ftp, 21
+            sftp, 22
+            """)
+    void shouldExtractAll_UsingFtpSchemes(String scheme, int expectedPort) {
+        var url = f("{}://some-ftp-server.acme.com/a-path", scheme);
+        var components = KiwiUrls.extractAllFrom(url);
+
+        assertAll(
+                () -> assertThat(components.getScheme()).isEqualTo(scheme),
+                () -> assertThat(components.getSubDomainName()).isEqualTo("some-ftp-server"),
+                () -> assertThat(components.getDomainName()).isEqualTo("acme.com"),
+                () -> assertThat(components.getPort()).contains(expectedPort),
+                () -> assertThat(components.getPath()).contains("/a-path")
+        );
+    }
+
+    @ParameterizedTest
+    @ValueSource(strings = { "a", "aa", "odd" })
+    void shouldExtractAll_UsingUnhandledScheme(String scheme) {
+        var url = f("{}://some-server.acme.com/a-path", scheme);
+
+        var components = KiwiUrls.extractAllFrom(url);
+
+        assertAll(
+                () -> assertThat(components.getScheme()).isEqualTo(scheme),
+                () -> assertThat(components.getSubDomainName()).isEqualTo("some-server"),
+                () -> assertThat(components.getDomainName()).isEqualTo("acme.com"),
+                () -> assertThat(components.getPort()).isEmpty(),
+                () -> assertThat(components.getPath()).contains("/a-path")
+        );
     }
 
     @Test
