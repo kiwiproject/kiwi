@@ -62,7 +62,6 @@ class KiwiXmlConvertersTest {
             var epochMillis = System.currentTimeMillis();
             var xmlGregorianCalendar = KiwiXmlConverters.epochMillisToXMLGregorianCalendar(epochMillis);
 
-            System.out.println(xmlGregorianCalendar.getTimezone());
             assertThat(xmlGregorianCalendar.toGregorianCalendar().getTimeInMillis())
                     .isEqualTo(epochMillis);
         }

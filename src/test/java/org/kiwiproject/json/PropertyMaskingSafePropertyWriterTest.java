@@ -120,8 +120,6 @@ class PropertyMaskingSafePropertyWriterTest {
 
         var properties = jsonHelper.convertToMap(new SampleExceptionThrowingObject());
 
-        System.out.println(jsonHelper.toJson(new SampleExceptionThrowingObject()));
-
         assertThat(properties).containsOnly(
                 entry("normalProperty", "string-value"),
                 entry("badProperty", null),
