@@ -301,7 +301,7 @@ public class KiwiXml {
             }
 
             if (isBlank(xmlns) || isBlank(classNamespace)) {
-                LOG.info("Skipping validation of namespace for class: {}, with namespace: '{}', and XML with namespace: '{}'." +
+                LOG.debug("Skipping validation of namespace for class: {}, with namespace: '{}', and XML with namespace: '{}'." +
                                 " One or both are blank or ignored.",
                         clazz.getName(), classNamespace, xmlns);
                 return true;
