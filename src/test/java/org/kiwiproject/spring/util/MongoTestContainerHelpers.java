@@ -7,9 +7,9 @@ import com.mongodb.client.MongoClients;
 import lombok.experimental.UtilityClass;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.mongodb.core.MongoTemplate;
-import org.testcontainers.containers.MongoDBContainer;
 import org.testcontainers.containers.wait.strategy.HostPortWaitStrategy;
 import org.testcontainers.utility.DockerImageName;
+import org.testcontainers.mongodb.MongoDBContainer;
 
 @UtilityClass
 @Slf4j
