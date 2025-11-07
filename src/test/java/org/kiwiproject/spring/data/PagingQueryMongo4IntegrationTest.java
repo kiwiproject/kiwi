@@ -5,9 +5,9 @@ import static org.kiwiproject.spring.util.MongoTestContainerHelpers.newMongoTemp
 
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.DisplayName;
-import org.testcontainers.containers.MongoDBContainer;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
+import org.testcontainers.mongodb.MongoDBContainer;
 
 @DisplayName("PagingQuery (Mongo 4)")
 @Testcontainers(disabledWithoutDocker = true)
