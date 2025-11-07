@@ -25,7 +25,7 @@ jobs:
           restore-keys: ${{ runner.os }}-m2        
         
       - name: Run Delombok
-        uses: sleberknight/delombok-action@v0.8.0
+        uses: sleberknight/delombok-action@56a7f9d35ad110b4c85e400353c355124f476c08
         
       - name: Print the Delomboked code
-        uses: sleberknight/print-delombok@v0.7.0
+        uses: sleberknight/print-delombok@13bf5860ede3e769a836dda7804df9e08a685e55
