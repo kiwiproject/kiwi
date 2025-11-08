@@ -48,13 +48,6 @@ jobs:
           key: ${{ runner.os }}-m2-${{ hashFiles('**/pom.xml') }}
           restore-keys: ${{ runner.os }}-m2
 
-      - name: Cache Embedded Mongo files
-        uses: actions/cache@v4
-        with:
-          path: ~/.embedmongo
-          key: ${{ runner.os }}-embedmongo
-          restore-keys: ${{ runner.os }}-embedmongo
-
       # Compile the project
       - name: Build
         env:
