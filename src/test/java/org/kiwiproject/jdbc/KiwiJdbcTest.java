@@ -27,15 +27,18 @@ import org.kiwiproject.util.BlankStringSource;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Time;
 import java.sql.Timestamp;
 import java.sql.Types;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.time.Month;
 import java.time.ZoneId;
 import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
+import java.time.temporal.ChronoUnit;
 import java.util.Date;
 
 @DisplayName("KiwiJdbc")
@@ -325,6 +328,48 @@ class KiwiJdbcTest {
 
             verify(resultSet).getDate("expiration_date");
             verifyNoMoreInteractions(resultSet);
+        }
+    }
+
+    @Nested
+    class LocalTimeFromTimeOrNull {
+
+        @Test
+        void shouldConvertFromTime() {
+            var originalTime = LocalTime.now().truncatedTo(ChronoUnit.SECONDS);
+            var time = Time.valueOf(originalTime);
+
+            assertThat(KiwiJdbc.localTimeFromTimeOrNull(time)).isEqualTo(originalTime);
+        }
+
+        @Test
+        void shouldReturnNull_WhenGivenNullTimestamp() {
+            assertThat(KiwiJdbc.localTimeFromTimeOrNull(null)).isNull();
+        }
+
+        @Test
+        void shouldConvertFromResultSet() throws SQLException {
+            var originalTime = LocalTime.now().truncatedTo(ChronoUnit.SECONDS);
+            var time = Time.valueOf(originalTime);
+
+            var resultSet = newMockResultSet();
+            when(resultSet.getTime(anyString())).thenReturn(time);
+
+            assertThat(KiwiJdbc.localTimeFromTimeOrNull(resultSet, "begin_business_hours"))
+                    .isEqualTo(originalTime);
+
+            verify(resultSet, only()).getTime("begin_business_hours");
+        }
+
+        @Test
+        void shouldReturnNull_WhenResultSet_ReturnsNullTime() throws SQLException {
+            var resultSet = newMockResultSet();
+            when(resultSet.getTime(anyString())).thenReturn(null);
+
+            assertThat(KiwiJdbc.localTimeFromTimeOrNull(resultSet, "end_business_hours"))
+                    .isNull();
+
+            verify(resultSet, only()).getTime("end_business_hours");
         }
     }
 
