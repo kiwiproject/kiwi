@@ -15,11 +15,13 @@ import org.kiwiproject.base.KiwiStrings;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Time;
 import java.sql.Timestamp;
 import java.sql.Types;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.time.ZoneId;
 import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
@@ -199,6 +201,30 @@ public class KiwiJdbc {
     @Nullable
     public static LocalDate localDateFromDateOrNull(java.sql.@Nullable Date date) {
         return isNull(date) ? null : date.toLocalDate();
+    }
+
+    /**
+     * Returns a {@link LocalTime} from the specified {@link java.sql.Time} column in the given {@link ResultSet}.
+     *
+     * @param rs         the ResultSet
+     * @param columnName the time column name
+     * @return the converted LocalTime or {@code null} if the column was {@code NULL}
+     * @throws SQLException if there is any error getting the time value from the database
+     */
+    @Nullable
+    public static LocalTime localTimeFromTimeOrNull(ResultSet rs, String columnName) throws SQLException {
+        return localTimeFromTimeOrNull(rs.getTime(columnName));
+    }
+
+    /**
+     * Returns a {@link LocalTime} from the given {@link java.sql.Time}.
+     *
+     * @param time the time to convert
+     * @return the converted LocalTime or {@code null} if the time is {@code null}
+     */
+    @Nullable
+    public static LocalTime localTimeFromTimeOrNull(@Nullable Time time) {
+        return isNull(time) ? null : time.toLocalTime();
     }
 
     /**
