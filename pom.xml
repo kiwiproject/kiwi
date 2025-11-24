@@ -32,7 +32,7 @@
         <kiwi-bom.version>2.3.0</kiwi-bom.version>
 
         <!-- Versions for provided dependencies -->
-        <commons-validator.version>1.10.0</commons-validator.version>
+        <commons-validator.version>1.10.1</commons-validator.version>
         <retrying-again.version>2.1.11</retrying-again.version>
 
         <!-- Versions for test dependencies -->
