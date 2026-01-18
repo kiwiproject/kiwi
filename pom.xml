@@ -32,7 +32,6 @@
         <kiwi-bom.version>3.0.0</kiwi-bom.version>
 
         <!-- Versions for provided dependencies -->
-        <commons-validator.version>1.10.1</commons-validator.version>
         <retrying-again.version>2.1.12</retrying-again.version>
 
         <!-- Versions for test dependencies -->
@@ -103,7 +102,6 @@
         <dependency>
             <groupId>commons-validator</groupId>
             <artifactId>commons-validator</artifactId>
-            <version>${commons-validator.version}</version>
             <scope>provided</scope>
         </dependency>
 
