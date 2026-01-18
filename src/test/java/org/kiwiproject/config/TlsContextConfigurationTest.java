@@ -48,7 +48,7 @@ class TlsContextConfigurationTest {
 
     private static void assertAllDefaultValues(TlsContextConfiguration config) {
         assertAll(
-                () -> assertThat(config.getProtocol()).isEqualTo(SSLContextProtocol.TLS_1_2.value),
+                () -> assertThat(config.getProtocol()).isEqualTo(SSLContextProtocol.TLS_1_3.value),
                 () -> assertThat(config.getProvider()).isNull(),
                 () -> assertThat(config.getKeyStorePath()).isNull(),
                 () -> assertThat(config.getKeyStorePassword()).isNull(),
@@ -190,7 +190,7 @@ class TlsContextConfigurationTest {
 
     private static void assertDefaultValues(TlsContextConfiguration config) {
         assertAll(
-                () -> assertThat(config.getProtocol()).isEqualTo(SSLContextProtocol.TLS_1_2.value),
+                () -> assertThat(config.getProtocol()).isEqualTo(SSLContextProtocol.TLS_1_3.value),
                 () -> assertThat(config.getKeyStoreType()).isEqualTo(KeyStoreType.JKS.value),
                 () -> assertThat(config.getTrustStoreType()).isEqualTo(KeyStoreType.JKS.value),
                 () -> assertThat(config.isVerifyHostname()).isTrue(),
@@ -471,7 +471,7 @@ class TlsContextConfigurationTest {
                 var dwTlsConfig = tlsConfig.toDropwizardTlsConfiguration();
 
                 assertAll(
-                        () -> assertThat(dwTlsConfig.getProtocol()).isEqualTo(SSLContextProtocol.TLS_1_2.value),
+                        () -> assertThat(dwTlsConfig.getProtocol()).isEqualTo(SSLContextProtocol.TLS_1_3.value),
                         () -> assertThat(dwTlsConfig.getKeyStorePath()).isNull(),
                         () -> assertThat(dwTlsConfig.getKeyStorePassword()).isNull(),
                         () -> assertThat(dwTlsConfig.getKeyStoreType()).isEqualTo(KeyStoreType.JKS.value),

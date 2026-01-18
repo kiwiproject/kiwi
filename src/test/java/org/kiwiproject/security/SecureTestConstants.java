@@ -19,7 +19,7 @@ public class SecureTestConstants {
 
     public static final String STORE_TYPE = "JKS";
 
-    public static final String TLS_PROTOCOL = "TLS";
+    public static final String TLS_PROTOCOL = SSLContextProtocol.TLS_1_3.getValue();
 
     static {
         LOG.info("Set JKS_FILE_PATH to {}", JKS_FILE_PATH);

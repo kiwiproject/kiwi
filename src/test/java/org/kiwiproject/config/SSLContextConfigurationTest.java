@@ -9,6 +9,7 @@ import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.kiwiproject.beans.BeanConverter;
 import org.kiwiproject.security.KeyStoreType;
+import org.kiwiproject.security.SSLContextProtocol;
 import org.kiwiproject.security.SecureTestConstants;
 
 import java.util.Map;
@@ -37,6 +38,11 @@ class SSLContextConfigurationTest {
         @BeforeEach
         void setUp() {
             baselineConfig = new SSLContextConfiguration();
+        }
+
+        @Test
+        void shouldHaveDefaultProtocol() {
+            assertThat(baselineConfig.getProtocol()).isEqualTo(SSLContextProtocol.TLS_1_3.getValue());
         }
 
         @Test

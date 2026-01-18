@@ -35,7 +35,7 @@ import java.util.Optional;
 public class TlsContextConfiguration implements KeyAndTrustStoreConfigProvider {
 
     /**
-     * The TLS/SSL protocol to use. Default is {@link SSLContextProtocol#TLS_1_2}.
+     * The TLS/SSL protocol to use. Default is {@link SSLContextProtocol#TLS_1_3}.
      *
      * @see SSLContextProtocol
      */
@@ -169,7 +169,7 @@ public class TlsContextConfiguration implements KeyAndTrustStoreConfigProvider {
         // on the fields too, which would duplicate the defaults
         // that are set in the all-args constructor. Yes, the code
         // is not as pretty, but there is less chance of changing
-        // one default value, and forgetting to change the other.
+        // one default value and forgetting to change the other.
         this(null,
                 null,
                 null,
@@ -226,7 +226,7 @@ public class TlsContextConfiguration implements KeyAndTrustStoreConfigProvider {
                                     List<String> supportedProtocols,
                                     List<String> supportedCiphers,
                                     String certAlias) {
-        this.protocol = isNull(protocol) ? SSLContextProtocol.TLS_1_2.value : protocol;
+        this.protocol = isNull(protocol) ? SSLContextProtocol.TLS_1_3.value : protocol;
         this.provider = provider;
         this.keyStorePath = keyStorePath;
         this.keyStorePassword = keyStorePassword;
