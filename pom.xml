@@ -5,7 +5,7 @@
     <parent>
         <groupId>org.kiwiproject</groupId>
         <artifactId>kiwi-parent</artifactId>
-        <version>3.0.35</version>
+        <version>3.0.36</version>
     </parent>
 
     <artifactId>kiwi</artifactId>
@@ -33,7 +33,7 @@
 
         <!-- Versions for provided dependencies -->
         <commons-validator.version>1.10.1</commons-validator.version>
-        <retrying-again.version>2.1.11</retrying-again.version>
+        <retrying-again.version>2.1.12</retrying-again.version>
 
         <!-- Versions for test dependencies -->
         <!-- nothing to see here...move along...move along... -->
