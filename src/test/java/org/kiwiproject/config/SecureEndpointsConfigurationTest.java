@@ -17,6 +17,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.kiwiproject.security.KeyStoreType;
+import org.kiwiproject.security.SSLContextProtocol;
 import org.kiwiproject.util.YamlTestHelper;
 
 import java.util.List;
@@ -64,7 +65,7 @@ class SecureEndpointsConfigurationTest {
             assertThat(secureEndpoints.getTrustStorePath()).isEqualTo("/path/to/truststore.jks");
             assertThat(secureEndpoints.getTrustStorePassword()).isEqualTo("tsPass100");
             assertThat(secureEndpoints.getTrustStoreType()).isEqualTo("JKS");
-            assertThat(secureEndpoints.getProtocol()).isNull();
+            assertThat(secureEndpoints.getProtocol()).isEqualTo(SSLContextProtocol.TLS_1_3.getValue());
             assertThat(secureEndpoints.isVerifyHostname()).isTrue();
 
             assertThat(secureEndpoints.getEndpoints())
