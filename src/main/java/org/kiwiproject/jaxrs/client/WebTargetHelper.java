@@ -19,7 +19,6 @@ import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.MultivaluedMap;
 import jakarta.ws.rs.core.UriBuilder;
 import org.apache.commons.lang3.StringUtils;
-import org.kiwiproject.base.KiwiDeprecated;
 
 import java.net.URI;
 import java.util.Arrays;
@@ -159,27 +158,6 @@ public class WebTargetHelper implements WebTarget {
      * @param name   the parameter name
      * @param values one or more parameter values
      * @return a new instance if {@code name} is not blank and {@code values} is not null or empty, otherwise this instance
-     * @deprecated use {@link #queryParamFilterListNotNull(String, List)}
-     */
-    @Deprecated(since = "4.10.0", forRemoval = true)
-    @KiwiDeprecated(
-            replacedBy = "#queryParamFilterListNotNull(String name, List<?> values)",
-            removeAt = "5.0.0"
-    )
-    public WebTargetHelper queryParamFilterNotNull(String name, List<Object> values) {
-        if (isBlank(name) || isNullOrEmpty(values)) {
-            return this;
-        }
-
-        return queryParamFilterNotNull(name, values.stream());
-    }
-
-    /**
-     * Adds any non-null values to the given query parameter. If {@code name} is blank, this is a no-op.
-     *
-     * @param name   the parameter name
-     * @param values one or more parameter values
-     * @return a new instance if {@code name} is not blank and {@code values} is not null or empty, otherwise this instance
      */
     public WebTargetHelper queryParamFilterListNotNull(String name, List<?> values) {
         if (isBlank(name) || isNullOrEmpty(values)) {
@@ -187,32 +165,6 @@ public class WebTargetHelper implements WebTarget {
         }
 
         return queryParamFilterStreamNotNull(name, values.stream());
-    }
-
-    /**
-     * Adds any non-null values to the given query parameter. If {@code name} is blank, this is a no-op.
-     *
-     * @param name   the parameter name
-     * @param stream containing one or more parameter values
-     * @return a new instance if {@code name} is not blank and {@code stream} is not null, otherwise this instance
-     * @deprecated use {@link #queryParamFilterStreamNotNull(String, Stream)}
-     */
-    @Deprecated(since = "4.10.0", forRemoval = true)
-    @KiwiDeprecated(
-            replacedBy = "#queryParamFilterStreamNotNull(String name, Stream<?> stream)",
-            removeAt = "5.0.0"
-    )
-    public WebTargetHelper queryParamFilterNotNull(String name, Stream<Object> stream) {
-        if (isBlank(name) || isNull(stream)) {
-            return this;
-        }
-
-        var nonNullValues = stream
-                .filter(Objects::nonNull)
-                .toArray();
-
-        var newWebTarget = webTarget.queryParam(name, nonNullValues);
-        return new WebTargetHelper(newWebTarget);
     }
 
     /**
@@ -312,27 +264,6 @@ public class WebTargetHelper implements WebTarget {
      * @param name   the parameter name
      * @param values one or more parameter values
      * @return a new instance if {@code name} is not blank and {@code values} is not null or empty, otherwise this instance
-     * @deprecated use {@link #queryParamFilterListNotBlank(String, List)}
-     */
-    @Deprecated(since = "4.10.0", forRemoval = true)
-    @KiwiDeprecated(
-            replacedBy = "#queryParamFilterListNotBlank(String name, List<String> values)",
-            removeAt = "5.0.0"
-    )
-    public WebTargetHelper queryParamFilterNotBlank(String name, List<String> values) {
-        if (isBlank(name) || isNullOrEmpty(values)) {
-            return this;
-        }
-
-        return queryParamFilterNotBlank(name, values.stream());
-    }
-
-    /**
-     * Adds any non-blank values to the given query parameter. If {@code name} is blank, this is a no-op.
-     *
-     * @param name   the parameter name
-     * @param values one or more parameter values
-     * @return a new instance if {@code name} is not blank and {@code values} is not null or empty, otherwise this instance
      */
     public WebTargetHelper queryParamFilterListNotBlank(String name, List<?> values) {
         if (isBlank(name) || isNullOrEmpty(values)) {
@@ -340,32 +271,6 @@ public class WebTargetHelper implements WebTarget {
         }
 
         return queryParamFilterStreamNotBlank(name, values.stream());
-    }
-
-    /**
-     * Adds any non-blank values to the given query parameter. If {@code name} is blank, this is a no-op.
-     *
-     * @param name   the parameter name
-     * @param stream containing one or more parameter values
-     * @return a new instance if {@code name} is not blank and {@code stream} is not null, otherwise this instance
-     * @deprecated use {@link #queryParamFilterStreamNotBlank(String, Stream)}
-     */
-    @Deprecated(since = "4.10.0", forRemoval = true)
-    @KiwiDeprecated(
-            replacedBy = "queryParamFilterStreamNotBlank(String name, Stream<String> stream)",
-            removeAt = "5.0.0"
-    )
-    public WebTargetHelper queryParamFilterNotBlank(String name, Stream<String> stream) {
-        if (isBlank(name) || isNull(stream)) {
-            return this;
-        }
-
-        var nonBlankValues = stream
-                .filter(StringUtils::isNotBlank)
-                .toArray();
-
-        var newWebTarget = webTarget.queryParam(name, nonBlankValues);
-        return new WebTargetHelper(newWebTarget);
     }
 
     /**
