@@ -86,7 +86,10 @@ public class KiwiIO {
      *
      * @param closeable the object to close, may be null or already closed
      * @implNote Copied from Apache Commons I/O's IOUtils once it became deprecated with the message "Please use
-     * the try-with-resources statement or handle suppressed exceptions manually."
+     * the try-with-resources statement or handle suppressed exceptions manually." Since this method was
+     * added, commons-io <a href="https://commons.apache.org/proper/commons-io/changes.html#a2.9.0">2.9.0</a>
+     * <em>un-deprecated</em> the {@code closeQuietly} methods. We plan to leave this here (just in case
+     * they change their minds again).
      * @see Throwable#addSuppressed(java.lang.Throwable)
      */
     public static void closeQuietly(final Closeable closeable) {
@@ -140,7 +143,10 @@ public class KiwiIO {
      *
      * @param closeables the objects to close, may be null or already closed
      * @implNote Copied from Apache Commons I/O's IOUtils once it became deprecated with the message "Please use
-     * the try-with-resources statement or handle suppressed exceptions manually."
+     * the try-with-resources statement or handle suppressed exceptions manually." Since this method was
+     * added, commons-io <a href="https://commons.apache.org/proper/commons-io/changes.html#a2.9.0">2.9.0</a>
+     * <em>un-deprecated</em> the {@code closeQuietly} methods. We plan to leave this here (just in case
+     * they change their minds again).
      * @see #closeQuietly(Closeable)
      * @see Throwable#addSuppressed(java.lang.Throwable)
      */
