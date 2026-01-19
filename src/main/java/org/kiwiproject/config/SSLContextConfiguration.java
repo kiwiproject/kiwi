@@ -6,12 +6,16 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.kiwiproject.security.KeyAndTrustStoreConfigProvider;
 import org.kiwiproject.security.KeyStoreType;
+import org.kiwiproject.security.SSLContextProtocol;
 import org.kiwiproject.security.SimpleSSLContextFactory;
 
 import javax.net.ssl.SSLContext;
 
 /**
- * Configuration for standard/common properties required for secure (i.e. SSL/TLS) connections.
+ * Configuration for standard/common properties required for secure (i.e., SSL/TLS) connections.
+ * <p>
+ * The default protocol is {@link SSLContextProtocol#TLS_1_3}, and the default key
+ * and trust store types are {@link KeyStoreType#JKS}.
  */
 @Getter
 @Setter
@@ -21,7 +25,7 @@ public class SSLContextConfiguration implements KeyAndTrustStoreConfigProvider {
     private String keyStorePassword;
     private String trustStorePath;
     private String trustStorePassword;
-    private String protocol;
+    private String protocol = SSLContextProtocol.TLS_1_3.getValue();
     private String keyStoreType = KeyStoreType.JKS.value;
     private String trustStoreType = KeyStoreType.JKS.value;
     private boolean verifyHostname = true;
