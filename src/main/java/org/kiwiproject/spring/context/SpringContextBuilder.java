@@ -3,6 +3,7 @@ package org.kiwiproject.spring.context;
 import static com.google.common.base.Preconditions.checkState;
 
 import org.springframework.context.ApplicationContext;
+import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 
@@ -21,12 +22,21 @@ import java.util.Map;
  * <p>
  * The methods return an instance of this class, so they can be changed together. Once the configuration is
  * set up, call {@link #build()} to create the ApplicationContext.
+ * <p>
+ * By default, this builder registers JVM shutdown hooks on the created Spring contexts.
+ * This is convenient for standalone applications, but can cause premature shutdown of Spring-managed resources
+ * (such as a {@code DataSource} and {@code EntityManagerFactory}) when the Spring context is managed by an
+ * external lifecycle manager (for example, Dropwizard {@code Managed} objects). In those cases, call
+ * {@link #withoutShutdownHooks()} and close the Spring context explicitly as part of the application's
+ * shutdown sequence.
  */
 public class SpringContextBuilder {
 
     private final Map<String, Object> parentContextBeans;
     private final List<Class<?>> annotatedClasses;
     private final List<String> configLocations;
+
+    private boolean registerShutdownHooks;
 
     /**
      * Create a context builder.
@@ -35,6 +45,7 @@ public class SpringContextBuilder {
         parentContextBeans = new LinkedHashMap<>();
         annotatedClasses = new ArrayList<>();
         configLocations = new ArrayList<>();
+        registerShutdownHooks = true;
     }
 
     /**
@@ -109,6 +120,21 @@ public class SpringContextBuilder {
     }
 
     /**
+     * Disables registration of JVM shutdown hooks on the parent and child Spring {@link ApplicationContext} instances.
+     * <p>
+     * This is recommended when the Spring context is managed by an external lifecycle manager (for example,
+     * Dropwizard {@code Managed} objects). In such environments, registering shutdown hooks can cause the Spring
+     * context (and resources such as a {@code DataSource} and/or {@code EntityManagerFactory}) to be closed
+     * prematurely during application shutdown.
+     *
+     * @return the builder instance
+     */
+    public SpringContextBuilder withoutShutdownHooks() {
+        this.registerShutdownHooks = false;
+        return this;
+    }
+
+    /**
      * Generate the ApplicationContext.
      *
      * @return the ApplicationContext defined by this builder
@@ -123,7 +149,7 @@ public class SpringContextBuilder {
         parent.refresh();
         var beanFactory = parent.getBeanFactory();
         parentContextBeans.forEach(beanFactory::registerSingleton);
-        parent.registerShutdownHook();
+        registerShutdownHookIfEnabled(parent);
         parent.start();
         return parent;
     }
@@ -141,7 +167,7 @@ public class SpringContextBuilder {
         annotationContext.setParent(parent);
         annotatedClasses.forEach(annotationContext::register);
         annotationContext.refresh();
-        annotationContext.registerShutdownHook();
+        registerShutdownHookIfEnabled(annotationContext);
         annotationContext.start();
         return annotationContext;
     }
@@ -151,8 +177,14 @@ public class SpringContextBuilder {
         xmlContext.setParent(parent);
         xmlContext.setConfigLocations(configLocations.toArray(new String[0]));
         xmlContext.refresh();
-        xmlContext.registerShutdownHook();
+        registerShutdownHookIfEnabled(xmlContext);
         xmlContext.start();
         return xmlContext;
+    }
+
+    private void registerShutdownHookIfEnabled(ConfigurableApplicationContext context) {
+        if (registerShutdownHooks) {
+            context.registerShutdownHook();
+        }
     }
 }
