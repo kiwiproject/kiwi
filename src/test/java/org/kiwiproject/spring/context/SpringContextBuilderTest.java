@@ -8,7 +8,6 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
-import org.springframework.context.ApplicationContext;
 import org.springframework.context.ConfigurableApplicationContext;
 
 import java.util.Map;
@@ -24,6 +23,38 @@ class SpringContextBuilderTest {
     }
 
     @Nested
+    class Contexts {
+
+        @Test
+        void shouldBeCreatedUsingBuild() {
+            var context = builder
+                    .addAnnotationConfiguration(SampleTestConfiguration.class)
+                    .build();
+
+            assertThat(context)
+                    .describedAs("expected actual type to be ConfigurableApplicationContext")
+                    .isInstanceOf(ConfigurableApplicationContext.class);
+
+            assertThat(context.getBeanDefinitionNames()).contains(
+                    "sampleTestBean1", "sampleTestBean2", "otherTestBean");
+
+            assertCanClose((ConfigurableApplicationContext) context);
+        }
+
+        @Test
+        void shouldBeCreatedUsingBuildConfigurableContext() {
+            var context = builder
+                    .addAnnotationConfiguration(SampleTestConfiguration.class)
+                    .buildConfigurableContext();
+
+            assertThat(context.getBeanDefinitionNames()).contains(
+                    "sampleTestBean1", "sampleTestBean2", "otherTestBean");
+
+            assertCanClose(context);
+        }
+    }
+
+    @Nested
     class AddParentContextBean {
 
         @Test
@@ -31,10 +62,10 @@ class SpringContextBuilderTest {
             var sampleTestBean1 = new SampleTestBean("test bean 1", 42);
             var sampleTestBean2 = new SampleTestBean("test bean 2", 84);
 
-            ApplicationContext context = builder
+            var context = builder
                     .addParentContextBean("sampleTestBean1", sampleTestBean1)
                     .addParentContextBean("sampleTestBean2", sampleTestBean2)
-                    .build();
+                    .buildConfigurableContext();
 
             assertThat(context.getParent()).isNotNull();
             Map<String, SampleTestBean> sampleBeans = context.getParent().getBeansOfType(SampleTestBean.class);
@@ -49,9 +80,9 @@ class SpringContextBuilderTest {
 
         @Test
         void shouldAddOneAnnotationConfiguration() {
-            ApplicationContext context = builder
+            var context = builder
                     .addAnnotationConfiguration(SampleTestConfiguration.class)
-                    .build();
+                    .buildConfigurableContext();
 
             var sampleTestBean1 = context.getBean("sampleTestBean1", SampleTestBean.class);
             assertThat(sampleTestBean1).isNotNull();
@@ -73,16 +104,16 @@ class SpringContextBuilderTest {
                     .isThrownBy(() ->
                             builder.addXmlConfigLocation("testApplicationContext.xml")
                                     .addAnnotationConfiguration(SampleTestConfiguration.class)
-                                    .build())
+                                    .buildConfigurableContext())
                     .withMessageStartingWith("XML config locations have already been specified");
         }
 
         @Test
         void shouldSupportUsingAnnotatedClasses_CombinedWith_ImportedXmlConfiguration() {
-            ApplicationContext context = builder
+            var context = builder
                     .addAnnotationConfiguration(XmlImportingTestConfiguration.class)
                     .addAnnotationConfiguration(SecondTestConfiguration.class)
-                    .build();
+                    .buildConfigurableContext();
 
             assertThat(context.getBean("sampleTestBean1", SampleTestBean.class).getName()).isEqualTo("test bean 1");
             assertThat(context.getBean("sampleTestBean2", SampleTestBean.class).getName()).isEqualTo("test bean 2");
@@ -95,9 +126,9 @@ class SpringContextBuilderTest {
 
         @Test
         void shouldAddMultipleAnnotationConfigurations() {
-            ApplicationContext context = builder
+            var context = builder
                     .withAnnotationConfigurations(SampleTestConfiguration.class, SecondTestConfiguration.class)
-                    .build();
+                    .buildConfigurableContext();
 
             assertThat(context.getBean("sampleTestBean1", SampleTestBean.class).getName()).isEqualTo("test bean 1");
             assertThat(context.getBean("sampleTestBean2", SampleTestBean.class).getName()).isEqualTo("test bean 2");
@@ -110,7 +141,7 @@ class SpringContextBuilderTest {
                     .isThrownBy(() ->
                             builder.addXmlConfigLocation("SpringContextBuilderTest/testApplicationContext.xml")
                                     .withAnnotationConfigurations(SampleTestConfiguration.class)
-                                    .build())
+                                    .buildConfigurableContext())
                     .withMessageStartingWith("XML config locations have already been specified");
         }
     }
@@ -120,9 +151,9 @@ class SpringContextBuilderTest {
 
         @Test
         void shouldAddOneXmlConfigLocation() {
-            ApplicationContext context = builder
+            var context = builder
                     .addXmlConfigLocation("SpringContextBuilderTest/testApplicationContext.xml")
-                    .build();
+                    .buildConfigurableContext();
 
             var sampleTestBean1 = context.getBean("sampleTestBean1", SampleTestBean.class);
             assertThat(sampleTestBean1).isNotNull();
@@ -144,7 +175,7 @@ class SpringContextBuilderTest {
                     .isThrownBy(() ->
                             builder.addAnnotationConfiguration(SampleTestConfiguration.class)
                                     .addXmlConfigLocation("testApplicationContext.xml")
-                                    .build())
+                                    .buildConfigurableContext())
                     .withMessageStartingWith("Annotated classes have already been specified");
         }
     }
@@ -154,11 +185,11 @@ class SpringContextBuilderTest {
 
         @Test
         void shouldAddMultipleXmlConfigLocations() {
-            ApplicationContext context = builder
+            var context = builder
                     .withXmlConfigLocations(
                             "SpringContextBuilderTest/testApplicationContext.xml",
                             "SpringContextBuilderTest/secondTestApplicationContext.xml")
-                    .build();
+                    .buildConfigurableContext();
 
             assertThat(context.getBean("sampleTestBean1", SampleTestBean.class).getName()).isEqualTo("test bean 1");
             assertThat(context.getBean("sampleTestBean2", SampleTestBean.class).getName()).isEqualTo("test bean 2");
@@ -172,7 +203,7 @@ class SpringContextBuilderTest {
                             builder.addAnnotationConfiguration(SampleTestConfiguration.class)
                                     .withXmlConfigLocations("SpringContextBuilderTest/testApplicationContext.xml",
                                             "SpringContextBuilderTest/secondTestApplicationContext.xml")
-                                    .build())
+                                    .buildConfigurableContext())
                     .withMessageStartingWith("Annotated classes have already been specified");
         }
     }
@@ -189,11 +220,11 @@ class SpringContextBuilderTest {
         void shouldRegisterBeansInParentContext_WhenShutdownHooksDisabled() {
             var bean = new Object();
 
-            ApplicationContext context = new SpringContextBuilder()
+            var context = new SpringContextBuilder()
                     .withoutShutdownHooks()
                     .addParentContextBean("myBean", bean)
                     .addAnnotationConfiguration(SampleTestConfiguration.class)
-                    .build();
+                    .buildConfigurableContext();
 
             assertThat(context.getParent()).isNotNull();
             assertThat(context.getParent().containsBean("myBean")).isTrue();
@@ -208,10 +239,10 @@ class SpringContextBuilderTest {
 
         @Test
         void shouldDisableShutdownHooks_ForAnnotationContext() {
-            ApplicationContext context = builder
+            var context = builder
                     .withoutShutdownHooks()
                     .addAnnotationConfiguration(SampleTestConfiguration.class)
-                    .build();
+                    .buildConfigurableContext();
 
             assertThat(context).isNotNull();
             assertThat(context.getParent()).isNotNull();
@@ -223,10 +254,10 @@ class SpringContextBuilderTest {
 
         @Test
         void shouldDisableShutdownHooks_ForXmlContext() {
-            ApplicationContext context = builder
+            var context = builder
                     .withoutShutdownHooks()
                     .addXmlConfigLocation("SpringContextBuilderTest/testApplicationContext.xml")
-                    .build();
+                    .buildConfigurableContext();
 
             assertThat(context).isNotNull();
             assertThat(context.getParent()).isNotNull();
@@ -236,16 +267,11 @@ class SpringContextBuilderTest {
             assertCanClose(context);
         }
 
-        private static void assertCanClose(ApplicationContext context) {
-            assertThat(context)
-                    .describedAs("The context should be a ConfigurableApplicationContext")
-                    .isInstanceOf(ConfigurableApplicationContext.class);
+    }
 
-            var configurableContext = (ConfigurableApplicationContext) context;
-
-            assertThatCode(configurableContext::close)
-                    .describedAs("Closing the context should not throw any exceptions")
-                    .doesNotThrowAnyException();
-        }
+    private static void assertCanClose(ConfigurableApplicationContext context) {
+        assertThatCode(context::close)
+                .describedAs("Closing the context should not throw any exceptions")
+                .doesNotThrowAnyException();
     }
 }

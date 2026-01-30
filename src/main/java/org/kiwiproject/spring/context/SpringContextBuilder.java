@@ -20,15 +20,19 @@ import java.util.Map;
  * Dropwizard configuration object, to be accessible from the child context. The parent context beans can be referenced
  * in either XML or annotation configurations.
  * <p>
- * The methods return an instance of this class, so they can be changed together. Once the configuration is
- * set up, call {@link #build()} to create the ApplicationContext.
+ * The methods return an instance of this class, so they can be chained together. Once the configuration is
+ * set up, call {@link #buildConfigurableContext()} to create the ApplicationContext as a
+ * {@link ConfigurableApplicationContext}, which allows you to {@link ConfigurableApplicationContext#close() close} it.
  * <p>
  * By default, this builder registers JVM shutdown hooks on the created Spring contexts.
  * This is convenient for standalone applications, but can cause premature shutdown of Spring-managed resources
- * (such as a {@code DataSource} and {@code EntityManagerFactory}) when the Spring context is managed by an
- * external lifecycle manager (for example, Dropwizard {@code Managed} objects). In those cases, call
- * {@link #withoutShutdownHooks()} and close the Spring context explicitly as part of the application's
- * shutdown sequence.
+ * (such as a {@code DataSource} and {@code EntityManagerFactory}) when the application is managed by an
+ * external lifecycle manager (for example, Dropwizard {@code Managed} objects). For example, consider a
+ * Dropwizard application with shutdown hooks enabled. In this scenario, Spring shutdown is driven by the JVM’s
+ * shutdown sequence ({@code SIGTERM}, {@code System.exit()}, etc.), and it can run <em>concurrently</em> with
+ * Dropwizard/Jetty shutdown. To avoid premature shutdown of Spring-managed resources, call
+ * {@link #withoutShutdownHooks()} and then close the Spring context(s) explicitly as part of the application's
+ * shutdown sequence to ensure proper ordering.
  */
 public class SpringContextBuilder {
 
@@ -135,16 +139,27 @@ public class SpringContextBuilder {
     }
 
     /**
-     * Generate the ApplicationContext.
+     * Generate the {@link ApplicationContext}.
      *
      * @return the ApplicationContext defined by this builder
+     * @implNote This method delegates to {@link #buildConfigurableContext()} to create the ApplicationContext,
+     * therefore the returned instance is a {@link ConfigurableApplicationContext}.
      */
     public ApplicationContext build() {
+        return buildConfigurableContext();
+    }
+
+    /**
+     * Generate the {@link ConfigurableApplicationContext}.
+     *
+     * @return the ConfigurableApplicationContext defined by this builder
+     */
+    public ConfigurableApplicationContext buildConfigurableContext() {
         var parent = buildParentApplicationContext();
         return buildContext(parent);
     }
 
-    private ApplicationContext buildParentApplicationContext() {
+    private ConfigurableApplicationContext buildParentApplicationContext() {
         var parent = new AnnotationConfigApplicationContext();
         parent.refresh();
         var beanFactory = parent.getBeanFactory();
@@ -154,7 +169,7 @@ public class SpringContextBuilder {
         return parent;
     }
 
-    private ApplicationContext buildContext(ApplicationContext parent) {
+    private ConfigurableApplicationContext buildContext(ApplicationContext parent) {
         if (annotatedClasses.isEmpty()) {
             return buildXmlContext(parent);
         }
@@ -162,7 +177,7 @@ public class SpringContextBuilder {
         return buildAnnotationContext(parent);
     }
 
-    private ApplicationContext buildAnnotationContext(ApplicationContext parent) {
+    private ConfigurableApplicationContext buildAnnotationContext(ApplicationContext parent) {
         var annotationContext = new AnnotationConfigApplicationContext();
         annotationContext.setParent(parent);
         annotatedClasses.forEach(annotationContext::register);
@@ -172,7 +187,7 @@ public class SpringContextBuilder {
         return annotationContext;
     }
 
-    private ApplicationContext buildXmlContext(ApplicationContext parent) {
+    private ConfigurableApplicationContext buildXmlContext(ApplicationContext parent) {
         var xmlContext = new ClassPathXmlApplicationContext();
         xmlContext.setParent(parent);
         xmlContext.setConfigLocations(configLocations.toArray(new String[0]));
