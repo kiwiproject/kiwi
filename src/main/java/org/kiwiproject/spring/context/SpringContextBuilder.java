@@ -140,11 +140,16 @@ public class SpringContextBuilder {
 
     /**
      * Generate the {@link ApplicationContext}.
+     * <p>
+     * As of 5.1.0, it is recommended to use {@link #buildConfigurableContext()} instead.
      *
      * @return the ApplicationContext defined by this builder
      * @implNote This method delegates to {@link #buildConfigurableContext()} to create the ApplicationContext,
      * therefore the returned instance is a {@link ConfigurableApplicationContext}.
+     * @deprecated since 5.1.0 - Use {@link #buildConfigurableContext()} instead
      */
+    @Deprecated(since = "5.1.0")
+    @SuppressWarnings({ "java:S1133" })
     public ApplicationContext build() {
         return buildConfigurableContext();
     }

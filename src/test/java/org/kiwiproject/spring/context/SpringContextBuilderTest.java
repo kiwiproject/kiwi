@@ -25,6 +25,7 @@ class SpringContextBuilderTest {
     @Nested
     class Contexts {
 
+        @SuppressWarnings("deprecation")
         @Test
         void shouldBeCreatedUsingBuild() {
             var context = builder
