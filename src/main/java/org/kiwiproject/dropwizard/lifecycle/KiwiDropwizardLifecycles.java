@@ -1,9 +1,17 @@
 package org.kiwiproject.dropwizard.lifecycle;
 
+import static com.google.common.base.Preconditions.checkState;
+import static java.util.Objects.nonNull;
+import static org.kiwiproject.base.KiwiPreconditions.checkArgumentNotNull;
+
 import com.google.common.util.concurrent.Runnables;
 import io.dropwizard.lifecycle.Managed;
 import io.dropwizard.lifecycle.setup.LifecycleEnvironment;
 import lombok.experimental.UtilityClass;
+import org.kiwiproject.util.function.KiwiConsumers;
+
+import java.util.function.Consumer;
+import java.util.function.Supplier;
 
 /**
  * Provides utilities related to the Dropwizard lifecycle.
@@ -86,5 +94,91 @@ public class KiwiDropwizardLifecycles {
      */
     public static void manageOnlyStop(LifecycleEnvironment lifecycle, Runnable stopAction) {
         manage(lifecycle, Runnables.doNothing(), stopAction);
+    }
+
+    /**
+     * Creates an instance of type {@code T} using the given {@code supplier}, attaches it to the
+     * given Dropwizard {@code lifecycle} with the given start and stop actions, and returns the
+     * created instance.
+     * <p>
+     * Useful when you need to create, manage, and retain a reference to an object that does not
+     * implement {@link Managed}. For example:
+     * <p>
+     * {@code var client = KiwiDropwizardLifecycles.manageAndReturn(lifecycle, () -> new Client(config), Client::start, Client::close);}
+     *
+     * @param lifecycle   the lifecycle to manage
+     * @param supplier    creates the instance to manage
+     * @param startAction the action to run on the instance when Dropwizard starts the application
+     * @param stopAction  the action to run on the instance when Dropwizard stops the application
+     * @param <T>         the type of the managed instance
+     * @return the created instance
+     * @throws IllegalArgumentException if any argument is null
+     * @throws IllegalStateException if the supplier returns null
+     */
+    public static <T> T manageAndReturn(LifecycleEnvironment lifecycle,
+                                        Supplier<T> supplier,
+                                        Consumer<T> startAction,
+                                        Consumer<T> stopAction) {
+        checkArgumentNotNull(lifecycle, "lifecycle must not be null");
+        checkArgumentNotNull(supplier, "supplier must not be null");
+        checkArgumentNotNull(startAction, "startAction must not be null");
+        checkArgumentNotNull(stopAction, "stopAction must not be null");
+
+        T instance = supplier.get();
+        checkState(nonNull(instance), "supplier must not return null");
+
+        manage(lifecycle,
+                () -> startAction.accept(instance),
+                () -> stopAction.accept(instance));
+
+        return instance;
+    }
+
+    /**
+     * Creates an instance of type {@code T} using the given {@code supplier}, attaches it to the
+     * given Dropwizard {@code lifecycle} with the given start action (and a no-op stop action),
+     * and returns the created instance.
+     * <p>
+     * Useful when you need to create, manage, and retain a reference to an object that does not
+     * implement {@link Managed} and only requires a start action. For example:
+     * <p>
+     * {@code var monitor = KiwiDropwizardLifecycles.manageOnlyStartAndReturn(lifecycle, Monitor::new, Monitor::start);}
+     *
+     * @param lifecycle   the lifecycle to manage
+     * @param supplier    creates the instance to manage
+     * @param startAction the action to run on the instance when Dropwizard starts the application
+     * @param <T>         the type of the managed instance
+     * @return the created instance
+     * @throws IllegalArgumentException if any argument is null
+     * @throws IllegalStateException if the supplier returns null
+     */
+    public static <T> T manageOnlyStartAndReturn(LifecycleEnvironment lifecycle,
+                                                 Supplier<T> supplier,
+                                                 Consumer<T> startAction) {
+        return manageAndReturn(lifecycle, supplier, startAction, KiwiConsumers.noOp());
+    }
+
+    /**
+     * Creates an instance of type {@code T} using the given {@code supplier}, attaches it to the
+     * given Dropwizard {@code lifecycle} with the given stop action (and a no-op start action),
+     * and returns the created instance.
+     * <p>
+     * Useful when you need to create, manage, and retain a reference to an object that does not
+     * implement {@link Managed} and only requires a stop action. For example:
+     * <p>
+     * {@code var client = KiwiDropwizardLifecycles.manageOnlyStopAndReturn(lifecycle, () -> new Client(config), Client::close);}
+     *
+     * @param lifecycle  the lifecycle to manage
+     * @param supplier   creates the instance to manage
+     * @param stopAction the action to run on the instance when Dropwizard stops the application
+     * @param <T>        the type of the managed instance
+     * @return the created instance
+     * @throws IllegalArgumentException if any argument is null
+     * @throws IllegalStateException if the supplier returns null
+     */
+    public static <T> T manageOnlyStopAndReturn(LifecycleEnvironment lifecycle,
+                                                Supplier<T> supplier,
+                                                Consumer<T> stopAction) {
+        return manageAndReturn(lifecycle, supplier, KiwiConsumers.noOp(), stopAction);
     }
 }
