@@ -3,6 +3,7 @@ package org.kiwiproject.collect;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
+import static org.assertj.core.api.Assertions.assertThatNullPointerException;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.assertj.core.api.Assertions.entry;
 import static org.junit.jupiter.api.Assertions.assertAll;
@@ -1576,7 +1577,7 @@ class KiwiMapsTest {
         void withFactory_shouldThrowNullPointerException_WhenFactoryReturnsNull() {
             var mergeFunction = KiwiMaps.<String>noDupKeysAllowedMergeFunction((v1, v2) -> null);
 
-            assertThatExceptionOfType(NullPointerException.class)
+            assertThatNullPointerException()
                     .isThrownBy(() -> mergeFunction.apply("value1", "value2"));
         }
 
