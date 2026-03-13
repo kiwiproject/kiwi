@@ -2,6 +2,7 @@ package org.kiwiproject.collect;
 
 import static java.util.Objects.isNull;
 import static java.util.Objects.nonNull;
+import static org.kiwiproject.base.KiwiPreconditions.checkArgumentNotBlank;
 import static org.kiwiproject.base.KiwiPreconditions.checkArgumentNotNull;
 import static org.kiwiproject.base.KiwiPreconditions.checkEvenItemCount;
 import static org.kiwiproject.base.KiwiStrings.f;
@@ -23,6 +24,7 @@ import java.util.TreeMap;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 import java.util.function.BiFunction;
+import java.util.function.BinaryOperator;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
@@ -783,6 +785,68 @@ public class KiwiMaps {
         } catch (Exception e) {
             return fallbackConverter.apply(v, e);
         }
+    }
+
+    /**
+     * Returns a merge function for use with
+     * {@link java.util.stream.Collectors#toMap(Function, Function, BinaryOperator)}
+     * and similar collectors, that throws {@link IllegalStateException} when a
+     * duplicate key is encountered.
+     * <p>
+     * Use this when you know that duplicate keys cannot occur and want to make
+     * that intent explicit. If a duplicate key is encountered, an
+     * {@link IllegalStateException} is thrown with a default message.
+     *
+     * @param <V> the type of the values
+     * @return a BinaryOperator that always throws IllegalStateException
+     */
+    public static <V> BinaryOperator<V> noDupKeysAllowedMergeFunction() {
+        return noDupKeysAllowedMergeFunction("Duplicate key found!");
+    }
+
+    /**
+     * Returns a merge function for use with
+     * {@link java.util.stream.Collectors#toMap(Function, Function, BinaryOperator)}
+     * and similar collectors, that throws {@link IllegalStateException} with the
+     * given message when a duplicate key is encountered.
+     * <p>
+     * Use this when you know that duplicate keys cannot occur and want to make
+     * that intent explicit with a descriptive message.
+     *
+     * @param message the message for the IllegalStateException
+     * @param <V>     the type of the values
+     * @return a BinaryOperator that always throws IllegalStateException
+     * @throws IllegalArgumentException if message is null, empty, or blank
+     */
+    public static <V> BinaryOperator<V> noDupKeysAllowedMergeFunction(String message) {
+        checkArgumentNotBlank(message, "message must not be blank");
+        return (v1, v2) -> {
+            throw new IllegalStateException(message);
+        };
+    }
+
+    /**
+     * Returns a merge function for use with
+     * {@link java.util.stream.Collectors#toMap(Function, Function, BinaryOperator)}
+     * and similar collectors, that uses the given factory to create and throw a
+     * {@link RuntimeException} when a duplicate key is encountered.
+     * <p>
+     * The factory receives the two values associated with the duplicate key, which
+     * can be used to provide more detailed exception messages.
+     *
+     * @param exceptionFactory a BiFunction accepting the two values for the duplicate
+     *                         key and returning the RuntimeException to throw
+     * @param <V>              the type of the values
+     * @return a BinaryOperator that throws the RuntimeException produced by the factory
+     * @throws IllegalArgumentException if exceptionFactory is null
+     * @throws NullPointerException if exceptionFactory returns null
+     */
+    public static <V> BinaryOperator<V> noDupKeysAllowedMergeFunction(
+            BiFunction<? super V, ? super V, ? extends RuntimeException> exceptionFactory) {
+        checkArgumentNotNull(exceptionFactory, "exceptionFactory must not be null");
+        return (v1, v2) -> {
+            throw exceptionFactory.apply(v1, v2);
+        };
     }
 
     private static void checkMapAndKeyArgsNotNull(Map<?, ?> map, Object key) {
