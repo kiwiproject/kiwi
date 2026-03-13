@@ -177,6 +177,37 @@ class KiwiInstantsTest {
     }
 
 
+    @Nested
+    class TruncatedToMillis {
+
+        @Test
+        void shouldTruncateInstantToMilliseconds() {
+            var instant = Instant.parse("2024-06-15T12:34:56.123456789Z");
+            assertThat(KiwiInstants.truncatedToMillis(instant))
+                    .isEqualTo(Instant.parse("2024-06-15T12:34:56.123Z"));
+        }
+
+        @Test
+        void shouldReturnSameValue_WhenInstantAlreadyHasMillisecondPrecision() {
+            var instant = Instant.parse("2024-06-15T12:34:56.123Z");
+            assertThat(KiwiInstants.truncatedToMillis(instant)).isEqualTo(instant);
+        }
+
+        @Test
+        void shouldTruncateZonedDateTimeToMilliseconds() {
+            var dateTime = ZonedDateTime.parse("2024-06-15T12:34:56.123456789Z");
+            assertThat(KiwiInstants.truncatedToMillis(dateTime))
+                    .isEqualTo(Instant.parse("2024-06-15T12:34:56.123Z"));
+        }
+
+        @Test
+        void shouldReturnSameValue_WhenZonedDateTimeAlreadyHasMillisecondPrecision() {
+            var dateTime = ZonedDateTime.parse("2024-06-15T12:34:56.123Z");
+            assertThat(KiwiInstants.truncatedToMillis(dateTime))
+                    .isEqualTo(dateTime.toInstant());
+        }
+    }
+
     /**
      * @implNote Because {@link Instant} does not deal with {@link TemporalUnit} values greater than
      * {@link ChronoUnit#DAYS}, these tests use {@link ZonedDateTime} to adjust the time scales.
