@@ -33,6 +33,7 @@ import java.util.concurrent.ConcurrentMap;
 import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
+import java.util.stream.Collectors;
 
 @DisplayName("KiwiMaps")
 class KiwiMapsTest {
@@ -1474,6 +1475,151 @@ class KiwiMapsTest {
                                 .isZero();
                     }
             );
+        }
+    }
+
+    @Nested
+    class NoDupKeysAllowedMergeFunction {
+
+        @Test
+        void noArg_shouldThrowIllegalStateException_WhenMergeFunctionIsInvoked() {
+            var mergeFunction = KiwiMaps.<String>noDupKeysAllowedMergeFunction();
+
+            assertThatExceptionOfType(IllegalStateException.class)
+                    .isThrownBy(() -> mergeFunction.apply("value1", "value2"))
+                    .withMessageContaining("Duplicate key");
+        }
+
+        @Test
+        void noArg_shouldWorkInToMap_WhenNoCollisionsOccur() {
+            var source = Map.of("a", 1, "b", 2, "c", 3);
+
+            var result = source.entrySet().stream()
+                    .collect(Collectors.toMap(
+                            Map.Entry::getKey,
+                            Map.Entry::getValue,
+                            KiwiMaps.noDupKeysAllowedMergeFunction()));
+
+            assertThat(result).containsExactlyInAnyOrderEntriesOf(source);
+        }
+
+        @Test
+        void noArg_shouldThrowIllegalStateException_ViaCollectorsToMap_WhenDuplicateKeyEncountered() {
+            var entries = List.of(
+                    Map.entry("a", 1),
+                    Map.entry("b", 2),
+                    Map.entry("a", 3));
+            var collector = Collectors.<Map.Entry<String, Integer>, String, Integer>toMap(
+                    Map.Entry::getKey, Map.Entry::getValue, KiwiMaps.noDupKeysAllowedMergeFunction());
+            var stream = entries.stream();
+
+            assertThatExceptionOfType(IllegalStateException.class)
+                    .isThrownBy(() -> stream.collect(collector))
+                    .withMessageContaining("Duplicate key");
+        }
+
+        @ParameterizedTest
+        @BlankStringSource
+        void withMessage_shouldRequireNonBlankMessage(String blank) {
+            assertThatIllegalArgumentException()
+                    .isThrownBy(() -> KiwiMaps.noDupKeysAllowedMergeFunction(blank));
+        }
+
+        @Test
+        void withMessage_shouldThrowIllegalStateException_WithGivenMessage() {
+            var message = "No duplicate keys permitted in this stream";
+            var mergeFunction = KiwiMaps.<Integer>noDupKeysAllowedMergeFunction(message);
+
+            assertThatExceptionOfType(IllegalStateException.class)
+                    .isThrownBy(() -> mergeFunction.apply(1, 2))
+                    .withMessage(message);
+        }
+
+        @Test
+        void withMessage_shouldWorkInToMap_WhenNoCollisionsOccur() {
+            var source = Map.of("x", 10, "y", 20);
+
+            var result = source.entrySet().stream()
+                    .collect(Collectors.toMap(
+                            Map.Entry::getKey,
+                            Map.Entry::getValue,
+                            KiwiMaps.noDupKeysAllowedMergeFunction("Unexpected duplicate!")));
+
+            assertThat(result).containsExactlyInAnyOrderEntriesOf(source);
+        }
+
+        @Test
+        void withMessage_shouldThrowIllegalStateException_ViaCollectorsToMap_WhenDuplicateKeyEncountered() {
+            var message = "No duplicate keys permitted in this stream";
+            var entries = List.of(
+                    Map.entry("a", 1),
+                    Map.entry("b", 2),
+                    Map.entry("a", 3));
+            var collector = Collectors.<Map.Entry<String, Integer>, String, Integer>toMap(
+                    Map.Entry::getKey, Map.Entry::getValue, KiwiMaps.noDupKeysAllowedMergeFunction(message));
+            var stream = entries.stream();
+
+            assertThatExceptionOfType(IllegalStateException.class)
+                    .isThrownBy(() -> stream.collect(collector))
+                    .withMessage(message);
+        }
+
+        @Test
+        void withFactory_shouldRequireNonNullFactory() {
+            assertThatIllegalArgumentException()
+                    .isThrownBy(() -> KiwiMaps.noDupKeysAllowedMergeFunction(
+                            (java.util.function.BiFunction<String, String, RuntimeException>) null))
+                    .withMessage("exceptionFactory must not be null");
+        }
+
+        @Test
+        void withFactory_shouldThrowNullPointerException_WhenFactoryReturnsNull() {
+            var mergeFunction = KiwiMaps.<String>noDupKeysAllowedMergeFunction((v1, v2) -> null);
+
+            assertThatExceptionOfType(NullPointerException.class)
+                    .isThrownBy(() -> mergeFunction.apply("value1", "value2"));
+        }
+
+        @Test
+        void withFactory_shouldThrowExceptionFromFactory() {
+            var mergeFunction = KiwiMaps.<String>noDupKeysAllowedMergeFunction(
+                    (v1, v2) -> new IllegalArgumentException("Dup values: " + v1 + ", " + v2));
+
+            assertThatExceptionOfType(IllegalArgumentException.class)
+                    .isThrownBy(() -> mergeFunction.apply("foo", "bar"))
+                    .withMessage("Dup values: foo, bar");
+        }
+
+        @Test
+        void withFactory_shouldThrowExceptionFromFactory_ViaCollectorsToMap_WhenDuplicateKeyEncountered() {
+            var entries = List.of(
+                    Map.entry("a", 1),
+                    Map.entry("b", 2),
+                    Map.entry("a", 3));
+            var collector = Collectors.<Map.Entry<String, Integer>, String, Integer>toMap(
+                    Map.Entry::getKey,
+                    Map.Entry::getValue,
+                    KiwiMaps.noDupKeysAllowedMergeFunction(
+                            (v1, v2) -> new IllegalArgumentException("Dup values: " + v1 + ", " + v2)));
+            var stream = entries.stream();
+
+            assertThatExceptionOfType(IllegalArgumentException.class)
+                    .isThrownBy(() -> stream.collect(collector))
+                    .withMessage("Dup values: 1, 3");
+        }
+
+        @Test
+        void withFactory_shouldWorkInToMap_WhenNoCollisionsOccur() {
+            var source = Map.of("p", 100, "q", 200);
+
+            var result = source.entrySet().stream()
+                    .collect(Collectors.toMap(
+                            Map.Entry::getKey,
+                            Map.Entry::getValue,
+                            KiwiMaps.noDupKeysAllowedMergeFunction(
+                                    (v1, v2) -> new IllegalStateException("Dup: " + v1 + ", " + v2))));
+
+            assertThat(result).containsExactlyInAnyOrderEntriesOf(source);
         }
     }
 }
