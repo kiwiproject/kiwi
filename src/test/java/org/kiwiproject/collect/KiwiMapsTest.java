@@ -1509,10 +1509,8 @@ class KiwiMapsTest {
                     Map.entry("a", 1),
                     Map.entry("b", 2),
                     Map.entry("a", 3));
-            var collector = Collectors.toMap(
-                    (Map.Entry<String, Integer> e) -> e.getKey(),
-                    (Map.Entry<String, Integer> e) -> e.getValue(),
-                    KiwiMaps.<Integer>noDupKeysAllowedMergeFunction());
+            var collector = Collectors.<Map.Entry<String, Integer>, String, Integer>toMap(
+                    Map.Entry::getKey, Map.Entry::getValue, KiwiMaps.noDupKeysAllowedMergeFunction());
             var stream = entries.stream();
 
             assertThatExceptionOfType(IllegalStateException.class)
@@ -1557,10 +1555,8 @@ class KiwiMapsTest {
                     Map.entry("a", 1),
                     Map.entry("b", 2),
                     Map.entry("a", 3));
-            var collector = Collectors.toMap(
-                    (Map.Entry<String, Integer> e) -> e.getKey(),
-                    (Map.Entry<String, Integer> e) -> e.getValue(),
-                    KiwiMaps.<Integer>noDupKeysAllowedMergeFunction(message));
+            var collector = Collectors.<Map.Entry<String, Integer>, String, Integer>toMap(
+                    Map.Entry::getKey, Map.Entry::getValue, KiwiMaps.noDupKeysAllowedMergeFunction(message));
             var stream = entries.stream();
 
             assertThatExceptionOfType(IllegalStateException.class)
@@ -1600,10 +1596,10 @@ class KiwiMapsTest {
                     Map.entry("a", 1),
                     Map.entry("b", 2),
                     Map.entry("a", 3));
-            var collector = Collectors.toMap(
-                    (Map.Entry<String, Integer> e) -> e.getKey(),
-                    (Map.Entry<String, Integer> e) -> e.getValue(),
-                    KiwiMaps.<Integer>noDupKeysAllowedMergeFunction(
+            var collector = Collectors.<Map.Entry<String, Integer>, String, Integer>toMap(
+                    Map.Entry::getKey,
+                    Map.Entry::getValue,
+                    KiwiMaps.noDupKeysAllowedMergeFunction(
                             (v1, v2) -> new IllegalArgumentException("Dup values: " + v1 + ", " + v2)));
             var stream = entries.stream();
 
