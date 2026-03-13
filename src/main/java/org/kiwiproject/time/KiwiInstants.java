@@ -267,6 +267,33 @@ public class KiwiInstants {
         return toZonedDateTime(instant).plus(amountToAdd, unit).toInstant();
     }
 
+    /**
+     * Return an {@link Instant} truncated to millisecond precision.
+     * <p>
+     * This is useful when comparing an {@link Instant} against a value from a millisecond-precision
+     * source such as a database timestamp, where nanoseconds would cause equality checks to fail.
+     *
+     * @param instant the {@link Instant} to truncate
+     * @return a new {@link Instant} truncated to milliseconds
+     */
+    public static Instant truncatedToMillis(Instant instant) {
+        return instant.truncatedTo(ChronoUnit.MILLIS);
+    }
+
+    /**
+     * Return an {@link Instant} derived from the given {@link ZonedDateTime}, truncated to
+     * millisecond precision.
+     * <p>
+     * This is useful when comparing a value against one from a millisecond-precision source such
+     * as a database timestamp, where nanoseconds would cause equality checks to fail.
+     *
+     * @param dateTime the {@link ZonedDateTime} to convert and truncate
+     * @return a new {@link Instant} truncated to milliseconds
+     */
+    public static Instant truncatedToMillis(ZonedDateTime dateTime) {
+        return dateTime.toInstant().truncatedTo(ChronoUnit.MILLIS);
+    }
+
     private static ZonedDateTime toZonedDateTime(Instant instant) {
         return ZonedDateTime.ofInstant(instant, ZoneOffset.UTC);
     }
