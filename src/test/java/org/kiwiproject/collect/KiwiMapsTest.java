@@ -1509,13 +1509,14 @@ class KiwiMapsTest {
                     Map.entry("a", 1),
                     Map.entry("b", 2),
                     Map.entry("a", 3));
+            var collector = Collectors.toMap(
+                    (Map.Entry<String, Integer> e) -> e.getKey(),
+                    (Map.Entry<String, Integer> e) -> e.getValue(),
+                    KiwiMaps.<Integer>noDupKeysAllowedMergeFunction());
+            var stream = entries.stream();
 
             assertThatExceptionOfType(IllegalStateException.class)
-                    .isThrownBy(() -> entries.stream()
-                            .collect(Collectors.toMap(
-                                    Map.Entry::getKey,
-                                    Map.Entry::getValue,
-                                    KiwiMaps.noDupKeysAllowedMergeFunction())))
+                    .isThrownBy(() -> stream.collect(collector))
                     .withMessageContaining("Duplicate key");
         }
 
@@ -1556,13 +1557,14 @@ class KiwiMapsTest {
                     Map.entry("a", 1),
                     Map.entry("b", 2),
                     Map.entry("a", 3));
+            var collector = Collectors.toMap(
+                    (Map.Entry<String, Integer> e) -> e.getKey(),
+                    (Map.Entry<String, Integer> e) -> e.getValue(),
+                    KiwiMaps.<Integer>noDupKeysAllowedMergeFunction(message));
+            var stream = entries.stream();
 
             assertThatExceptionOfType(IllegalStateException.class)
-                    .isThrownBy(() -> entries.stream()
-                            .collect(Collectors.toMap(
-                                    Map.Entry::getKey,
-                                    Map.Entry::getValue,
-                                    KiwiMaps.noDupKeysAllowedMergeFunction(message))))
+                    .isThrownBy(() -> stream.collect(collector))
                     .withMessage(message);
         }
 
@@ -1598,15 +1600,15 @@ class KiwiMapsTest {
                     Map.entry("a", 1),
                     Map.entry("b", 2),
                     Map.entry("a", 3));
+            var collector = Collectors.toMap(
+                    (Map.Entry<String, Integer> e) -> e.getKey(),
+                    (Map.Entry<String, Integer> e) -> e.getValue(),
+                    KiwiMaps.<Integer>noDupKeysAllowedMergeFunction(
+                            (v1, v2) -> new IllegalArgumentException("Dup values: " + v1 + ", " + v2)));
+            var stream = entries.stream();
 
             assertThatExceptionOfType(IllegalArgumentException.class)
-                    .isThrownBy(() -> entries.stream()
-                            .collect(Collectors.toMap(
-                                    Map.Entry::getKey,
-                                    Map.Entry::getValue,
-                                    KiwiMaps.noDupKeysAllowedMergeFunction(
-                                            (v1, v2) -> new IllegalArgumentException(
-                                                    "Dup values: " + v1 + ", " + v2)))))
+                    .isThrownBy(() -> stream.collect(collector))
                     .withMessage("Dup values: 1, 3");
         }
 
