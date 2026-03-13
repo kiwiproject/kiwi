@@ -291,7 +291,7 @@ public class KiwiInstants {
      * @return a new {@link Instant} truncated to milliseconds
      */
     public static Instant truncatedToMillis(ZonedDateTime dateTime) {
-        return dateTime.toInstant().truncatedTo(ChronoUnit.MILLIS);
+        return truncatedToMillis(dateTime.toInstant());
     }
 
     private static ZonedDateTime toZonedDateTime(Instant instant) {
