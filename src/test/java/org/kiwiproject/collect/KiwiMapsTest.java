@@ -1487,7 +1487,7 @@ class KiwiMapsTest {
 
             assertThatExceptionOfType(IllegalStateException.class)
                     .isThrownBy(() -> mergeFunction.apply("value1", "value2"))
-                    .withMessageContaining("Duplicate key");
+                    .withMessage("Duplicate keys are not allowed");
         }
 
         @Test
@@ -1515,7 +1515,7 @@ class KiwiMapsTest {
 
             assertThatExceptionOfType(IllegalStateException.class)
                     .isThrownBy(() -> stream.collect(collector))
-                    .withMessageContaining("Duplicate key");
+                    .withMessage("Duplicate keys are not allowed");
         }
 
         @ParameterizedTest

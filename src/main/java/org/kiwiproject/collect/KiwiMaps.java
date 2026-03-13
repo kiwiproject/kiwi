@@ -801,7 +801,7 @@ public class KiwiMaps {
      * @return a BinaryOperator that always throws IllegalStateException
      */
     public static <V> BinaryOperator<V> noDupKeysAllowedMergeFunction() {
-        return noDupKeysAllowedMergeFunction("Duplicate key found!");
+        return noDupKeysAllowedMergeFunction("Duplicate keys are not allowed");
     }
 
     /**
