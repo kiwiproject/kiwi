@@ -82,8 +82,8 @@ class UUIDsTest {
                 "015186f5-539d-4bcb-b3bc-34718931EF37",
                 "015186F5-539D-4BCB-B3BC-34718931EF37"
         })
-        void shouldBeTrue_ForUppercaseUUIDs(String uuid, SoftAssertions softly) {
-            assertValidUUIDs(softly, () -> UUID.fromString(uuid));
+        void shouldBeTrue_ForUppercaseUUIDs(String uuid) {
+            assertThat(UUIDs.isValidUUID(uuid)).isTrue();
         }
 
         @ParameterizedTest
@@ -146,8 +146,8 @@ class UUIDsTest {
                 "015186f5-539d-4bcb-b3bc-34718931EF37",
                 "015186F5-539D-4BCB-B3BC-34718931EF37"
         })
-        void shouldBeTrue_ForUppercaseUUIDs(String uuid, SoftAssertions softly) {
-            assertValidUUIDs(softly, () -> UUID.fromString(uuid));
+        void shouldBeTrue_ForUppercaseUUIDs(String uuid) {
+            assertThat(UUIDs.isValidUUIDAllowingNil(uuid)).isTrue();
         }
 
         @ParameterizedTest
