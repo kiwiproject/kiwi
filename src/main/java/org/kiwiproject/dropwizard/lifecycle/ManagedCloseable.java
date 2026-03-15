@@ -11,7 +11,10 @@ import java.io.IOException;
 
 /**
  * A Dropwizard {@link Managed} that manages a single {@link Closeable} instance.
- * By default, {@link #stop()} propagates any {@link IOException} thrown during close.
+ * The wrapped instance is accessible via {@link #getCloseable()}.
+ * <p>
+ * Use {@link #of(Closeable)} or the constructor for default behavior, where
+ * {@link #stop()} propagates any {@link IOException} thrown during close.
  * Use {@link #closingQuietly(Closeable)} to create an instance that suppresses any
  * {@link IOException} thrown during close instead of propagating it.
  */
@@ -64,6 +67,9 @@ public class ManagedCloseable implements Managed {
 
     /**
      * No-op.
+     *
+     * @apiNote The {@link Closeable} is expected to already be open when this
+     * managed object is created.
      */
     @Override
     public void start() {
