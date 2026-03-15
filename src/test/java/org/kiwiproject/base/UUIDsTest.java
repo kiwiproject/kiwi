@@ -182,6 +182,9 @@ class UUIDsTest {
 
     static Stream<String> invalidUUIDs() {
         return Stream.of(
+                null,
+                "",
+                " ",
                 "1",
                 "bob",
                 "!",
