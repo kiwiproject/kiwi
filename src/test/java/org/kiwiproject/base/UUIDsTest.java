@@ -68,14 +68,7 @@ class UUIDsTest {
         }
 
         @ParameterizedTest
-        @ValueSource(strings = {
-                "6ba7b810-9dad-11d1-80b4-00c04fd430c8",  // v1
-                "6ba7b810-9dad-21d1-a000-00c04fd430c8",  // v2
-                "886313e1-3b8a-5372-9b90-0c9aee199e5d",  // v5
-                "1ec9414c-232a-6b00-b3c8-9e6bdeced846",  // v6
-                "018e6b5e-8e90-7d3a-8f0c-1234567890ab",  // v7
-                "017f22e2-79b0-8cc3-98c4-dc0c0c07398f"   // v8
-        })
+        @MethodSource("org.kiwiproject.base.UUIDsTest#uuidVersionSamples")
         void shouldBeTrue_ForVersion1_2_5_6_7_and_8_UUIDs(String uuid) {
             assertThat(UUIDs.isValidUUID(uuid)).isTrue();
         }
@@ -139,14 +132,7 @@ class UUIDsTest {
         }
 
         @ParameterizedTest
-        @ValueSource(strings = {
-                "6ba7b810-9dad-11d1-80b4-00c04fd430c8",  // v1
-                "6ba7b810-9dad-21d1-a000-00c04fd430c8",  // v2
-                "886313e1-3b8a-5372-9b90-0c9aee199e5d",  // v5
-                "1ec9414c-232a-6b00-b3c8-9e6bdeced846",  // v6
-                "018e6b5e-8e90-7d3a-8f0c-1234567890ab",  // v7
-                "017f22e2-79b0-8cc3-98c4-dc0c0c07398f"   // v8
-        })
+        @MethodSource("org.kiwiproject.base.UUIDsTest#uuidVersionSamples")
         void shouldBeTrue_ForVersion1_2_5_6_7_and_8_UUIDs(String uuid) {
             assertThat(UUIDs.isValidUUIDAllowingNil(uuid)).isTrue();
         }
@@ -191,6 +177,17 @@ class UUIDsTest {
                                 .describedAs("candidate %s should be valid", candidate)
                                 .isTrue()
                 );
+    }
+
+    static Stream<String> uuidVersionSamples() {
+        return Stream.of(
+                "6ba7b810-9dad-11d1-80b4-00c04fd430c8",  // v1
+                "6ba7b810-9dad-21d1-a000-00c04fd430c8",  // v2
+                "886313e1-3b8a-5372-9b90-0c9aee199e5d",  // v5
+                "1ec9414c-232a-6b00-b3c8-9e6bdeced846",  // v6
+                "018e6b5e-8e90-7d3a-8f0c-1234567890ab",  // v7
+                "017f22e2-79b0-8cc3-98c4-dc0c0c07398f"   // v8
+        );
     }
 
     static Stream<String> invalidUUIDs() {
