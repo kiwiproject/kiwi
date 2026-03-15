@@ -29,13 +29,16 @@ public class UUIDs {
     }
 
     /**
-     * Checks if the {@code value} is a valid UUID conforming to <a href="https://www.rfc-editor.org/rfc/rfc9562">RFC 9562</a>.
-     * The general form is 8-4-4-4-12 where all the digits are hexadecimal.
-     * Example: {@code e94c302e-e684-4d72-9060-a66461f858d6}
+     * Checks if the {@code value} is a valid UUID conforming to
+     * <a href="https://www.rfc-editor.org/rfc/rfc9562">RFC 9562</a>.
+     * The general form is 8-4-4-4-12 where the digits are hexadecimal,
+     * the version nibble must be non-zero, and the variant nibble must
+     * indicate the RFC 9562 variant. Example: {@code e94c302e-e684-4d72-9060-a66461f858d6}
      * <p>
      * Note specifically that this method <em>does not support</em> the
      * <a href="https://www.rfc-editor.org/rfc/rfc9562#section-5.9">Nil UUID</a>
-     * and will always return false if given a Nil UUID.
+     * or the <a href="https://www.rfc-editor.org/rfc/rfc9562#section-5.10">Max UUID</a>
+     * and will always return false for either.
      *
      * @param value the string to check
      * @return {@code true} if a valid UUID, {@code false} otherwise (including if {@code value} is null)
@@ -50,12 +53,18 @@ public class UUIDs {
 
     /**
      * Checks if the {@code value} is a valid UUID conforming to
-     * <a href="https://www.rfc-editor.org/rfc/rfc9562">RFC 9562</a> (including the Nil UUID). The general form is
-     * 8-4-4-4-12 where all the digits are hexadecimal. Example: {@code e94c302e-e684-4d72-9060-a66461f858d6}, or the
-     * nil UUID {@code 00000000-0000-0000-0000-000000000000}.
+     * <a href="https://www.rfc-editor.org/rfc/rfc9562">RFC 9562</a> (including the Nil UUID).
+     * The general form is 8-4-4-4-12 where the digits are hexadecimal, the version nibble
+     * must be non-zero, and the variant nibble must indicate the RFC 9562 variant.
+     * Example: {@code e94c302e-e684-4d72-9060-a66461f858d6}, or the nil UUID
+     * {@code 00000000-0000-0000-0000-000000000000}.
+     * <p>
+     * Note specifically that this method <em>does not support</em> the
+     * <a href="https://www.rfc-editor.org/rfc/rfc9562#section-5.10">Max UUID</a>
+     * and will always return false for it.
      *
      * @param value the string to check
-     * @return {@code true} if a valid UUID, {@code false} otherwise
+     * @return {@code true} if a valid UUID, {@code false} otherwise (including if {@code value} is null)
      * @see UUID
      */
     public static boolean isValidUUIDAllowingNil(String value) {
