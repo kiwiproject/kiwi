@@ -11,6 +11,8 @@ import java.time.ZoneId;
 /**
  * Jackson serializer that converts a {@link java.time.LocalDateTime} into milliseconds since the epoch
  * in the UTC zone by default, or in a zone specified in the constructor.
+ *
+ * @see org.kiwiproject.jackson.deser.LocalDateTimeEpochTimeDeserializer
  */
 public class LocalDateTimeEpochTimeSerializer extends StdSerializer<LocalDateTime> {
 
