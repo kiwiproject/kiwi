@@ -1,6 +1,6 @@
 package org.kiwiproject.dropwizard.lifecycle;
 
-import static org.kiwiproject.base.KiwiPreconditions.checkArgumentNotNull;
+import static org.kiwiproject.base.KiwiPreconditions.requireNotNull;
 
 import io.dropwizard.lifecycle.Managed;
 import lombok.Getter;
@@ -12,8 +12,8 @@ import java.io.IOException;
 /**
  * A Dropwizard {@link Managed} that manages a single {@link Closeable} instance.
  * By default, {@link #stop()} propagates any {@link IOException} thrown during close.
- * Use {@link #closingQuietly(Closeable)} to create an instance that suppresses close
- * errors instead.
+ * Use {@link #closingQuietly(Closeable)} to create an instance that suppresses any
+ * {@link IOException} thrown during close instead of propagating it.
  */
 public class ManagedCloseable implements Managed {
 
@@ -34,8 +34,7 @@ public class ManagedCloseable implements Managed {
     }
 
     private ManagedCloseable(Closeable closeable, boolean closeQuietly) {
-        checkArgumentNotNull(closeable, "closeable must not be null");
-        this.closeable = closeable;
+        this.closeable = requireNotNull(closeable, "closeable must not be null");
         this.closeQuietly = closeQuietly;
     }
 
@@ -52,8 +51,8 @@ public class ManagedCloseable implements Managed {
     }
 
     /**
-     * Creates a {@code ManagedCloseable} that suppresses any errors thrown when closing
-     * the given {@link Closeable}, logging them instead of propagating them.
+     * Creates a {@code ManagedCloseable} that suppresses any {@link IOException} thrown
+     * when closing the given {@link Closeable}, logging it instead of propagating it.
      *
      * @param closeable the {@link Closeable} to manage
      * @return a new ManagedCloseable
@@ -73,9 +72,9 @@ public class ManagedCloseable implements Managed {
 
     /**
      * Closes the managed {@link Closeable}. If this instance was created with
-     * {@link #closingQuietly(Closeable)}, any errors thrown during close are suppressed
-     * and logged rather than propagated. Otherwise, any {@link IOException} thrown by
-     * {@link Closeable#close()} is propagated to the caller.
+     * {@link #closingQuietly(Closeable)}, any {@link IOException} thrown during close is
+     * suppressed and logged rather than propagated. Otherwise, any {@link IOException}
+     * thrown by {@link Closeable#close()} is propagated to the caller.
      *
      * @throws IOException if the close fails and this instance was not created with
      *                     {@link #closingQuietly(Closeable)}

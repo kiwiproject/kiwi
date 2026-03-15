@@ -1,5 +1,6 @@
 package org.kiwiproject.dropwizard.lifecycle;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatCode;
 import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -26,6 +27,13 @@ class ManagedCloseableTest {
         closeable = mock(Closeable.class);
     }
 
+    @Test
+    void shouldNotInteractWithCloseable_WhenStartIsCalled() {
+        var managed = new ManagedCloseable(closeable);
+        managed.start();
+        verifyNoInteractions(closeable);
+    }
+
     @Nested
     class Constructor {
 
@@ -36,10 +44,9 @@ class ManagedCloseableTest {
         }
 
         @Test
-        void shouldNotInteractWithCloseable_WhenStartIsCalled() {
+        void shouldReturnCloseable() {
             var managed = new ManagedCloseable(closeable);
-            managed.start();
-            verifyNoInteractions(closeable);
+            assertThat(managed.getCloseable()).isSameAs(closeable);
         }
 
         @Test
@@ -57,6 +64,7 @@ class ManagedCloseableTest {
             assertThatThrownBy(managed::stop)
                     .isInstanceOf(IOException.class)
                     .hasMessage("close failed");
+            verify(closeable).close();
         }
     }
 
@@ -70,6 +78,12 @@ class ManagedCloseableTest {
         }
 
         @Test
+        void shouldReturnCloseable() {
+            var managed = ManagedCloseable.of(closeable);
+            assertThat(managed.getCloseable()).isSameAs(closeable);
+        }
+
+        @Test
         void shouldCloseCloseable_WhenStopIsCalled() throws Exception {
             var managed = ManagedCloseable.of(closeable);
             managed.stop();
@@ -84,6 +98,7 @@ class ManagedCloseableTest {
             assertThatThrownBy(managed::stop)
                     .isInstanceOf(IOException.class)
                     .hasMessage("close failed");
+            verify(closeable).close();
         }
     }
 
@@ -97,6 +112,12 @@ class ManagedCloseableTest {
         }
 
         @Test
+        void shouldReturnCloseable() {
+            var managed = ManagedCloseable.closingQuietly(closeable);
+            assertThat(managed.getCloseable()).isSameAs(closeable);
+        }
+
+        @Test
         void shouldCloseCloseable_WhenStopIsCalled() throws Exception {
             var managed = ManagedCloseable.closingQuietly(closeable);
             managed.stop();
@@ -104,11 +125,23 @@ class ManagedCloseableTest {
         }
 
         @Test
-        void shouldNotPropagateException_WhenStopIsCalled_AndCloseThrows() {
-            Closeable throwingCloseable = () -> { throw new IOException("close failed"); };
-            var managed = ManagedCloseable.closingQuietly(throwingCloseable);
+        void shouldNotPropagateIOException_WhenStopIsCalled_AndCloseThrows() throws Exception {
+            doThrow(new IOException("close failed")).when(closeable).close();
+            var managed = ManagedCloseable.closingQuietly(closeable);
 
             assertThatCode(managed::stop).doesNotThrowAnyException();
+            verify(closeable).close();
+        }
+
+        @Test
+        void shouldPropagateRuntimeException_WhenStopIsCalled_AndCloseThrows() throws Exception {
+            doThrow(new RuntimeException("unexpected")).when(closeable).close();
+            var managed = ManagedCloseable.closingQuietly(closeable);
+
+            assertThatThrownBy(managed::stop)
+                    .isInstanceOf(RuntimeException.class)
+                    .hasMessage("unexpected");
+            verify(closeable).close();
         }
     }
 }
