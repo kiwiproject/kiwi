@@ -187,7 +187,8 @@ class UUIDsTest {
                 "!",
                 "abcd-56-efg",
                 UUIDs.randomUUIDString().substring(0, 35),
-                UUIDs.randomUUIDString().substring(1)
+                UUIDs.randomUUIDString().substring(1),
+                UUIDs.randomUUIDString() + "a"
         );
     }
 
