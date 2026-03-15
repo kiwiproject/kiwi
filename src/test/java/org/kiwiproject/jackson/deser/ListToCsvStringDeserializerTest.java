@@ -20,6 +20,7 @@ import org.kiwiproject.yaml.YamlHelper;
 class ListToCsvStringDeserializerTest {
 
     @Test
+    @SuppressWarnings("resource")
     void shouldRequireNonNullCodecToReadObjectAsTree() {
         var deserializer = new ListToCsvStringDeserializer();
 
