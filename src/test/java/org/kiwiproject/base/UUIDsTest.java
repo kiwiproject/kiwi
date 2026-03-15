@@ -97,6 +97,11 @@ class UUIDsTest {
             assertThat(UUIDs.isValidUUID("00000000-0000-0000-0000-000000000000")).isFalse();
         }
 
+        @Test
+        void shouldBeFalse_ForTheMaxUUID() {
+            assertThat(UUIDs.isValidUUID("ffffffff-ffff-ffff-ffff-ffffffffffff")).isFalse();
+        }
+
         private void assertValidUUIDs(SoftAssertions softly, Supplier<UUID> supplier) {
             assertUUIDCheckerValidatesSuppliedUUIDs(softly, UUIDs::isValidUUID, supplier);
         }
@@ -159,6 +164,11 @@ class UUIDsTest {
         @Test
         void shouldBeTrue_ForTheNilUUID() {
             assertThat(UUIDs.isValidUUIDAllowingNil("00000000-0000-0000-0000-000000000000")).isTrue();
+        }
+
+        @Test
+        void shouldBeFalse_ForTheMaxUUID() {
+            assertThat(UUIDs.isValidUUIDAllowingNil("ffffffff-ffff-ffff-ffff-ffffffffffff")).isFalse();
         }
 
         private void assertValidUUIDs(SoftAssertions softly, Supplier<UUID> supplier) {
