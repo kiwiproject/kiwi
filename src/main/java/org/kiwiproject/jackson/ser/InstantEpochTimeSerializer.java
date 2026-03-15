@@ -9,6 +9,8 @@ import java.time.Instant;
 
 /**
  * Jackson serializer that converts an {@link Instant} into milliseconds since the epoch.
+ *
+ * @see org.kiwiproject.jackson.deser.InstantEpochTimeDeserializer
  */
 public class InstantEpochTimeSerializer extends StdSerializer<Instant> {
 
