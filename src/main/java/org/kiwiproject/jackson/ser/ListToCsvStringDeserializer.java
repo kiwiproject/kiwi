@@ -41,6 +41,7 @@ import java.util.stream.IntStream;
  *
  * @implNote The deserialization requires {@link JsonParser#getCodec()} to return a non-null codec and will throw an
  * {@link IllegalStateException} if the returned codec is null.
+ * @see CsvStringToStringListSerializer
  */
 public class ListToCsvStringDeserializer extends StdDeserializer<String> {
 
