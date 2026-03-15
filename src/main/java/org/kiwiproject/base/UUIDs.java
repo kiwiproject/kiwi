@@ -1,8 +1,9 @@
 package org.kiwiproject.base;
 
+import static java.util.Objects.isNull;
+
 import lombok.experimental.UtilityClass;
 
-import java.util.Objects;
 import java.util.UUID;
 import java.util.regex.Pattern;
 
@@ -41,7 +42,7 @@ public class UUIDs {
      * @see UUID
      */
     public static boolean isValidUUID(String value) {
-        if (Objects.isNull(value)) {
+        if (isNull(value)) {
             return false;
         }
         return UUID_PATTERN.matcher(value).matches();
