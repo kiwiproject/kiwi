@@ -152,6 +152,19 @@ class UUIDsTest {
         }
 
         @ParameterizedTest
+        @ValueSource(strings = {
+                "015186F5-539d-4bcb-b3bc-34718931ef37",
+                "015186f5-539D-4bcb-b3bc-34718931ef37",
+                "015186f5-539d-4BCB-b3bc-34718931ef37",
+                "015186f5-539d-4bcb-B3BC-34718931ef37",
+                "015186f5-539d-4bcb-b3bc-34718931EF37",
+                "015186F5-539D-4BCB-B3BC-34718931EF37"
+        })
+        void shouldBeTrue_ForUppercaseUUIDs(String uuid, SoftAssertions softly) {
+            assertValidUUIDs(softly, () -> UUID.fromString(uuid));
+        }
+
+        @ParameterizedTest
         @MethodSource("org.kiwiproject.base.UUIDsTest#invalidUUIDs")
         void shouldBeFalse_ForInvalidUUIDs(String value) {
             assertThat(UUIDs.isValidUUIDAllowingNil(value)).isFalse();
