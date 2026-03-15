@@ -2,6 +2,7 @@ package org.kiwiproject.base;
 
 import lombok.experimental.UtilityClass;
 
+import java.util.Objects;
 import java.util.UUID;
 import java.util.regex.Pattern;
 
@@ -36,10 +37,13 @@ public class UUIDs {
      * and will always return false if given a Nil UUID.
      *
      * @param value the string to check
-     * @return {@code true} if a valid UUID, {@code false} otherwise
+     * @return {@code true} if a valid UUID, {@code false} otherwise (including if {@code value} is null)
      * @see UUID
      */
     public static boolean isValidUUID(String value) {
+        if (Objects.isNull(value)) {
+            return false;
+        }
         return UUID_PATTERN.matcher(value).matches();
     }
 
