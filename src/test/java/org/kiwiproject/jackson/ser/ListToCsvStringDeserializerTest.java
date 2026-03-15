@@ -17,9 +17,11 @@ import org.kiwiproject.json.JsonHelper;
 import org.kiwiproject.yaml.YamlHelper;
 
 @DisplayName("ListToCsvStringDeserializer")
+@SuppressWarnings("removal")
 class ListToCsvStringDeserializerTest {
 
     @Test
+    @SuppressWarnings("resource")
     void shouldRequireNonNullCodecToReadObjectAsTree() {
         var deserializer = new ListToCsvStringDeserializer();
 

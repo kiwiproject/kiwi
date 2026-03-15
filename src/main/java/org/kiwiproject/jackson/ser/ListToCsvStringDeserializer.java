@@ -11,6 +11,7 @@ import com.fasterxml.jackson.databind.DeserializationContext;
 import com.fasterxml.jackson.databind.JsonDeserializer;
 import com.fasterxml.jackson.databind.deser.std.StdDeserializer;
 import com.fasterxml.jackson.databind.node.TextNode;
+import org.kiwiproject.base.KiwiDeprecated;
 
 import java.io.IOException;
 import java.util.stream.IntStream;
@@ -42,7 +43,16 @@ import java.util.stream.IntStream;
  * @implNote The deserialization requires {@link JsonParser#getCodec()} to return a non-null codec and will throw an
  * {@link IllegalStateException} if the returned codec is null.
  * @see CsvStringToStringListSerializer
+ * @deprecated Use {@link org.kiwiproject.jackson.deser.ListToCsvStringDeserializer} instead.
+ * Will be removed in 6.0.0.
  */
+@Deprecated(since = "5.2.0", forRemoval = true)
+@KiwiDeprecated(
+        removeAt = "6.0.0",
+        replacedBy = "org.kiwiproject.jackson.deser.ListToCsvStringDeserializer",
+        reference = "#1371"
+)
+@SuppressWarnings({ "java:S1133", "DeprecatedIsStillUsed" })
 public class ListToCsvStringDeserializer extends StdDeserializer<String> {
 
     @SuppressWarnings("WeakerAccess")
