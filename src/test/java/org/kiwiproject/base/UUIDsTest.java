@@ -42,17 +42,17 @@ class UUIDsTest {
     class IsValidUUID {
 
         @Test
-        void shouldBeTrue_ForValidType4UUIDs(SoftAssertions softly) {
+        void shouldBeTrue_ForValidVersion4UUIDs(SoftAssertions softly) {
             assertValidUUIDs(softly, UUID::randomUUID);
         }
 
         @Test
-        void shouldBeTrue_ForValidType3UUIDs(SoftAssertions softly) {
+        void shouldBeTrue_ForValidVersion3UUIDs(SoftAssertions softly) {
             assertValidUUIDs(softly, () -> UUID.nameUUIDFromBytes(randomByteArray()));
         }
 
         @Test
-        void shouldBeTrue_ForValidType4UUIDs_UsingUUIDConstructor(SoftAssertions softly) {
+        void shouldBeTrue_ForValidVersion4UUIDs_UsingUUIDConstructor(SoftAssertions softly) {
             assertValidUUIDs(softly, () -> {
                 var validUUID = UUID.randomUUID();
                 return new UUID(validUUID.getMostSignificantBits(), validUUID.getLeastSignificantBits());
@@ -60,11 +60,24 @@ class UUIDsTest {
         }
 
         @Test
-        void shouldBeTrue_ForValidType3UUIDs_UsingUUIDConstructor(SoftAssertions softly) {
+        void shouldBeTrue_ForValidVersion3UUIDs_UsingUUIDConstructor(SoftAssertions softly) {
             assertValidUUIDs(softly, () -> {
                 var validUUID = UUID.nameUUIDFromBytes(randomByteArray());
                 return new UUID(validUUID.getMostSignificantBits(), validUUID.getLeastSignificantBits());
             });
+        }
+
+        @ParameterizedTest
+        @ValueSource(strings = {
+                "6ba7b810-9dad-11d1-80b4-00c04fd430c8",  // v1
+                "6ba7b810-9dad-21d1-a000-00c04fd430c8",  // v2
+                "886313e1-3b8a-5372-9b90-0c9aee199e5d",  // v5
+                "1ec9414c-232a-6b00-b3c8-9e6bdeced846",  // v6
+                "018e6b5e-8e90-7d3a-8f0c-1234567890ab",  // v7
+                "017f22e2-79b0-8cc3-98c4-dc0c0c07398f"   // v8
+        })
+        void shouldBeTrue_ForVersion1_2_5_6_7_and_8_UUIDs(String uuid) {
+            assertThat(UUIDs.isValidUUID(uuid)).isTrue();
         }
 
         @ParameterizedTest
@@ -100,17 +113,17 @@ class UUIDsTest {
     class IsValidUUIDAllowingNil {
 
         @Test
-        void shouldBeTrue_ForValidType4UUIDs(SoftAssertions softly) {
+        void shouldBeTrue_ForValidVersion4UUIDs(SoftAssertions softly) {
             assertValidUUIDs(softly, UUID::randomUUID);
         }
 
         @Test
-        void shouldBeTrue_ForValidType3UUIDs(SoftAssertions softly) {
+        void shouldBeTrue_ForValidVersion3UUIDs(SoftAssertions softly) {
             assertValidUUIDs(softly, () -> UUID.nameUUIDFromBytes(randomByteArray()));
         }
 
         @Test
-        void shouldBeTrue_ForValidType4UUIDs_UsingUUIDConstructor(SoftAssertions softly) {
+        void shouldBeTrue_ForValidVersion4UUIDs_UsingUUIDConstructor(SoftAssertions softly) {
             assertValidUUIDs(softly, () -> {
                 var validUUID = UUID.randomUUID();
                 return new UUID(validUUID.getMostSignificantBits(), validUUID.getLeastSignificantBits());
@@ -118,7 +131,7 @@ class UUIDsTest {
         }
 
         @Test
-        void shouldBeTrue_ForValidType3UUIDs_UsingUUIDConstructor(SoftAssertions softly) {
+        void shouldBeTrue_ForValidVersion3UUIDs_UsingUUIDConstructor(SoftAssertions softly) {
             assertValidUUIDs(softly, () -> {
                 var validUUID = UUID.nameUUIDFromBytes(randomByteArray());
                 return new UUID(validUUID.getMostSignificantBits(), validUUID.getLeastSignificantBits());
@@ -126,9 +139,22 @@ class UUIDsTest {
         }
 
         @ParameterizedTest
+        @ValueSource(strings = {
+                "6ba7b810-9dad-11d1-80b4-00c04fd430c8",  // v1
+                "6ba7b810-9dad-21d1-a000-00c04fd430c8",  // v2
+                "886313e1-3b8a-5372-9b90-0c9aee199e5d",  // v5
+                "1ec9414c-232a-6b00-b3c8-9e6bdeced846",  // v6
+                "018e6b5e-8e90-7d3a-8f0c-1234567890ab",  // v7
+                "017f22e2-79b0-8cc3-98c4-dc0c0c07398f"   // v8
+        })
+        void shouldBeTrue_ForVersion1_2_5_6_7_and_8_UUIDs(String uuid) {
+            assertThat(UUIDs.isValidUUIDAllowingNil(uuid)).isTrue();
+        }
+
+        @ParameterizedTest
         @MethodSource("org.kiwiproject.base.UUIDsTest#invalidUUIDs")
         void shouldBeFalse_ForInvalidUUIDs(String value) {
-            assertThat(UUIDs.isValidUUID(value)).isFalse();
+            assertThat(UUIDs.isValidUUIDAllowingNil(value)).isFalse();
         }
 
         @RepeatedTest(5)
