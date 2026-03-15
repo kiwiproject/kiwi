@@ -92,7 +92,7 @@ class UUIDsTest {
             assertThat(UUIDs.isValidUUID(value)).isFalse();
         }
 
-        @RepeatedTest(5)
+        @Test
         void shouldBeFalse_ForTheNilUUID() {
             assertThat(UUIDs.isValidUUID("00000000-0000-0000-0000-000000000000")).isFalse();
         }
@@ -156,7 +156,7 @@ class UUIDsTest {
             assertThat(UUIDs.isValidUUIDAllowingNil(value)).isFalse();
         }
 
-        @RepeatedTest(5)
+        @Test
         void shouldBeTrue_ForTheNilUUID() {
             assertThat(UUIDs.isValidUUIDAllowingNil("00000000-0000-0000-0000-000000000000")).isTrue();
         }
