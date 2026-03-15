@@ -41,6 +41,11 @@
         <sonar.projectKey>kiwiproject_kiwi</sonar.projectKey>
         <sonar.organization>kiwiproject</sonar.organization>
         <sonar.host.url>https://sonarcloud.io</sonar.host.url>
+        <!-- Exclude deser.ListToCsvStringDeserializer from CPD since it is an intentional
+             copy of ser.ListToCsvStringDeserializer, which will be deprecated in 5.2.0
+             and removed in 6.0.0. Remove this exclusion when ser.ListToCsvStringDeserializer
+             is removed (see issue #1375). -->
+        <sonar.cpd.exclusions>**/jackson/deser/ListToCsvStringDeserializer.java</sonar.cpd.exclusions>
     </properties>
 
     <dependencyManagement>
