@@ -9,7 +9,6 @@ import static org.kiwiproject.collect.KiwiArrays.isNullOrEmpty;
 import static org.kiwiproject.collect.KiwiLists.isNullOrEmpty;
 import static org.kiwiproject.collect.KiwiMaps.isNullOrEmpty;
 
-import com.google.common.annotations.Beta;
 import com.google.common.annotations.VisibleForTesting;
 import jakarta.ws.rs.client.Client;
 import jakarta.ws.rs.client.Invocation;
@@ -62,7 +61,6 @@ import java.util.stream.Stream;
  *         .get();
  * </pre>
  */
-@Beta
 public class WebTargetHelper implements WebTarget {
 
     private final WebTarget webTarget;
