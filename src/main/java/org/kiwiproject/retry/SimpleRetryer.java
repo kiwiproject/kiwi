@@ -207,6 +207,7 @@ public class SimpleRetryer {
                 retryDelayTime, retryDelayUnit,
                 environment,
                 type,
+                logLevelForSubsequentAttempts,
                 supplier
         );
     }
