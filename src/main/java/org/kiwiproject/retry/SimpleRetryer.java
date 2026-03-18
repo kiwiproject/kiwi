@@ -62,6 +62,8 @@ import java.util.function.Supplier;
 @Builder
 public class SimpleRetryer {
 
+    private static final KiwiEnvironment KIWI_ENVIRONMENT = new DefaultEnvironment();
+
     /**
      * Default maximum attempts.
      */
@@ -92,7 +94,7 @@ public class SimpleRetryer {
      */
     @VisibleForTesting
     @Builder.Default
-    final KiwiEnvironment environment = new DefaultEnvironment();
+    final KiwiEnvironment environment = KIWI_ENVIRONMENT;
 
     /**
      * The maximum number of attempts before giving up.
