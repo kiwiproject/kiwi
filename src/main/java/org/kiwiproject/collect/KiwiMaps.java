@@ -849,6 +849,28 @@ public class KiwiMaps {
         };
     }
 
+    /**
+     * Associates the specified value with the specified key in the map,
+     * but only if the key is already present. Unlike {@link Map#computeIfPresent},
+     * this method operates solely on key presence and is not affected by whether
+     * the current mapped value is null. The new value may itself be null.
+     * <p>
+     * Note: {@link Map#replace(Object, Object)} has the same default behavior,
+     * but its Javadoc states "only if it is currently mapped to some value,"
+     * which can be misleadingly read as excluding null-valued keys. This method
+     * exists to provide unambiguous intent and documentation.
+     *
+     * @see Map#replace(Object, Object)
+     * @see Map#computeIfPresent(Object, BiFunction)
+     */
+    public static <K, V> void replaceIfPresent(Map<K, V> map, K key, V value) {
+        checkArgumentNotNull(map, "map must not be null");
+
+        if (map.containsKey(key)) {
+            map.put(key, value);
+        }
+    }
+
     private static void checkMapAndKeyArgsNotNull(Map<?, ?> map, Object key) {
         checkArgumentNotNull(map, "map must not be null");
         checkArgumentNotNull(key, "key must not be null");
