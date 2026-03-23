@@ -1623,4 +1623,57 @@ class KiwiMapsTest {
             assertThat(result).containsExactlyInAnyOrderEntriesOf(source);
         }
     }
+
+    @Nested
+    class ReplaceIfPresent {
+
+        @Test
+        void shouldRequireNonNullMap() {
+            assertThatIllegalArgumentException()
+                    .isThrownBy(() -> KiwiMaps.replaceIfPresent(null, "aKey", "aValue"))
+                    .withMessage("map must not be null");
+        }
+
+        @Test
+        void shouldDoNothing_WhenKeyDoesNotExist() {
+            var map = newHashMap("a", 1, "b", 2);
+            KiwiMaps.replaceIfPresent(map, "c", 99);
+            assertThat(map).containsOnly(entry("a", 1), entry("b", 2));
+        }
+
+        @Test
+        void shouldDoNothing_WhenMapIsEmpty() {
+            var map = new HashMap<String, Integer>();
+            KiwiMaps.replaceIfPresent(map, "a", 42);
+            assertThat(map).isEmpty();
+        }
+
+        @Test
+        void shouldReplaceValue_WhenKeyExists() {
+            var map = newHashMap("a", 1, "b", 2);
+            KiwiMaps.replaceIfPresent(map, "a", 99);
+            assertThat(map).containsOnly(entry("a", 99), entry("b", 2));
+        }
+
+        @Test
+        void shouldReplaceValue_WhenCurrentValueIsNull() {
+            var map = KiwiMaps.<String, Integer>newHashMap("a", null, "b", 2);
+            KiwiMaps.replaceIfPresent(map, "a", 99);
+            assertThat(map).containsOnly(entry("a", 99), entry("b", 2));
+        }
+
+        @Test
+        void shouldReplaceWithNullValue_WhenKeyExists() {
+            var map = newHashMap("a", 1, "b", 2);
+            KiwiMaps.replaceIfPresent(map, "a", null);
+            assertThat(map).containsOnly(entry("a", null), entry("b", 2));
+        }
+
+        @Test
+        void shouldReplaceWithNullValue_WhenCurrentValueIsAlsoNull() {
+            var map = KiwiMaps.<String, Integer>newHashMap("a", null, "b", 2);
+            KiwiMaps.replaceIfPresent(map, "a", null);
+            assertThat(map).containsOnly(entry("a", null), entry("b", 2));
+        }
+    }
 }
