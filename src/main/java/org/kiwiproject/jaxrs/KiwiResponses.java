@@ -934,11 +934,14 @@ public class KiwiResponses {
     /**
      * Closes the given {@link Response}, which can be {@code null}, swallowing any exceptions and logging them
      * at INFO level.
+     * <p>
+     * If the response is null or already closed, calling this method is a no-op.
      *
      * @param response the response object
+     * @see Response#isClosed()
      */
     public static void closeQuietly(Response response) {
-        if (nonNull(response)) {
+        if (nonNull(response) && !response.isClosed()) {
             try {
                 response.close();
             } catch (Exception e) {

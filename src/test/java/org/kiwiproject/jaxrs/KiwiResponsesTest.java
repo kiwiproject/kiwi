@@ -17,6 +17,7 @@ import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.only;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
@@ -280,7 +281,9 @@ class KiwiResponsesTest {
 
             KiwiResponses.closeQuietly(response);
 
+            verify(response).isClosed();
             verify(response).close();
+            verifyNoMoreInteractions(response);
         }
 
         @Test
@@ -290,12 +293,26 @@ class KiwiResponsesTest {
         }
 
         @Test
+        void shouldIgnoreClosedResponses() {
+            var response = mock(Response.class);
+            when(response.isClosed()).thenReturn(true);
+
+            KiwiResponses.closeQuietly(response);
+
+            verify(response, only()).isClosed();
+        }
+
+        @Test
         void shouldIgnoreExceptions() {
             var response = newMockResponseWithStatus(Response.Status.INTERNAL_SERVER_ERROR);
             doThrow(new ProcessingException("error closing")).when(response).close();
 
             assertThatCode(() -> KiwiResponses.closeQuietly(response))
                     .doesNotThrowAnyException();
+
+            verify(response).isClosed();
+            verify(response).close();
+            verifyNoMoreInteractions(response);
         }
     }
 
