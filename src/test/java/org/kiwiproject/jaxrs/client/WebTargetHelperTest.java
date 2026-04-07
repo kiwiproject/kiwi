@@ -1200,4 +1200,27 @@ class WebTargetHelperTest {
     private static String[] splitQueryParams(WebTargetHelper newWebTarget) {
         return newWebTarget.getUri().getQuery().split("&");
     }
+
+    @Nested
+    class ToString {
+
+        @Test
+        void shouldDelegateToWrappedWebTarget() {
+            var helper = withWebTarget(originalWebTarget);
+            assertThat(helper).hasToString(originalWebTarget.toString());
+        }
+
+        @Test
+        void shouldNotUseDefaultObjectToString() {
+            var helper = withWebTarget(originalWebTarget);
+            assertThat(helper.toString()).doesNotContain("WebTargetHelper@");
+        }
+
+        @Test
+        void shouldReflectStateAfterChaining() {
+            var helper = withWebTarget(originalWebTarget)
+                    .queryParamIfNotBlank("foo", "bar");
+            assertThat(helper).hasToString(helper.wrapped().toString());
+        }
+    }
 }
