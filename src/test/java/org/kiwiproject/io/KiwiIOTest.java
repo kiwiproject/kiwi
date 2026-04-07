@@ -251,6 +251,28 @@ class KiwiIOTest {
 
         @SuppressWarnings("ConstantValue")
         @Test
+        void shouldClose_NullAutoCloseable() {
+            AutoCloseable autoCloseable = null;
+            assertThatCode(() -> KiwiIO.closeQuietly(autoCloseable)).doesNotThrowAnyException();
+        }
+
+        @Test
+        void shouldClose_AutoCloseable() throws Exception {
+            var autoCloseable = mock(AutoCloseable.class);
+            assertThatCode(() -> KiwiIO.closeQuietly(autoCloseable)).doesNotThrowAnyException();
+            verify(autoCloseable).close();
+        }
+
+        @Test
+        void shouldClose_AutoCloseable_WhenThrowsOnClose() throws Exception {
+            var autoCloseable = mock(AutoCloseable.class);
+            doThrow(new Exception("I cannot close")).when(autoCloseable).close();
+            assertThatCode(() -> KiwiIO.closeQuietly(autoCloseable)).doesNotThrowAnyException();
+            verify(autoCloseable).close();
+        }
+
+        @SuppressWarnings("ConstantValue")
+        @Test
         void shouldClose_NullXMLStreamReader() {
             XMLStreamReader xmlStreamReader = null;
             assertThatCode(() -> KiwiIO.closeQuietly(xmlStreamReader)).doesNotThrowAnyException();

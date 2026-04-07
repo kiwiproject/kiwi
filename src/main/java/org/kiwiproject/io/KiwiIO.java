@@ -160,6 +160,28 @@ public class KiwiIO {
     }
 
     /**
+     * Closes an {@link AutoCloseable} unconditionally.
+     * <p>
+     * Equivalent to {@link AutoCloseable#close()}, except any exceptions will be ignored. This is typically used in
+     * finally blocks or when closing resources that do not implement {@link Closeable}, such as
+     * {@code jakarta.ws.rs.core.Response}.
+     * <p>
+     * Note: If the object implements {@link Closeable}, prefer {@link #closeQuietly(Closeable)} instead,
+     * as it is more specific and only catches {@link IOException}.
+     *
+     * @param autoCloseable the object to close, may be null or already closed
+     */
+    public static void closeQuietly(final AutoCloseable autoCloseable) {
+        try {
+            if (nonNull(autoCloseable)) {
+                autoCloseable.close();
+            }
+        } catch (final Exception e) {
+            logCloseError(autoCloseable.getClass(), e);
+        }
+    }
+
+    /**
      * Closes an {@link XMLStreamReader} unconditionally.
      * <p>
      * <em>Since {@link XMLStreamReader} does not implement {@link Closeable}, you cannot use a try-with-resources.</em>
