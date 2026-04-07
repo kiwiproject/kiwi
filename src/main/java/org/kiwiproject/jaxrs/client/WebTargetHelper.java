@@ -582,4 +582,12 @@ public class WebTargetHelper implements WebTarget {
         this.webTarget.register(component, contracts);
         return this;
     }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public String toString() {
+        return this.webTarget.toString();
+    }
 }
