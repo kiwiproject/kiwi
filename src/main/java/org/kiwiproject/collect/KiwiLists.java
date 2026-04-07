@@ -3,6 +3,8 @@ package org.kiwiproject.collect;
 import static com.google.common.base.Preconditions.checkArgument;
 import static com.google.common.base.Preconditions.checkNotNull;
 import static java.util.Objects.nonNull;
+import static java.util.stream.Collectors.toCollection;
+import static org.kiwiproject.base.KiwiPreconditions.checkArgumentNotNull;
 
 import lombok.experimental.UtilityClass;
 
@@ -12,6 +14,7 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
+import java.util.function.Function;
 import java.util.stream.IntStream;
 
 /**
@@ -264,6 +267,49 @@ public class KiwiLists {
 
     private static <T> List<T> distinctListFrom(Collection<T> collection) {
         return collection.stream().distinct().toList();
+    }
+
+    /**
+     * Maps each element of the given list using the provided mapper function,
+     * returning an unmodifiable {@link List} containing the mapped elements.
+     * <p>
+     * The returned list is unmodifiable. If you need a mutable result, use
+     * {@link #mapToMutableList(List, Function)} instead.
+     *
+     * @param <T>    the type of elements in the input list
+     * @param <R>    the type of elements in the returned list
+     * @param list   the input list; must not be null
+     * @param mapper the mapping function to apply to each element; must not be null
+     * @return an unmodifiable list containing the mapped elements, in encounter order
+     * @throws IllegalArgumentException if list or mapper is null
+     * @see #mapToMutableList(List, Function)
+     */
+    public static <T, R> List<R> mapToList(List<? extends T> list, Function<? super T, R> mapper) {
+        checkArgumentNotNull(list, "list must not be null");
+        checkArgumentNotNull(mapper, "mapper must not be null");
+        return list.stream().map(mapper).toList();
+    }
+
+    /**
+     * Maps each element of the given list using the provided mapper function,
+     * returning a mutable {@link ArrayList} containing the mapped elements.
+     * <p>
+     * Use this when the returned list must support add, remove, or set operations.
+     * If mutability is not required, prefer {@link #mapToList(List, Function)}.
+     *
+     * @param <T>    the type of elements in the input list
+     * @param <R>    the type of elements in the returned list
+     * @param list   the input list; must not be null
+     * @param mapper the mapping function to apply to each element; must not be null
+     * @return a mutable {@link ArrayList} containing the mapped elements, in encounter order
+     * @throws IllegalArgumentException if list or mapper is null
+     * @see #mapToList(List, Function)
+     */
+    @SuppressWarnings("java:S6204")  // this method intentionally returns a mutable list (sonar)
+    public static <T, R> List<R> mapToMutableList(List<? extends T> list, Function<? super T, R> mapper) {
+        checkArgumentNotNull(list, "list must not be null");
+        checkArgumentNotNull(mapper, "mapper must not be null");
+        return list.stream().map(mapper).collect(toCollection(ArrayList::new));
     }
 
     /**

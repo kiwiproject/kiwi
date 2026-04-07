@@ -2,7 +2,9 @@ package org.kiwiproject.collect;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatCode;
+import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
+import static org.assertj.core.api.Assertions.assertThatNoException;
 import static org.assertj.core.api.Assertions.assertThatNullPointerException;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.assertj.core.util.Lists.newArrayList;
@@ -26,6 +28,7 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Set;
+import java.util.function.Function;
 import java.util.random.RandomGenerator;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
@@ -393,6 +396,210 @@ class KiwiListsTest {
             assertThat(KiwiLists.distinctOrEmpty(List.of(42, 42, 84, 84, 126, 336, 336)))
                     .containsExactly(42, 84, 126, 336);
         }
+    }
+
+    @Nested
+    class MapToList {
+
+        @Test
+        void shouldReturnEmptyList_WhenInputIsEmpty() {
+            List<String> result = KiwiLists.mapToList(List.<String>of(), String::toUpperCase);
+            assertThat(result).isEmpty();
+        }
+
+        @Test
+        void shouldMapElements() {
+            var entities = List.of(new Entity(1), new Entity(2), new Entity(3));
+            List<Integer> ids = KiwiLists.mapToList(entities, Entity::getId);
+            assertThat(ids).containsExactly(1, 2, 3);
+        }
+
+        @Test
+        void shouldMapToADifferentType() {
+            var numbers = List.of(1, 2, 3);
+            List<String> strings = KiwiLists.mapToList(numbers, Object::toString);
+            assertThat(strings).containsExactly("1", "2", "3");
+        }
+
+        @Test
+        void shouldReturnUnmodifiableList() {
+            List<String> result = KiwiLists.mapToList(List.of("a", "b"), String::toUpperCase);
+            assertThatExceptionOfType(UnsupportedOperationException.class)
+                    .isThrownBy(() -> result.add("C"));
+        }
+
+        @Test
+        void shouldThrowIllegalArgumentException_WhenListIsNull() {
+            assertThatIllegalArgumentException()
+                    .isThrownBy(() -> KiwiLists.mapToList(null, Function.identity()));
+        }
+
+        @Test
+        void shouldThrowIllegalArgumentException_WhenMapperIsNull() {
+            assertThatIllegalArgumentException()
+                    .isThrownBy(() -> KiwiLists.mapToList(List.of("a"), null));
+        }
+
+        @Test
+        void shouldMapUsingFunctionOnSupertype_WhenListContainsSubtype() {
+            // List<Employee>, mapped with Function<Person, String> — exercises ? super T
+            var employees = List.of(
+                    new Employee(1, "Alice", "Engineering"),
+                    new Employee(2, "Bob", "Product"));
+            Function<Person, String> getName = Person::getName;
+            
+            List<String> names = KiwiLists.mapToList(employees, getName);
+            
+            assertThat(names).containsExactly("Alice", "Bob");
+        }
+
+        @Test
+        void shouldMapSubtypeToSupertype_WhenResultTypeIsWider() {
+            // List<Employee> mapped to List<Entity> — R inferred as Entity
+            var employees = List.of(
+                    new Employee(1, "Alice", "Engineering"),
+                    new Employee(2, "Bob", "Product"));
+
+            List<Entity> entities = KiwiLists.mapToList(employees, e -> e);
+
+            assertThat(entities).hasSize(2);
+            assertThat(entities.get(0).getId()).isEqualTo(1);
+        }
+
+        @Test
+        void shouldMapMixedSupertypeFunction_WhenMappingAcrossHierarchy() {
+            // List<Person> mapped using Function<Entity, Integer> — getId defined on Entity
+            var people = List.of(new Person(10, "Alice"), new Person(20, "Bob"));
+            Function<Entity, Integer> getId = Entity::getId;
+            
+            List<Integer> ids = KiwiLists.mapToList(people, getId);
+            
+            assertThat(ids).containsExactly(10, 20);
+        }
+
+        @Test
+        void shouldMapHeterogeneousList_WhenListContainsMixedSubtypes() {
+            List<Entity> mixed = List.of(
+                    new Entity(1),
+                    new Person(2, "Alice"),
+                    new Employee(3, "Bob", "Engineering"));
+           
+            List<Integer> ids = KiwiLists.mapToList(mixed, Entity::getId);
+            
+            assertThat(ids).containsExactly(1, 2, 3);
+        }
+
+        @Test
+        void shouldMapHeterogeneousList_WhenMapperInspectsDynamicType() {
+            List<Entity> mixed = List.of(
+                    new Entity(1),
+                    new Person(2, "Alice"),
+                    new Employee(3, "Bob", "Engineering"));
+            
+            List<String> descriptions = KiwiLists.mapToList(mixed, e -> {
+                if (e instanceof Employee emp) {
+                    return "Employee: " + emp.getName();
+                } else if (e instanceof Person p) {
+                    return "Person: " + p.getName();
+                }
+                return "Entity: " + e.getId();
+            });
+            
+            assertThat(descriptions).containsExactly(
+                    "Entity: 1",
+                    "Person: Alice",
+                    "Employee: Bob");
+        }
+
+        private static class Entity {
+            private final int id;
+
+            Entity(int id) {
+                this.id = id;
+            }
+
+            int getId() {
+                return id;
+            }
+        }
+
+        private static class Person extends Entity {
+            private final String name;
+
+            Person(int id, String name) {
+                super(id);
+                this.name = name;
+            }
+
+            String getName() {
+                return name;
+            }
+        }
+
+        private static class Employee extends Person {
+            private final String department;
+
+            Employee(int id, String name, String department) {
+                super(id, name);
+                this.department = department;
+            }
+
+            @SuppressWarnings("unused")
+			String getDepartment() {
+                return department;
+            }
+        }
+    }
+
+    @Nested
+    class MapToMutableList {
+
+        @Test
+        void shouldReturnEmptyList_WhenInputIsEmpty() {
+            List<String> result = KiwiLists.mapToMutableList(List.<String>of(), String::toUpperCase);
+            assertThat(result).isEmpty();
+        }
+
+        @Test
+        void shouldMapElements() {
+            var entities = List.of(new Entity(1), new Entity(2), new Entity(3));
+            List<Integer> ids = KiwiLists.mapToMutableList(entities, Entity::id);
+            assertThat(ids).containsExactly(1, 2, 3);
+        }
+
+        @Test
+        void shouldMapToADifferentType() {
+            var numbers = List.of(1, 2, 3);
+            List<String> strings = KiwiLists.mapToMutableList(numbers, Object::toString);
+            assertThat(strings).containsExactly("1", "2", "3");
+        }
+
+        @Test
+        void shouldReturnMutableList() {
+            List<String> result = KiwiLists.mapToMutableList(List.of("a", "b"), String::toUpperCase);
+            assertThatNoException().isThrownBy(() -> result.add("C"));
+            assertThat(result).containsExactly("A", "B", "C");
+        }
+
+        @Test
+        void shouldReturnArrayList() {
+            List<String> result = KiwiLists.mapToMutableList(List.of("a"), String::toUpperCase);
+            assertThat(result).isInstanceOf(ArrayList.class);
+        }
+
+        @Test
+        void shouldThrowIllegalArgumentException_WhenListIsNull() {
+            assertThatIllegalArgumentException()
+                    .isThrownBy(() -> KiwiLists.mapToMutableList(null, Function.identity()));
+        }
+
+        @Test
+        void shouldThrowIllegalArgumentException_WhenMapperIsNull() {
+            assertThatIllegalArgumentException()
+                    .isThrownBy(() -> KiwiLists.mapToMutableList(List.of("a"), null));
+        }
+
+        private static record Entity(int id) {}
     }
 
     @Nested
