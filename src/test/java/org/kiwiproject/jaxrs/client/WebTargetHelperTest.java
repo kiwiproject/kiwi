@@ -60,6 +60,29 @@ class WebTargetHelperTest {
     }
 
     @Nested
+    class Wrapped {
+
+        @Test
+        void shouldReturnWrappedWebTarget() {
+            var helper = withWebTarget(originalWebTarget);
+            assertThat(helper.wrapped()).isSameAs(originalWebTarget);
+        }
+
+        @Test
+        void shouldReturnCurrentWrappedInstance_AfterChaining() {
+            var helper = withWebTarget(originalWebTarget)
+                    .queryParamIfNotBlank("foo", "bar");
+            assertThat(helper.wrapped()).isNotSameAs(originalWebTarget);
+        }
+
+        @Test
+        void shouldNotBeSameAs_ToWebTarget() {
+            var helper = withWebTarget(originalWebTarget);
+            assertThat(helper.wrapped()).isNotSameAs(helper.toWebTarget());
+        }
+    }
+
+    @Nested
     class WithWebTarget {
 
         @Test

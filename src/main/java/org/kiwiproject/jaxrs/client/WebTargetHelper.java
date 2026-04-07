@@ -9,7 +9,6 @@ import static org.kiwiproject.collect.KiwiArrays.isNullOrEmpty;
 import static org.kiwiproject.collect.KiwiLists.isNullOrEmpty;
 import static org.kiwiproject.collect.KiwiMaps.isNullOrEmpty;
 
-import com.google.common.annotations.VisibleForTesting;
 import jakarta.ws.rs.client.Client;
 import jakarta.ws.rs.client.Invocation;
 import jakarta.ws.rs.client.WebTarget;
@@ -75,10 +74,14 @@ public class WebTargetHelper implements WebTarget {
     }
 
     /**
+     * Returns the wrapped {@link WebTarget} instance.
+     * <p>
+     * Note that this returns the actual wrapped instance, and is therefore not equivalent to
+     * {@link #toWebTarget()}, which creates a new {@link WebTarget} instance.
+     *
      * @return the wrapped WebTarget
      */
-    @VisibleForTesting
-    WebTarget wrapped() {
+    public WebTarget wrapped() {
         return webTarget;
     }
 
