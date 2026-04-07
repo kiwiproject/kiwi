@@ -429,7 +429,7 @@ class KiwiListsTest {
         }
 
         @Test
-        void shouldThrowNullPointerException_WhenListIsNull() {
+        void shouldThrowIllegalArgumentException_WhenListIsNull() {
             assertThatIllegalArgumentException()
                     .isThrownBy(() -> KiwiLists.mapToList(null, Function.identity()));
         }
