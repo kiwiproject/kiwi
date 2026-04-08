@@ -2,6 +2,7 @@ package org.kiwiproject.jaxrs;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.entry;
+import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -13,6 +14,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
@@ -138,5 +140,85 @@ class KiwiEntitiesTest {
         String make;
         String model;
         int year;
+    }
+
+    @Nested
+    class SafeReadEntityResultWithClass {
+
+        @Test
+        void shouldReturnResultWithEntity_WhenReadSucceeds() {
+            var response = mock(Response.class);
+            when(response.readEntity(String.class)).thenReturn("the entity");
+
+            ReadEntityResult<String> result = KiwiEntities.safeReadEntityResult(response, String.class);
+
+            assertAll(
+                    () -> assertThat(result.hasEntity()).isTrue(),
+                    () -> assertThat(result.entity()).isEqualTo("the entity"),
+                    () -> assertThat(result.exception()).isNull()
+            );
+        }
+
+        @Test
+        void shouldReturnResultWithException_WhenReadThrows() {
+            var response = mock(Response.class);
+            when(response.readEntity(String.class)).thenThrow(new RuntimeException("read failed"));
+
+            ReadEntityResult<String> result = KiwiEntities.safeReadEntityResult(response, String.class);
+
+            assertAll(
+                    () -> assertThat(result.hasException()).isTrue(),
+                    () -> assertThat(result.exception()).isInstanceOf(RuntimeException.class),
+                    () -> assertThat(result.entity()).isNull()
+            );
+        }
+
+        @Test
+        void shouldReturnResultWithEntity_WhenReadReturnsNull() {
+            var response = mock(Response.class);
+            when(response.readEntity(String.class)).thenReturn(null);
+
+            ReadEntityResult<String> result = KiwiEntities.safeReadEntityResult(response, String.class);
+
+            assertAll(
+                    () -> assertThat(result.hasEntity()).isTrue(),
+                    () -> assertThat(result.entity()).isNull()
+            );
+        }
+    }
+
+    @Nested
+    class SafeReadEntityResultWithGenericType {
+
+        @Test
+        void shouldReturnResultWithEntity_WhenReadSucceeds() {
+            var response = mock(Response.class);
+            var genericType = new GenericType<List<String>>() {};
+            var entityValue = List.of("a", "b", "c");
+            when(response.readEntity(genericType)).thenReturn(entityValue);
+
+            ReadEntityResult<List<String>> result = KiwiEntities.safeReadEntityResult(response, genericType);
+
+            assertAll(
+                    () -> assertThat(result.hasEntity()).isTrue(),
+                    () -> assertThat(result.entity()).containsExactly("a", "b", "c"),
+                    () -> assertThat(result.exception()).isNull()
+            );
+        }
+
+        @Test
+        void shouldReturnResultWithException_WhenReadThrows() {
+            var response = mock(Response.class);
+            var genericType = new GenericType<List<String>>() {};
+            when(response.readEntity(genericType)).thenThrow(new RuntimeException("read failed"));
+
+            ReadEntityResult<List<String>> result = KiwiEntities.safeReadEntityResult(response, genericType);
+
+            assertAll(
+                    () -> assertThat(result.hasException()).isTrue(),
+                    () -> assertThat(result.exception()).isInstanceOf(RuntimeException.class),
+                    () -> assertThat(result.entity()).isNull()
+            );
+        }
     }
 }

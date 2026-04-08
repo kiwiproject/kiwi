@@ -90,7 +90,64 @@ public class KiwiEntities {
     }
 
     private static <T> Optional<T> emptyOptional(Exception e) {
-        LOG.error("Error reading response entity", e);
+        logErrorReadingResponse(e);
         return Optional.empty();
+    }
+
+    /**
+     * Read an entity as an instance of the given {@link Class} specified by {@code entityType},
+     * returning a {@link ReadEntityResult} that contains either the entity or the exception
+     * that prevented it from being read.
+     * <p>
+     * Unlike {@link #safeReadEntity(Response, Class)}, this method surfaces the exception
+     * to the caller rather than only logging it, allowing callers to inspect or handle
+     * the failure reason.
+     *
+     * @param response   the response object
+     * @param entityType the type of entity the response is expected to contain
+     * @param <T>        the entity type
+     * @return a {@link ReadEntityResult} containing either the entity or the exception
+     * @see #safeReadEntityResult(Response, GenericType)
+     */
+    public static <T> ReadEntityResult<T> safeReadEntityResult(Response response, Class<T> entityType) {
+        try {
+            var entity = response.readEntity(entityType);
+            return new ReadEntityResult<>(entity, null);
+        } catch (Exception e) {
+            return exceptionalResult(e);
+        }
+    }
+
+    /**
+     * Read an entity as an instance of the given {@link GenericType} specified by {@code entityType},
+     * returning a {@link ReadEntityResult} that contains either the entity or the exception
+     * that prevented it from being read.
+     * <p>
+     * Unlike {@link #safeReadEntity(Response, GenericType)}, this method surfaces the exception
+     * to the caller rather than only logging it, allowing callers to inspect or handle
+     * the failure reason.
+     *
+     * @param response   the response object
+     * @param entityType the type of entity the response is expected to contain
+     * @param <T>        the entity type
+     * @return a {@link ReadEntityResult} containing either the entity or the exception
+     * @see #safeReadEntityResult(Response, Class)
+     */
+    public static <T> ReadEntityResult<T> safeReadEntityResult(Response response, GenericType<T> entityType) {
+        try {
+            var entity = response.readEntity(entityType);
+            return new ReadEntityResult<>(entity, null);
+        } catch (Exception e) {
+            return exceptionalResult(e);
+        }
+    }
+
+    private static <T> ReadEntityResult<T> exceptionalResult(Exception e) {
+        logErrorReadingResponse(e);
+        return new ReadEntityResult<>(null, e);
+    }
+
+    private static void logErrorReadingResponse(Exception e) {
+        LOG.error("Error reading response entity", e);
     }
 }
