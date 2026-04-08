@@ -87,5 +87,11 @@ class ReadEntityResultTest {
             var result = new ReadEntityResult<>("the entity", null);
             assertThat(result.hasException()).isFalse();
         }
+
+        @Test
+        void shouldReturnFalse_WhenBothAreNull_SuchAsA204Response() {
+            var result = new ReadEntityResult<>(null, null);
+            assertThat(result.hasException()).isFalse();
+        }
     }
 }
