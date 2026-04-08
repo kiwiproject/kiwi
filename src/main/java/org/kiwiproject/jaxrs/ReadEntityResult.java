@@ -30,8 +30,8 @@ public record ReadEntityResult<T>(T entity, Exception exception) {
      * @throws IllegalArgumentException if both entity and exception are non-null
      */
     public ReadEntityResult {
-        checkArgument(!(nonNull(entity) && nonNull(exception)),
-                "entity and exception cannot both be non-null");
+        var hasEntityAndException = nonNull(entity) && nonNull(exception);
+        checkArgument(!hasEntityAndException, "entity and exception cannot both be non-null");
     }
 
     /**
