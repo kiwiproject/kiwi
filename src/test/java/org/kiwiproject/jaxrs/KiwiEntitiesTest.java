@@ -2,6 +2,7 @@ package org.kiwiproject.jaxrs;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.entry;
+import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -151,9 +152,11 @@ class KiwiEntitiesTest {
 
             ReadEntityResult<String> result = KiwiEntities.safeReadEntityResult(response, String.class);
 
-            assertThat(result.hasEntity()).isTrue();
-            assertThat(result.entity()).isEqualTo("the entity");
-            assertThat(result.exception()).isNull();
+            assertAll(
+                    () -> assertThat(result.hasEntity()).isTrue(),
+                    () -> assertThat(result.entity()).isEqualTo("the entity"),
+                    () -> assertThat(result.exception()).isNull()
+            );
         }
 
         @Test
@@ -163,9 +166,11 @@ class KiwiEntitiesTest {
 
             ReadEntityResult<String> result = KiwiEntities.safeReadEntityResult(response, String.class);
 
-            assertThat(result.hasException()).isTrue();
-            assertThat(result.exception()).isInstanceOf(RuntimeException.class);
-            assertThat(result.entity()).isNull();
+            assertAll(
+                    () -> assertThat(result.hasException()).isTrue(),
+                    () -> assertThat(result.exception()).isInstanceOf(RuntimeException.class),
+                    () -> assertThat(result.entity()).isNull()
+            );
         }
 
         @Test
@@ -175,8 +180,10 @@ class KiwiEntitiesTest {
 
             ReadEntityResult<String> result = KiwiEntities.safeReadEntityResult(response, String.class);
 
-            assertThat(result.hasEntity()).isTrue();
-            assertThat(result.entity()).isNull();
+            assertAll(
+                    () -> assertThat(result.hasEntity()).isTrue(),
+                    () -> assertThat(result.entity()).isNull()
+            );
         }
     }
 
@@ -192,9 +199,11 @@ class KiwiEntitiesTest {
 
             ReadEntityResult<List<String>> result = KiwiEntities.safeReadEntityResult(response, genericType);
 
-            assertThat(result.hasEntity()).isTrue();
-            assertThat(result.entity()).containsExactly("a", "b", "c");
-            assertThat(result.exception()).isNull();
+            assertAll(
+                    () -> assertThat(result.hasEntity()).isTrue(),
+                    () -> assertThat(result.entity()).containsExactly("a", "b", "c"),
+                    () -> assertThat(result.exception()).isNull()
+            );
         }
 
         @Test
@@ -205,9 +214,11 @@ class KiwiEntitiesTest {
 
             ReadEntityResult<List<String>> result = KiwiEntities.safeReadEntityResult(response, genericType);
 
-            assertThat(result.hasException()).isTrue();
-            assertThat(result.exception()).isInstanceOf(RuntimeException.class);
-            assertThat(result.entity()).isNull();
+            assertAll(
+                    () -> assertThat(result.hasException()).isTrue(),
+                    () -> assertThat(result.exception()).isInstanceOf(RuntimeException.class),
+                    () -> assertThat(result.entity()).isNull()
+            );
         }
     }
 }

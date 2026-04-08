@@ -2,6 +2,7 @@ package org.kiwiproject.jaxrs;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
+import static org.junit.jupiter.api.Assertions.assertAll;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -16,22 +17,31 @@ class ReadEntityResultTest {
         @Test
         void shouldAllowNullEntity() {
             var result = new ReadEntityResult<>(null, new RuntimeException("oops"));
-            assertThat(result.entity()).isNull();
-            assertThat(result.exception()).isNotNull();
+
+            assertAll(
+                    () -> assertThat(result.entity()).isNull(),
+                    () -> assertThat(result.exception()).isNotNull()
+            );
         }
 
         @Test
         void shouldAllowNullException() {
             var result = new ReadEntityResult<>("the entity", null);
-            assertThat(result.entity()).isEqualTo("the entity");
-            assertThat(result.exception()).isNull();
+
+            assertAll(
+                    () -> assertThat(result.entity()).isEqualTo("the entity"),
+                    () -> assertThat(result.exception()).isNull()
+            );
         }
 
         @Test
         void shouldAllowBothNull_WhenResponseHadNoBody() {
             var result = new ReadEntityResult<>(null, null);
-            assertThat(result.entity()).isNull();
-            assertThat(result.exception()).isNull();
+
+            assertAll(
+                    () -> assertThat(result.entity()).isNull(),
+                    () -> assertThat(result.exception()).isNull()
+            );
         }
 
         @Test
