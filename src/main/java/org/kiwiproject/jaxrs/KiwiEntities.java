@@ -90,7 +90,7 @@ public class KiwiEntities {
     }
 
     private static <T> Optional<T> emptyOptional(Exception e) {
-        LOG.error("Error reading response entity", e);
+        logErrorReadingResponse(e);
         return Optional.empty();
     }
 
@@ -114,8 +114,7 @@ public class KiwiEntities {
             var entity = response.readEntity(entityType);
             return new ReadEntityResult<>(entity, null);
         } catch (Exception e) {
-            LOG.error("Error reading response entity", e);
-            return new ReadEntityResult<>(null, e);
+            return exceptionalResult(e);
         }
     }
 
@@ -139,8 +138,16 @@ public class KiwiEntities {
             var entity = response.readEntity(entityType);
             return new ReadEntityResult<>(entity, null);
         } catch (Exception e) {
-            LOG.error("Error reading response entity", e);
-            return new ReadEntityResult<>(null, e);
+            return exceptionalResult(e);
         }
+    }
+
+    private static <T> ReadEntityResult<T> exceptionalResult(Exception e) {
+        logErrorReadingResponse(e);
+        return new ReadEntityResult<>(null, e);
+    }
+
+    private static void logErrorReadingResponse(Exception e) {
+        LOG.error("Error reading response entity", e);
     }
 }
