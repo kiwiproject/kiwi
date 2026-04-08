@@ -3,7 +3,6 @@ package org.kiwiproject.jaxrs;
 import static com.google.common.base.Preconditions.checkArgument;
 import static java.util.Objects.isNull;
 import static java.util.Objects.nonNull;
-import org.jspecify.annotations.Nullable;
 
 /**
  * Represents the result of a {@link KiwiEntities#safeReadEntityResult} call, containing either
@@ -21,7 +20,7 @@ import org.jspecify.annotations.Nullable;
  * @param entity    the entity read from the response, or null if the response had no body or an exception occurred
  * @param exception the exception that occurred while reading the entity, or null if successful
  */
-public record ReadEntityResult<T>(@Nullable T entity, @Nullable Exception exception) {
+public record ReadEntityResult<T>(T entity, Exception exception) {
 
     /**
      * Compact constructor that enforces the invariant that entity and exception
