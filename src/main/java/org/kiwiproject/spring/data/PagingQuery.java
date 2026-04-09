@@ -36,7 +36,7 @@ import java.util.concurrent.ConcurrentMap;
  * the pagination of this instance.
  */
 @Slf4j
-@SuppressWarnings({"java:S2160", "DeprecatedIsStillUsed"})  // S2160: no need to override equals; DeprecatedIsStillUsed: internal usages of deprecated AggregateResult
+@SuppressWarnings({"java:S2160", "DeprecatedIsStillUsed", "java:S5738"})  // S2160: no need to override equals; DeprecatedIsStillUsed/S5738: internal usages of deprecated AggregateResult
 public class PagingQuery extends Query {
 
     private final MongoTemplate mongoTemplate;
