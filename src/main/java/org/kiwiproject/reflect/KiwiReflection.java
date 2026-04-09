@@ -9,7 +9,6 @@ import static org.kiwiproject.base.KiwiPreconditions.checkArgumentNotNull;
 import static org.kiwiproject.base.KiwiPreconditions.requireNotNull;
 import static org.kiwiproject.base.KiwiStrings.f;
 
-import com.google.common.annotations.Beta;
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.collect.Lists;
 import com.google.common.primitives.Primitives;
@@ -683,7 +682,6 @@ public class KiwiReflection {
      * @see Class#getDeclaredConstructor(Class...)
      * @see java.lang.reflect.Constructor#newInstance(Object...)
      */
-    @Beta
     public static <T> T newInstanceUsingNoArgsConstructor(Class<T> type) {
         checkArgumentNotNull(type);
         try {
@@ -722,7 +720,6 @@ public class KiwiReflection {
      * @see java.lang.reflect.Constructor#newInstance(Object...)
      */
     @SuppressWarnings("unchecked")
-    @Beta
     public static <T> T newInstanceInferringParamTypes(Class<T> type, Object... arguments) {
         checkArgumentNotNull(type);
         checkArgumentNotNull(arguments);
@@ -795,7 +792,6 @@ public class KiwiReflection {
      * @apiNote This method is named differently than {@link #newInstance(Class, List, List)} to avoid amiguity
      * that happens with method overloads when one (or more) uses varargs and the others don't.
      */
-    @Beta
     public static <T> T newInstanceExactParamTypes(Class<T> type, List<Class<?>> parameterTypes, Object... arguments) {
         checkArgumentNotNull(arguments);
         return newInstance(type, parameterTypes, Lists.newArrayList(arguments));

@@ -7,7 +7,6 @@ import static org.kiwiproject.base.KiwiPreconditions.checkArgumentNotNull;
 import static org.kiwiproject.base.KiwiPreconditions.checkEvenItemCount;
 import static org.kiwiproject.base.KiwiStrings.f;
 
-import com.google.common.annotations.Beta;
 import lombok.experimental.UtilityClass;
 import org.jspecify.annotations.Nullable;
 
@@ -734,8 +733,6 @@ public class KiwiMaps {
     /**
      * Returns the value associated with the specified key, converted using the provided converter function.
      * <p>
-     * This method is marked as {@link Beta} and may change in future releases.
-     *
      * @param map       the map
      * @param key       the key whose associated value is to be returned
      * @param converter a function that converts the value to the desired type
@@ -743,7 +740,6 @@ public class KiwiMaps {
      * @return the value associated with the key, converted using the provided converter function
      * @throws IllegalArgumentException if the map, key, or converter is null
      */
-    @Beta
     @Nullable
     public static <T> T getConvertedValue(Map<?, ?> map, Object key, Function<Object, T> converter) {
         checkMapAndKeyArgsNotNull(map, key);
@@ -757,8 +753,6 @@ public class KiwiMaps {
      * Returns the value associated with the specified key, converted using the provided converter function.
      * If the conversion fails with an exception, the fallback converter is used to provide an alternative value.
      * <p>
-     * This method is marked as {@link Beta} and may change in future releases.
-     *
      * @param map               the map
      * @param key               the key whose associated value is to be returned
      * @param converter         a function that converts the value to the desired type
@@ -768,7 +762,6 @@ public class KiwiMaps {
      * or the result of the fallback converter if the primary conversion fails
      * @throws IllegalArgumentException if the map, key, converter, or fallbackConverter is null
      */
-    @Beta
     @Nullable
     public static <T> T getConvertedValueWithFallback(Map<?, ?> map,
                                                       Object key,

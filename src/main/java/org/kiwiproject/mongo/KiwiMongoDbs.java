@@ -5,7 +5,6 @@ import static org.kiwiproject.base.KiwiPreconditions.checkArgumentNotBlank;
 import static org.kiwiproject.base.KiwiPreconditions.checkArgumentNotNull;
 import static org.kiwiproject.base.KiwiStrings.f;
 
-import com.google.common.annotations.Beta;
 import lombok.experimental.UtilityClass;
 
 import java.net.URI;
@@ -14,7 +13,6 @@ import java.net.URI;
  * Static utilities relating to Mongo databases.
  */
 @UtilityClass
-@Beta
 public class KiwiMongoDbs {
 
     /**
