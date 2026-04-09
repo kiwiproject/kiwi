@@ -7,8 +7,8 @@ import static java.util.Objects.nonNull;
 import static org.kiwiproject.base.KiwiPreconditions.checkArgumentNotNull;
 import static org.kiwiproject.collect.KiwiLists.isNotNullOrEmpty;
 
-import com.google.common.annotations.Beta;
 import com.google.common.annotations.VisibleForTesting;
+import org.kiwiproject.base.KiwiDeprecated;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
@@ -36,7 +36,7 @@ import java.util.concurrent.ConcurrentMap;
  * the pagination of this instance.
  */
 @Slf4j
-@SuppressWarnings("java:S2160")  // we don't need to override equals
+@SuppressWarnings({"java:S2160", "DeprecatedIsStillUsed"})  // S2160: no need to override equals; DeprecatedIsStillUsed: internal usages of deprecated AggregateResult
 public class PagingQuery extends Query {
 
     private final MongoTemplate mongoTemplate;
@@ -116,8 +116,16 @@ public class PagingQuery extends Query {
      * @param aggregationOps one or more aggregation operations
      * @param <T>            the result type
      * @return the aggregated {@link Page}
+     * @deprecated This method has significant restrictions and limitations; see the Caveats and
+     * Recommendations sections above. Will be removed without replacement.
      */
-    @Beta
+    @Deprecated(since = "5.3.0", forRemoval = true)
+    @KiwiDeprecated(
+            replacedBy = "will be removed without replacement",
+            reference = "#1400",
+            usageSeverity = KiwiDeprecated.Severity.SEVERE
+    )
+    @SuppressWarnings("java:S1133")
     public <T> Page<T> aggregatePage(Class<T> clazz, AggregationOperation... aggregationOps) {
         checkArgumentNotNull(clazz);
         checkPageableNotNull();
