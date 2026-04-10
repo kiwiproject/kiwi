@@ -64,7 +64,7 @@ class KiwiJdbcGeneratedKeysTest {
         @Test
         void shouldReturnGeneratedIdAtGivenColumnIndex() throws SQLException {
             try (var ps = connection.prepareStatement(
-                    "INSERT INTO test_items (name) VALUES (?)", Statement.RETURN_GENERATED_KEYS)) {
+                    "INSERT INTO test_items (name) VALUES (?)", new int[]{1})) {
                 ps.setString(1, "item");
                 ps.executeUpdate();
                 var id = KiwiJdbcGeneratedKeys.generatedId(ps, 1);
@@ -94,7 +94,7 @@ class KiwiJdbcGeneratedKeysTest {
         @Test
         void shouldReturnGeneratedKeyAsLong() throws SQLException {
             try (var ps = connection.prepareStatement(
-                    "INSERT INTO test_items (name) VALUES (?)", Statement.RETURN_GENERATED_KEYS)) {
+                    "INSERT INTO test_items (name) VALUES (?)", new int[]{1})) {
                 ps.setString(1, "item");
                 ps.executeUpdate();
                 var id = KiwiJdbcGeneratedKeys.generatedKey(ps, 1, Long.class);
