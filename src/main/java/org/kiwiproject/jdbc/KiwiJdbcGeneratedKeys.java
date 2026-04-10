@@ -20,7 +20,10 @@ import java.sql.Statement;
  * // Option 2: PreparedStatement, column-name-based (works with both index- and name-based retrieval)
  * var ps = connection.prepareStatement(sql, new String[]{"id"});
  *
- * // Option 3: plain Statement, flag-based at execute time
+ * // Option 3: PreparedStatement, column-index-based (works with index-based retrieval methods)
+ * var ps = connection.prepareStatement(sql, new int[]{1});
+ *
+ * // Option 4: plain Statement, flag-based at execute time
  * var stmt = connection.createStatement();
  * stmt.executeUpdate(sql, Statement.RETURN_GENERATED_KEYS);
  * }</pre>
