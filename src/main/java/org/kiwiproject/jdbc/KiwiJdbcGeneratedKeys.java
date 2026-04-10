@@ -53,12 +53,15 @@ public class KiwiJdbcGeneratedKeys {
      * <p>
      * This is the most portable option, as all major JDBC drivers support index-based
      * access on the generated keys {@link java.sql.ResultSet}.
+     * <p>
+     * The generated keys {@link java.sql.ResultSet} is closed before this method returns.
      *
      * @param statement the {@link Statement}, which must have been executed with generated
      *                  key retrieval enabled
      * @return the Long value of the generated key
      * @throws SQLException          if a database access error occurs
      * @throws IllegalStateException if no generated keys were returned
+     * @see #generatedKey(Statement, int, Class)
      */
     public static Long generatedId(Statement statement) throws SQLException {
         return generatedId(statement, 1);
@@ -68,6 +71,8 @@ public class KiwiJdbcGeneratedKeys {
      * Extract the generated key at the given column index as a {@link Long}.
      * <p>
      * Index-based access is the most portable option across JDBC drivers.
+     * <p>
+     * The generated keys {@link java.sql.ResultSet} is closed before this method returns.
      *
      * @param statement   the {@link Statement}, which must have been executed with generated
      *                    key retrieval enabled
@@ -75,6 +80,7 @@ public class KiwiJdbcGeneratedKeys {
      * @return the Long value of the generated key
      * @throws SQLException          if a database access error occurs
      * @throws IllegalStateException if no generated keys were returned
+     * @see #generatedKey(Statement, int, Class)
      */
     public static Long generatedId(Statement statement, int columnIndex) throws SQLException {
         return generatedKey(statement, columnIndex, Long.class);
@@ -86,6 +92,8 @@ public class KiwiJdbcGeneratedKeys {
      * Name-based access is not supported by all JDBC drivers. Prefer
      * {@link #generatedId(Statement, int)} for maximum portability. See the
      * class-level Javadoc for driver compatibility details.
+     * <p>
+     * The generated keys {@link java.sql.ResultSet} is closed before this method returns.
      *
      * @param statement  the {@link Statement}, which must have been executed with generated
      *                   key retrieval enabled
@@ -93,6 +101,7 @@ public class KiwiJdbcGeneratedKeys {
      * @return the Long value of the generated key
      * @throws SQLException          if a database access error occurs
      * @throws IllegalStateException if no generated keys were returned
+     * @see #generatedKey(Statement, String, Class)
      */
     public static Long generatedId(Statement statement, String columnName) throws SQLException {
         return generatedKey(statement, columnName, Long.class);
