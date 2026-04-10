@@ -11,7 +11,7 @@ import java.sql.Statement;
  *
  * <p><strong>Requesting generated keys:</strong> The caller must request generated keys before
  * or at execution time, otherwise {@link Statement#getGeneratedKeys()} returns an empty
- * {@link java.sql.ResultSet} and these methods will throw. There are three ways to request them:
+ * {@link java.sql.ResultSet} and these methods will throw. There are four ways to request them:
  *
  * <pre>{@code
  * // Option 1: PreparedStatement, flag-based (works with index-based retrieval methods)
