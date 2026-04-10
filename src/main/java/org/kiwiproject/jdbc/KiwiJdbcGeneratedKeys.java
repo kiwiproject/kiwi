@@ -25,15 +25,17 @@ import java.sql.Statement;
  * {@link Statement}, all methods in this class accept those types as well.
  *
  * <p><strong>Driver compatibility for name-based methods:</strong> Index-based methods are the most
- * portable across JDBC drivers. Name-based methods have varying support:
+ * portable across JDBC drivers. Name-based methods have varying support. The following table
+ * reflects documented driver behavior and general community experience rather than
+ * test-verified guarantees across all listed databases:
  *
  * <table border="1">
- *   <caption>Name-based generated key access by database</caption>
+ *   <caption>Name-based generated key access by database (based on documented driver behavior)</caption>
  *   <tr><th>Database</th><th>Name-based access</th></tr>
- *   <tr><td>PostgreSQL</td><td>Supported</td></tr>
+ *   <tr><td>PostgreSQL</td><td>Generally supported</td></tr>
  *   <tr><td>H2</td><td>Supported</td></tr>
- *   <tr><td>SQL Server</td><td>Supported</td></tr>
- *   <tr><td>Oracle</td><td>Supported (requires column names specified at prepare time)</td></tr>
+ *   <tr><td>SQL Server</td><td>Generally supported</td></tr>
+ *   <tr><td>Oracle</td><td>Generally supported (requires column names specified at prepare time)</td></tr>
  *   <tr><td>MySQL / MariaDB</td><td>Unreliable — column may be named {@code GENERATED_KEY}
  *       rather than the actual column name</td></tr>
  *   <tr><td>SQLite</td><td>Not supported — use index-based methods</td></tr>
@@ -100,6 +102,8 @@ public class KiwiJdbcGeneratedKeys {
      * Extract the generated key at the given column index as an instance of the given type.
      * <p>
      * Index-based access is the most portable option across JDBC drivers.
+     * <p>
+     * The generated keys {@link java.sql.ResultSet} is closed before this method returns.
      *
      * @param statement   the {@link Statement}, which must have been executed with generated
      *                    key retrieval enabled
@@ -112,9 +116,10 @@ public class KiwiJdbcGeneratedKeys {
      */
     public static <T> T generatedKey(Statement statement, int columnIndex, Class<T> keyType)
             throws SQLException {
-        var keys = statement.getGeneratedKeys();
-        KiwiJdbc.nextOrThrow(keys, NO_KEYS_MESSAGE);
-        return keys.getObject(columnIndex, keyType);
+        try (var keys = statement.getGeneratedKeys()) {
+            KiwiJdbc.nextOrThrow(keys, NO_KEYS_MESSAGE);
+            return keys.getObject(columnIndex, keyType);
+        }
     }
 
     /**
@@ -123,6 +128,8 @@ public class KiwiJdbcGeneratedKeys {
      * Name-based access is not supported by all JDBC drivers. Prefer
      * {@link #generatedKey(Statement, int, Class)} for maximum portability. See the
      * class-level Javadoc for driver compatibility details.
+     * <p>
+     * The generated keys {@link java.sql.ResultSet} is closed before this method returns.
      *
      * @param statement  the {@link Statement}, which must have been executed with generated
      *                   key retrieval enabled
@@ -135,8 +142,9 @@ public class KiwiJdbcGeneratedKeys {
      */
     public static <T> T generatedKey(Statement statement, String columnName, Class<T> keyType)
             throws SQLException {
-        var keys = statement.getGeneratedKeys();
-        KiwiJdbc.nextOrThrow(keys, NO_KEYS_MESSAGE);
-        return keys.getObject(columnName, keyType);
+        try (var keys = statement.getGeneratedKeys()) {
+            KiwiJdbc.nextOrThrow(keys, NO_KEYS_MESSAGE);
+            return keys.getObject(columnName, keyType);
+        }
     }
 }
