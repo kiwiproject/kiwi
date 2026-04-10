@@ -9,16 +9,20 @@ import java.sql.Statement;
 /**
  * Utilities for extracting generated keys from a JDBC {@link Statement} after an insert operation.
  *
- * <p><strong>Requesting generated keys:</strong> The caller must request generated keys at execution
- * time, otherwise {@link Statement#getGeneratedKeys()} returns an empty {@link java.sql.ResultSet}
- * and these methods will throw. There are two ways to request them:
+ * <p><strong>Requesting generated keys:</strong> The caller must request generated keys before
+ * or at execution time, otherwise {@link Statement#getGeneratedKeys()} returns an empty
+ * {@link java.sql.ResultSet} and these methods will throw. There are three ways to request them:
  *
  * <pre>{@code
- * // Option 1: flag-based (works with index-based retrieval methods)
+ * // Option 1: PreparedStatement, flag-based (works with index-based retrieval methods)
  * var ps = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
  *
- * // Option 2: column-name-based (works with both index- and name-based retrieval)
+ * // Option 2: PreparedStatement, column-name-based (works with both index- and name-based retrieval)
  * var ps = connection.prepareStatement(sql, new String[]{"id"});
+ *
+ * // Option 3: plain Statement, flag-based at execute time
+ * var stmt = connection.createStatement();
+ * stmt.executeUpdate(sql, Statement.RETURN_GENERATED_KEYS);
  * }</pre>
  *
  * <p>Since {@link PreparedStatement} and {@link java.sql.CallableStatement} both extend
@@ -46,7 +50,7 @@ public class KiwiJdbcGeneratedKeys {
 
     private static final String NO_KEYS_MESSAGE =
             "No generated keys were returned; ensure keys were requested using" +
-            " Statement.RETURN_GENERATED_KEYS or by specifying column names or column indexes at prepare time";
+            " Statement.RETURN_GENERATED_KEYS, by specifying column names, or by specifying column indexes";
 
     /**
      * Extract the generated key at column index 1 as a {@link Long}.
