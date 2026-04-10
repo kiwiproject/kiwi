@@ -46,7 +46,7 @@ public class KiwiJdbcGeneratedKeys {
 
     private static final String NO_KEYS_MESSAGE =
             "No generated keys were returned; ensure keys were requested using" +
-            " Statement.RETURN_GENERATED_KEYS or by specifying column names at prepare time";
+            " Statement.RETURN_GENERATED_KEYS or by specifying column names or column indexes at prepare time";
 
     /**
      * Extract the generated key at column index 1 as a {@link Long}.
