@@ -126,5 +126,15 @@ class KiwiJdbcGeneratedKeysTest {
                 assertThat(id).isPositive();
             }
         }
+
+        @Test
+        void shouldThrowWhenNoGeneratedKeysRequested() throws SQLException {
+            try (var ps = connection.prepareStatement("INSERT INTO test_items (name) VALUES (?)")) {
+                ps.setString(1, "item");
+                ps.executeUpdate();
+                assertThatIllegalStateException()
+                        .isThrownBy(() -> KiwiJdbcGeneratedKeys.generatedKey(ps, "id", Long.class));
+            }
+        }
     }
 }
