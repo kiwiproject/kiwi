@@ -62,6 +62,7 @@ public class KiwiJdbcGeneratedKeys {
      * @throws SQLException          if a database access error occurs
      * @throws IllegalStateException if no generated keys were returned
      * @see #generatedKey(Statement, int, Class)
+     * @see Statement#getGeneratedKeys()
      */
     public static Long generatedId(Statement statement) throws SQLException {
         return generatedId(statement, 1);
@@ -81,6 +82,7 @@ public class KiwiJdbcGeneratedKeys {
      * @throws SQLException          if a database access error occurs
      * @throws IllegalStateException if no generated keys were returned
      * @see #generatedKey(Statement, int, Class)
+     * @see Statement#getGeneratedKeys()
      */
     public static Long generatedId(Statement statement, int columnIndex) throws SQLException {
         return generatedKey(statement, columnIndex, Long.class);
@@ -102,6 +104,7 @@ public class KiwiJdbcGeneratedKeys {
      * @throws SQLException          if a database access error occurs
      * @throws IllegalStateException if no generated keys were returned
      * @see #generatedKey(Statement, String, Class)
+     * @see Statement#getGeneratedKeys()
      */
     public static Long generatedId(Statement statement, String columnName) throws SQLException {
         return generatedKey(statement, columnName, Long.class);
@@ -122,6 +125,7 @@ public class KiwiJdbcGeneratedKeys {
      * @return the value of the generated key
      * @throws SQLException          if a database access error occurs
      * @throws IllegalStateException if no generated keys were returned
+     * @see Statement#getGeneratedKeys()
      */
     public static <T> T generatedKey(Statement statement, int columnIndex, Class<T> keyType)
             throws SQLException {
@@ -148,6 +152,7 @@ public class KiwiJdbcGeneratedKeys {
      * @return the value of the generated key
      * @throws SQLException          if a database access error occurs
      * @throws IllegalStateException if no generated keys were returned
+     * @see Statement#getGeneratedKeys()
      */
     public static <T> T generatedKey(Statement statement, String columnName, Class<T> keyType)
             throws SQLException {
