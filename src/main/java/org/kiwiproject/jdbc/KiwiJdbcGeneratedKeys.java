@@ -42,7 +42,7 @@ import java.sql.Statement;
  *   <tr><td>PostgreSQL</td><td>Generally supported</td></tr>
  *   <tr><td>H2</td><td>Supported</td></tr>
  *   <tr><td>SQL Server</td><td>Generally supported</td></tr>
- *   <tr><td>Oracle</td><td>Generally supported (requires column names specified at prepare time)</td></tr>
+ *   <tr><td>Oracle</td><td>Generally supported (requires column names specified at "prepare" time)</td></tr>
  *   <tr><td>MySQL / MariaDB</td><td>Unreliable — column may be named {@code GENERATED_KEY}
  *       rather than the actual column name</td></tr>
  *   <tr><td>SQLite</td><td>Not supported — use index-based methods</td></tr>
@@ -98,7 +98,7 @@ public class KiwiJdbcGeneratedKeys {
     /**
      * Extract the generated key with the given column name as a {@link Long}.
      * <p>
-     * Name-based access is not supported by all JDBC drivers. Prefer
+     * Not all JDBC drivers support column name-based access. Prefer
      * {@link #generatedId(Statement, int)} for maximum portability. See the
      * class-level Javadoc for driver compatibility details.
      * <p>
@@ -145,7 +145,7 @@ public class KiwiJdbcGeneratedKeys {
     /**
      * Extract the generated key with the given column name as an instance of the given type.
      * <p>
-     * Name-based access is not supported by all JDBC drivers. Prefer
+     * Not all JDBC drivers support column name-based access. Prefer
      * {@link #generatedKey(Statement, int, Class)} for maximum portability. See the
      * class-level Javadoc for driver compatibility details.
      * <p>
