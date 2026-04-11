@@ -88,7 +88,7 @@ public class KiwiJdbc {
      * @param ps            the PreparedStatement to execute
      * @param expectedCount the expected number of rows updated
      * @throws SQLException          if there is a database problem
-     * @throws IllegalStateException if the number of updated rows does not equal expectedCount
+     * @throws IllegalStateException if the number of updated rows does not equal {@code expectedCount}
      * @see #executeUpdateExpectingCount(PreparedStatement, int, String, Object...)
      */
     public static void executeUpdateExpectingCount(PreparedStatement ps, int expectedCount) throws SQLException {
@@ -109,7 +109,7 @@ public class KiwiJdbc {
      *                        {@link KiwiStrings#format(String, Object...)} handles placeholders
      * @param args            the arguments to be substituted into the message template
      * @throws SQLException          if there is a database problem
-     * @throws IllegalStateException if the number of updated rows does not equal expectedCount
+     * @throws IllegalStateException if the number of updated rows does not equal {@code expectedCount}
      * @see #executeUpdateExpectingCount(PreparedStatement, int)
      */
     public static void executeUpdateExpectingCount(PreparedStatement ps, int expectedCount,
