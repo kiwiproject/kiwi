@@ -89,7 +89,7 @@ public class KiwiJdbc {
      * @param expectedCount the expected number of rows updated
      * @throws SQLException          if there is a database problem
      * @throws IllegalStateException if the number of updated rows does not equal {@code expectedCount}
-     * @see #executeUpdateExpectingCount(PreparedStatement, int, String, Object...)
+     * @see #executeUpdateExpectingCount(PreparedStatement, int, String)
      */
     public static void executeUpdateExpectingCount(PreparedStatement ps, int expectedCount) throws SQLException {
         var count = ps.executeUpdate();
