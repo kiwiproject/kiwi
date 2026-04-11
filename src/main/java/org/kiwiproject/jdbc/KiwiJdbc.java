@@ -128,6 +128,10 @@ public class KiwiJdbc {
      * @param countChecker a predicate to test the number of rows updated
      * @throws SQLException          if there is a database problem
      * @throws IllegalStateException if the number of updated rows does not satisfy countChecker
+     * @implNote The default message includes only the actual count, not the expected condition,
+     *           because an {@link IntPredicate} cannot be introspected to produce a meaningful
+     *           description. Use the overload that accepts a message template if a more
+     *           descriptive error message is needed.
      * @see #executeUpdateExpectingCount(PreparedStatement, IntPredicate, String, Object...)
      */
     public static void executeUpdateExpectingCount(PreparedStatement ps,
