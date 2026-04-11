@@ -112,8 +112,10 @@ public class KiwiJdbc {
      * @throws IllegalStateException if the number of updated rows does not equal {@code expectedCount}
      * @see #executeUpdateExpectingCount(PreparedStatement, int)
      */
-    public static void executeUpdateExpectingCount(PreparedStatement ps, int expectedCount,
-                                                   String messageTemplate, Object... args) throws SQLException {
+    public static void executeUpdateExpectingCount(PreparedStatement ps,
+                                                   int expectedCount,
+                                                   String messageTemplate,
+                                                   Object... args) throws SQLException {
         executeUpdateExpectingCount(ps, count -> count == expectedCount, messageTemplate, args);
     }
 
@@ -152,7 +154,8 @@ public class KiwiJdbc {
      */
     public static void executeUpdateExpectingCount(PreparedStatement ps,
                                                    IntPredicate countChecker,
-                                                   String messageTemplate, Object... args) throws SQLException {
+                                                   String messageTemplate,
+                                                   Object... args) throws SQLException {
         var count = ps.executeUpdate();
         if (!countChecker.test(count)) {
             throw new IllegalStateException(format(messageTemplate, args));
