@@ -1107,7 +1107,7 @@ class KiwiJdbcTest {
                     when(ps.executeUpdate()).thenReturn(3);
 
                     assertThatCode(() -> KiwiJdbc.executeUpdateExpectingCount(
-                                    ps, 3, "Expected 3 updated rows but was: {}", 0))
+                                    ps, 3, "Expected {} updated rows but was: {}"))
                             .doesNotThrowAnyException();
 
                     verify(ps, only()).executeUpdate();
@@ -1119,8 +1119,8 @@ class KiwiJdbcTest {
 
                     assertThatIllegalStateException()
                             .isThrownBy(() -> KiwiJdbc.executeUpdateExpectingCount(
-                                    ps, 1, "Expected 1 updated row but was: {}", 0))
-                            .withMessage("Expected 1 updated row but was: 0");
+                                    ps, 1, "Expected {} updated row(s) but was: {}"))
+                            .withMessage("Expected 1 updated row(s) but was: 0");
 
                     verify(ps, only()).executeUpdate();
                 }
@@ -1163,7 +1163,7 @@ class KiwiJdbcTest {
                     when(ps.executeUpdate()).thenReturn(2);
 
                     assertThatCode(() -> KiwiJdbc.executeUpdateExpectingCount(
-                                    ps, count -> count >= 1, "Expected at least 1 row updated but was: {}", 0))
+                                    ps, count -> count >= 1, "Expected at least 1 row updated but was: {}"))
                             .doesNotThrowAnyException();
 
                     verify(ps, only()).executeUpdate();
@@ -1175,7 +1175,7 @@ class KiwiJdbcTest {
 
                     assertThatIllegalStateException()
                             .isThrownBy(() -> KiwiJdbc.executeUpdateExpectingCount(
-                                    ps, count -> count >= 1, "Expected at least 1 row updated but was: {}", 0))
+                                    ps, count -> count >= 1, "Expected at least 1 row updated but was: {}"))
                             .withMessage("Expected at least 1 row updated but was: 0");
 
                     verify(ps, only()).executeUpdate();
