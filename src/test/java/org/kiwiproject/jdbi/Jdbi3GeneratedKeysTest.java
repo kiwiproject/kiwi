@@ -19,7 +19,7 @@ class Jdbi3GeneratedKeysTest {
 
     @BeforeEach
     void setUp() {
-        jdbi = Jdbi.create("jdbc:h2:mem:test");
+        jdbi = Jdbi.create("jdbc:h2:mem:Jdbi3GeneratedKeysTest");
     }
 
     @Test
