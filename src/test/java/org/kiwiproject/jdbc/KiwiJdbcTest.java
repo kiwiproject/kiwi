@@ -1061,6 +1061,129 @@ class KiwiJdbcTest {
         }
     }
 
+    @Nested
+    class ExecuteUpdateExpectingCount {
+
+        private PreparedStatement ps;
+
+        @BeforeEach
+        void setUp() {
+            ps = mock(PreparedStatement.class);
+        }
+
+        @Nested
+        class WithExactCount {
+
+            @Nested
+            class WithDefaultMessage {
+
+                @Test
+                void shouldNotThrow_WhenCountMatchesExpected() throws SQLException {
+                    when(ps.executeUpdate()).thenReturn(1);
+
+                    assertThatCode(() -> KiwiJdbc.executeUpdateExpectingCount(ps, 1))
+                            .doesNotThrowAnyException();
+
+                    verify(ps, only()).executeUpdate();
+                }
+
+                @Test
+                void shouldThrow_WhenCountDoesNotMatchExpected() throws SQLException {
+                    when(ps.executeUpdate()).thenReturn(0);
+
+                    assertThatIllegalStateException()
+                            .isThrownBy(() -> KiwiJdbc.executeUpdateExpectingCount(ps, 1))
+                            .withMessage("Expected 1 row(s) updated but was: 0");
+
+                    verify(ps, only()).executeUpdate();
+                }
+            }
+
+            @Nested
+            class WithCustomMessage {
+
+                @Test
+                void shouldNotThrow_WhenCountMatchesExpected() throws SQLException {
+                    when(ps.executeUpdate()).thenReturn(3);
+
+                    assertThatCode(() -> KiwiJdbc.executeUpdateExpectingCount(
+                                    ps, 3, "Expected {} updated rows but was: {}"))
+                            .doesNotThrowAnyException();
+
+                    verify(ps, only()).executeUpdate();
+                }
+
+                @Test
+                void shouldThrow_WhenCountDoesNotMatchExpected() throws SQLException {
+                    when(ps.executeUpdate()).thenReturn(0);
+
+                    assertThatIllegalStateException()
+                            .isThrownBy(() -> KiwiJdbc.executeUpdateExpectingCount(
+                                    ps, 1, "Expected {} updated row(s) but was: {}"))
+                            .withMessage("Expected 1 updated row(s) but was: 0");
+
+                    verify(ps, only()).executeUpdate();
+                }
+            }
+        }
+
+        @Nested
+        class WithPredicateCountChecker {
+
+            @Nested
+            class WithDefaultMessage {
+
+                @Test
+                void shouldNotThrow_WhenPredicateIsSatisfied() throws SQLException {
+                    when(ps.executeUpdate()).thenReturn(5);
+
+                    assertThatCode(() -> KiwiJdbc.executeUpdateExpectingCount(ps, count -> count >= 1))
+                            .doesNotThrowAnyException();
+
+                    verify(ps, only()).executeUpdate();
+                }
+
+                @Test
+                void shouldThrow_WhenPredicateIsNotSatisfied() throws SQLException {
+                    when(ps.executeUpdate()).thenReturn(0);
+
+                    assertThatIllegalStateException()
+                            .isThrownBy(() -> KiwiJdbc.executeUpdateExpectingCount(ps, count -> count >= 1))
+                            .withMessage("Update count 0 did not satisfy the expected condition");
+
+                    verify(ps, only()).executeUpdate();
+                }
+            }
+
+            @Nested
+            class WithCustomMessage {
+
+                @Test
+                void shouldNotThrow_WhenPredicateIsSatisfied() throws SQLException {
+                    when(ps.executeUpdate()).thenReturn(2);
+
+                    assertThatCode(() -> KiwiJdbc.executeUpdateExpectingCount(
+                                    ps, count -> count >= 1, "Expected at least 1 row updated but was: {}"))
+                            .doesNotThrowAnyException();
+
+                    verify(ps, only()).executeUpdate();
+                }
+
+                @Test
+                void shouldThrow_WhenPredicateIsNotSatisfied() throws SQLException {
+                    when(ps.executeUpdate()).thenReturn(0);
+
+                    assertThatIllegalStateException()
+                            .isThrownBy(() -> KiwiJdbc.executeUpdateExpectingCount(
+                                    ps, count -> count >= 1, "Expected at least 1 row updated but was: {}"))
+                            .withMessage("Expected at least 1 row updated but was: 0");
+
+                    verify(ps, only()).executeUpdate();
+                }
+            }
+        }
+    }
+
     private static ResultSet newMockResultSet() {
         return mock(ResultSet.class);
     }

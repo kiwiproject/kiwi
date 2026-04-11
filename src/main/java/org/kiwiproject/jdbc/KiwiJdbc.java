@@ -27,6 +27,7 @@ import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 import java.util.Date;
 import java.util.Optional;
+import java.util.function.IntPredicate;
 
 /**
  * JDBC utilities.
@@ -76,6 +77,98 @@ public class KiwiJdbc {
     public static void nextOrThrow(ResultSet rs, String messageTemplate, Object... args) throws SQLException {
         if (!rs.next()) {
             throw new IllegalStateException(format(messageTemplate, args));
+        }
+    }
+
+    /**
+     * Executes {@link PreparedStatement#executeUpdate()} and throws {@link IllegalStateException}
+     * if the number of updated rows does not equal {@code expectedCount}.
+     * Uses a default error message that includes both the expected and actual counts.
+     *
+     * @param ps            the PreparedStatement to execute
+     * @param expectedCount the expected number of rows updated
+     * @throws SQLException          if there is a database problem
+     * @throws IllegalStateException if the number of updated rows does not equal {@code expectedCount}
+     * @see #executeUpdateExpectingCount(PreparedStatement, int, String)
+     */
+    public static void executeUpdateExpectingCount(PreparedStatement ps, int expectedCount) throws SQLException {
+        executeUpdateExpectingCount(ps, expectedCount, "Expected {} row(s) updated but was: {}");
+    }
+
+    /**
+     * Executes {@link PreparedStatement#executeUpdate()} and throws {@link IllegalStateException}
+     * if the number of updated rows does not equal {@code expectedCount}.
+     * <p>
+     * The message template is formatted with {@code expectedCount} as the first argument and the
+     * actual update count as the second argument. For example:
+     * <pre>
+     * executeUpdateExpectingCount(ps, expectedCount, "Expected {} row(s) updated but was: {}");
+     * </pre>
+     *
+     * @param ps              the PreparedStatement to execute
+     * @param expectedCount   the expected number of rows updated
+     * @param messageTemplate the error message template in case the count does not match; the first
+     *                        {@code {}} placeholder is substituted with {@code expectedCount} and
+     *                        the second with the actual update count
+     * @throws SQLException          if there is a database problem
+     * @throws IllegalStateException if the number of updated rows does not equal {@code expectedCount}
+     * @see #executeUpdateExpectingCount(PreparedStatement, int)
+     */
+    public static void executeUpdateExpectingCount(PreparedStatement ps,
+                                                   int expectedCount,
+                                                   String messageTemplate) throws SQLException {
+        var count = ps.executeUpdate();
+        if (count != expectedCount) {
+            throw new IllegalStateException(format(messageTemplate, expectedCount, count));
+        }
+    }
+
+    /**
+     * Executes {@link PreparedStatement#executeUpdate()} and throws {@link IllegalStateException}
+     * if the number of updated rows does not satisfy {@code countChecker}.
+     * Uses a default error message that includes the actual count.
+     *
+     * @param ps           the PreparedStatement to execute
+     * @param countChecker a predicate to test the number of rows updated
+     * @throws SQLException          if there is a database problem
+     * @throws IllegalStateException if the number of updated rows does not satisfy {@code countChecker}
+     * @implNote The default message includes only the actual count, not the expected condition,
+     *           because an {@link IntPredicate} cannot be introspected to produce a meaningful
+     *           description. Use the overload that accepts a message template if a more
+     *           descriptive error message is needed.
+     * @see #executeUpdateExpectingCount(PreparedStatement, IntPredicate, String)
+     */
+    public static void executeUpdateExpectingCount(PreparedStatement ps,
+                                                   IntPredicate countChecker) throws SQLException {
+        executeUpdateExpectingCount(ps, countChecker,
+                "Update count {} did not satisfy the expected condition");
+    }
+
+    /**
+     * Executes {@link PreparedStatement#executeUpdate()} and throws {@link IllegalStateException}
+     * if the number of updated rows does not satisfy {@code countChecker}.
+     * <p>
+     * The message template is formatted with the actual update count as the only argument.
+     * For example:
+     * <pre>
+     * executeUpdateExpectingCount(ps, count -> count >= minCount,
+     *         "Expected at least " + minCount + " row(s) updated but was: {}");
+     * </pre>
+     *
+     * @param ps              the PreparedStatement to execute
+     * @param countChecker    a predicate to test the number of rows updated
+     * @param messageTemplate the error message template in case the predicate is not satisfied;
+     *                        the {@code {}} placeholder is substituted with the actual update count
+     * @throws SQLException          if there is a database problem
+     * @throws IllegalStateException if the number of updated rows does not satisfy {@code countChecker}
+     * @see #executeUpdateExpectingCount(PreparedStatement, IntPredicate)
+     */
+    public static void executeUpdateExpectingCount(PreparedStatement ps,
+                                                   IntPredicate countChecker,
+                                                   String messageTemplate) throws SQLException {
+        var count = ps.executeUpdate();
+        if (!countChecker.test(count)) {
+            throw new IllegalStateException(format(messageTemplate, count));
         }
     }
 
