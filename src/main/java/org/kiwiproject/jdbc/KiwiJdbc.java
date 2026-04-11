@@ -92,11 +92,7 @@ public class KiwiJdbc {
      * @see #executeUpdateExpectingCount(PreparedStatement, int, String)
      */
     public static void executeUpdateExpectingCount(PreparedStatement ps, int expectedCount) throws SQLException {
-        var count = ps.executeUpdate();
-        if (count != expectedCount) {
-            throw new IllegalStateException(
-                    format("Expected {} row(s) updated but was: {}", expectedCount, count));
-        }
+        executeUpdateExpectingCount(ps, expectedCount, "Expected {} row(s) updated but was: {}");
     }
 
     /**
@@ -144,11 +140,8 @@ public class KiwiJdbc {
      */
     public static void executeUpdateExpectingCount(PreparedStatement ps,
                                                    IntPredicate countChecker) throws SQLException {
-        var count = ps.executeUpdate();
-        if (!countChecker.test(count)) {
-            throw new IllegalStateException(
-                    format("Update count {} did not satisfy the expected condition", count));
-        }
+        executeUpdateExpectingCount(ps, countChecker,
+                "Update count {} did not satisfy the expected condition");
     }
 
     /**
