@@ -19,6 +19,7 @@ import java.nio.file.Paths;
 import java.security.KeyStore;
 import java.security.KeyStoreException;
 import java.security.NoSuchAlgorithmException;
+import java.security.NoSuchProviderException;
 import java.security.UnrecoverableKeyException;
 import java.security.cert.CertificateException;
 import java.util.Optional;
@@ -247,6 +248,69 @@ public class KiwiSecurity {
                                               String trustStoreType,
                                               String trustManagerAlgorithm,
                                               String protocol) {
+        return createSslContext(keyStorePath,
+                keyStorePassword,
+                keyStoreType,
+                null,
+                keyManagerAlgorithm,
+                trustStorePath,
+                trustStorePassword,
+                trustStoreType,
+                null,
+                trustManagerAlgorithm,
+                protocol);
+    }
+
+    /**
+     * Create a new {@link SSLContext} instance for the given paths, passwords, key and trust store types, key and
+     * trust store providers, key and trust manager algorithms, and protocol. The key and trust store types should be
+     * one of the algorithms defined in {@link KeyStoreType}.
+     * <p>
+     * If only the trust store is necessary, supply {@code null} values for the {@code keyStorePath},
+     * {@code keyStorePassword}, {@code keyStoreType}, {@code keyStoreProvider}, and {@code keyManagerAlgorithm}.
+     * <p>
+     * If a provider is given, {@link KeyStore#getInstance(String, String)} is used; otherwise
+     * {@link KeyStore#getInstance(String)} is used.
+     * <p>
+     * WARNING: While public, this is very low-level and not generally intended for client code to call directly.
+     * We recommend using {@link #createSslContext(String, String, String, String, SSLContextProtocol)}
+     * or {@link #createSslContext(String, String, String, String, String)}. Kiwi also provides higher-level
+     * constructs in the {@link org.kiwiproject.security} package.
+     *
+     * @param keyStorePath          path to the key store
+     * @param keyStorePassword      password of the key store
+     * @param keyStoreType          the key store type
+     * @param keyStoreProvider      the JCE provider name for the key store, or {@code null} to use the default provider
+     * @param keyManagerAlgorithm   the key manager algorithm
+     * @param trustStorePath        path to the trust store
+     * @param trustStorePassword    password of the trust store
+     * @param trustStoreType        the trust store type
+     * @param trustStoreProvider    the JCE provider name for the trust store, or {@code null} to use the default provider
+     * @param trustManagerAlgorithm the trust manager algorithm
+     * @param protocol              the protocol to use
+     * @return a new {@link SSLContext} instance
+     * @throws SSLContextException if unable to create the {@link SSLContext}
+     * @see KeyStore#getInstance(String)
+     * @see KeyStore#getInstance(String, String)
+     * @see KeyManager
+     * @see KeyManagerFactory#getInstance(String)
+     * @see TrustManager
+     * @see TrustManagerFactory#getInstance(String)
+     * @see SSLContextProtocol
+     * @see KeyStoreType
+     */
+    @SuppressWarnings("java:S107")
+    public static SSLContext createSslContext(@Nullable String keyStorePath,
+                                              @Nullable String keyStorePassword,
+                                              @Nullable String keyStoreType,
+                                              @Nullable String keyStoreProvider,
+                                              @Nullable String keyManagerAlgorithm,
+                                              String trustStorePath,
+                                              String trustStorePassword,
+                                              String trustStoreType,
+                                              @Nullable String trustStoreProvider,
+                                              String trustManagerAlgorithm,
+                                              String protocol) {
 
         if (isNotBlank(keyStorePath)) {
             checkArgumentNotNull(keyStorePassword, "keyStorePassword cannot be null");
@@ -261,12 +325,12 @@ public class KiwiSecurity {
         checkArgumentNotBlank(protocol, "protocol cannot be blank");
 
         try {
-            var optionalKeyStore = getKeyStore(keyStoreType, keyStorePath, keyStorePassword);
+            var optionalKeyStore = getKeyStore(keyStoreType, keyStorePath, keyStorePassword, keyStoreProvider);
             var keyManagers = optionalKeyStore
                     .map(store -> getKeyManagers(store, keyStorePassword, keyManagerAlgorithm))
                     .orElse(null);
 
-            var trustStore = getKeyStore(trustStoreType, trustStorePath, trustStorePassword)
+            var trustStore = getKeyStore(trustStoreType, trustStorePath, trustStorePassword, trustStoreProvider)
                     .orElseThrow(IllegalArgumentException::new);
             var trustManagers = getTrustManagers(trustStore, trustManagerAlgorithm);
 
@@ -316,6 +380,34 @@ public class KiwiSecurity {
     }
 
     /**
+     * Return an {@link Optional} containing a {@link KeyStore} for the given {@link KeyStoreType}, path, password,
+     * and JCE provider, or an empty {@link Optional} if either path or password is null.
+     * <p>
+     * This method is intended to load an <em>existing</em> key store. If you need to programmatically create a new
+     * one, use the {@link KeyStore} API directly.
+     * <p>
+     * If the returned Optional contains a KeyStore, it has been successfully loaded.
+     * <p>
+     * If a provider is given, {@link KeyStore#getInstance(String, String)} is used; otherwise
+     * {@link KeyStore#getInstance(String)} is used.
+     *
+     * @param keyStoreType the type of key store
+     * @param path         the path to the key store
+     * @param password     the key store password
+     * @param provider     the JCE provider name, or {@code null} to use the default provider
+     * @return an optional with a {@link KeyStore} or an empty optional
+     * @throws IllegalArgumentException if keyStoreType is blank
+     * @throws SSLContextException      if unable to create a {@link KeyStore}
+     * @see KeyStore#getInstance(String)
+     * @see KeyStore#getInstance(String, String)
+     * @see KeyStore#load(java.io.InputStream, char[])
+     */
+    public static Optional<KeyStore> getKeyStore(KeyStoreType keyStoreType, String path, String password, @Nullable String provider) {
+        checkArgumentNotNull(keyStoreType, "keyStoreType cannot be null");
+        return getKeyStore(keyStoreType.value, path, password, provider);
+    }
+
+    /**
      * Return an {@link Optional} containing a {@link KeyStore} for the given {@link KeyStoreType}, path, and
      * password, or an empty {@link Optional} if either path or password is null.
      * <p>
@@ -334,7 +426,34 @@ public class KiwiSecurity {
      *  @see KeyStore#load(java.io.InputStream, char[])
      */
     public static Optional<KeyStore> getKeyStore(String keyStoreType, String path, String password) {
-        LOG.trace("Get and load {} KeyStore/TrustStore for {}", keyStoreType, path);
+        return getKeyStore(keyStoreType, path, password, null);
+    }
+
+    /**
+     * Return an {@link Optional} containing a {@link KeyStore} for the given key store type, path, password,
+     * and JCE provider, or an empty {@link Optional} if either path or password is null.
+     * <p>
+     * This method is intended to load an <em>existing</em> key store. If you need to programmatically create a new
+     * one, use the {@link KeyStore} API directly.
+     * <p>
+     * If the returned Optional contains a KeyStore, it has been successfully loaded.
+     * <p>
+     * If a provider is given, {@link KeyStore#getInstance(String, String)} is used; otherwise
+     * {@link KeyStore#getInstance(String)} is used.
+     *
+     * @param keyStoreType the type of key store
+     * @param path         the path to the key store
+     * @param password     the key store password
+     * @param provider     the JCE provider name, or {@code null} to use the default provider
+     * @return an optional with a {@link KeyStore} or an empty optional
+     * @throws IllegalArgumentException if keyStoreType is blank
+     * @throws SSLContextException      if unable to create a {@link KeyStore}
+     * @see KeyStore#getInstance(String)
+     * @see KeyStore#getInstance(String, String)
+     * @see KeyStore#load(java.io.InputStream, char[])
+     */
+    public static Optional<KeyStore> getKeyStore(String keyStoreType, String path, String password, @Nullable String provider) {
+        LOG.trace("Get and load {} KeyStore/TrustStore for {} (provider: {})", keyStoreType, path, provider);
         if (isNull(path) || isNull(password)) {
             LOG.debug("No keystore specified (path and/or password is null)");
             return Optional.empty();
@@ -343,13 +462,15 @@ public class KiwiSecurity {
         checkArgumentNotBlank(keyStoreType, "keyStoreType cannot be blank");
 
         try {
-            var keyStore = KeyStore.getInstance(keyStoreType);
+            var keyStore = isNotBlank(provider)
+                    ? KeyStore.getInstance(keyStoreType, provider)
+                    : KeyStore.getInstance(keyStoreType);
             var keyStoreUrl = Paths.get(path).toUri().toURL();
             try (var inputStream = keyStoreUrl.openStream()) {
                 keyStore.load(inputStream, password.toCharArray());
             }
             return Optional.of(keyStore);
-        } catch (KeyStoreException | IOException | CertificateException | NoSuchAlgorithmException e) {
+        } catch (KeyStoreException | IOException | CertificateException | NoSuchAlgorithmException | NoSuchProviderException e) {
             throw new SSLContextException("Error getting key store", e);
         }
     }
