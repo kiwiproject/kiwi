@@ -280,12 +280,12 @@ public class KiwiSecurity {
      * @param keyStorePath          path to the key store
      * @param keyStorePassword      password of the key store
      * @param keyStoreType          the key store type
-     * @param keyStoreProvider      the JCE provider name for the key store, or {@code null} to use the default provider
+     * @param keyStoreProvider      the JCE provider name for the key store, or {@code null} or blank to use the default provider
      * @param keyManagerAlgorithm   the key manager algorithm
      * @param trustStorePath        path to the trust store
      * @param trustStorePassword    password of the trust store
      * @param trustStoreType        the trust store type
-     * @param trustStoreProvider    the JCE provider name for the trust store, or {@code null} to use the default provider
+     * @param trustStoreProvider    the JCE provider name for the trust store, or {@code null} or blank to use the default provider
      * @param trustManagerAlgorithm the trust manager algorithm
      * @param protocol              the protocol to use
      * @return a new {@link SSLContext} instance
@@ -394,7 +394,7 @@ public class KiwiSecurity {
      * @param keyStoreType the type of key store
      * @param path         the path to the key store
      * @param password     the key store password
-     * @param provider     the JCE provider name, or {@code null} to use the default provider
+     * @param provider     the JCE provider name, or {@code null} or blank to use the default provider
      * @return an optional with a {@link KeyStore} or an empty optional
      * @throws IllegalArgumentException if keyStoreType is blank
      * @throws SSLContextException      if unable to create a {@link KeyStore}
@@ -444,7 +444,7 @@ public class KiwiSecurity {
      * @param keyStoreType the type of key store
      * @param path         the path to the key store
      * @param password     the key store password
-     * @param provider     the JCE provider name, or {@code null} to use the default provider
+     * @param provider     the JCE provider name, or {@code null} or blank to use the default provider
      * @return an optional with a {@link KeyStore} or an empty optional
      * @throws IllegalArgumentException if keyStoreType is blank
      * @throws SSLContextException      if unable to create a {@link KeyStore}
