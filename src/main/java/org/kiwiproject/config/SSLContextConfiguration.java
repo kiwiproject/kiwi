@@ -9,8 +9,6 @@ import org.kiwiproject.security.KeyStoreType;
 import org.kiwiproject.security.SSLContextProtocol;
 import org.kiwiproject.security.SimpleSSLContextFactory;
 
-import static java.util.Objects.nonNull;
-
 import javax.net.ssl.SSLContext;
 
 /**
@@ -186,27 +184,19 @@ public class SSLContextConfiguration implements KeyAndTrustStoreConfigProvider {
      * @return a new instance
      */
     public SimpleSSLContextFactory toSimpleSSLContextFactory() {
-        var builder = SimpleSSLContextFactory.builder()
+        return SimpleSSLContextFactory.builder()
+                .keyStorePath(keyStorePath)
+                .keyStorePassword(keyStorePassword)
                 .keyStoreType(keyStoreType)
+                .keyStoreProvider(keyStoreProvider)
                 .trustStorePath(trustStorePath)
                 .trustStorePassword(trustStorePassword)
                 .trustStoreType(trustStoreType)
+                .trustStoreProvider(trustStoreProvider)
                 .protocol(protocol)
                 .verifyHostname(verifyHostname)
-                .disableSniHostCheck(disableSniHostCheck);
-        if (nonNull(keyStorePath)) {
-            builder.keyStorePath(keyStorePath);
-        }
-        if (nonNull(keyStorePassword)) {
-            builder.keyStorePassword(keyStorePassword);
-        }
-        if (nonNull(keyStoreProvider)) {
-            builder.keyStoreProvider(keyStoreProvider);
-        }
-        if (nonNull(trustStoreProvider)) {
-            builder.trustStoreProvider(trustStoreProvider);
-        }
-        return builder.build();
+                .disableSniHostCheck(disableSniHostCheck)
+                .build();
     }
 
     /**
