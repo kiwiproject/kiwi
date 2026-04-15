@@ -394,9 +394,15 @@ public class SimpleSSLContextFactory {
     public SSLContext getSslContext() {
         if (isNull(sslContext)) {
             sslContext = KiwiSecurity.createSslContext(
-                    keyStorePath, keyStorePassword, keyStoreType, keyStoreProvider,
+                    keyStorePath,
+                    keyStorePassword,
+                    keyStoreType,
+                    keyStoreProvider,
                     KeyManagerFactory.getDefaultAlgorithm(),
-                    trustStorePath, trustStorePassword, trustStoreType, trustStoreProvider,
+                    trustStorePath,
+                    trustStorePassword,
+                    trustStoreType,
+                    trustStoreProvider,
                     TrustManagerFactory.getDefaultAlgorithm(),
                     protocol);
         }
