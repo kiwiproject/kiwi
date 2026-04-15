@@ -236,5 +236,24 @@ class SimpleSSLContextFactoryTest {
                     entry("disableSniHostCheck", true)
             );
         }
+
+        @Test
+        void shouldSetProviderProperties() {
+            var factory = SimpleSSLContextFactory.builder()
+                    .keyStorePath("/path/to/key_store")
+                    .keyStorePassword("password_xyz")
+                    .keyStoreProvider("SUN")
+                    .trustStorePath("/path/to/trust_store")
+                    .trustStorePassword("password_12345")
+                    .trustStoreProvider("SUN")
+                    .protocol("TLSv1.3")
+                    .build();
+
+            var config = factory.configuration();
+
+            assertThat(config)
+                    .containsEntry("keyStoreProvider", "SUN")
+                    .containsEntry("trustStoreProvider", "SUN");
+        }
     }
 }
