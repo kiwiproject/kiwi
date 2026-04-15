@@ -325,8 +325,8 @@ public class TlsContextConfiguration implements KeyAndTrustStoreConfigProvider {
     /**
      * Convert this configuration into a {@link SSLContextConfiguration}.
      * <p>
-     * Note that {@link SSLContextConfiguration} does not have {@code provider}, {@code keyStoreProvider},
-     * {@code trustStoreProvider}, {@code trustSelfSignedCertificates}, {@code supportedProtocols},
+     * Note that {@link SSLContextConfiguration} does not have {@code provider},
+     * {@code trustSelfSignedCertificates}, {@code supportedProtocols},
      * {@code supportedCiphers}, or {@code certAlias}. As a result, this is a "lossy" conversion since it loses
      * these values.
      *
@@ -337,9 +337,11 @@ public class TlsContextConfiguration implements KeyAndTrustStoreConfigProvider {
                 .keyStorePath(keyStorePath)
                 .keyStorePassword(keyStorePassword)
                 .keyStoreType(keyStoreType)
+                .keyStoreProvider(keyStoreProvider)
                 .trustStorePath(trustStorePath)
                 .trustStorePassword(trustStorePassword)
                 .trustStoreType(trustStoreType)
+                .trustStoreProvider(trustStoreProvider)
                 .protocol(protocol)
                 .verifyHostname(verifyHostname)
                 .disableSniHostCheck(disableSniHostCheck)
