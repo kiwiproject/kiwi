@@ -95,6 +95,34 @@ class SimpleSSLContextFactoryTest {
         assertThat(contextFactory.getSslContext()).isNotNull();
     }
 
+    @Test
+    void shouldBuildWithProviders() {
+        var contextFactory = SimpleSSLContextFactory.builder()
+                .keyStorePath(path)
+                .keyStorePassword(password)
+                .keyStoreProvider("SUN")
+                .trustStorePath(path)
+                .trustStorePassword(password)
+                .trustStoreProvider("SUN")
+                .protocol(protocol)
+                .build();
+
+        assertThat(contextFactory.getSslContext()).isNotNull();
+    }
+
+    @Test
+    void shouldDefaultProvidersToNull() {
+        var contextFactory = SimpleSSLContextFactory.builder()
+                .trustStorePath(path)
+                .trustStorePassword(password)
+                .protocol(protocol)
+                .build();
+
+        var config = contextFactory.configuration();
+        assertThat(config).containsEntry("keyStoreProvider", null)
+                .containsEntry("trustStoreProvider", null);
+    }
+
     @Nested
     class ShouldThrowExceptionBuilding {
 
@@ -167,9 +195,11 @@ class SimpleSSLContextFactoryTest {
                             entry("keyStorePath", null),
                             entry("keyStorePassword", null),
                             entry("keyStoreType", "JKS"),
+                            entry("keyStoreProvider", null),
                             entry("trustStorePath", "/path/to/trust_store"),
                             entry("trustStorePassword", "password_12345"),
                             entry("trustStoreType", "JKS"),
+                            entry("trustStoreProvider", null),
                             entry("protocol", "TLSv1.2"),
                             entry("verifyHostname", true),
                             entry("disableSniHostCheck", false)
@@ -196,13 +226,34 @@ class SimpleSSLContextFactoryTest {
                     entry("keyStorePath", "/path/to/key_store"),
                     entry("keyStorePassword", "password_xyz"),
                     entry("keyStoreType", "PKCS11"),
+                    entry("keyStoreProvider", null),
                     entry("trustStorePath", "/path/to/trust_store"),
                     entry("trustStorePassword", "password_12345"),
                     entry("trustStoreType", "PKCS12"),
+                    entry("trustStoreProvider", null),
                     entry("protocol", "TLSv1.1"),
                     entry("verifyHostname", false),
                     entry("disableSniHostCheck", true)
             );
+        }
+
+        @Test
+        void shouldIncludeProviderPropertiesInConfiguration() {
+            var factory = SimpleSSLContextFactory.builder()
+                    .keyStorePath("/path/to/key_store")
+                    .keyStorePassword("password_xyz")
+                    .keyStoreProvider("SUN")
+                    .trustStorePath("/path/to/trust_store")
+                    .trustStorePassword("password_12345")
+                    .trustStoreProvider("SUN")
+                    .protocol("TLSv1.3")
+                    .build();
+
+            var config = factory.configuration();
+
+            assertThat(config)
+                    .containsEntry("keyStoreProvider", "SUN")
+                    .containsEntry("trustStoreProvider", "SUN");
         }
     }
 }
