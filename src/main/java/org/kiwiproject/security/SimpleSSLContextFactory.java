@@ -7,7 +7,9 @@ import lombok.Getter;
 import lombok.Synchronized;
 import org.kiwiproject.collect.KiwiMaps;
 
+import javax.net.ssl.KeyManagerFactory;
 import javax.net.ssl.SSLContext;
+import javax.net.ssl.TrustManagerFactory;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -29,9 +31,11 @@ public class SimpleSSLContextFactory {
     private static final String KEY_STORE_PATH_PROPERTY = "keyStorePath";
     private static final String KEY_STORE_PASSWORD_PROPERTY = "keyStorePassword";
     private static final String KEY_STORE_TYPE_PROPERTY = "keyStoreType";
+    private static final String KEY_STORE_PROVIDER_PROPERTY = "keyStoreProvider";
     private static final String TRUST_STORE_PATH_PROPERTY = "trustStorePath";
     private static final String TRUST_STORE_PASSWORD_PROPERTY = "trustStorePassword";
     private static final String TRUST_STORE_TYPE_PROPERTY = "trustStoreType";
+    private static final String TRUST_STORE_PROVIDER_PROPERTY = "trustStoreProvider";
     private static final String PROTOCOL_PROPERTY = "protocol";
     private static final String VERIFY_HOSTNAME_PROPERTY = "verifyHostname";
     private static final String DISABLE_SNI_HOST_CHECK_PROPERTY = "disableSniHostCheck";
@@ -43,9 +47,11 @@ public class SimpleSSLContextFactory {
     private final String keyStorePath;
     private final String keyStorePassword;
     private final String keyStoreType;
+    private final String keyStoreProvider;
     private final String trustStorePath;
     private final String trustStorePassword;
     private final String trustStoreType;
+    private final String trustStoreProvider;
     private final String protocol;
     private SSLContext sslContext;
 
@@ -131,14 +137,9 @@ public class SimpleSSLContextFactory {
                                    String trustStoreType,
                                    String protocol,
                                    boolean verifyHostname) {
-        this.keyStorePath = keyStorePath;
-        this.keyStorePassword = keyStorePassword;
-        this.keyStoreType = keyStoreType;
-        this.trustStorePath = trustStorePath;
-        this.trustStorePassword = trustStorePassword;
-        this.trustStoreType = trustStoreType;
-        this.protocol = protocol;
-        this.verifyHostname = verifyHostname;
+        this(keyStorePath, keyStorePassword, keyStoreType, null,
+                trustStorePath, trustStorePassword, trustStoreType, null,
+                protocol, verifyHostname, false);
     }
 
     /**
@@ -164,12 +165,31 @@ public class SimpleSSLContextFactory {
                                    String protocol,
                                    boolean verifyHostname,
                                    boolean disableSniHostCheck) {
+        this(keyStorePath, keyStorePassword, keyStoreType, null,
+                trustStorePath, trustStorePassword, trustStoreType, null,
+                protocol, verifyHostname, disableSniHostCheck);
+    }
+
+    @SuppressWarnings("java:S107")
+    private SimpleSSLContextFactory(String keyStorePath,
+                                    String keyStorePassword,
+                                    String keyStoreType,
+                                    String keyStoreProvider,
+                                    String trustStorePath,
+                                    String trustStorePassword,
+                                    String trustStoreType,
+                                    String trustStoreProvider,
+                                    String protocol,
+                                    boolean verifyHostname,
+                                    boolean disableSniHostCheck) {
         this.keyStorePath = keyStorePath;
         this.keyStorePassword = keyStorePassword;
         this.keyStoreType = keyStoreType;
+        this.keyStoreProvider = keyStoreProvider;
         this.trustStorePath = trustStorePath;
         this.trustStorePassword = trustStorePassword;
         this.trustStoreType = trustStoreType;
+        this.trustStoreProvider = trustStoreProvider;
         this.protocol = protocol;
         this.verifyHostname = verifyHostname;
         this.disableSniHostCheck = disableSniHostCheck;
@@ -193,9 +213,11 @@ public class SimpleSSLContextFactory {
                     KEY_STORE_PATH_PROPERTY, Optional.empty(),
                     KEY_STORE_PASSWORD_PROPERTY, Optional.empty(),
                     KEY_STORE_TYPE_PROPERTY, Optional.of(KeyStoreType.JKS.value),
+                    KEY_STORE_PROVIDER_PROPERTY, Optional.empty(),
                     TRUST_STORE_PATH_PROPERTY, Optional.empty(),
                     TRUST_STORE_PASSWORD_PROPERTY, Optional.empty(),
                     TRUST_STORE_TYPE_PROPERTY, Optional.of(KeyStoreType.JKS.value),
+                    TRUST_STORE_PROVIDER_PROPERTY, Optional.empty(),
                     PROTOCOL_PROPERTY, Optional.empty(),
                     VERIFY_HOSTNAME_PROPERTY, Optional.of("true"),
                     DISABLE_SNI_HOST_CHECK_PROPERTY, Optional.of("false")
@@ -229,6 +251,15 @@ public class SimpleSSLContextFactory {
             return this;
         }
 
+        public Builder keyStoreProvider(String keyStoreProvider) {
+            return setKeyStoreProvider(keyStoreProvider);
+        }
+
+        public Builder setKeyStoreProvider(String keyStoreProvider) {
+            entries.put(KEY_STORE_PROVIDER_PROPERTY, Optional.of(keyStoreProvider));
+            return this;
+        }
+
         public Builder trustStorePath(String trustStorePath) {
             return setTrustStorePath(trustStorePath);
         }
@@ -253,6 +284,15 @@ public class SimpleSSLContextFactory {
 
         public Builder setTrustStoreType(String trustStoreType) {
             entries.put(TRUST_STORE_TYPE_PROPERTY, Optional.of(trustStoreType));
+            return this;
+        }
+
+        public Builder trustStoreProvider(String trustStoreProvider) {
+            return setTrustStoreProvider(trustStoreProvider);
+        }
+
+        public Builder setTrustStoreProvider(String trustStoreProvider) {
+            entries.put(TRUST_STORE_PROVIDER_PROPERTY, Optional.of(trustStoreProvider));
             return this;
         }
 
@@ -294,9 +334,11 @@ public class SimpleSSLContextFactory {
                     stringOrNull(KEY_STORE_PATH_PROPERTY),
                     stringOrNull(KEY_STORE_PASSWORD_PROPERTY),
                     stringOrThrow(KEY_STORE_TYPE_PROPERTY),
+                    stringOrNull(KEY_STORE_PROVIDER_PROPERTY),
                     stringOrThrow(TRUST_STORE_PATH_PROPERTY),
                     stringOrThrow(TRUST_STORE_PASSWORD_PROPERTY),
                     stringOrThrow(TRUST_STORE_TYPE_PROPERTY),
+                    stringOrNull(TRUST_STORE_PROVIDER_PROPERTY),
                     stringOrThrow(PROTOCOL_PROPERTY),
                     toBooleanOrThrow(VERIFY_HOSTNAME_PROPERTY),
                     toBooleanOrThrow(DISABLE_SNI_HOST_CHECK_PROPERTY)
@@ -352,7 +394,11 @@ public class SimpleSSLContextFactory {
     public SSLContext getSslContext() {
         if (isNull(sslContext)) {
             sslContext = KiwiSecurity.createSslContext(
-                    keyStorePath, keyStorePassword, keyStoreType, trustStorePath, trustStorePassword, trustStoreType, protocol);
+                    keyStorePath, keyStorePassword, keyStoreType, keyStoreProvider,
+                    KeyManagerFactory.getDefaultAlgorithm(),
+                    trustStorePath, trustStorePassword, trustStoreType, trustStoreProvider,
+                    TrustManagerFactory.getDefaultAlgorithm(),
+                    protocol);
         }
         return sslContext;
     }
@@ -372,9 +418,11 @@ public class SimpleSSLContextFactory {
                 KEY_STORE_PATH_PROPERTY, keyStorePath,
                 KEY_STORE_PASSWORD_PROPERTY, keyStorePassword,
                 KEY_STORE_TYPE_PROPERTY, keyStoreType,
+                KEY_STORE_PROVIDER_PROPERTY, keyStoreProvider,
                 TRUST_STORE_PATH_PROPERTY, trustStorePath,
                 TRUST_STORE_PASSWORD_PROPERTY, trustStorePassword,
                 TRUST_STORE_TYPE_PROPERTY, trustStoreType,
+                TRUST_STORE_PROVIDER_PROPERTY, trustStoreProvider,
                 PROTOCOL_PROPERTY, protocol,
                 VERIFY_HOSTNAME_PROPERTY, verifyHostname,
                 DISABLE_SNI_HOST_CHECK_PROPERTY, disableSniHostCheck
