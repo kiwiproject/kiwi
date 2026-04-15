@@ -510,9 +510,33 @@ class TlsContextConfigurationTest {
                         () -> assertThat(sslConfig.getKeyStorePath()).isEqualTo("/data/pki/key-store.pkcs12"),
                         () -> assertThat(sslConfig.getKeyStorePassword()).isEqualTo("myKsPassword"),
                         () -> assertThat(sslConfig.getKeyStoreType()).isEqualTo(KeyStoreType.PKCS12.value),
+                        () -> assertThat(sslConfig.getKeyStoreProvider()).isNull(),
                         () -> assertThat(sslConfig.getTrustStorePath()).isEqualTo("/data/pki/trust-store.pkcs12"),
                         () -> assertThat(sslConfig.getTrustStorePassword()).isEqualTo("myTsPassword"),
-                        () -> assertThat(sslConfig.getTrustStoreType()).isEqualTo(KeyStoreType.PKCS12.value)
+                        () -> assertThat(sslConfig.getTrustStoreType()).isEqualTo(KeyStoreType.PKCS12.value),
+                        () -> assertThat(sslConfig.getTrustStoreProvider()).isNull()
+                );
+            }
+
+            @Test
+            void shouldPreserveProviderPropertiesWhenConvertingToSslContextConfiguration() {
+                var tlsContextConfig = TlsContextConfiguration.builder()
+                        .protocol(SSLContextProtocol.TLS_1_3.value)
+                        .keyStorePath("/data/pki/key-store.pkcs12")
+                        .keyStorePassword("myKsPassword")
+                        .keyStoreType(KeyStoreType.PKCS12.value)
+                        .keyStoreProvider("SUN")
+                        .trustStorePath("/data/pki/trust-store.pkcs12")
+                        .trustStorePassword("myTsPassword")
+                        .trustStoreType(KeyStoreType.PKCS12.value)
+                        .trustStoreProvider("SUN")
+                        .build();
+
+                var sslConfig = tlsContextConfig.toSslContextConfiguration();
+
+                assertAll(
+                        () -> assertThat(sslConfig.getKeyStoreProvider()).isEqualTo("SUN"),
+                        () -> assertThat(sslConfig.getTrustStoreProvider()).isEqualTo("SUN")
                 );
             }
 

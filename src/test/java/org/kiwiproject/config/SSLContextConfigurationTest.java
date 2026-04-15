@@ -80,13 +80,59 @@ class SSLContextConfigurationTest {
                 () -> assertThat(tlsConfig.getKeyStorePath()).isEqualTo(sslConfig.getKeyStorePath()),
                 () -> assertThat(tlsConfig.getKeyStorePassword()).isEqualTo(sslConfig.getKeyStorePassword()),
                 () -> assertThat(tlsConfig.getKeyStoreType()).isEqualTo(sslConfig.getKeyStoreType()),
+                () -> assertThat(tlsConfig.getKeyStoreProvider()).isNull(),
                 () -> assertThat(tlsConfig.getTrustStorePath()).isEqualTo(sslConfig.getTrustStorePath()),
                 () -> assertThat(tlsConfig.getTrustStorePassword()).isEqualTo(sslConfig.getTrustStorePassword()),
                 () -> assertThat(tlsConfig.getTrustStoreType()).isEqualTo(sslConfig.getTrustStoreType()),
+                () -> assertThat(tlsConfig.getTrustStoreProvider()).isNull(),
                 () -> assertThat(tlsConfig.isVerifyHostname()).isEqualTo(sslConfig.isVerifyHostname()),
                 () -> assertThat(tlsConfig.isDisableSniHostCheck()).isEqualTo(sslConfig.isDisableSniHostCheck()),
                 () -> assertThat(tlsConfig.getProtocol()).isEqualTo(sslConfig.getProtocol()),
                 () -> assertThat(tlsConfig.getSupportedProtocols()).isNull()
+        );
+    }
+
+    @Test
+    void shouldPreserveProviderPropertiesWhenConvertingToTlsContextConfiguration() {
+        var sslConfig = SSLContextConfiguration.builder()
+                .keyStorePath(path)
+                .keyStorePassword(password)
+                .keyStoreType(type)
+                .keyStoreProvider("SUN")
+                .trustStorePath(path)
+                .trustStorePassword(password)
+                .trustStoreType(type)
+                .trustStoreProvider("SUN")
+                .protocol(protocol)
+                .build();
+
+        var tlsConfig = sslConfig.toTlsContextConfiguration();
+
+        assertAll(
+                () -> assertThat(tlsConfig.getKeyStoreProvider()).isEqualTo("SUN"),
+                () -> assertThat(tlsConfig.getTrustStoreProvider()).isEqualTo("SUN")
+        );
+    }
+
+    @Test
+    void shouldPreserveProviderPropertiesWhenConvertingToSimpleSSLContextFactory() {
+        var sslConfig = SSLContextConfiguration.builder()
+                .keyStorePath(path)
+                .keyStorePassword(password)
+                .keyStoreType(KeyStoreType.JKS.value)
+                .keyStoreProvider("SUN")
+                .trustStorePath(path)
+                .trustStorePassword(password)
+                .trustStoreType(KeyStoreType.JKS.value)
+                .trustStoreProvider("SUN")
+                .protocol(protocol)
+                .build();
+
+        var factoryConfig = sslConfig.toSimpleSSLContextFactory().configuration();
+
+        assertAll(
+                () -> assertThat(factoryConfig).containsEntry("keyStoreProvider", "SUN"),
+                () -> assertThat(factoryConfig).containsEntry("trustStoreProvider", "SUN")
         );
     }
 

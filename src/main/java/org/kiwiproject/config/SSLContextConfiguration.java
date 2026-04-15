@@ -28,6 +28,8 @@ public class SSLContextConfiguration implements KeyAndTrustStoreConfigProvider {
     private String protocol = SSLContextProtocol.TLS_1_3.getValue();
     private String keyStoreType = KeyStoreType.JKS.value;
     private String trustStoreType = KeyStoreType.JKS.value;
+    private String keyStoreProvider;
+    private String trustStoreProvider;
     private boolean verifyHostname = true;
     private boolean disableSniHostCheck;
 
@@ -106,6 +108,24 @@ public class SSLContextConfiguration implements KeyAndTrustStoreConfigProvider {
             return this;
         }
 
+        public Builder keyStoreProvider(String keyStoreProvider) {
+            return setKeyStoreProvider(keyStoreProvider);
+        }
+
+        public Builder setKeyStoreProvider(String keyStoreProvider) {
+            configuration.setKeyStoreProvider(keyStoreProvider);
+            return this;
+        }
+
+        public Builder trustStoreProvider(String trustStoreProvider) {
+            return setTrustStoreProvider(trustStoreProvider);
+        }
+
+        public Builder setTrustStoreProvider(String trustStoreProvider) {
+            configuration.setTrustStoreProvider(trustStoreProvider);
+            return this;
+        }
+
         public Builder verifyHostname(boolean verifyHostname) {
             return setVerifyHostname(verifyHostname);
         }
@@ -164,15 +184,27 @@ public class SSLContextConfiguration implements KeyAndTrustStoreConfigProvider {
      * @return a new instance
      */
     public SimpleSSLContextFactory toSimpleSSLContextFactory() {
-        return new SimpleSSLContextFactory(keyStorePath,
-                keyStorePassword,
-                keyStoreType,
-                trustStorePath,
-                trustStorePassword,
-                trustStoreType,
-                protocol,
-                verifyHostname,
-                disableSniHostCheck);
+        var builder = SimpleSSLContextFactory.builder()
+                .keyStoreType(keyStoreType)
+                .trustStorePath(trustStorePath)
+                .trustStorePassword(trustStorePassword)
+                .trustStoreType(trustStoreType)
+                .protocol(protocol)
+                .verifyHostname(verifyHostname)
+                .disableSniHostCheck(disableSniHostCheck);
+        if (keyStorePath != null) {
+            builder.keyStorePath(keyStorePath);
+        }
+        if (keyStorePassword != null) {
+            builder.keyStorePassword(keyStorePassword);
+        }
+        if (keyStoreProvider != null) {
+            builder.keyStoreProvider(keyStoreProvider);
+        }
+        if (trustStoreProvider != null) {
+            builder.trustStoreProvider(trustStoreProvider);
+        }
+        return builder.build();
     }
 
     /**
@@ -185,9 +217,11 @@ public class SSLContextConfiguration implements KeyAndTrustStoreConfigProvider {
                 .keyStorePath(keyStorePath)
                 .keyStorePassword(keyStorePassword)
                 .keyStoreType(keyStoreType)
+                .keyStoreProvider(keyStoreProvider)
                 .trustStorePath(trustStorePath)
                 .trustStorePassword(trustStorePassword)
                 .trustStoreType(trustStoreType)
+                .trustStoreProvider(trustStoreProvider)
                 .protocol(protocol)
                 .verifyHostname(verifyHostname)
                 .disableSniHostCheck(disableSniHostCheck)
