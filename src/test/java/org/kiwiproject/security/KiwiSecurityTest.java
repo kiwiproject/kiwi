@@ -21,6 +21,7 @@ import java.io.InputStream;
 import java.security.KeyStore;
 import java.security.KeyStoreException;
 import java.security.NoSuchAlgorithmException;
+import java.security.NoSuchProviderException;
 import java.security.UnrecoverableKeyException;
 import java.util.Locale;
 
@@ -114,6 +115,24 @@ class KiwiSecurityTest {
                 assertThat(KiwiSecurity.createSslContext(
                         null, null, null, null,
                         path, password, "JKS", TrustManagerFactory.getDefaultAlgorithm(), "TLSv1.2"))
+                        .isNotNull();
+            }
+
+            @Test
+            void whenUsingNullProviders() {
+                assertThat(KiwiSecurity.createSslContext(
+                        path, password, type, null, KeyManagerFactory.getDefaultAlgorithm(),
+                        path, password, type, null, TrustManagerFactory.getDefaultAlgorithm(),
+                        protocol.value))
+                        .isNotNull();
+            }
+
+            @Test
+            void whenUsingValidProviders() {
+                assertThat(KiwiSecurity.createSslContext(
+                        path, password, type, "SUN", KeyManagerFactory.getDefaultAlgorithm(),
+                        path, password, type, "SUN", TrustManagerFactory.getDefaultAlgorithm(),
+                        protocol.value))
                         .isNotNull();
             }
         }
@@ -317,6 +336,30 @@ class KiwiSecurityTest {
             }
 
             @Test
+            void whenInvalidKeyStoreProvider() {
+                assertThatThrownBy(() ->
+                        KiwiSecurity.createSslContext(
+                                path, password, storeType, "NotARealProvider", keyManagerAlgorithm,
+                                path, password, storeType, null, trustManagerAlgorithm,
+                                protocol))
+                        .hasMessage("Error creating SSLContext")
+                        .isExactlyInstanceOf(SSLContextException.class)
+                        .hasCauseExactlyInstanceOf(NoSuchProviderException.class);
+            }
+
+            @Test
+            void whenInvalidTrustStoreProvider() {
+                assertThatThrownBy(() ->
+                        KiwiSecurity.createSslContext(
+                                null, null, null, null, null,
+                                path, password, storeType, "NotARealProvider", trustManagerAlgorithm,
+                                protocol))
+                        .hasMessage("Error creating SSLContext")
+                        .isExactlyInstanceOf(SSLContextException.class)
+                        .hasCauseExactlyInstanceOf(NoSuchProviderException.class);
+            }
+
+            @Test
             void whenInvalidKeyManagerAlgorithm() {
                 assertThatThrownBy(() ->
                         KiwiSecurity.createSslContext(
@@ -369,6 +412,46 @@ class KiwiSecurityTest {
             void whenGivenNullPathOrPassword(String path, String password) {
                 assertThat(KiwiSecurity.getKeyStore(KeyStoreType.JKS, path, password)).isEmpty();
             }
+
+            @Test
+            void whenValidStringTypeAndPathAndCredential_withNullProvider() {
+                assertThat(KiwiSecurity.getKeyStore("JKS", path, password, null)).isPresent();
+            }
+
+            @Test
+            void whenValidStringTypeAndPathAndCredential_withBlankProvider() {
+                assertThat(KiwiSecurity.getKeyStore("JKS", path, password, "")).isPresent();
+            }
+
+            @Test
+            void whenValidStringTypeAndPathAndCredential_withExplicitProvider() {
+                assertThat(KiwiSecurity.getKeyStore("JKS", path, password, "SUN")).isPresent();
+            }
+
+            @Test
+            void whenValidKeyStoreTypeAndPathAndCredential_withNullProvider() {
+                assertThat(KiwiSecurity.getKeyStore(KeyStoreType.JKS, path, password, null)).isPresent();
+            }
+
+            @Test
+            void whenValidKeyStoreTypeAndPathAndCredential_withBlankProvider() {
+                assertThat(KiwiSecurity.getKeyStore(KeyStoreType.JKS, path, password, "")).isPresent();
+            }
+
+            @Test
+            void whenValidKeyStoreTypeAndPathAndCredential_withExplicitProvider() {
+                assertThat(KiwiSecurity.getKeyStore(KeyStoreType.JKS, path, password, "SUN")).isPresent();
+            }
+
+            @ParameterizedTest
+            @CsvSource(value = {
+                "null, null",
+                "/certs/my.jks, null",
+                "null, the_password!"
+            }, nullValues = "null")
+            void whenGivenNullPathOrPassword_withProvider(String path, String password) {
+                assertThat(KiwiSecurity.getKeyStore(KeyStoreType.JKS, path, password, "SUN")).isEmpty();
+            }
         }
 
         @Nested
@@ -404,6 +487,24 @@ class KiwiSecurityTest {
                         .hasMessage("Error getting key store")
                         .hasCauseExactlyInstanceOf(IOException.class)
                         .hasRootCauseExactlyInstanceOf(UnrecoverableKeyException.class);
+            }
+
+            @Test
+            void whenInvalidProvider_withStringType() {
+                assertThatThrownBy(() ->
+                        KiwiSecurity.getKeyStore("JKS", path, password, "NotARealProvider"))
+                        .isExactlyInstanceOf(SSLContextException.class)
+                        .hasMessage("Error getting key store")
+                        .hasCauseExactlyInstanceOf(NoSuchProviderException.class);
+            }
+
+            @Test
+            void whenInvalidProvider_withKeyStoreType() {
+                assertThatThrownBy(() ->
+                        KiwiSecurity.getKeyStore(KeyStoreType.JKS, path, password, "NotARealProvider"))
+                        .isExactlyInstanceOf(SSLContextException.class)
+                        .hasMessage("Error getting key store")
+                        .hasCauseExactlyInstanceOf(NoSuchProviderException.class);
             }
         }
     }
