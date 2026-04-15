@@ -238,7 +238,7 @@ class SimpleSSLContextFactoryTest {
         }
 
         @Test
-        void shouldSetProviderProperties() {
+        void shouldIncludeProviderPropertiesInConfiguration() {
             var factory = SimpleSSLContextFactory.builder()
                     .keyStorePath("/path/to/key_store")
                     .keyStorePassword("password_xyz")
