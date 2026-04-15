@@ -229,7 +229,7 @@ public class SimpleSSLContextFactory {
         }
 
         public Builder setKeyStorePath(String keyStorePath) {
-            entries.put(KEY_STORE_PATH_PROPERTY, Optional.of(keyStorePath));
+            entries.put(KEY_STORE_PATH_PROPERTY, Optional.ofNullable(keyStorePath));
             return this;
         }
 
@@ -238,7 +238,7 @@ public class SimpleSSLContextFactory {
         }
 
         public Builder setKeyStorePassword(String keyStorePassword) {
-            entries.put(KEY_STORE_PASSWORD_PROPERTY, Optional.of(keyStorePassword));
+            entries.put(KEY_STORE_PASSWORD_PROPERTY, Optional.ofNullable(keyStorePassword));
             return this;
         }
 
@@ -256,7 +256,7 @@ public class SimpleSSLContextFactory {
         }
 
         public Builder setKeyStoreProvider(String keyStoreProvider) {
-            entries.put(KEY_STORE_PROVIDER_PROPERTY, Optional.of(keyStoreProvider));
+            entries.put(KEY_STORE_PROVIDER_PROPERTY, Optional.ofNullable(keyStoreProvider));
             return this;
         }
 
@@ -292,7 +292,7 @@ public class SimpleSSLContextFactory {
         }
 
         public Builder setTrustStoreProvider(String trustStoreProvider) {
-            entries.put(TRUST_STORE_PROVIDER_PROPERTY, Optional.of(trustStoreProvider));
+            entries.put(TRUST_STORE_PROVIDER_PROPERTY, Optional.ofNullable(trustStoreProvider));
             return this;
         }
 
