@@ -453,7 +453,7 @@ public class KiwiSecurity {
      * @see KeyStore#load(java.io.InputStream, char[])
      */
     public static Optional<KeyStore> getKeyStore(String keyStoreType, String path, String password, @Nullable String provider) {
-        LOG.trace("Get and load {} KeyStore/TrustStore for {} (provider: {})", keyStoreType, path, provider);
+        LOG.trace("Get and load {} KeyStore/TrustStore (provider: {})", keyStoreType, provider);
         if (isNull(path) || isNull(password)) {
             LOG.debug("No keystore specified (path and/or password is null)");
             return Optional.empty();
