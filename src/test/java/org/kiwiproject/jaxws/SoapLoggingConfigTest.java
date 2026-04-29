@@ -12,7 +12,7 @@ import org.kiwiproject.yaml.YamlHelper;
 import org.slf4j.event.Level;
 
 @DisplayName("SoapLoggingConfig")
-public class SoapLoggingConfigTest {
+class SoapLoggingConfigTest {
 
     @Test
     void shouldHaveDefaultValues() {
