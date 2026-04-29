@@ -1,5 +1,6 @@
 package org.kiwiproject.config;
 
+import static org.kiwiproject.base.KiwiPreconditions.checkArgumentNotBlank;
 import static org.kiwiproject.base.KiwiStrings.f;
 
 import lombok.AccessLevel;
@@ -19,6 +20,13 @@ import java.util.function.Supplier;
  * the no-args constructor and setter methods.
  * <p>
  * As this is a configuration class that supports population from external configuration, it is mutable.
+ * <p>
+ * Endpoints can be retrieved by tag or by path ending. Tags are not required to be unique; multiple endpoints
+ * may share the same tag to represent a logical group. Use {@link #getEndpointByTag(String)} or
+ * {@link #getEndpointByTagOrEmpty(String)} when a tag identifies exactly one endpoint, and
+ * {@link #getEndpointsByTag(String)} when multiple endpoints may share the same tag.
+ * 
+ * @see EndpointConfiguration
  */
 public class SecureEndpointsConfiguration extends SSLContextConfiguration {
 
@@ -212,9 +220,26 @@ public class SecureEndpointsConfiguration extends SSLContextConfiguration {
      * @return an {@link Optional} that may or may not contain an endpoint
      */
     public Optional<EndpointConfiguration> getEndpointByTagOrEmpty(String tag) {
+        checkArgumentNotBlank(tag, "tag must not be blank");
         return endpoints.stream()
-                .filter(endpoint -> endpoint.getTag().equalsIgnoreCase(tag))
+                .filter(endpoint -> tag.equalsIgnoreCase(endpoint.getTag()))
                 .findFirst();
+    }
+
+    /**
+     * Returns all {@link EndpointConfiguration} instances with the given tag, or an empty list if none are found.
+     * <p>
+     * Unlike {@link #getEndpointByTag(String)}, an empty result is not considered an error; the caller
+     * is responsible for deciding how to handle it.
+     *
+     * @param tag the tag to search for
+     * @return a list of EndpointConfiguration instances with the given tag
+     */
+    public List<EndpointConfiguration> getEndpointsByTag(String tag) {
+        checkArgumentNotBlank(tag, "tag must not be blank");
+        return endpoints.stream()
+                .filter(endpoint -> tag.equalsIgnoreCase(endpoint.getTag()))
+                .toList();
     }
 
     /**

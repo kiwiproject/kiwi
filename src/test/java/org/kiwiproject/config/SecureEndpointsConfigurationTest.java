@@ -1,8 +1,11 @@
 package org.kiwiproject.config;
 
+import static java.util.stream.Collectors.toList;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatCode;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.assertj.core.api.Assertions.tuple;
+import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.kiwiproject.security.SecureTestConstants.JKS_FILE_PATH;
 import static org.kiwiproject.security.SecureTestConstants.JKS_PASSWORD;
 import static org.kiwiproject.security.SecureTestConstants.STORE_TYPE;
@@ -310,14 +313,100 @@ class SecureEndpointsConfigurationTest {
                 assertThat(secureEndpointsConfig.getEndpointByPathEndingOrEmpty("bar")).isEmpty();
             }
         }
+    }
 
-        private void assertEndpointForTag(int tag, EndpointConfiguration endpoint) {
-            assertThat(endpoint.getTag()).isEqualTo(String.valueOf(tag));
-            assertThat(endpoint.getScheme()).isEqualTo(HTTP_SCHEME);
-            assertThat(endpoint.getDomain()).isEqualTo(EXAMPLE_DOMAIN);
-            assertThat(endpoint.getPort()).isEqualTo(PORT);
-            assertThat(endpoint.getPath()).isEqualTo(PATH_PREFIX + tag);
+    @Nested
+    class GetEndpointsByTag {
+
+        private SecureEndpointsConfiguration secureEndpointsConfig;
+
+        @BeforeEach
+        void setUp() {
+            secureEndpointsConfig = newSecureEndpointsConfigurationWithEndpoints();
         }
+
+        @Test
+        void shouldThrowException_WhenTagIsNull() {
+            assertThatThrownBy(() -> secureEndpointsConfig.getEndpointsByTag(null))
+                    .isExactlyInstanceOf(IllegalArgumentException.class);
+        }
+
+        @Test
+        void shouldThrowException_WhenTagIsBlank() {
+            assertThatThrownBy(() -> secureEndpointsConfig.getEndpointsByTag("  "))
+                    .isExactlyInstanceOf(IllegalArgumentException.class);
+        }
+
+        @Test
+        void shouldReturnEmptyList_WhenNoEndpointsMatchTag() {
+            assertThat(secureEndpointsConfig.getEndpointsByTag("foo")).isEmpty();
+        }
+
+        @Test
+        void shouldReturnSingleEndpoint_WhenOneEndpointMatchesTag() {
+            var results = secureEndpointsConfig.getEndpointsByTag("1");
+
+            assertThat(results).hasSize(1);
+            assertEndpointForTag(1, results.get(0));
+        }
+
+        @Test
+        void shouldReturnAllEndpoints_WhenMultipleEndpointsMatchTag() {
+            var proxy1 = EndpointConfiguration.builder()
+                    .tag("proxy")
+                    .scheme(HTTP_SCHEME)
+                    .domain(EXAMPLE_DOMAIN)
+                    .port(PORT)
+                    .path(PATH_PREFIX + "-proxy-1")
+                    .build();
+            var proxy2 = EndpointConfiguration.builder()
+                    .tag("proxy")
+                    .scheme(HTTP_SCHEME)
+                    .domain(EXAMPLE_DOMAIN)
+                    .port(PORT)
+                    .path(PATH_PREFIX + "-proxy-2")
+                    .build();
+            secureEndpointsConfig.getEndpoints().addAll(List.of(proxy1, proxy2));
+
+            var results = secureEndpointsConfig.getEndpointsByTag("proxy");
+
+            assertThat(results).hasSize(2).containsExactlyInAnyOrder(proxy1, proxy2);
+        }
+
+        @Test
+        void shouldMatchTagCaseInsensitively() {
+            var endpoint = EndpointConfiguration.builder()
+                    .tag("Proxy")
+                    .scheme(HTTP_SCHEME)
+                    .domain(EXAMPLE_DOMAIN)
+                    .port(PORT)
+                    .path(PATH_PREFIX + "-proxy")
+                    .build();
+            secureEndpointsConfig.getEndpoints().add(endpoint);
+
+            assertAll(
+                    () -> assertThat(secureEndpointsConfig.getEndpointsByTag("proxy")).containsExactly(endpoint),
+                    () -> assertThat(secureEndpointsConfig.getEndpointsByTag("PROXY")).containsExactly(endpoint),
+                    () -> assertThat(secureEndpointsConfig.getEndpointsByTag("Proxy")).containsExactly(endpoint)
+            );
+        }
+
+        @Test
+        void shouldNotThrow_WhenAnEndpointHasNullTag() {
+            var endpointWithNullTag = new EndpointConfiguration();
+            secureEndpointsConfig.getEndpoints().add(endpointWithNullTag);
+
+            assertThatCode(() -> secureEndpointsConfig.getEndpointsByTag("1"))
+                    .doesNotThrowAnyException();
+        }
+    }
+
+    private void assertEndpointForTag(int tag, EndpointConfiguration endpoint) {
+        assertThat(endpoint.getTag()).isEqualTo(String.valueOf(tag));
+        assertThat(endpoint.getScheme()).isEqualTo(HTTP_SCHEME);
+        assertThat(endpoint.getDomain()).isEqualTo(EXAMPLE_DOMAIN);
+        assertThat(endpoint.getPort()).isEqualTo(PORT);
+        assertThat(endpoint.getPath()).isEqualTo(PATH_PREFIX + tag);
     }
 
     @Nested
@@ -387,7 +476,7 @@ class SecureEndpointsConfigurationTest {
     }
 
     private SecureEndpointsConfiguration newSecureEndpointsConfiguration(IntStream tagStream) {
-        var endpointConfigs = tagStream.mapToObj(this::newHttpEndpointConfiguration).toList();
+        var endpointConfigs = tagStream.mapToObj(this::newHttpEndpointConfiguration).collect(toList());
 
         var config = newSecureEndpointsConfigurationWithNoEndpoints();
         config.setEndpoints(endpointConfigs);
