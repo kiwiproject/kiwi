@@ -23,6 +23,18 @@ import java.util.function.Predicate;
  * {@link SecureEndpointsConfiguration}.
  * <p>
  * As this is a configuration class generally intended to be populated from external configuration, it is mutable.
+ * <p>
+ * When multiple hosts serve the same endpoint (same scheme, port, and path), a comma-separated list of domains
+ * can be supplied to {@link #setDomain(String)} rather than creating multiple {@link EndpointConfiguration}
+ * instances. Requests will be distributed across the domains in round-robin fashion when using {@link #getURI()}.
+ * <p>
+ * When multiple endpoints share the same logical role but differ in scheme, port, path, or other properties,
+ * create separate {@link EndpointConfiguration} instances and assign them the same tag. All endpoints with a
+ * given tag can then be retrieved together via {@link SecureEndpointsConfiguration#getEndpointsByTag(String)}.
+ * Note that unlike the multiple-domain (using comma-separated values) approach, there is no automatic 
+ * round-robin across separately configured endpoints; callers are responsible for selecting among them.
+ * 
+ * @see SecureEndpointsConfiguration
  */
 @Getter
 @Setter
@@ -35,6 +47,7 @@ public class EndpointConfiguration {
      *
      * @see SecureEndpointsConfiguration#getEndpointByTag(String)
      * @see SecureEndpointsConfiguration#getEndpointByTagOrEmpty(String)
+     * @see SecureEndpointsConfiguration#getEndpointsByTag(String)
      */
     private String tag;
 
