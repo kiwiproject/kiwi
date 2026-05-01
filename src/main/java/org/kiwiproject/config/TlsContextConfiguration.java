@@ -257,7 +257,6 @@ public class TlsContextConfiguration implements KeyAndTrustStoreConfigProvider {
      *
      * @param tlsConfig the Dropwizard TlsConfiguration from which to pull information
      * @return a new TlsContextConfiguration instance
-     * @implNote Currently we do not support {@code supportedCiphers} or {@code certAlias}, which Dropwizard does.
      */
     public static TlsContextConfiguration fromDropwizardTlsConfiguration(TlsConfiguration tlsConfig) {
         checkArgumentNotNull(tlsConfig, "TlsConfiguration cannot be null");
