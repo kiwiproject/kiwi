@@ -4,8 +4,8 @@ import lombok.experimental.UtilityClass;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.OptionalInt;
-import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * Factory for {@link ExecutionStrategy} instances.
@@ -54,7 +54,7 @@ public class ExecutionStrategies {
          */
         @Override
         public void exit(int exitCode) {
-            LOG.warn("Terminating the VM!");
+            LOG.warn("Terminating the VM with exit code {}", exitCode);
             System.exit(exitCode);
         }
     }

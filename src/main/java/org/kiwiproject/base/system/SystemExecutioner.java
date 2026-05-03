@@ -64,6 +64,7 @@ public class SystemExecutioner {
      * @param waitTime the amount of time to wait before exiting
      */
     public void exit(int exitCode, Duration waitTime) {
+        requireNotNull(waitTime, "waitTime must not be null");
         LOG.warn("Waiting {} before exiting", waitTime);
         new DefaultEnvironment().sleepQuietly(waitTime);
         exit(exitCode);
