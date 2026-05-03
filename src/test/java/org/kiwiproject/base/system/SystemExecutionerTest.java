@@ -89,7 +89,7 @@ class SystemExecutionerTest {
             logElapsed(elapsedNanos, elapsedMillis);
             var fudgedWaitTimeMillis = waitTime.toMillis() - 2; // Allow for some slop in timing
             assertThat(elapsedMillis)
-                    .describedAs("Elapsed millis must be greater than or equal to %d", waitTime.toMillis())
+                    .describedAs("Elapsed millis must be greater than or equal to %d", fudgedWaitTimeMillis)
                     .isGreaterThanOrEqualTo(fudgedWaitTimeMillis);
         } finally {
             executorService.shutdownNow();
