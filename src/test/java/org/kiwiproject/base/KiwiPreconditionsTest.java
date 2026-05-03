@@ -838,6 +838,66 @@ class KiwiPreconditionsTest {
         }
     }
 
+    @Nested
+    class CheckArrayArgumentNotEmpty {
+
+        @Nested
+        class WithNoMessage {
+
+            @Test
+            void shouldNotThrow_WhenArgumentIsNotEmpty() {
+                assertThatCode(() -> KiwiPreconditions.checkArgumentNotEmpty(new String[]{"a", "b"}))
+                        .doesNotThrowAnyException();
+            }
+
+            @ParameterizedTest
+            @NullAndEmptySource
+            void shouldThrowWhenArgument_IsNullOrEmpty(String[] array) {
+                assertThatIllegalArgumentException()
+                        .isThrownBy(() -> KiwiPreconditions.checkArgumentNotEmpty(array));
+            }
+        }
+
+        @Nested
+        class WithMessage {
+
+            @Test
+            void shouldNotThrow_WhenArgumentIsNotEmpty() {
+                assertThatCode(() ->
+                        KiwiPreconditions.checkArgumentNotEmpty(new String[]{"a", "b"}, "invalid array"))
+                        .doesNotThrowAnyException();
+            }
+
+            @ParameterizedTest
+            @NullAndEmptySource
+            void shouldThrowWhenArgument_IsNullOrEmpty(String[] array) {
+                assertThatIllegalArgumentException()
+                        .isThrownBy(() -> KiwiPreconditions.checkArgumentNotEmpty(array, "invalid array"))
+                        .withMessage("invalid array");
+            }
+        }
+
+        @Nested
+        class WithMessageTemplate {
+
+            @Test
+            void shouldNotThrow_WhenArgumentIsNotEmpty() {
+                assertThatCode(() ->
+                        KiwiPreconditions.checkArgumentNotEmpty(new String[]{"a", "b"}, "invalid {} array", "foo"))
+                        .doesNotThrowAnyException();
+            }
+
+            @ParameterizedTest
+            @NullAndEmptySource
+            void shouldThrowWhenArgument_IsNullOrEmpty(String[] array) {
+                assertThatIllegalArgumentException()
+                        .isThrownBy(() ->
+                                KiwiPreconditions.checkArgumentNotEmpty(array, "invalid {} array", "foo"))
+                        .withMessage("invalid foo array");
+            }
+        }
+    }
+
     @SuppressWarnings("unused")
     static class SomeCheckedException extends Exception {
 

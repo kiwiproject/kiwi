@@ -6,6 +6,8 @@ import static java.util.Objects.nonNull;
 import static org.apache.commons.lang3.StringUtils.isBlank;
 import static org.apache.commons.lang3.StringUtils.isNotBlank;
 import static org.kiwiproject.base.KiwiStrings.format;
+import static org.kiwiproject.collect.KiwiArrays.isNotNullOrEmpty;
+import static org.kiwiproject.collect.KiwiArrays.isNullOrEmpty;
 import static org.kiwiproject.collect.KiwiCollections.isNotNullOrEmpty;
 import static org.kiwiproject.collect.KiwiCollections.isNullOrEmpty;
 import static org.kiwiproject.collect.KiwiMaps.isNotNullOrEmpty;
@@ -595,6 +597,48 @@ public class KiwiPreconditions {
                                                     String errorMessageTemplate,
                                                     Object... errorMessageArgs) {
         if (isNullOrEmpty(map)) {
+            throw newIllegalArgumentException(errorMessageTemplate, errorMessageArgs);
+        }
+    }
+
+    /**
+     * Ensures that the array passed as a parameter to the calling method is not null or empty.
+     * Throws an {@link IllegalArgumentException} if the array is null or empty.
+     *
+     * @param array the array, possibly null
+     * @param <T>   the type of elements in the array
+     */
+    public static <T> void checkArgumentNotEmpty(T[] array) {
+        Preconditions.checkArgument(isNotNullOrEmpty(array));
+    }
+
+    /**
+     * Ensures that the array passed as a parameter to the calling method is not null or empty.
+     * Throws an {@link IllegalArgumentException} if the array is null or empty.
+     *
+     * @param array        the array, possibly null
+     * @param errorMessage the error message for the exception
+     * @param <T>          the type of elements in the array
+     */
+    public static <T> void checkArgumentNotEmpty(T[] array, String errorMessage) {
+        Preconditions.checkArgument(isNotNullOrEmpty(array), errorMessage);
+    }
+
+    /**
+     * Ensures that the array passed as a parameter to the calling method is not null or empty.
+     * Throws an {@link IllegalArgumentException} if the array is null or empty.
+     *
+     * @param array                the array, possibly null
+     * @param errorMessageTemplate a template for the exception message should the check fail, according to how
+     *                             {@link KiwiStrings#format(String, Object...)} handles placeholders
+     * @param errorMessageArgs     the arguments to be substituted into the message template. Arguments
+     *                             are converted to Strings using {@link String#valueOf(Object)}.
+     * @param <T>                  the type of elements in the array
+     */
+    public static <T> void checkArgumentNotEmpty(T[] array,
+                                                 String errorMessageTemplate,
+                                                 Object... errorMessageArgs) {
+        if (isNullOrEmpty(array)) {
             throw newIllegalArgumentException(errorMessageTemplate, errorMessageArgs);
         }
     }
