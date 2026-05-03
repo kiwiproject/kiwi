@@ -13,7 +13,7 @@ import java.time.Duration;
  * Wrapper around {@link System#exit(int)} for situations in which the JVM must be exited. This class is mainly
  * intended for scenarios in which production code may call {@link System#exit(int)} in order to allow unit testing
  * of the exit behavior, but without actually exiting the JVM. For example, a Jetty server that cannot start due to
- * failure to obtain a port, or any other non-recoverable startup error that would otherwise result in a hung or
+ * failure to get a port or any other non-recoverable startup error that would otherwise result in a hung or
  * unresponsive server, application, resource, etc. In situations like this, you can test that the
  * {@link SystemExecutioner} would have exited when specific errors occur.
  * <p>
