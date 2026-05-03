@@ -5,6 +5,7 @@ import static org.kiwiproject.base.KiwiPreconditions.requireNotNull;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.kiwiproject.base.DefaultEnvironment;
+import org.kiwiproject.time.KiwiDurationFormatters;
 
 import java.time.Duration;
 
@@ -65,7 +66,7 @@ public class SystemExecutioner {
      */
     public void exit(int exitCode, Duration waitTime) {
         requireNotNull(waitTime, "waitTime must not be null");
-        LOG.warn("Waiting {} before exiting", waitTime);
+        LOG.warn("Waiting {} before exiting", KiwiDurationFormatters.formatJavaDurationWords(waitTime));
         new DefaultEnvironment().sleepQuietly(waitTime);
         exit(exitCode);
     }
