@@ -12,6 +12,7 @@ import java.net.ConnectException;
 import java.net.NoRouteToHostException;
 import java.net.SocketTimeoutException;
 import java.net.UnknownHostException;
+import java.util.Locale;
 import java.util.function.Predicate;
 
 /**
@@ -48,6 +49,31 @@ public class KiwiRetryerPredicates {
      */
     public static final Predicate<Exception> SOCKET_TIMEOUT = ex ->
             ex instanceof SocketTimeoutException || getRootCause(ex) instanceof SocketTimeoutException;
+
+
+    /**
+     * Check if a given {@link Exception} is or has a root cause of {@link SocketTimeoutException} that
+     * occurred during connection (as opposed to a read timeout).
+     *
+     * @implNote This predicate distinguishes connect timeouts from read timeouts by checking whether the
+     * exception message contains "connect" (case-insensitive). This relies on JDK message text, not a
+     * formal Java API, and may not be reliable across all JVM implementations or JDK versions.
+     * OpenJDK tends to use phrases such as "connect timed out" or "Connect timed out" (e.g.
+     * "HTTP connect timed out") for connect timeouts, and "Read timed out" for read timeouts.
+     * @implNote SocketTimeoutException does not have a cause, which is why we check only the instance and root cause
+     */
+    public static final Predicate<Exception> SOCKET_CONNECT_TIMEOUT = ex -> {
+        if (ex instanceof SocketTimeoutException) {
+            return messageContainsConnect(ex);
+        }
+        var rootCause = getRootCause(ex);
+        return rootCause instanceof SocketTimeoutException && messageContainsConnect(rootCause);
+    };
+
+    private static boolean messageContainsConnect(Throwable t) {
+        var message = t.getMessage();
+        return nonNull(message) && message.toLowerCase(Locale.US).contains("connect");
+    }
 
 
     /**

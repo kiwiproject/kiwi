@@ -80,6 +80,36 @@ class KiwiRetryerPredicatesTest {
         private final Predicate<Exception> predicate = KiwiRetryerPredicates.NO_ROUTE_TO_HOST;
     }
 
+    @Nested
+    @Getter
+    class SOCKET_CONNECT_TIMEOUT_Predicate extends AbstractExceptionPredicateTest {
+        private final Exception exception = new SocketTimeoutException("connect timed out");
+        private final Predicate<Exception> predicate = KiwiRetryerPredicates.SOCKET_CONNECT_TIMEOUT;
+
+        @ParameterizedTest
+        @ValueSource(strings = { "connect timed out", "Connect timed out", "CONNECT TIMED OUT" })
+        void whenSocketTimeoutExceptionMessageContainsConnectInAnyCase_shouldBeTrue(String message) {
+            assertThat(getPredicate().test(new SocketTimeoutException(message))).isTrue();
+        }
+
+        @Test
+        void whenSocketTimeoutExceptionMessageDoesNotContainConnect_shouldBeFalse() {
+            assertThat(getPredicate().test(new SocketTimeoutException("Read timed out"))).isFalse();
+        }
+
+        @Test
+        void whenSocketTimeoutExceptionWithReadTimeoutMessageIsTheRootCause_shouldBeFalse() {
+            var readTimeout = new SocketTimeoutException("Read timed out");
+            var wrapped = new UncheckedIOException(new IOException("something went wrong", readTimeout));
+            assertThat(getPredicate().test(wrapped)).isFalse();
+        }
+
+        @Test
+        void whenSocketTimeoutExceptionHasNullMessage_shouldBeFalse() {
+            assertThat(getPredicate().test(new SocketTimeoutException())).isFalse();
+        }
+    }
+
     /**
      * Base class providing test generation for the Throwable predicates in KiwiRetryerPredicates.
      */
