@@ -104,7 +104,7 @@ public class ExecutionStrategies {
          * @return an OptionalInt containing the exit code, or empty if exit was never called
          */
         public OptionalInt exitCode() {
-            return didExit.get() ? OptionalInt.of(exitCode.get()) : OptionalInt.empty();
+            return didExit() ? OptionalInt.of(exitCode.get()) : OptionalInt.empty();
         }
     }
 }
