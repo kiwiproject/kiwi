@@ -6,7 +6,7 @@ import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.kiwiproject.base.DefaultEnvironment;
 
-import java.util.concurrent.TimeUnit;
+import java.time.Duration;
 
 /**
  * Wrapper around {@link System#exit(int)} for situations in which the JVM must be exited. This class is mainly
@@ -19,7 +19,8 @@ import java.util.concurrent.TimeUnit;
  * The no-args constructor uses the {@link ExecutionStrategies.SystemExitExecutionStrategy}, which uses
  * {@link System#exit(int)} to terminate the JVM. You can supply your own {@link ExecutionStrategy} as well, for
  * example {@link ExecutionStrategies.NoOpExecutionStrategy} is useful in unit tests (so it doesn't actually terminate
- * the JVM).
+ * the JVM), and {@link ExecutionStrategies.ExitFlaggingExecutionStrategy} is useful in integration tests where you
+ * want to verify the exit code without terminating the JVM.
  */
 @Slf4j
 public class SystemExecutioner {
@@ -48,21 +49,23 @@ public class SystemExecutioner {
     }
 
     /**
-     * Exits immediately.
+     * Exits immediately with the given exit code.
+     *
+     * @param exitCode the exit code, following the same conventions as {@link System#exit(int)}
      */
-    public void exit() {
-        executionStrategy.exit();
+    public void exit(int exitCode) {
+        executionStrategy.exit(exitCode);
     }
 
     /**
-     * Waits the given amount of time, then exits.
+     * Waits the given duration, then exits with the given exit code.
      *
-     * @param waitTime     the wait time amount
-     * @param waitTimeUnit the wait time unit
+     * @param exitCode the exit code, following the same conventions as {@link System#exit(int)}
+     * @param waitTime the amount of time to wait before exiting
      */
-    public void exit(long waitTime, TimeUnit waitTimeUnit) {
-        LOG.warn("Waiting {} {} before exiting", waitTime, waitTimeUnit);
-        new DefaultEnvironment().sleepQuietly(waitTime, waitTimeUnit);
-        exit();
+    public void exit(int exitCode, Duration waitTime) {
+        LOG.warn("Waiting {} before exiting", waitTime);
+        new DefaultEnvironment().sleepQuietly(waitTime);
+        exit(exitCode);
     }
 }

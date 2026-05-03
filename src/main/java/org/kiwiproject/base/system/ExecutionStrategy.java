@@ -6,7 +6,9 @@ package org.kiwiproject.base.system;
 public interface ExecutionStrategy {
 
     /**
-     * Performs the exit operation.
+     * Performs the exit operation using the given exit code.
+     *
+     * @param exitCode the exit code, following the same conventions as {@link System#exit(int)}
      */
-    void exit();
+    void exit(int exitCode);
 }

@@ -11,6 +11,7 @@ import org.junit.jupiter.api.RepeatedTest;
 import org.junit.jupiter.api.Test;
 import org.kiwiproject.base.DefaultEnvironment;
 
+import java.time.Duration;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicLong;
@@ -38,10 +39,11 @@ class SystemExecutionerTest {
         var executionStrategy = new ExecutionStrategies.ExitFlaggingExecutionStrategy();
         var executioner = new SystemExecutioner(executionStrategy);
         long startTime = System.nanoTime();
-        executioner.exit();
+        executioner.exit(1);
         var elapsedNanos = System.nanoTime() - startTime;
 
         assertThat(executionStrategy.didExit()).isTrue();
+        assertThat(executionStrategy.exitCode()).hasValue(1);
 
         long elapsedMillis = TimeUnit.NANOSECONDS.toMillis(elapsedNanos);
         LOG.info("elapsedMillis: {} (elapsedNanos: {})", elapsedMillis, elapsedNanos);
@@ -52,7 +54,7 @@ class SystemExecutionerTest {
     void shouldExitWithWaitTime() {
         var executorService = Executors.newSingleThreadExecutor();
 
-        var waitTimeMillis = 25;
+        var waitTime = Duration.ofMillis(25);
         var executionStrategy = new ExecutionStrategies.ExitFlaggingExecutionStrategy();
         var executioner = new SystemExecutioner(executionStrategy);
         var startTime = new AtomicLong();
@@ -60,7 +62,7 @@ class SystemExecutionerTest {
         var executionFuture = executorService.submit(() -> {
             LOG.info("Calling executioner...");
             startTime.set(System.nanoTime());
-            executioner.exit(waitTimeMillis, TimeUnit.MILLISECONDS);
+            executioner.exit(1, waitTime);
         });
 
         await().pollInterval(5, TimeUnit.MILLISECONDS)
@@ -72,12 +74,13 @@ class SystemExecutionerTest {
         assertThat(executionStrategy.didExit())
                 .describedAs("Execution strategy exit() should have been called")
                 .isTrue();
+        assertThat(executionStrategy.exitCode()).hasValue(1);
 
         long elapsedMillis = TimeUnit.NANOSECONDS.toMillis(elapsedNanos);
         logElapsed(elapsedNanos, elapsedMillis);
-        var fudgedWaitTimeMillis = waitTimeMillis - 2; // Allow for some slop in timing
+        var fudgedWaitTimeMillis = waitTime.toMillis() - 2; // Allow for some slop in timing
         assertThat(elapsedMillis)
-                .describedAs("Elapsed millis must be greater than or equal to %d", waitTimeMillis)
+                .describedAs("Elapsed millis must be greater than or equal to %d", waitTime.toMillis())
                 .isGreaterThanOrEqualTo(fudgedWaitTimeMillis);
 
         executorService.shutdown();
@@ -94,7 +97,7 @@ class SystemExecutionerTest {
         var executionFuture = executorService.submit(() -> {
             LOG.info("Calling executioner with 5 second wait");
             startTime.set(System.nanoTime());
-            executioner.exit(5, TimeUnit.SECONDS);
+            executioner.exit(1, Duration.ofSeconds(5));
         });
 
         var killerSleepTimeMillis = 100;

@@ -1,9 +1,10 @@
 package org.kiwiproject.base.system;
 
-import lombok.Getter;
 import lombok.experimental.UtilityClass;
 import lombok.extern.slf4j.Slf4j;
 
+import java.util.OptionalInt;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
@@ -22,8 +23,8 @@ public class ExecutionStrategies {
     }
 
     /**
-     * Returns a strategy that "flags" when the {@code exit()} method is called, but does not actually
-     * terminate the JVM.
+     * Returns a strategy that "flags" when the {@code exit(int)} method is called, but does not actually
+     * terminate the JVM. Intended for use in integration tests where the JVM should not actually exit.
      *
      * @return an exit-flagging ExecutionStrategy
      */
@@ -34,20 +35,10 @@ public class ExecutionStrategies {
     /**
      * Returns a strategy that uses the {@link System} class to exit/terminate the JVM.
      *
-     * @return a strategy that uses {@link System#exit(int)} that sets the exit code to 1 (one)
+     * @return a strategy that uses {@link System#exit(int)}
      */
     public static SystemExitExecutionStrategy systemExit() {
         return new SystemExitExecutionStrategy();
-    }
-
-    /**
-     * Returns a strategy that uses the {@link System} class to exit/terminate the JVM.
-     *
-     * @param exitCode the exit code that will be supplied to {@link System#exit(int)}
-     * @return a strategy that uses {@link System#exit(int)} that uses the given exit code
-     */
-    public static SystemExitExecutionStrategy systemExit(int exitCode) {
-        return new SystemExitExecutionStrategy(exitCode);
     }
 
     /**
@@ -56,30 +47,13 @@ public class ExecutionStrategies {
     @Slf4j
     public static class SystemExitExecutionStrategy implements ExecutionStrategy {
 
-        @Getter
-        private final int exitCode;
-
         /**
-         * Construct an instance that will set the exit code to 1 (one).
-         */
-        public SystemExitExecutionStrategy() {
-            this(1);
-        }
-
-        /**
-         * Construct an instance that will use the given exit code.
+         * Terminates the currently running JVM with the given exit code.
          *
-         * @param exitCode the exit code for {@link System#exit(int)}
-         */
-        public SystemExitExecutionStrategy(int exitCode) {
-            this.exitCode = exitCode;
-        }
-
-        /**
-         * Terminates the currently running JVM.
+         * @param exitCode the exit code, following the same conventions as {@link System#exit(int)}
          */
         @Override
-        public void exit() {
+        public void exit(int exitCode) {
             LOG.warn("Terminating the VM!");
             System.exit(exitCode);
         }
@@ -94,31 +68,43 @@ public class ExecutionStrategies {
          * A no-op. Mainly useful in unit testing scenarios.
          */
         @Override
-        public void exit() {
+        public void exit(int exitCode) {
             // Intentionally empty
         }
     }
 
     /**
-     * Implementation of {@link ExecutionStrategy} that "flags" a call to {@link #exit()} but does not actually
-     * exit the JVM.
+     * Implementation of {@link ExecutionStrategy} that "flags" a call to {@link #exit(int)} but does not actually
+     * exit the JVM. Intended for use in integration tests where the JVM should not actually exit, but code can
+     * verify that exit would have been called and with what exit code.
      */
     public static class ExitFlaggingExecutionStrategy implements ExecutionStrategy {
 
         private final AtomicBoolean didExit = new AtomicBoolean();
+        private final AtomicInteger exitCode = new AtomicInteger();
 
         @Override
-        public void exit() {
+        public void exit(int exitCode) {
+            this.exitCode.set(exitCode);
             didExit.set(true);
         }
 
         /**
-         * Was {@link #exit()} called?
+         * Was {@link #exit(int)} called?
          *
          * @return true if exit was called, otherwise false
          */
         public boolean didExit() {
             return didExit.get();
+        }
+
+        /**
+         * Returns the exit code passed to {@link #exit(int)}, or an empty OptionalInt if exit was never called.
+         *
+         * @return an OptionalInt containing the exit code, or empty if exit was never called
+         */
+        public OptionalInt exitCode() {
+            return didExit.get() ? OptionalInt.of(exitCode.get()) : OptionalInt.empty();
         }
     }
 }
