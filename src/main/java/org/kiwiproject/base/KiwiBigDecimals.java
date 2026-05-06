@@ -64,7 +64,19 @@ public class KiwiBigDecimals {
      * @throws IllegalArgumentException if the given value is null
      */
     public static double requireDouble(@NonNull BigDecimal value) {
-        checkArgumentNotNull(value, "value cannot be null");
+        return requireDouble(value, "value cannot be null");
+    }
+
+    /**
+     * Converts the given {@link BigDecimal} to a primitive double.
+     *
+     * @param value   the non-null BigDecimal
+     * @param message the error message to use if the value is null
+     * @return a primitive double
+     * @throws IllegalArgumentException if the given value is null
+     */
+    public static double requireDouble(@NonNull BigDecimal value, String message) {
+        checkArgumentNotNull(value, message);
         return value.doubleValue();
     }
 }
