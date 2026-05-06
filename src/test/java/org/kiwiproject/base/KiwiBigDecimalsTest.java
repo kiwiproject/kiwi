@@ -48,4 +48,15 @@ class KiwiBigDecimalsTest {
         softly.assertThat(KiwiBigDecimals.requireDouble(BigDecimal.ONE)).isEqualTo(1.0);
         softly.assertThat(KiwiBigDecimals.requireDouble(BigDecimal.TEN)).isEqualTo(10.0);
     }
+
+    @Test
+    void shouldRequireDoublePrimitiveWithCustomMessage(SoftAssertions softly) {
+        //noinspection DataFlowIssue
+        softly.assertThatThrownBy(() -> KiwiBigDecimals.requireDouble(null, "price cannot be null"))
+                .isExactlyInstanceOf(IllegalArgumentException.class)
+                .hasMessage("price cannot be null");
+        softly.assertThat(KiwiBigDecimals.requireDouble(BigDecimal.ZERO, "price cannot be null")).isZero();
+        softly.assertThat(KiwiBigDecimals.requireDouble(BigDecimal.ONE, "price cannot be null")).isEqualTo(1.0);
+        softly.assertThat(KiwiBigDecimals.requireDouble(BigDecimal.TEN, "price cannot be null")).isEqualTo(10.0);
+    }
 }
