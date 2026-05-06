@@ -388,9 +388,10 @@ public class Async {
      * Since the side effect is benign, putting it here seems preferable to duplicating the same logic
      * everywhere this method is called.
      */
-    private static AsyncException newAsyncException(long timeout, TimeUnit unit,
-                                                    Exception ex,
-                                                    CompletableFuture<?> future) {
+    @VisibleForTesting
+    static AsyncException newAsyncException(long timeout, TimeUnit unit,
+                                            Exception ex,
+                                            CompletableFuture<?> future) {
         String msg;
         if (ex instanceof TimeoutException) {
             msg = f("Timed out waiting for async task after {} {}", timeout, unit);
@@ -403,6 +404,10 @@ public class Async {
                     causeOpt.map(KiwiThrowables::typeOf).orElse("unknown"),
                     causeOpt.flatMap(KiwiThrowables::messageOf).orElse("(none)"));
         } else {
+            // Should never be reached: CompletableFuture.get() only throws InterruptedException,
+            // ExecutionException, and TimeoutException as checked exceptions.
+            LOG.warn("Unexpected exception type {} in newAsyncException; this should not happen",
+                    ex.getClass().getName());
             msg = f("{} occurred while waiting up to {} {}", ex.getClass().getSimpleName(), timeout, unit);
         }
         LOG.error(msg, ex);
