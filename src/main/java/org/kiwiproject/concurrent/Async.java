@@ -388,27 +388,21 @@ public class Async {
      * Since the side effect is benign, putting it here seems preferable to duplicating the same logic
      * everywhere this method is called.
      */
-    @VisibleForTesting
-    static AsyncException newAsyncException(long timeout, TimeUnit unit,
-                                            Exception ex,
-                                            CompletableFuture<?> future) {
+    private static AsyncException newAsyncException(long timeout, TimeUnit unit,
+                                                    Exception ex,
+                                                    CompletableFuture<?> future) {
         String msg;
         if (ex instanceof TimeoutException) {
             msg = f("Timed out waiting for async task after {} {}", timeout, unit);
         } else if (ex instanceof InterruptedException) {
             msg = f("Interrupted while waiting for async task after {} {}", timeout, unit);
-        } else if (ex instanceof ExecutionException executionException) {
+        } else {
+            var executionException = (ExecutionException) ex;
             var causeOpt = KiwiThrowables.nextCauseOf(executionException);
             msg = f("Async task completed exceptionally while waiting up to {} {}; cause: {}: {}",
                     timeout, unit,
                     causeOpt.map(KiwiThrowables::typeOf).orElse("unknown"),
                     causeOpt.flatMap(KiwiThrowables::messageOf).orElse("(none)"));
-        } else {
-            // Should never be reached: CompletableFuture.get() only throws InterruptedException,
-            // ExecutionException, and TimeoutException as checked exceptions.
-            LOG.warn("Unexpected exception type {} in newAsyncException; this should not happen",
-                    ex.getClass().getName());
-            msg = f("{} occurred while waiting up to {} {}", ex.getClass().getSimpleName(), timeout, unit);
         }
         LOG.error(msg, ex);
         return new AsyncException(msg, ex, future);

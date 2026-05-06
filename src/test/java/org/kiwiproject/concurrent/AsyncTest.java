@@ -493,20 +493,6 @@ class AsyncTest {
         }
     }
 
-    @Nested
-    class NewAsyncException {
-
-        @Test
-        void shouldUseDefaultMessage_ForUnexpectedExceptionType() {
-            var ex = new RuntimeException("unexpected");
-            var asyncException = Async.newAsyncException(5, TimeUnit.SECONDS, ex, null);
-
-            assertThat(asyncException)
-                    .hasMessage("RuntimeException occurred while waiting up to 5 SECONDS")
-                    .hasCause(ex);
-        }
-    }
-
     /**
      * Cancel the given CompletableFuture. This should be called by tests that are testing timeout situations
      * such as when testing {@link Async#waitFor(CompletableFuture, long, TimeUnit)} and the other similar
