@@ -263,7 +263,7 @@ class AsyncHelperTest {
             try {
                 assertThatThrownBy(() -> asyncHelper.waitFor(future, 1, TimeUnit.MILLISECONDS))
                         .isExactlyInstanceOf(AsyncException.class)
-                        .hasMessage("TimeoutException occurred (maximum wait was specified as 1 MILLISECONDS)")
+                        .hasMessage("Timed out waiting for async task after 1 MILLISECONDS")
                         .hasCauseInstanceOf(TimeoutException.class);
 
                 assertThat(task.getCurrentCount()).isZero();
@@ -315,7 +315,7 @@ class AsyncHelperTest {
                 var futures = List.of(future1, future2, future3);
                 assertThatThrownBy(() -> asyncHelper.waitForAll(futures, 1, TimeUnit.MILLISECONDS))
                         .isExactlyInstanceOf(AsyncException.class)
-                        .hasMessage("TimeoutException occurred (maximum wait was specified as 1 MILLISECONDS)")
+                        .hasMessage("Timed out waiting for async task after 1 MILLISECONDS")
                         .hasCauseInstanceOf(TimeoutException.class);
 
                 assertThat(task1.getCurrentCount()).isZero();
@@ -373,7 +373,7 @@ class AsyncHelperTest {
                 var futures = List.of(future1, future2, future3);
                 assertThatThrownBy(() -> asyncHelper.waitForAllIgnoringType(futures, 1, TimeUnit.MILLISECONDS))
                         .isExactlyInstanceOf(AsyncException.class)
-                        .hasMessage("TimeoutException occurred (maximum wait was specified as 1 MILLISECONDS)")
+                        .hasMessage("Timed out waiting for async task after 1 MILLISECONDS")
                         .hasCauseInstanceOf(TimeoutException.class);
 
                 assertThat(task1.getCurrentCount()).isZero();
@@ -417,7 +417,7 @@ class AsyncHelperTest {
             var asyncException = (AsyncException) executionException.getCause();
 
             assertThat(asyncException)
-                    .hasMessage("TimeoutException occurred (maximum wait was specified as 5 MILLISECONDS)")
+                    .hasMessage("Timed out waiting for async task after 5 MILLISECONDS")
                     .hasCauseExactlyInstanceOf(TimeoutException.class);
         }
     }
