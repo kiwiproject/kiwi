@@ -64,8 +64,7 @@ public class KiwiBigDecimals {
      * @throws IllegalArgumentException if the given value is null
      */
     public static double requireDouble(@NonNull BigDecimal value) {
-        checkArgumentNotNull(value, "value cannot be null");
-        return value.doubleValue();
+        return requireDouble(value, "value cannot be null");
     }
 
     /**
