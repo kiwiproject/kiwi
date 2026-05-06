@@ -397,13 +397,11 @@ public class Async {
         } else if (ex instanceof InterruptedException) {
             msg = f("Interrupted while waiting for async task after {} {}", timeout, unit);
         } else if (ex instanceof ExecutionException executionException) {
-            var cause = executionException.getCause();
-            if (nonNull(cause)) {
-                msg = f("Async task completed exceptionally while waiting up to {} {}; cause: {}: {}",
-                        timeout, unit, cause.getClass().getName(), cause.getMessage());
-            } else {
-                msg = f("Async task completed exceptionally while waiting up to {} {}", timeout, unit);
-            }
+            var cause = KiwiThrowables.nextCauseOf(executionException);
+            msg = f("Async task completed exceptionally while waiting up to {} {}; cause: {}: {}",
+                    timeout, unit,
+                    cause.map(KiwiThrowables::typeOf).orElse("unknown"),
+                    cause.flatMap(KiwiThrowables::messageOf).orElse("(none)"));
         } else {
             msg = f("{} occurred while waiting up to {} {}", ex.getClass().getSimpleName(), timeout, unit);
         }
