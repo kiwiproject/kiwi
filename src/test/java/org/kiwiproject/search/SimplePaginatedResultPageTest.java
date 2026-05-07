@@ -224,6 +224,27 @@ class SimplePaginatedResultPageTest {
     }
 
     @Test
+    void shouldGetNumberOfElements_WhenFullPage() {
+        var pageSize = 10;
+        var page = new SimplePaginatedResultPage<>(0, pageSize, 50, newContentOfSize(pageSize));
+        assertThat(page.getNumberOfElements()).isEqualTo(pageSize);
+    }
+
+    @Test
+    void shouldGetNumberOfElements_WhenPartialLastPage() {
+        var pageSize = 10;
+        var lastPageSize = 3;
+        var page = new SimplePaginatedResultPage<>(4, pageSize, 43, newContentOfSize(lastPageSize));
+        assertThat(page.getNumberOfElements()).isEqualTo(lastPageSize);
+    }
+
+    @Test
+    void shouldGetNumberOfElements_WhenEmptyPage() {
+        var page = new SimplePaginatedResultPage<Item>(0, 10, 0, List.of());
+        assertThat(page.getNumberOfElements()).isZero();
+    }
+
+    @Test
     void shouldNotIncludeContentInStringRepresentation() {
         var pageSize = 10;
         var page = new SimplePaginatedResultPage<>(
