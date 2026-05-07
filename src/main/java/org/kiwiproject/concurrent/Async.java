@@ -370,10 +370,12 @@ public class Async {
                 return future.get(timeout, unit);
             } catch (InterruptedException ex) {
                 Thread.currentThread().interrupt();
-                future.cancel(true);
+                var cancelled = future.cancel(true);
+                LOG.debug("Attempted to cancel future after interruption; cancelled={}", cancelled);
                 throw newAsyncException(timeout, unit, ex, future);
             } catch (ExecutionException | TimeoutException ex) {
-                future.cancel(true);
+                var cancelled = future.cancel(true);
+                LOG.debug("Attempted to cancel future after {}; cancelled={}", ex.getClass().getSimpleName(), cancelled);
                 throw newAsyncException(timeout, unit, ex, future);
             }
         };
@@ -389,8 +391,19 @@ public class Async {
     private static AsyncException newAsyncException(long timeout, TimeUnit unit,
                                                     Exception ex,
                                                     CompletableFuture<?> future) {
-        var msg = f("{} occurred (maximum wait was specified as {} {})",
-                ex.getClass().getSimpleName(), timeout, unit);
+        String msg;
+        if (ex instanceof TimeoutException) {
+            msg = f("Timed out waiting for async task after {} {}", timeout, unit);
+        } else if (ex instanceof InterruptedException) {
+            msg = f("Interrupted while waiting for async task after {} {}", timeout, unit);
+        } else {
+            var executionException = (ExecutionException) ex;
+            var causeOpt = KiwiThrowables.nextCauseOf(executionException);
+            msg = f("Async task completed exceptionally while waiting up to {} {}; cause: {}: {}",
+                    timeout, unit,
+                    causeOpt.map(KiwiThrowables::typeOf).orElse("unknown"),
+                    causeOpt.flatMap(KiwiThrowables::messageOf).orElse("(none)"));
+        }
         LOG.error(msg, ex);
         return new AsyncException(msg, ex, future);
     }

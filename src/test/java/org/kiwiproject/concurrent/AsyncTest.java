@@ -288,12 +288,39 @@ class AsyncTest {
             try {
                 assertThatThrownBy(() -> Async.waitFor(future, 1, TimeUnit.MILLISECONDS))
                         .isExactlyInstanceOf(AsyncException.class)
-                        .hasMessage("TimeoutException occurred (maximum wait was specified as 1 MILLISECONDS)")
+                        .hasMessage("Timed out waiting for async task after 1 MILLISECONDS")
                         .hasCauseInstanceOf(TimeoutException.class);
 
                 assertThat(task.getCurrentCount()).isZero();
             } finally {
                 cancel(future);
+            }
+        }
+
+        @Test
+        void shouldThrowAsyncException_WithCauseDetails_WhenFutureCompletesExceptionally() {
+            var cause = new RuntimeException("the task blew up");
+            CompletableFuture<Integer> future = CompletableFuture.failedFuture(cause);
+
+            assertThatThrownBy(() -> Async.waitFor(future, 500, TimeUnit.MILLISECONDS))
+                    .isExactlyInstanceOf(AsyncException.class)
+                    .hasMessage("Async task completed exceptionally while waiting up to 500 MILLISECONDS;" +
+                            " cause: java.lang.RuntimeException: the task blew up")
+                    .hasCauseInstanceOf(ExecutionException.class);
+        }
+
+        @Test
+        void shouldThrowAsyncException_WhenThreadIsInterrupted_WhileWaiting() {
+            CompletableFuture<Integer> future = new CompletableFuture<>();
+            try {
+                Thread.currentThread().interrupt();
+                assertThatThrownBy(() -> Async.waitFor(future, 500, TimeUnit.MILLISECONDS))
+                        .isExactlyInstanceOf(AsyncException.class)
+                        .hasMessage("Interrupted while waiting for async task after 500 MILLISECONDS")
+                        .hasCauseInstanceOf(InterruptedException.class);
+            } finally {
+                Thread.interrupted(); // clear interrupt status
+                future.cancel(true);
             }
         }
     }
@@ -340,7 +367,7 @@ class AsyncTest {
                 var futures = List.of(future1, future2, future3);
                 assertThatThrownBy(() -> Async.waitForAll(futures, 1, TimeUnit.MILLISECONDS))
                         .isExactlyInstanceOf(AsyncException.class)
-                        .hasMessage("TimeoutException occurred (maximum wait was specified as 1 MILLISECONDS)")
+                        .hasMessage("Timed out waiting for async task after 1 MILLISECONDS")
                         .hasCauseInstanceOf(TimeoutException.class);
 
                 assertThat(task1.getCurrentCount()).isZero();
@@ -398,7 +425,7 @@ class AsyncTest {
                 var futures = List.of(future1, future2, future3);
                 assertThatThrownBy(() -> Async.waitForAllIgnoringType(futures, 1, TimeUnit.MILLISECONDS))
                         .isExactlyInstanceOf(AsyncException.class)
-                        .hasMessage("TimeoutException occurred (maximum wait was specified as 1 MILLISECONDS)")
+                        .hasMessage("Timed out waiting for async task after 1 MILLISECONDS")
                         .hasCauseInstanceOf(TimeoutException.class);
 
                 assertThat(task1.getCurrentCount()).isZero();
@@ -442,8 +469,27 @@ class AsyncTest {
             var asyncException = (AsyncException) executionException.getCause();
 
             assertThat(asyncException)
-                    .hasMessage("TimeoutException occurred (maximum wait was specified as 5 MILLISECONDS)")
+                    .hasMessage("Timed out waiting for async task after 5 MILLISECONDS")
                     .hasCauseExactlyInstanceOf(TimeoutException.class);
+        }
+
+        @Test
+        void shouldSurfaceCauseDetails_WhenFutureCompletesExceptionally() {
+            var cause = new IllegalStateException("downstream failure");
+            CompletableFuture<Integer> future = CompletableFuture.failedFuture(cause);
+            CompletableFuture<Integer> futureWithTimeout = Async.withMaxTimeout(future, 500, TimeUnit.MILLISECONDS);
+
+            awaitAtMost500msWith25MsPoll().until(futureWithTimeout::isCompletedExceptionally);
+
+            var thrown = catchThrowable(futureWithTimeout::get);
+            assertThat(thrown).isInstanceOf(ExecutionException.class)
+                    .hasCauseExactlyInstanceOf(AsyncException.class);
+
+            var asyncException = (AsyncException) ((ExecutionException) thrown).getCause();
+            assertThat(asyncException)
+                    .hasMessage("Async task completed exceptionally while waiting up to 500 MILLISECONDS;" +
+                            " cause: java.lang.IllegalStateException: downstream failure")
+                    .hasCauseExactlyInstanceOf(ExecutionException.class);
         }
     }
 
