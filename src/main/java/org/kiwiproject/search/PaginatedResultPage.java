@@ -17,10 +17,10 @@ public interface PaginatedResultPage<T> extends PaginatedResult {
     List<T> getContent();
 
     /**
-     * The number of elements on this page. This may be less than {@link #getPageSize()} on the last page
-     * when the total count is not evenly divisible by the page size.
+     * Return the number of elements on this page.
      *
-     * @return the number of elements on this page
+     * @return the number of elements on this page, which may be less than {@link #getPageSize()}
+     *         when this is the last page or when this page has no content
      */
     default int getNumberOfElements() {
         return getContent().size();
