@@ -15,4 +15,14 @@ public interface PaginatedResultPage<T> extends PaginatedResult {
      * @return an unmodifiable list of items; must not be null
      */
     List<T> getContent();
+
+    /**
+     * Return the number of elements on this page.
+     *
+     * @return the number of elements on this page, which may be less than {@link #getPageSize()}
+     *         when this is the last page or when this page has no content
+     */
+    default int getNumberOfElements() {
+        return getContent().size();
+    }
 }
