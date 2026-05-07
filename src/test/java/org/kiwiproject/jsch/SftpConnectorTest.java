@@ -25,6 +25,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 
+import java.nio.charset.StandardCharsets;
 import java.util.Optional;
 
 @DisplayName("SftpConnector")
@@ -194,7 +195,7 @@ class SftpConnectorTest {
             SftpConnector.addAuthToSession(config, jsch, session);
 
             verifyNoInteractions(jsch);
-            verify(session).setPassword(password);
+            verify(session).setPassword(password.getBytes(StandardCharsets.UTF_8));
             verifyNoMoreInteractions(session);
         }
 

@@ -15,6 +15,7 @@ import com.jcraft.jsch.JSchException;
 import com.jcraft.jsch.Session;
 import lombok.extern.slf4j.Slf4j;
 
+import java.nio.charset.StandardCharsets;
 import java.util.Optional;
 
 /**
@@ -185,7 +186,7 @@ public class SftpConnector {
 
         } else if (isNotBlank(config.getPassword())) {
             LOG.debug("Using password to connect");
-            session.setPassword(config.getPassword());
+            session.setPassword(config.getPassword().getBytes(StandardCharsets.UTF_8));
 
         } else {
             throw new SftpTransfersException("Missing a private key and a password; cannot authenticate to the SFTP server");
