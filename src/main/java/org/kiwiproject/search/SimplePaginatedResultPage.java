@@ -11,8 +11,6 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.ToString;
-import org.checkerframework.checker.index.qual.NonNegative;
-import org.checkerframework.checker.index.qual.Positive;
 import org.kiwiproject.search.KiwiSearching.PageNumberingScheme;
 
 import java.util.List;
@@ -71,8 +69,8 @@ public class SimplePaginatedResultPage<T> implements PaginatedResultPage<T> {
     }
 
     private static <T> List<T> validateAndCopyContent(List<T> content,
-                                                      @Positive int pageSize,
-                                                      @NonNegative long totalCount) {
+                                                      int pageSize,
+                                                      long totalCount) {
         checkArgumentNotNull(content, "content must not be null");
         if (totalCount == 0) {
             checkArgument(content.isEmpty(), "content must be empty when totalCount is zero");
