@@ -23,6 +23,8 @@ updates:
       semver-patch-days: 5
       semver-minor-days: 14
       semver-major-days: 30
+      exclude:
+        - "org.kiwiproject:*"
     commit-message:
       prefix: "chore(deps)"
   - package-ecosystem: "github-actions"
