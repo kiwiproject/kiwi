@@ -15,6 +15,14 @@ import java.util.stream.IntStream;
 
 /**
  * Utility methods for working with Array instances.
+ * <p>
+ * <strong>Note</strong>: accessor methods that return {@code T} directly (e.g. {@link #first(Object[]) first},
+ * {@link #second(Object[]) second}, {@link #third(Object[]) third}, {@link #penultimate(Object[]) penultimate})
+ * may return {@code null} if the underlying array contains {@code null} at that position, since they
+ * simply reflect the array's contents. Methods returning {@code Optional<T>} (e.g.,
+ * {@link #firstIfPresent(Object[]) firstIfPresent}, {@link #lastIfPresent(Object[]) lastIfPresent})
+ * will instead throw {@link NullPointerException} in that same situation, since {@code Optional} cannot
+ * represent a {@code null} value.
  */
 @UtilityClass
 public class KiwiArrays {
@@ -211,7 +219,7 @@ public class KiwiArrays {
      *
      * @param items the array
      * @param <T>   the type of items in the array
-     * @return Optional containing last element if exists, otherwise Optional.empty()
+     * @return Optional containing the last element if it exists, otherwise Optional.empty()
      */
     public static <T> Optional<T> lastIfPresent(T[] items) {
         return isNotNullOrEmpty(items) ? Optional.of(last(items)) : Optional.empty();

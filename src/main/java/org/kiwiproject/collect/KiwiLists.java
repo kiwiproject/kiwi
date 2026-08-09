@@ -19,6 +19,14 @@ import java.util.stream.IntStream;
 
 /**
  * Utility methods for working with {@link List} instances.
+ * <p>
+ * <strong>Note</strong>: accessor methods that return {@code T} directly (e.g., {@link #first(List) first},
+ * {@link #second(List) second}, {@link #third(List) third}, {@link #penultimate(List) penultimate}) may return
+ * {@code null} if the underlying list contains {@code null} at that position, since they
+ * simply reflect the list's contents. Methods returning {@code Optional<T>} (e.g.
+ * {@link #firstIfPresent(List) firstIfPresent}, {@link #lastIfPresent(List)} lastIfPresent) will instead throw
+ * {@link NullPointerException} in that same situation, since {@code Optional} cannot
+ * represent a {@code null} value.
  */
 @UtilityClass
 public class KiwiLists {
@@ -207,7 +215,7 @@ public class KiwiLists {
      *
      * @param items the list
      * @param <T>   the type of items in the list
-     * @return Optional containing last element if exists, otherwise Optional.empty()
+     * @return Optional containing the last element if it exists, otherwise Optional.empty()
      */
     public static <T> Optional<T> lastIfPresent(List<T> items) {
         return isNotNullOrEmpty(items) ? Optional.of(last(items)) : Optional.empty();
