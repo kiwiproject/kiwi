@@ -111,7 +111,7 @@ public class KiwiSecurity {
      * Create a new {@link SSLContext} instance for the given paths, passwords, and protocol, assuming that the
      * key and trust store types are {@link KeyStoreType#JKS}. Uses the default key and trust manager algorithms
      * as defined by {@link KeyManagerFactory} and {@link TrustManagerFactory}. The key and trust store types should
-     * be one of the algorithms defined in {@link KeyStoreType}.
+     * be one of the values defined in {@link KeyStoreType}.
      * <p>
      * If only the trust store is necessary, supply {@code null} values for the {@code keyStorePath},
      * {@code keyStorePassword}, and {@code keyStoreType}.
@@ -158,7 +158,7 @@ public class KiwiSecurity {
     /**
      * Create a new {@link SSLContext} instance for the given paths, passwords, key and trust store types, and protocol.
      * Uses the default key and trust manager algorithms as defined by {@link KeyManagerFactory} and
-     * {@link TrustManagerFactory}. The key and trust store types should be one of the algorithms defined
+     * {@link TrustManagerFactory}. The key and trust store types should be one of the values defined
      * in {@link KeyStoreType}.
      * <p>
      * If only the trust store is necessary, supply {@code null} values for the {@code keyStorePath},
@@ -206,7 +206,7 @@ public class KiwiSecurity {
 
     /**
      * Create a new {@link SSLContext} instance for the given paths, passwords, key and trust store types, key and
-     * trust manager algorithms, and protocol. The key and trust store types should be one of the algorithms
+     * trust manager algorithms, and protocol. The key and trust store types should be one of the values
      * defined in {@link KeyStoreType}.
      * <p>
      * If only the trust store is necessary, supply {@code null} values for the {@code keyStorePath},
@@ -264,7 +264,7 @@ public class KiwiSecurity {
     /**
      * Create a new {@link SSLContext} instance for the given paths, passwords, key and trust store types, key and
      * trust store providers, key and trust manager algorithms, and protocol. The key and trust store types should be
-     * one of the algorithms defined in {@link KeyStoreType}.
+     * one of the values defined in {@link KeyStoreType}.
      * <p>
      * If only the trust store is necessary, supply {@code null} values for the {@code keyStorePath},
      * {@code keyStorePassword}, {@code keyStoreType}, {@code keyStoreProvider}, and {@code keyManagerAlgorithm}.
