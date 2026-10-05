@@ -2,6 +2,10 @@
 # Deploy maven artifact in current directory into Maven central repository using
 # maven-release-plugin goals (https://maven.apache.org/maven-release/maven-release-plugin/)
 
+# Make a pipeline fail if any command in it fails, so that a Maven failure is not
+# hidden by tee succeeding
+set -o pipefail
+
 function print_usage() {
   echo "Usage: $0 -h -n -s -t"
   echo
@@ -54,7 +58,10 @@ echo "Branch is OK [${current_branch}]"
 
 # fetch latest information from remote repository and ensure there are no remote changes
 echo 'Checking repository is up to date'
-git fetch
+if ! git fetch; then
+  echo 'WARNING: git fetch failed, so cannot tell whether the repository is up to date'
+  exit 1
+fi
 status=$(git status)
 if [[ "$status" == *"Your branch is up to date"* ]]; then
   echo 'Repository is up to date'
@@ -76,6 +83,9 @@ if [[ "$confirm_release" -eq 1 ]]; then
 else
   confirmation='yes'
 fi
+
+# exit status of this script; set to Maven's exit status if a release is performed
+mvn_result=0
 
 # perform release, or exit if release not confirmed
 if [[ "$confirmation" == 'yes' ]]; then
@@ -105,3 +115,5 @@ if [[ "$confirmation" == 'yes' ]]; then
 else
   echo 'Exit without deploy'
 fi
+
+exit "$mvn_result"
