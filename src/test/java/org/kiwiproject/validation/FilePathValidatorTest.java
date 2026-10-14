@@ -12,6 +12,8 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.kiwiproject.internal.Fixtures;
 
 @DisplayName("FilePathValidator")
@@ -87,6 +89,29 @@ class FilePathValidatorTest {
             config.setFilePath1(path);
 
             assertOnePropertyViolation(validator, config, "filePath1");
+        }
+
+        @Test
+        void whenEmptyString() {
+            config.setFilePath1("");
+            config.setFilePath2("");  // allowNull only applies to null, not empty
+            config.setFilePath3("");
+
+            assertOnePropertyViolation(validator, config, "filePath1");
+            assertOnePropertyViolation(validator, config, "filePath2");
+            assertOnePropertyViolation(validator, config, "filePath3");
+        }
+
+        @ParameterizedTest
+        @ValueSource(strings = {" ", "   ", "\t"})
+        void whenBlankString(String blank) {
+            config.setFilePath1(blank);
+            config.setFilePath2(blank);
+            config.setFilePath3(blank);
+
+            assertOnePropertyViolation(validator, config, "filePath1");
+            assertOnePropertyViolation(validator, config, "filePath2");
+            assertOnePropertyViolation(validator, config, "filePath3");
         }
 
         @Test

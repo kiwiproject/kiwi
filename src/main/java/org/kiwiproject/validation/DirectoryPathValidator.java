@@ -14,6 +14,10 @@ import java.nio.file.Path;
 /**
  * Validates that a string value is a valid path, exists, and is a directory.
  * <p>
+ * An empty or blank string is always invalid (an empty string is <em>not</em> interpreted as the current
+ * directory), regardless of the {@code allowNull}, {@code mkdirs}, {@code ensureReadable} and
+ * {@code ensureWritable} options.
+ * <p>
  * Optionally, this validator will verify that the directory is readable and/or writable.
  * <p>
  * As mentioned in the documentation for {@link DirectoryPath}, this may also attempt to create the directory
@@ -36,6 +40,14 @@ public class DirectoryPathValidator implements ConstraintValidator<DirectoryPath
     public boolean isValid(String value, ConstraintValidatorContext context) {
         if (isNull(value)) {
             return directoryPath.allowNull();
+        }
+
+        // Empty and blank strings are never valid directory paths. Do not rely on java.io.File to reject an
+        // empty string, since as of JDK 25 new File("") means the current directory (JDK-8024695) and
+        // exists() etc. return true. Blank strings are rejected so that mkdirs can never create a directory
+        // whose name is only whitespace.
+        if (value.isBlank()) {
+            return false;
         }
 
         try {

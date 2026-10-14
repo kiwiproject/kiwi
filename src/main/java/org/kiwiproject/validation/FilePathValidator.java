@@ -11,6 +11,7 @@ import java.nio.file.Path;
 
 /**
  * Validates that a string value is a valid path, exists, and is a regular file (not a directory).
+ * An empty or blank string is always invalid.
  *
  * @implNote Please read the implementation note in {@link FilePath} regarding the possibility of
  * <a href="https://owasp.org/www-community/attacks/Path_Traversal">Path Traversal</a> attacks.
@@ -29,6 +30,12 @@ public class FilePathValidator implements ConstraintValidator<FilePath, String> 
     public boolean isValid(String value, ConstraintValidatorContext context) {
         if (isNull(value)) {
             return filePath.allowNull();
+        }
+
+        // Empty and blank strings are never valid file paths. Be explicit rather than relying on java.io.File
+        // behavior, which changed in JDK 25 (new File("") now means the current directory, JDK-8024695).
+        if (value.isBlank()) {
+            return false;
         }
 
         try {
