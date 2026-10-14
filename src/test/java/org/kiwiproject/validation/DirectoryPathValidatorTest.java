@@ -12,11 +12,14 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.Arrays;
 import java.util.function.BiConsumer;
 
 @DisplayName("DirectoryPathValidator")
@@ -132,6 +135,107 @@ class DirectoryPathValidatorTest {
             config.setDirectoryPath8(secondSubDir.getAbsolutePath());
 
             assertOnePropertyViolation(validator, config, "directoryPath8");
+        }
+    }
+
+    /**
+     * An empty string must never be treated as "the current directory". JDK 25 changed java.io.File so that
+     * {@code new File("")} behaves like the current directory (JDK-8024695), so the validator must reject it
+     * explicitly in order to behave identically on all JDK versions.
+     */
+    @Nested
+    class WhenEmptyString {
+
+        @Test
+        void shouldBeInvalid_ByDefault() {
+            config.setDirectoryPath1("");
+            assertPropertyViolations(validator, config, "directoryPath1", DEFAULT_MESSAGE);
+        }
+
+        @Test
+        void shouldBeInvalid_EvenWhenAllowingNulls() {
+            config.setDirectoryPath3("");
+            assertOnePropertyViolation(validator, config, "directoryPath3");
+        }
+
+        @Test
+        void shouldBeInvalid_WhenEnsuringReadable() {
+            config.setDirectoryPath5("");
+            assertOnePropertyViolation(validator, config, "directoryPath5");
+        }
+
+        @Test
+        void shouldBeInvalid_WhenEnsuringWritable() {
+            config.setDirectoryPath6("");
+            assertOnePropertyViolation(validator, config, "directoryPath6");
+        }
+
+        @Test
+        void shouldBeInvalid_WhenEnsuringReadableAndWritable() {
+            config.setDirectoryPath7("");
+            assertOnePropertyViolation(validator, config, "directoryPath7");
+        }
+
+        @Test
+        void shouldBeInvalid_WhenMkdirsTrue_AndNotCreateAnything() {
+            var workingDir = new File(System.getProperty("user.dir"));
+            var entriesBefore = workingDir.list();
+
+            config.setDirectoryPath8("");
+            assertOnePropertyViolation(validator, config, "directoryPath8");
+
+            var entriesAfter = workingDir.list();
+            assertThat(sorted(entriesAfter))
+                    .describedAs("empty string must not create any directories")
+                    .isEqualTo(sorted(entriesBefore));
+        }
+
+        @Test
+        void shouldBeInvalid_WhenUsingCustomMessage() {
+            config.setDirectoryPath2("");
+            assertPropertyViolations(validator, config, "directoryPath2", CUSTOM_MESSAGE);
+        }
+
+        private String[] sorted(String[] names) {
+            var copy = names.clone();
+            Arrays.sort(copy);
+            return copy;
+        }
+    }
+
+    /**
+     * Blank (whitespace-only) strings are always invalid, including when mkdirs is true, in which case
+     * nothing may be created.
+     */
+    @Nested
+    class WhenBlankString {
+
+        @ParameterizedTest
+        @ValueSource(strings = {" ", "   ", "\t", " \t "})
+        void shouldBeInvalid_ForAllOptionCombinations(String blank) {
+            var workingDir = new File(System.getProperty("user.dir"));
+            var entriesBefore = workingDir.list();
+
+            config.setDirectoryPath1(blank);
+            config.setDirectoryPath2(blank);
+            config.setDirectoryPath3(blank);
+            config.setDirectoryPath5(blank);
+            config.setDirectoryPath6(blank);
+            config.setDirectoryPath7(blank);
+            config.setDirectoryPath8(blank);
+
+            assertPropertyViolations(validator, config, "directoryPath1", DEFAULT_MESSAGE);
+            assertPropertyViolations(validator, config, "directoryPath2", CUSTOM_MESSAGE);
+            assertOnePropertyViolation(validator, config, "directoryPath3");
+            assertOnePropertyViolation(validator, config, "directoryPath5");
+            assertOnePropertyViolation(validator, config, "directoryPath6");
+            assertOnePropertyViolation(validator, config, "directoryPath7");
+            assertOnePropertyViolation(validator, config, "directoryPath8");
+
+            var entriesAfter = workingDir.list();
+            assertThat(entriesAfter)
+                    .describedAs("blank string must not create any directories")
+                    .containsExactlyInAnyOrder(entriesBefore);
         }
     }
 

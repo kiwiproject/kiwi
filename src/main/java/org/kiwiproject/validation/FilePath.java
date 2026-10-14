@@ -21,7 +21,8 @@ import java.lang.annotation.Target;
  * <a href="https://owasp.org/www-community/attacks/Path_Traversal">Path Traversal</a> attacks.
  * <p>
  * By default, this does not permit null values. If the element being validated allows {@code null} values, you can
- * set {@link #allowNull()} to {@code true}.
+ * set {@link #allowNull()} to {@code true}. Note that {@code allowNull} only applies to {@code null}; an empty
+ * or blank (whitespace-only) string is always invalid.
  * <p>
  * Examples:
  * <pre>

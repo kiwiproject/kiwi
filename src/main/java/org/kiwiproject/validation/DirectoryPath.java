@@ -23,6 +23,11 @@ import java.lang.annotation.Target;
  * By default, this does not permit null values. If the element being validated allows {@code null} values, you can
  * set {@link #allowNull()} to {@code true}.
  * <p>
+ * An empty or blank (whitespace-only) string is always invalid, regardless of any other option. An empty string is
+ * never interpreted as the current directory, and {@link #mkdirs()} will never attempt to create a directory for
+ * an empty or blank string. Note that {@link #allowNull()} only applies to {@code null}, not to empty or blank
+ * strings.
+ * <p>
  * You can also use {@link #ensureReadable()} and {@link #ensureWritable()} to verify that the directory is readable
  * or writable by the current process.
  * <p>
@@ -77,7 +82,7 @@ public @interface DirectoryPath {
     boolean ensureReadable() default false;
 
     /**
-     * Whether to verify that the current process can read the specified directory.
+     * Whether to verify that the current process can write to the specified directory.
      * The default is false (no verification is performed).
      *
      * @return true to validate the directory is writable; if false does not verify
@@ -92,6 +97,8 @@ public @interface DirectoryPath {
      * However, based on the use cases we have encountered, this is a <em>pragmatic</em> way to ensure directories are
      * present, and we have found the alternatives to be clumsy at best, overly complicated at worst. One common
      * example is to ensure a temporary or working directory exists for an application to use.
+     * <p>
+     * An empty or blank string never causes a directory to be created.
      * <p>
      * <em>Regardless, please be sure you understand the side-effecting behavior if you set this to {@code true}.</em>
      *
