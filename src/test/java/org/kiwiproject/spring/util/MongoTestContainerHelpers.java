@@ -34,8 +34,17 @@ public class MongoTestContainerHelpers {
     @SuppressWarnings("resource")  // because Testcontainers closes it for us
     public static MongoDBContainer newMongoDBContainer(String dockerImageName) {
         LOG.info("Create MongoDBContainer for Docker image name: {}", dockerImageName);
-        return new MongoDBContainer(DockerImageName.parse(dockerImageName))
+        var container = new MongoDBContainer(DockerImageName.parse(dockerImageName))
                 .waitingFor(new HostPortWaitStrategy());
+
+        // EXPERIMENT: see https://jira.mongodb.org/browse/SERVER-121912
+        var glibcTunables = System.getenv("MONGO_GLIBC_TUNABLES");
+        if (glibcTunables != null && !glibcTunables.isBlank()) {
+            LOG.info("Setting GLIBC_TUNABLES={} on Mongo container", glibcTunables);
+            container.withEnv("GLIBC_TUNABLES", glibcTunables);
+        }
+
+        return container;
     }
 
     public static MongoTemplate newMongoTemplate(MongoDBContainer container) {

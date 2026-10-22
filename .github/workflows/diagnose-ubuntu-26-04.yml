@@ -9,12 +9,13 @@ on:
 
 jobs:
   diagnose:
-    name: Diagnose (${{ matrix.os }})
+    name: Diagnose (${{ matrix.os }}, tunables=${{ matrix.tunables || 'none' }})
     runs-on: ${{ matrix.os }}
     strategy:
       fail-fast: false
       matrix:
         os: ['ubuntu-26.04', 'ubuntu-24.04']
+        tunables: ['', 'glibc.pthread.rseq=0', 'glibc.pthread.rseq=1']
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1  # v7.0.1
 
@@ -46,13 +47,14 @@ jobs:
           done
           dpkg -l | grep -Ei 'coreutils' || true
 
-      - name: Mongo readiness timeline (mongo:8, mongo:7)
+      - name: Mongo readiness timeline (mongo:8)
         continue-on-error: true
         run: |
-          for image in mongo:8 mongo:7; do
+          for image in mongo:8; do
             echo "::group::$image"
             docker pull -q "$image" >/dev/null
-            cid=$(docker run -d -p 27017 "$image")
+            echo "tunables='${{ matrix.tunables }}'"
+            cid=$(docker run -d -p 27017 ${{ matrix.tunables && format('-e GLIBC_TUNABLES={0}', matrix.tunables) || '' }} "$image")
             port=$(docker port "$cid" 27017/tcp | head -1 | sed 's/.*://')
             echo "container=$cid hostPort=$port"
             start=$(date +%s.%N)
@@ -71,6 +73,8 @@ jobs:
 
       - name: Mongo 8 + ProcessesTest via Maven, with container log capture
         continue-on-error: true
+        env:
+          MONGO_GLIBC_TUNABLES: ${{ matrix.tunables }}
         run: |
           mkdir -p /tmp/diag
           docker events --format '{{.Time}} {{.Type}} {{.Action}} {{.Actor.Attributes.image}}' > /tmp/diag/events.txt 2>&1 &
