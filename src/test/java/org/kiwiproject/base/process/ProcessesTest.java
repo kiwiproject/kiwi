@@ -275,7 +275,8 @@ class ProcessesTest {
         void shouldFindProgramThatExists(String program) {
             // Check the file name rather than using Path#endsWith, since AssertJ resolves symbolic
             // links for endsWith, and programs such as cp and mv can be symbolic links with a
-            // different name (e.g. /usr/bin/cp -> gnucp on Ubuntu 26.04)
+            // different name (e.g. /usr/bin/cp -> gnucp on Ubuntu 26.04).
+            // See https://github.com/kiwiproject/kiwi/issues/1479
             assertThat(Processes.whichAsPath(program))
                     .hasValueSatisfying(value -> assertThat(value).hasFileName(program));
         }
