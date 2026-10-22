@@ -19,7 +19,6 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 
-import java.nio.file.Path;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
@@ -274,8 +273,12 @@ class ProcessesTest {
         @ParameterizedTest
         @ValueSource(strings = {"cp", "ls", "mv"})
         void shouldFindProgramThatExists(String program) {
+            // Check the file name rather than using Path#endsWith, since AssertJ resolves symbolic
+            // links for endsWith, and programs such as cp and mv can be symbolic links with a
+            // different name (e.g. /usr/bin/cp -> gnucp on Ubuntu 26.04).
+            // See https://github.com/kiwiproject/kiwi/issues/1479
             assertThat(Processes.whichAsPath(program))
-                    .hasValueSatisfying(value -> assertThat(value).endsWith(Path.of(program)));
+                    .hasValueSatisfying(value -> assertThat(value).hasFileName(program));
         }
 
         @ParameterizedTest

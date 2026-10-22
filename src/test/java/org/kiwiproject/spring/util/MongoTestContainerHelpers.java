@@ -35,7 +35,12 @@ public class MongoTestContainerHelpers {
     public static MongoDBContainer newMongoDBContainer(String dockerImageName) {
         LOG.info("Create MongoDBContainer for Docker image name: {}", dockerImageName);
         return new MongoDBContainer(DockerImageName.parse(dockerImageName))
-                .waitingFor(new HostPortWaitStrategy());
+                .waitingFor(new HostPortWaitStrategy())
+                // TODO Remove this workaround when MongoDB fixes SERVER-121912 or the CI runners'
+                //  kernel is not affected; see https://github.com/kiwiproject/kiwi/issues/1478.
+                //  MongoDB refuses to start on Linux kernels 6.19+ (SERVER-121912), and
+                //  letting glibc manage rseq lets it start. See also issue #1480.
+                .withEnv("GLIBC_TUNABLES", "glibc.pthread.rseq=1");
     }
 
     public static MongoTemplate newMongoTemplate(MongoDBContainer container) {
