@@ -273,11 +273,11 @@ class ProcessesTest {
         @ParameterizedTest
         @ValueSource(strings = {"cp", "ls", "mv"})
         void shouldFindProgramThatExists(String program) {
-            // Compare the file name only, since AssertJ's Path#endsWith resolves symbolic links,
-            // and programs such as cp and mv can be symbolic links with a different name
-            // (e.g. /usr/bin/cp -> gnucp on Ubuntu 26.04)
+            // Check the file name rather than using Path#endsWith, since AssertJ resolves symbolic
+            // links for endsWith, and programs such as cp and mv can be symbolic links with a
+            // different name (e.g. /usr/bin/cp -> gnucp on Ubuntu 26.04)
             assertThat(Processes.whichAsPath(program))
-                    .hasValueSatisfying(value -> assertThat(value.getFileName()).hasToString(program));
+                    .hasValueSatisfying(value -> assertThat(value).hasFileName(program));
         }
 
         @ParameterizedTest
