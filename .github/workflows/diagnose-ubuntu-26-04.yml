@@ -1,0 +1,91 @@
+# Temporary diagnostics for build failures after ubuntu-latest moved from 24.04 to 26.04.
+# Do not merge. Delete this workflow once the failures are understood.
+name: diagnose-ubuntu-26-04
+on:
+  pull_request:
+    paths:
+      - '.github/workflows/diagnose-ubuntu-26-04.yml'
+  workflow_dispatch:
+
+jobs:
+  diagnose:
+    name: Diagnose (${{ matrix.os }})
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: ['ubuntu-26.04', 'ubuntu-24.04']
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1  # v7.0.1
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@b843ebf9b913146b38da2eaa7aeddf76074ae1ad  # v6.1.0
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+
+      - name: Environment
+        run: |
+          echo "::group::os-release / kernel"
+          cat /etc/os-release | head -4
+          uname -r
+          echo "ImageVersion=$ImageVersion ImageOS=$ImageOS"
+          echo "::endgroup::"
+          echo "::group::docker"
+          docker version --format 'client={{.Client.Version}} server={{.Server.Version}} api={{.Server.APIVersion}}'
+          docker info --format 'storage={{.Driver}} cgroup={{.CgroupDriver}}/{{.CgroupVersion}} runtime={{.DefaultRuntime}} containerd-snapshotter={{.DriverStatus}}'
+          echo "::endgroup::"
+
+      - name: Coreutils (ProcessesTest cp/mv/ls)
+        run: |
+          for p in cp mv ls; do
+            echo "== $p"
+            which "$p"
+            ls -l "$(which "$p")"
+            readlink -f "$(which "$p")"
+          done
+          dpkg -l | grep -Ei 'coreutils' || true
+
+      - name: Mongo readiness timeline (mongo:8, mongo:7)
+        continue-on-error: true
+        run: |
+          for image in mongo:8 mongo:7; do
+            echo "::group::$image"
+            docker pull -q "$image" >/dev/null
+            cid=$(docker run -d -p 27017 "$image")
+            port=$(docker port "$cid" 27017/tcp | head -1 | sed 's/.*://')
+            echo "container=$cid hostPort=$port"
+            start=$(date +%s.%N)
+            for i in $(seq 1 90); do
+              if (exec 3<>"/dev/tcp/127.0.0.1/$port") 2>/dev/null; then open=open; else open=closed; fi
+              if docker exec "$cid" mongosh --quiet --eval 'db.runCommand({ping:1}).ok' 2>/dev/null | grep -q '^1$'; then ping=ok; else ping=no; fi
+              printf '%5.1fs hostPort=%s ping=%s\n' "$(echo "$(date +%s.%N) - $start" | bc)" "$open" "$ping"
+              [ "$ping" = ok ] && break
+              sleep 1
+            done
+            echo "--- docker logs (last 40)"
+            docker logs "$cid" 2>&1 | tail -40
+            docker rm -f "$cid" >/dev/null
+            echo "::endgroup::"
+          done
+
+      - name: Mongo 8 + ProcessesTest via Maven, with container log capture
+        continue-on-error: true
+        run: |
+          mkdir -p /tmp/diag
+          docker events --format '{{.Time}} {{.Type}} {{.Action}} {{.Actor.Attributes.image}}' > /tmp/diag/events.txt 2>&1 &
+          (while true; do
+             for id in $(docker ps -aq); do docker logs "$id" > "/tmp/diag/$id.log" 2>&1; done
+             sleep 0.5
+           done) &
+          mvn -B -ntp -q test -Dtest='PagingQueryMongo8IntegrationTest,ProcessesTest' -Dsurefire.failIfNoSpecifiedTests=false \
+            2>&1 | grep -E 'Tests run:|ERROR|FAIL|Container|Mongo' | grep -v 'DEBUG\|TRACE' | head -60
+
+      - name: Captured container logs and events
+        if: always()
+        run: |
+          echo "::group::docker events"; cat /tmp/diag/events.txt 2>/dev/null | head -80; echo "::endgroup::"
+          for f in /tmp/diag/*.log; do
+            [ -e "$f" ] || continue
+            echo "::group::$f"; head -3 "$f"; echo ...; tail -25 "$f"; echo "::endgroup::"
+          done
