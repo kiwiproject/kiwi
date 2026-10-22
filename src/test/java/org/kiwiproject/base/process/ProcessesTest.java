@@ -19,7 +19,6 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 
-import java.nio.file.Path;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
@@ -275,7 +274,8 @@ class ProcessesTest {
         @ValueSource(strings = {"cp", "ls", "mv"})
         void shouldFindProgramThatExists(String program) {
             // Compare the file name only, since AssertJ's Path#endsWith resolves symbolic links,
-            // and programs such as cp and mv can be links to a multi-call binary (e.g. coreutils)
+            // and programs such as cp and mv can be symbolic links with a different name
+            // (e.g. /usr/bin/cp -> gnucp on Ubuntu 26.04)
             assertThat(Processes.whichAsPath(program))
                     .hasValueSatisfying(value -> assertThat(value.getFileName()).hasToString(program));
         }
