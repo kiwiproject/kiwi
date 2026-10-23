@@ -24,9 +24,11 @@ import java.util.stream.IntStream;
  * {@link #second(List) second}, {@link #third(List) third}, {@link #penultimate(List) penultimate}) may return
  * {@code null} if the underlying list contains {@code null} at that position, since they
  * simply reflect the list's contents. Methods returning {@code Optional<T>} (e.g.
- * {@link #firstIfPresent(List) firstIfPresent}, {@link #lastIfPresent(List)} lastIfPresent) will instead throw
+ * {@link #firstIfPresent(List) firstIfPresent}, {@link #lastIfPresent(List) lastIfPresent}) will instead throw
  * {@link NullPointerException} in that same situation, since {@code Optional} cannot
- * represent a {@code null} value.
+ * represent a {@code null} value. This is intentional: these methods return an empty {@code Optional} when the
+ * list is {@code null} or empty, so also returning an empty {@code Optional} for a {@code null} element
+ * would make it impossible to tell those two cases apart.
  */
 @UtilityClass
 public class KiwiLists {
@@ -110,6 +112,8 @@ public class KiwiLists {
      * @param items the list
      * @param <T>   the type of items in the list
      * @return Optional containing the first element if exists, otherwise Optional.empty()
+     * @throws NullPointerException if the list is not null or empty, but its first element is null;
+     *                              see the {@link KiwiLists class-level note} for why
      */
     public static <T> Optional<T> firstIfPresent(List<T> items) {
         return isNotNullOrEmpty(items) ? Optional.of(first(items)) : Optional.empty();
@@ -216,6 +220,8 @@ public class KiwiLists {
      * @param items the list
      * @param <T>   the type of items in the list
      * @return Optional containing the last element if it exists, otherwise Optional.empty()
+     * @throws NullPointerException if the list is not null or empty, but its last element is null;
+     *                              see the {@link KiwiLists class-level note} for why
      */
     public static <T> Optional<T> lastIfPresent(List<T> items) {
         return isNotNullOrEmpty(items) ? Optional.of(last(items)) : Optional.empty();

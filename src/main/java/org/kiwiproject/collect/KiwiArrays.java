@@ -22,7 +22,9 @@ import java.util.stream.IntStream;
  * simply reflect the array's contents. Methods returning {@code Optional<T>} (e.g.,
  * {@link #firstIfPresent(Object[]) firstIfPresent}, {@link #lastIfPresent(Object[]) lastIfPresent})
  * will instead throw {@link NullPointerException} in that same situation, since {@code Optional} cannot
- * represent a {@code null} value.
+ * represent a {@code null} value. This is intentional: these methods return an empty {@code Optional} when the
+ * array is {@code null} or empty, so also returning an empty {@code Optional} for a {@code null} element
+ * would make it impossible to tell those two cases apart.
  */
 @UtilityClass
 public class KiwiArrays {
@@ -114,6 +116,8 @@ public class KiwiArrays {
      * @param items the array
      * @param <T>   the type of items in the array
      * @return Optional containing the first element if exists, otherwise Optional.empty()
+     * @throws NullPointerException if the array is not null or empty, but its first element is null;
+     *                              see the {@link KiwiArrays class-level note} for why
      */
     public static <T> Optional<T> firstIfPresent(T[] items) {
         return isNotNullOrEmpty(items) ? Optional.of(first(items)) : Optional.empty();
@@ -220,6 +224,8 @@ public class KiwiArrays {
      * @param items the array
      * @param <T>   the type of items in the array
      * @return Optional containing the last element if it exists, otherwise Optional.empty()
+     * @throws NullPointerException if the array is not null or empty, but its last element is null;
+     *                              see the {@link KiwiArrays class-level note} for why
      */
     public static <T> Optional<T> lastIfPresent(T[] items) {
         return isNotNullOrEmpty(items) ? Optional.of(last(items)) : Optional.empty();
