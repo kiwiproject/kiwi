@@ -206,10 +206,10 @@ class KiwiListsTest {
 
         @Test
         void shouldThrow_WhenFirstElementIsNull() {
-            var items = newArrayList(null, "guava");
+            var itemsWithNullFirst = newArrayList(null, "guava");
 
             assertThatNullPointerException()
-                    .isThrownBy(() -> KiwiLists.firstIfPresent(items));
+                    .isThrownBy(() -> KiwiLists.firstIfPresent(itemsWithNullFirst));
         }
 
         @Test
@@ -315,10 +315,10 @@ class KiwiListsTest {
 
         @Test
         void shouldThrow_WhenLastElementIsNull() {
-            var items = newArrayList("kiwi", null);
+            var itemsWithNullLast = newArrayList("kiwi", null);
 
             assertThatNullPointerException()
-                    .isThrownBy(() -> KiwiLists.lastIfPresent(items));
+                    .isThrownBy(() -> KiwiLists.lastIfPresent(itemsWithNullLast));
         }
 
         @Test
