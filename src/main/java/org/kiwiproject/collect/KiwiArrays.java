@@ -22,7 +22,9 @@ import java.util.stream.IntStream;
  * simply reflect the array's contents. Methods returning {@code Optional<T>} (e.g.,
  * {@link #firstIfPresent(Object[]) firstIfPresent}, {@link #lastIfPresent(Object[]) lastIfPresent})
  * will instead throw {@link NullPointerException} in that same situation, since {@code Optional} cannot
- * represent a {@code null} value.
+ * represent a {@code null} value. This is intentional: these methods return an empty {@code Optional} when the
+ * array is {@code null} or empty, so also returning an empty {@code Optional} for a {@code null} element
+ * would make it impossible to tell those two cases apart.
  */
 @UtilityClass
 public class KiwiArrays {
