@@ -14,6 +14,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
+import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
 
 import org.jspecify.annotations.Nullable;
@@ -541,6 +542,8 @@ class VaultEncryptionHelperTest {
                     .hasMessage("ansible-vault did not exit before timeout of 10 SECONDS. Stderr: Partial error output");
 
             verify(process).destroyForcibly();
+            verify(process).getErrorStream();
+            verifyNoMoreInteractions(process);
         }
 
         @Test
@@ -552,6 +555,8 @@ class VaultEncryptionHelperTest {
                     .hasMessage("ansible-vault did not exit before timeout of 10 SECONDS. Stderr: [no stderr]");
 
             verify(process).destroyForcibly();
+            verify(process).getErrorStream();
+            verifyNoMoreInteractions(process);
         }
 
         @Test
@@ -564,6 +569,7 @@ class VaultEncryptionHelperTest {
 
             verify(process).destroyForcibly();
             verify(process, never()).getErrorStream();
+            verifyNoMoreInteractions(process);
         }
 
         @Test
@@ -576,7 +582,10 @@ class VaultEncryptionHelperTest {
                     .isExactlyInstanceOf(VaultEncryptionException.class)
                     .hasMessageStartingWith("ansible-vault did not exit before timeout");
 
+            verify(process).destroyForcibly();
+            verify(process).getErrorStream();
             verify(process, never()).getInputStream();
+            verifyNoMoreInteractions(process);
         }
 
         // The first call to waitForExit (the command timeout) returns empty, and the second call
