@@ -24,7 +24,7 @@ import java.util.stream.IntStream;
  * {@link #second(List) second}, {@link #third(List) third}, {@link #penultimate(List) penultimate}) may return
  * {@code null} if the underlying list contains {@code null} at that position, since they
  * simply reflect the list's contents. Methods returning {@code Optional<T>} (e.g.
- * {@link #firstIfPresent(List) firstIfPresent}, {@link #lastIfPresent(List)} lastIfPresent) will instead throw
+ * {@link #firstIfPresent(List) firstIfPresent}, {@link #lastIfPresent(List) lastIfPresent}) will instead throw
  * {@link NullPointerException} in that same situation, since {@code Optional} cannot
  * represent a {@code null} value.
  */
