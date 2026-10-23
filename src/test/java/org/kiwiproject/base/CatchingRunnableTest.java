@@ -4,7 +4,6 @@ import static java.util.Objects.nonNull;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatCode;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.assertj.core.api.Assertions.fail;
 import static org.awaitility.Awaitility.await;
 import static org.awaitility.Durations.FIVE_SECONDS;
 
@@ -142,8 +141,6 @@ class CatchingRunnableTest {
                     .describedAs("We should have received at least one error for proper verification")
                     .hasPositiveValue();
 
-        } catch (Exception e) {
-            fail("No exceptions should have escaped", e);
         } finally {
             if (nonNull(scheduledFuture)) {
                 scheduledFuture.cancel(true);
