@@ -2,6 +2,7 @@ package org.kiwiproject.json;
 
 import static com.google.common.collect.Lists.newArrayList;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
 import static org.assertj.core.api.Assertions.entry;
 import static org.kiwiproject.jackson.KiwiTypeReferences.LIST_OF_STRING_TYPE_REFERENCE;
 import static org.kiwiproject.jackson.KiwiTypeReferences.MAP_OF_STRING_TO_OBJECT_TYPE_REFERENCE;
@@ -751,6 +752,15 @@ class JsonHelperAdvancedFeaturesTest {
 
     @Nested
     class Merge {
+
+        @Test
+        void shouldThrowIllegalArgument_WhenOriginalObjectIsNull() {
+            var updates = Map.of("foo", "modifiedFoo");
+
+            assertThatIllegalArgumentException()
+                    .isThrownBy(() -> jsonHelper.mergeObjects(null, updates))
+                    .withMessage("originalObject must not be null");
+        }
 
         @Test
         void shouldMergeTwoObjects(SoftAssertions softly) {
