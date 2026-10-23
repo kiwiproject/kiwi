@@ -203,6 +203,21 @@ class KiwiListsTest {
                     .isPresent()
                     .contains("kiwi");
         }
+
+        @Test
+        void shouldThrow_WhenFirstElementIsNull() {
+            var itemsWithNullFirst = newArrayList(null, "guava");
+
+            assertThatNullPointerException()
+                    .isThrownBy(() -> KiwiLists.firstIfPresent(itemsWithNullFirst));
+        }
+
+        @Test
+        void shouldContainFirst_WhenOnlyLaterElementsAreNull() {
+            assertThat(KiwiLists.firstIfPresent(newArrayList("kiwi", null)))
+                    .isPresent()
+                    .contains("kiwi");
+        }
     }
 
     @Nested
@@ -275,6 +290,11 @@ class KiwiListsTest {
     class LastIfPresent {
 
         @Test
+        void shouldBeEmpty_WhenNullList() {
+            assertThat(KiwiLists.lastIfPresent(null)).isEmpty();
+        }
+
+        @Test
         void shouldBeEmpty_WhenEmptyList() {
             assertThat(KiwiLists.lastIfPresent(new ArrayList<>())).isEmpty();
         }
@@ -289,6 +309,21 @@ class KiwiListsTest {
         @Test
         void shouldContainLast_WhenTwoElementList() {
             assertThat(KiwiLists.lastIfPresent(newArrayList("kiwi", "guava")))
+                    .isPresent()
+                    .contains("guava");
+        }
+
+        @Test
+        void shouldThrow_WhenLastElementIsNull() {
+            var itemsWithNullLast = newArrayList("kiwi", null);
+
+            assertThatNullPointerException()
+                    .isThrownBy(() -> KiwiLists.lastIfPresent(itemsWithNullLast));
+        }
+
+        @Test
+        void shouldContainLast_WhenOnlyEarlierElementsAreNull() {
+            assertThat(KiwiLists.lastIfPresent(newArrayList(null, "guava")))
                     .isPresent()
                     .contains("guava");
         }
