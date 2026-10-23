@@ -40,6 +40,10 @@ public class VaultEncryptionHelper {
     private static final int DEFAULT_TIMEOUT = 10;
     private static final TimeUnit DEFAULT_TIMEOUT_UNIT = TimeUnit.SECONDS;
 
+    // How long to wait for a process to stop after it did not exit before the timeout
+    private static final int STOP_TIMEOUT = 5;
+    private static final TimeUnit STOP_TIMEOUT_UNIT = TimeUnit.SECONDS;
+
     private final ProcessHelper processHelper;
     private final VaultConfiguration configuration;
 
@@ -388,12 +392,11 @@ public class VaultEncryptionHelper {
 
         var vaultProcess = processHelper.launch(osCommand.parts());
         var exitCode = processHelper.waitForExit(vaultProcess, DEFAULT_TIMEOUT, DEFAULT_TIMEOUT_UNIT)
-                .orElseThrow(() -> new VaultEncryptionException("ansible-vault did not exit before timeout"));
+                .orElseThrow(() -> newTimeoutException(vaultProcess));
         LOG.debug("ansible-vault exit code: {}", exitCode);
 
         if (exitCode != 0) {
-            var rawErrorOutput = KiwiIO.readErrorStreamOf(vaultProcess);
-            var errorOutput = isBlank(rawErrorOutput) ? "[no stderr]" : rawErrorOutput.trim();
+            var errorOutput = errorOutputOf(vaultProcess);
             LOG.debug("Error output: [{}]", errorOutput);
 
             var message = f("ansible-vault returned non-zero exit code {}. Stderr: {}", exitCode, errorOutput);
@@ -401,6 +404,29 @@ public class VaultEncryptionHelper {
         }
 
         return vaultProcess;
+    }
+
+    /**
+     * Stops the process that did not exit before the timeout, so it is not left running, and creates an
+     * exception containing the timeout and whatever the process wrote to stderr, to help diagnose why it was
+     * too slow or hung. Stdout is intentionally not included, since it can contain decrypted secrets.
+     */
+    private VaultEncryptionException newTimeoutException(Process vaultProcess) {
+        vaultProcess.destroyForcibly();
+
+        var stopped = processHelper.waitForExit(vaultProcess, STOP_TIMEOUT, STOP_TIMEOUT_UNIT).isPresent();
+        var errorOutput = stopped ? errorOutputOf(vaultProcess) : "[process did not stop]";
+        LOG.warn("ansible-vault did not exit within {} {}. Stopped: {}. Stderr: [{}]",
+                DEFAULT_TIMEOUT, DEFAULT_TIMEOUT_UNIT, stopped, errorOutput);
+
+        var message = f("ansible-vault did not exit before timeout of {} {}. Stderr: {}",
+                DEFAULT_TIMEOUT, DEFAULT_TIMEOUT_UNIT, errorOutput);
+        return new VaultEncryptionException(message);
+    }
+
+    private static String errorOutputOf(Process vaultProcess) {
+        var rawErrorOutput = KiwiIO.readErrorStreamOf(vaultProcess);
+        return isBlank(rawErrorOutput) ? "[no stderr]" : rawErrorOutput.trim();
     }
 
 }
