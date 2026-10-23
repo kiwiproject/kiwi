@@ -1,12 +1,12 @@
 package org.kiwiproject.dropwizard.metrics.health;
 
-import static org.kiwiproject.io.TimeBasedDirectoryCleaner.DeleteError;
-
 import com.codahale.metrics.health.HealthCheck;
 import org.apache.commons.lang3.time.DurationFormatUtils;
 import org.kiwiproject.io.TimeBasedDirectoryCleaner;
+import org.kiwiproject.io.TimeBasedDirectoryCleaner.DeleteError;
 
 import java.time.Duration;
+import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 
@@ -25,7 +25,7 @@ public class TimeBasedDirectoryCleanerHealthCheck extends HealthCheck {
     private final TimeBasedDirectoryCleaner cleaner;
     private final long warningThresholdInMillis;
     private final String warningThresholdDescription;
-    private final String intializedAt;
+    private final String initializedAt;
 
     /**
      * Create with specified {@link TimeBasedDirectoryCleaner} and the default warning threshold.
@@ -50,8 +50,8 @@ public class TimeBasedDirectoryCleanerHealthCheck extends HealthCheck {
                 SUPPRESS_LEADING_ZERO_ELEMENTS,
                 SUPPRESS_TRAILING_ZERO_ELEMENTS);
 
-        var formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd hh:mm");
-        this.intializedAt = ZonedDateTime.now().format(formatter);
+        var formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
+        this.initializedAt = ZonedDateTime.now(ZoneId.systemDefault()).format(formatter);
     }
 
     @Override
@@ -65,14 +65,14 @@ public class TimeBasedDirectoryCleanerHealthCheck extends HealthCheck {
             return Result.healthy("No delete errors in last %s (%d total errors since %s)",
                     warningThresholdDescription,
                     cleaner.getDeleteErrorCount(),
-                    intializedAt);
+                    initializedAt);
         }
 
         return Result.unhealthy("%d delete error(s) in last %s (%d total errors since %s)",
                 errorsWithinThreshold,
                 warningThresholdDescription,
                 cleaner.getDeleteErrorCount(),
-                intializedAt);
+                initializedAt);
     }
 
     private boolean errorHasOccurredWithinWarningThreshold(long now, DeleteError error) {
