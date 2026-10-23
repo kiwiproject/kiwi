@@ -143,14 +143,14 @@ class KiwiSecurityTest {
             private String storeType;
             private String keyManagerAlgorithm;
             private String trustManagerAlgorithm;
-            private String protocol;
+            private String protocolName;
 
             @BeforeEach
             void setUp() {
                 storeType = KeyStoreType.JKS.value;
                 keyManagerAlgorithm = KeyManagerFactory.getDefaultAlgorithm();
                 trustManagerAlgorithm = KeyManagerFactory.getDefaultAlgorithm();
-                protocol = SSLContextProtocol.TLS_1_2.value;
+                protocolName = SSLContextProtocol.TLS_1_2.value;
             }
 
             @Nested
@@ -163,7 +163,7 @@ class KiwiSecurityTest {
                                     KiwiSecurity.createSslContext(
                                             path, null, storeType, keyManagerAlgorithm,
                                             path, password, storeType, trustManagerAlgorithm,
-                                            protocol))
+                                            protocolName))
                             .withMessage("keyStorePassword cannot be null");
                 }
 
@@ -175,7 +175,7 @@ class KiwiSecurityTest {
                                     KiwiSecurity.createSslContext(
                                             path, password, blankKeyStoreType, keyManagerAlgorithm,
                                             path, password, storeType, trustManagerAlgorithm,
-                                            protocol))
+                                            protocolName))
                             .withMessage("keyStoreType cannot be blank");
                 }
 
@@ -187,7 +187,7 @@ class KiwiSecurityTest {
                                     KiwiSecurity.createSslContext(
                                             path, password, storeType, blankKeyManagerAlgorithm,
                                             path, password, storeType, trustManagerAlgorithm,
-                                            protocol
+                                            protocolName
                                     ))
                             .withMessage("keyManagerAlgorithm cannot be blank");
                 }
@@ -213,7 +213,7 @@ class KiwiSecurityTest {
                                 KiwiSecurity.createSslContext(
                                         null, null, storeType, keyManagerAlgorithm,
                                         path, null, storeType, trustManagerAlgorithm,
-                                        protocol
+                                        protocolName
                                 ))
                         .withMessage("trustStorePassword cannot be null");
             }
@@ -226,7 +226,7 @@ class KiwiSecurityTest {
                                 KiwiSecurity.createSslContext(
                                         null, null, storeType, keyManagerAlgorithm,
                                         path, password, blankTrustStoreType, trustManagerAlgorithm,
-                                        protocol))
+                                        protocolName))
                         .withMessage("trustStoreType cannot be blank");
             }
 
@@ -238,7 +238,7 @@ class KiwiSecurityTest {
                                 KiwiSecurity.createSslContext(
                                         null, null, storeType, keyManagerAlgorithm,
                                         path, password, storeType, blankTrustManagerAlgorithm,
-                                        protocol))
+                                        protocolName))
                         .withMessage("trustManagerAlgorithm cannot be blank");
             }
 
@@ -258,7 +258,7 @@ class KiwiSecurityTest {
             void whenInvalidKeyStorePath() {
                 assertThatThrownBy(() ->
                         KiwiSecurity.createSslContext(
-                                "/not/valid/keystore.jks", password, path, password, protocol
+                                "/not/valid/keystore.jks", password, path, password, protocolName
                         ))
                         .hasMessage("Error creating SSLContext")
                         .isExactlyInstanceOf(SSLContextException.class)
@@ -269,7 +269,7 @@ class KiwiSecurityTest {
             void whenInvalidKeyStoreCredential() {
                 assertThatThrownBy(() ->
                         KiwiSecurity.createSslContext(
-                                path, "invalid-keystore-password", path, password, protocol
+                                path, "invalid-keystore-password", path, password, protocolName
                         ))
                         .hasMessage("Error creating SSLContext")
                         .isExactlyInstanceOf(SSLContextException.class)
@@ -280,7 +280,7 @@ class KiwiSecurityTest {
             void whenInvalidTrustStorePath() {
                 assertThatThrownBy(() ->
                         KiwiSecurity.createSslContext(
-                                path, password, "/not/valid/truststore.jks", password, protocol
+                                path, password, "/not/valid/truststore.jks", password, protocolName
                         ))
                         .hasMessage("Error creating SSLContext")
                         .isExactlyInstanceOf(SSLContextException.class)
@@ -291,7 +291,7 @@ class KiwiSecurityTest {
             void whenInvalidTrustStoreCredential() {
                 assertThatThrownBy(() ->
                         KiwiSecurity.createSslContext(
-                                path, password, path, "invalid-truststore-password", protocol
+                                path, password, path, "invalid-truststore-password", protocolName
                         ))
                         .hasMessage("Error creating SSLContext")
                         .isExactlyInstanceOf(SSLContextException.class)
@@ -315,7 +315,7 @@ class KiwiSecurityTest {
                         KiwiSecurity.createSslContext(
                                 path, password, "InvalidKeyStoreType", keyManagerAlgorithm,
                                 path, password, storeType, trustManagerAlgorithm,
-                                protocol
+                                protocolName
                         ))
                         .hasMessage("Error creating SSLContext")
                         .isExactlyInstanceOf(SSLContextException.class)
@@ -328,7 +328,7 @@ class KiwiSecurityTest {
                         KiwiSecurity.createSslContext(
                                 path, password, storeType, keyManagerAlgorithm,
                                 path, password, "InvalidTrustStoreType", trustManagerAlgorithm,
-                                protocol
+                                protocolName
                         ))
                         .hasMessage("Error creating SSLContext")
                         .isExactlyInstanceOf(SSLContextException.class)
@@ -341,7 +341,7 @@ class KiwiSecurityTest {
                         KiwiSecurity.createSslContext(
                                 path, password, storeType, "NotARealProvider", keyManagerAlgorithm,
                                 path, password, storeType, null, trustManagerAlgorithm,
-                                protocol))
+                                protocolName))
                         .hasMessage("Error creating SSLContext")
                         .isExactlyInstanceOf(SSLContextException.class)
                         .hasCauseExactlyInstanceOf(NoSuchProviderException.class);
@@ -353,7 +353,7 @@ class KiwiSecurityTest {
                         KiwiSecurity.createSslContext(
                                 null, null, null, null, null,
                                 path, password, storeType, "NotARealProvider", trustManagerAlgorithm,
-                                protocol))
+                                protocolName))
                         .hasMessage("Error creating SSLContext")
                         .isExactlyInstanceOf(SSLContextException.class)
                         .hasCauseExactlyInstanceOf(NoSuchProviderException.class);
@@ -365,7 +365,7 @@ class KiwiSecurityTest {
                         KiwiSecurity.createSslContext(
                                 path, password, storeType, "TotallyInvalidAlgorithm",
                                 path, password, storeType, trustManagerAlgorithm,
-                                protocol
+                                protocolName
                         ))
                         .hasMessage("Error creating SSLContext")
                         .isExactlyInstanceOf(SSLContextException.class)
@@ -378,7 +378,7 @@ class KiwiSecurityTest {
                         KiwiSecurity.createSslContext(
                                 path, password, storeType, keyManagerAlgorithm,
                                 path, password, storeType, "TotallyInvalidAlgorithm",
-                                protocol
+                                protocolName
                         ))
                         .hasMessage("Error creating SSLContext")
                         .isExactlyInstanceOf(SSLContextException.class)

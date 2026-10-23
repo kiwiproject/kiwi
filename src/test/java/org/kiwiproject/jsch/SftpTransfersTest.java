@@ -85,24 +85,24 @@ class SftpTransfersTest {
     @Nested
     class ConnectionMethodDelegation {
 
-        private SftpConnector connector;
+        private SftpConnector mockConnector;
 
         @BeforeEach
         void setUp() {
-            connector = mock(SftpConnector.class);
-            sftp = new SftpTransfers(connector);
+            mockConnector = mock(SftpConnector.class);
+            sftp = new SftpTransfers(mockConnector);
         }
 
         @Test
         void shouldDelegateToSftpConnector_WhenConnecting() {
             sftp.connect();
-            verify(connector).connect();
+            verify(mockConnector).connect();
         }
 
         @Test
         void shouldDelegateToSftpConnector_WhenDisconnecting() {
             sftp.disconnect();
-            verify(connector).disconnect();
+            verify(mockConnector).disconnect();
         }
     }
 
