@@ -950,10 +950,13 @@ public class JsonHelper {
      * @param mergeOptions   zero or more {@link MergeOption}
      * @param <T>            the type of the merged object
      * @return a new instance of type T
+     * @throws IllegalArgumentException if originalObject is null
      * @see MergeOption
      */
     @SuppressWarnings("unchecked")
     public <T> T mergeObjects(T originalObject, Object updateObject, MergeOption... mergeOptions) {
+        checkArgumentNotNull(originalObject, "originalObject must not be null");
+
         var originalObjJson = toJson(originalObject);
         var updateObjJson = toJson(updateObject);
 
