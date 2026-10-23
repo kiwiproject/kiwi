@@ -1,7 +1,7 @@
 package org.kiwiproject.concurrent;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.fail;
+import static org.assertj.core.api.Assertions.assertThatCode;
 import static org.kiwiproject.collect.KiwiLists.first;
 import static org.kiwiproject.collect.KiwiLists.second;
 
@@ -233,12 +233,8 @@ class StripedLockTest {
     }
 
     private void sleep10ms() {
-        try {
-            ENV.sleep(10, TimeUnit.MILLISECONDS);
-        } catch (InterruptedException e) {
-            LOG.error("Unexpected InterruptedException", e);
-            fail("Failed due to InterruptedException");
-        }
+        assertThatCode(() -> ENV.sleep(10, TimeUnit.MILLISECONDS))
+                .doesNotThrowAnyException();
     }
 
     private <T> void waitForAll(List<CompletableFuture<T>> futures) {

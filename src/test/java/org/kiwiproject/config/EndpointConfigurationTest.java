@@ -3,7 +3,6 @@ package org.kiwiproject.config;
 import static java.util.stream.Collectors.joining;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.assertj.core.api.Assertions.fail;
 import static org.kiwiproject.base.KiwiStrings.f;
 
 import com.google.common.collect.Iterables;
@@ -343,14 +342,14 @@ class EndpointConfigurationTest {
         class ShouldGetUriFromMultipleThreads {
 
             @RepeatedTest(100)
-            void whenSingleDomain() {
+            void whenSingleDomain() throws InterruptedException {
                 config = newEndpointConfigurationWithDomain("domain-1.test");
 
                 submitConcurrentCallsAndAssertZeroFailures(List.of("https://domain-1.test/path"));
             }
 
             @RepeatedTest(100)
-            void whenMultipleDomains() {
+            void whenMultipleDomains() throws InterruptedException {
                 config = newEndpointConfigurationWithDomain("domain-1.test,domain-2.test");
 
                 submitConcurrentCallsAndAssertZeroFailures(
@@ -366,7 +365,7 @@ class EndpointConfigurationTest {
                     .build();
         }
 
-        private void submitConcurrentCallsAndAssertZeroFailures(List<String> validResults) {
+        private void submitConcurrentCallsAndAssertZeroFailures(List<String> validResults) throws InterruptedException {
             for (int i = 0; i < NUM_TIMES; i++) {
                 completionService.submit(() -> config.getURI());
             }
@@ -375,8 +374,6 @@ class EndpointConfigurationTest {
                 try {
                     var uri = completionService.take().get();
                     assertThat(validResults).contains(uri);
-                } catch (InterruptedException e) {
-                    fail("InterruptedException taking or getting next URI", e);
                 } catch (ExecutionException e) {
                     LOG.error("ExecutionException taking or getting next URI", e);
                     errorCount.incrementAndGet();
