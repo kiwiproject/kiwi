@@ -11,8 +11,10 @@ import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.argThat;
 import static org.mockito.ArgumentMatchers.same;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
+import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
 
 import org.jspecify.annotations.Nullable;
@@ -523,6 +525,78 @@ class VaultEncryptionHelperTest {
 
             // Smoke test...
             verify(processHelper).launch(anyList());
+        }
+    }
+
+    @Nested
+    class WhenProcessDoesNotExitBeforeTimeout {
+
+        private static final String PLAIN_TEXT_FILE = "/data/etc/secrets.yml";
+
+        @Test
+        void shouldStopProcessAndIncludeTimeoutAndStderrInMessage() {
+            mockProcessThatDoesNotExit(Optional.of(137), "Partial error output");
+
+            assertThatThrownBy(() -> helper.encryptFile(PLAIN_TEXT_FILE))
+                    .isExactlyInstanceOf(VaultEncryptionException.class)
+                    .hasMessage("ansible-vault did not exit before timeout of 10 SECONDS. Stderr: Partial error output");
+
+            verify(process).destroyForcibly();
+            verify(process).getErrorStream();
+            verifyNoMoreInteractions(process);
+        }
+
+        @Test
+        void shouldIndicateNoStderr_WhenProcessWroteNothingToStderr() {
+            mockProcessThatDoesNotExit(Optional.of(137), null);
+
+            assertThatThrownBy(() -> helper.encryptFile(PLAIN_TEXT_FILE))
+                    .isExactlyInstanceOf(VaultEncryptionException.class)
+                    .hasMessage("ansible-vault did not exit before timeout of 10 SECONDS. Stderr: [no stderr]");
+
+            verify(process).destroyForcibly();
+            verify(process).getErrorStream();
+            verifyNoMoreInteractions(process);
+        }
+
+        @Test
+        void shouldNotReadStderr_WhenProcessDoesNotStop() {
+            mockProcessThatDoesNotExit(Optional.empty(), "this should not be read");
+
+            assertThatThrownBy(() -> helper.encryptFile(PLAIN_TEXT_FILE))
+                    .isExactlyInstanceOf(VaultEncryptionException.class)
+                    .hasMessage("ansible-vault did not exit before timeout of 10 SECONDS. Stderr: [process did not stop]");
+
+            verify(process).destroyForcibly();
+            verify(process, never()).getErrorStream();
+            verifyNoMoreInteractions(process);
+        }
+
+        @Test
+        void shouldNeverReadStdout_BecauseItCanContainDecryptedSecrets() {
+            mockProcessThatDoesNotExit(Optional.of(137), "Partial error output");
+
+            var encryptedString = Fixtures.fixture(ENCRYPT_STRING_1_1_FORMAT);
+
+            assertThatThrownBy(() -> helper.decryptString(encryptedString))
+                    .isExactlyInstanceOf(VaultEncryptionException.class)
+                    .hasMessageStartingWith("ansible-vault did not exit before timeout");
+
+            verify(process).destroyForcibly();
+            verify(process).getErrorStream();
+            verify(process, never()).getInputStream();
+            verifyNoMoreInteractions(process);
+        }
+
+        // The first call to waitForExit (the command timeout) returns empty, and the second call
+        // (waiting for the process to stop after it was destroyed) returns exitCodeAfterStop.
+        private void mockProcessThatDoesNotExit(Optional<Integer> exitCodeAfterStop, @Nullable String errorOutput) {
+            when(processHelper.launch(anyList())).thenReturn(process);
+            when(processHelper.waitForExit(same(process), anyLong(), any(TimeUnit.class)))
+                    .thenReturn(Optional.empty(), exitCodeAfterStop);
+
+            when(process.getInputStream()).thenReturn(newInputStream("the decrypted secret"));
+            when(process.getErrorStream()).thenReturn(newInputStream(errorOutput));
         }
     }
 
