@@ -112,6 +112,7 @@ public class KiwiLists {
      * @param items the list
      * @param <T>   the type of items in the list
      * @return Optional containing the first element if exists, otherwise Optional.empty()
+     * @throws java.lang.NullPointerException if the list is not null or empty, but its first element is null
      */
     public static <T> Optional<T> firstIfPresent(List<T> items) {
         return isNotNullOrEmpty(items) ? Optional.of(first(items)) : Optional.empty();
@@ -218,6 +219,7 @@ public class KiwiLists {
      * @param items the list
      * @param <T>   the type of items in the list
      * @return Optional containing the last element if it exists, otherwise Optional.empty()
+     * @throws java.lang.NullPointerException if the list is not null or empty, but its last element is null
      */
     public static <T> Optional<T> lastIfPresent(List<T> items) {
         return isNotNullOrEmpty(items) ? Optional.of(last(items)) : Optional.empty();

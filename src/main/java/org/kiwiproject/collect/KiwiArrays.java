@@ -116,6 +116,7 @@ public class KiwiArrays {
      * @param items the array
      * @param <T>   the type of items in the array
      * @return Optional containing the first element if exists, otherwise Optional.empty()
+     * @throws NullPointerException if the array is not null or empty, but its first element is null
      */
     public static <T> Optional<T> firstIfPresent(T[] items) {
         return isNotNullOrEmpty(items) ? Optional.of(first(items)) : Optional.empty();
@@ -222,6 +223,7 @@ public class KiwiArrays {
      * @param items the array
      * @param <T>   the type of items in the array
      * @return Optional containing the last element if it exists, otherwise Optional.empty()
+     * @throws NullPointerException if the array is not null or empty, but its last element is null
      */
     public static <T> Optional<T> lastIfPresent(T[] items) {
         return isNotNullOrEmpty(items) ? Optional.of(last(items)) : Optional.empty();
