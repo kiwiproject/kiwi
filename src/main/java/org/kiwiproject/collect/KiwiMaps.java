@@ -271,8 +271,8 @@ public class KiwiMaps {
     /**
      * Returns the value to which the specified key is mapped.
      * <p>
-     * If the map is null or empty, or it does not contain the specified key, or the value
-     * associated with the key is null, a {@link NoSuchElementException} is thrown.
+     * If the map does not contain the specified key, or the value associated with the key
+     * is null, a {@link NoSuchElementException} is thrown.
      *
      * @param map the map
      * @param key the key whose associated value is to be returned
@@ -280,7 +280,7 @@ public class KiwiMaps {
      * @param <V> the type of the values in the map
      * @return the value to which the specified key is mapped
      * @throws IllegalArgumentException if either argument is null
-     * @throws NoSuchElementException if the map is null or empty, does not contain the specified key,
+     * @throws NoSuchElementException if the map does not contain the specified key,
      *                                or the value associated with the key is null
      */
     public static <K, V> V getOrThrow(Map<K, V> map, K key) {
@@ -300,8 +300,8 @@ public class KiwiMaps {
     /**
      * Returns the value to which the specified key is mapped.
      * <p>
-     * If the map is null or empty, or it does not contain the specified key, or the value
-     * associated with the key is null, the exception provided by the given Supplier is thrown.
+     * If the map does not contain the specified key, or the value associated with the key
+     * is null, the exception provided by the given Supplier is thrown.
      *
      * @param map               the map
      * @param key               the key whose associated value is to be returned
@@ -311,7 +311,7 @@ public class KiwiMaps {
      * @param <E>               the type of RuntimeException
      * @return the value to which the specified key is mapped
      * @throws IllegalArgumentException if any of the arguments is null
-     * @throws E if the map is null or empty, does not contain the specified key,
+     * @throws E if the map does not contain the specified key,
      *           or the value associated with the key is null
      */
     public static <K, V, E extends RuntimeException> V getOrThrow(Map<K, V> map,
@@ -324,8 +324,8 @@ public class KiwiMaps {
     /**
      * Returns the value to which the specified key is mapped.
      * <p>
-     * If the map is null or empty, or it does not contain the specified key, or the value
-     * associated with the key is null, the exception provided by the given Supplier is thrown.
+     * If the map does not contain the specified key, or the value associated with the key
+     * is null, the exception provided by the given Supplier is thrown.
      *
      * @param map               the map
      * @param key               the key whose associated value is to be returned
@@ -335,7 +335,7 @@ public class KiwiMaps {
      * @param <E>               the type of Exception
      * @return the value to which the specified key is mapped
      * @throws IllegalArgumentException if any of the arguments is null
-     * @throws E if the map is null or empty, does not contain the specified key,
+     * @throws E if the map does not contain the specified key,
      *           or the value associated with the key is null
      */
     public static <K, V, E extends Exception> V getOrThrowChecked(Map<K, V> map,
@@ -428,6 +428,26 @@ public class KiwiMaps {
     }
 
     /**
+     * Returns the value associated with the specified key, cast to the specified type,
+     * and throws an exception if the key doesn't exist or the value is null.
+     * <p>
+     * This is the "required" counterpart of {@link #getTypedValueOrNull}. Use it when
+     * the value must be present, instead of wrapping the nullable result in {@code Objects.requireNonNull}.
+     *
+     * @param map       the map
+     * @param key       the key whose associated value is to be returned
+     * @param valueType the class representing the type to cast the value to
+     * @param <T>       the type of the value to be returned
+     * @return the value associated with the key, cast to the specified type
+     * @throws IllegalArgumentException if any argument is null
+     * @throws NoSuchElementException   if the key doesn't exist in the map, or the value associated with the key is null
+     * @throws MapTypeMismatchException if the value cannot be cast to the expected type
+     */
+    public static <T> T getTypedValueOrThrow(Map<?, ?> map, Object key, Class<T> valueType) {
+        return requireValue(map, key, getTypedValueOrNull(map, key, valueType));
+    }
+
+    /**
      * Returns the value associated with the specified key as a Collection of the specified type,
      * or null if the key doesn't exist, or the value is null.
      *
@@ -495,6 +515,26 @@ public class KiwiMaps {
         } catch (ClassCastException e) {
             throw MapTypeMismatchException.forTypeMismatch(key, Collection.class, e);
         }
+    }
+
+    /**
+     * Returns the value associated with the specified key, as a Collection of the specified type,
+     * and throws an exception if the key doesn't exist or the value is null.
+     * <p>
+     * This is the "required" counterpart of {@link #getTypedCollectionOrNull}. Use it when
+     * the value must be present, instead of wrapping the nullable result in {@code Objects.requireNonNull}.
+     *
+     * @param map       the map
+     * @param key       the key whose associated value is to be returned
+     * @param valueType the class representing the type of elements in the collection
+     * @param <T>       the type of elements in the collection
+     * @return the value associated with the key as a Collection of the specified type
+     * @throws IllegalArgumentException if any argument is null
+     * @throws NoSuchElementException   if the key doesn't exist in the map, or the value associated with the key is null
+     * @throws MapTypeMismatchException if the value cannot be cast to the expected type
+     */
+    public static <T> Collection<T> getTypedCollectionOrThrow(Map<?, ?> map, Object key, Class<T> valueType) {
+        return requireValue(map, key, getTypedCollectionOrNull(map, key, valueType));
     }
 
     /**
@@ -568,6 +608,26 @@ public class KiwiMaps {
     }
 
     /**
+     * Returns the value associated with the specified key, as a List of the specified type,
+     * and throws an exception if the key doesn't exist or the value is null.
+     * <p>
+     * This is the "required" counterpart of {@link #getTypedListOrNull}. Use it when
+     * the value must be present, instead of wrapping the nullable result in {@code Objects.requireNonNull}.
+     *
+     * @param map       the map
+     * @param key       the key whose associated value is to be returned
+     * @param valueType the class representing the type of elements in the list
+     * @param <T>       the type of elements in the list
+     * @return the value associated with the key as a List of the specified type
+     * @throws IllegalArgumentException if any argument is null
+     * @throws NoSuchElementException   if the key doesn't exist in the map, or the value associated with the key is null
+     * @throws MapTypeMismatchException if the value cannot be cast to the expected type
+     */
+    public static <T> List<T> getTypedListOrThrow(Map<?, ?> map, Object key, Class<T> valueType) {
+        return requireValue(map, key, getTypedListOrNull(map, key, valueType));
+    }
+
+    /**
      * Returns the value associated with the specified key as a Set of the specified type,
      * or null if the key doesn't exist, or the value is null.
      *
@@ -635,6 +695,26 @@ public class KiwiMaps {
         } catch (ClassCastException e) {
             throw MapTypeMismatchException.forTypeMismatch(key, Set.class, e);
         }
+    }
+
+    /**
+     * Returns the value associated with the specified key, as a Set of the specified type,
+     * and throws an exception if the key doesn't exist or the value is null.
+     * <p>
+     * This is the "required" counterpart of {@link #getTypedSetOrNull}. Use it when
+     * the value must be present, instead of wrapping the nullable result in {@code Objects.requireNonNull}.
+     *
+     * @param map       the map
+     * @param key       the key whose associated value is to be returned
+     * @param valueType the class representing the type of elements in the set
+     * @param <T>       the type of elements in the set
+     * @return the value associated with the key as a Set of the specified type
+     * @throws IllegalArgumentException if any argument is null
+     * @throws NoSuchElementException   if the key doesn't exist in the map, or the value associated with the key is null
+     * @throws MapTypeMismatchException if the value cannot be cast to the expected type
+     */
+    public static <T> Set<T> getTypedSetOrThrow(Map<?, ?> map, Object key, Class<T> valueType) {
+        return requireValue(map, key, getTypedSetOrNull(map, key, valueType));
     }
 
     /**
@@ -719,6 +799,43 @@ public class KiwiMaps {
         } catch (ClassCastException e) {
             throw MapTypeMismatchException.forTypeMismatch(key, Map.class, e);
         }
+    }
+
+    /**
+     * Returns the value associated with the specified key, as a Map with keys and values of the specified types,
+     * and throws an exception if the key doesn't exist or the value is null.
+     * <p>
+     * This is the "required" counterpart of {@link #getTypedMapOrNull}. Use it when
+     * the value must be present, instead of wrapping the nullable result in {@code Objects.requireNonNull}.
+     *
+     * @param map       the map
+     * @param key       the key whose associated value is to be returned
+     * @param keyType   the class representing the type of keys in the returned map
+     * @param valueType the class representing the type of values in the returned map
+     * @param <K>       the type of keys in the returned map
+     * @param <V>       the type of values in the returned map
+     * @return the value associated with the key as a Map with the specified key and value types
+     * @throws IllegalArgumentException if any argument is null
+     * @throws NoSuchElementException   if the key doesn't exist in the map, or the value associated with the key is null
+     * @throws MapTypeMismatchException if the value cannot be cast to the expected type
+     */
+    public static <K, V> Map<K, V> getTypedMapOrThrow(Map<?, ?> map,
+                                                      Object key,
+                                                      Class<K> keyType,
+                                                      Class<V> valueType) {
+        return requireValue(map, key, getTypedMapOrNull(map, key, keyType, valueType));
+    }
+
+    private static <T> T requireValue(Map<?, ?> map, Object key, @Nullable T value) {
+        if (nonNull(value)) {
+            return value;
+        }
+
+        if (map.containsKey(key)) {
+            throw new NoSuchElementException(f("value associated with key '{}' is null", key));
+        }
+
+        throw new NoSuchElementException(f("key '{}' does not exist in map", key));
     }
 
     private static <V> void checkValueTypeNotNull(Class<V> valueType) {
