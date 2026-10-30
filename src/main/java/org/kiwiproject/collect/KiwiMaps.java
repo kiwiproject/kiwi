@@ -271,8 +271,8 @@ public class KiwiMaps {
     /**
      * Returns the value to which the specified key is mapped.
      * <p>
-     * If the map is null or empty, or it does not contain the specified key, or the value
-     * associated with the key is null, a {@link NoSuchElementException} is thrown.
+     * If the map does not contain the specified key, or the value associated with the key
+     * is null, a {@link NoSuchElementException} is thrown.
      *
      * @param map the map
      * @param key the key whose associated value is to be returned
@@ -280,7 +280,7 @@ public class KiwiMaps {
      * @param <V> the type of the values in the map
      * @return the value to which the specified key is mapped
      * @throws IllegalArgumentException if either argument is null
-     * @throws NoSuchElementException if the map is null or empty, does not contain the specified key,
+     * @throws NoSuchElementException if the map does not contain the specified key,
      *                                or the value associated with the key is null
      */
     public static <K, V> V getOrThrow(Map<K, V> map, K key) {
@@ -300,8 +300,8 @@ public class KiwiMaps {
     /**
      * Returns the value to which the specified key is mapped.
      * <p>
-     * If the map is null or empty, or it does not contain the specified key, or the value
-     * associated with the key is null, the exception provided by the given Supplier is thrown.
+     * If the map does not contain the specified key, or the value associated with the key
+     * is null, the exception provided by the given Supplier is thrown.
      *
      * @param map               the map
      * @param key               the key whose associated value is to be returned
@@ -311,7 +311,7 @@ public class KiwiMaps {
      * @param <E>               the type of RuntimeException
      * @return the value to which the specified key is mapped
      * @throws IllegalArgumentException if any of the arguments is null
-     * @throws E if the map is null or empty, does not contain the specified key,
+     * @throws E if the map does not contain the specified key,
      *           or the value associated with the key is null
      */
     public static <K, V, E extends RuntimeException> V getOrThrow(Map<K, V> map,
@@ -324,8 +324,8 @@ public class KiwiMaps {
     /**
      * Returns the value to which the specified key is mapped.
      * <p>
-     * If the map is null or empty, or it does not contain the specified key, or the value
-     * associated with the key is null, the exception provided by the given Supplier is thrown.
+     * If the map does not contain the specified key, or the value associated with the key
+     * is null, the exception provided by the given Supplier is thrown.
      *
      * @param map               the map
      * @param key               the key whose associated value is to be returned
@@ -335,7 +335,7 @@ public class KiwiMaps {
      * @param <E>               the type of Exception
      * @return the value to which the specified key is mapped
      * @throws IllegalArgumentException if any of the arguments is null
-     * @throws E if the map is null or empty, does not contain the specified key,
+     * @throws E if the map does not contain the specified key,
      *           or the value associated with the key is null
      */
     public static <K, V, E extends Exception> V getOrThrowChecked(Map<K, V> map,
