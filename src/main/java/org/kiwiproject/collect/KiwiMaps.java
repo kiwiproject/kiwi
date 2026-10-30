@@ -608,6 +608,26 @@ public class KiwiMaps {
     }
 
     /**
+     * Returns the value associated with the specified key, as a List of the specified type,
+     * and throws an exception if the key doesn't exist or the value is null.
+     * <p>
+     * This is the "required" counterpart of {@link #getTypedListOrNull}. Use it when
+     * the value must be present, instead of wrapping the nullable result in {@code Objects.requireNonNull}.
+     *
+     * @param map       the map
+     * @param key       the key whose associated value is to be returned
+     * @param valueType the class representing the type of elements in the list
+     * @param <T>       the type of elements in the list
+     * @return the value associated with the key as a List of the specified type
+     * @throws IllegalArgumentException if any argument is null
+     * @throws NoSuchElementException   if the key doesn't exist in the map, or the value associated with the key is null
+     * @throws MapTypeMismatchException if the value cannot be cast to the expected type
+     */
+    public static <T> List<T> getTypedListOrThrow(Map<?, ?> map, Object key, Class<T> valueType) {
+        return requireValue(map, key, getTypedListOrNull(map, key, valueType));
+    }
+
+    /**
      * Returns the value associated with the specified key as a Set of the specified type,
      * or null if the key doesn't exist, or the value is null.
      *
