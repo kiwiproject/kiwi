@@ -428,6 +428,26 @@ public class KiwiMaps {
     }
 
     /**
+     * Returns the value associated with the specified key, cast to the specified type,
+     * and throws an exception if the key doesn't exist or the value is null.
+     * <p>
+     * This is the "required" counterpart of {@link #getTypedValueOrNull}. Use it when
+     * the value must be present, instead of wrapping the nullable result in {@code Objects.requireNonNull}.
+     *
+     * @param map       the map
+     * @param key       the key whose associated value is to be returned
+     * @param valueType the class representing the type to cast the value to
+     * @param <T>       the type of the value to be returned
+     * @return the value associated with the key, cast to the specified type
+     * @throws IllegalArgumentException if any argument is null
+     * @throws NoSuchElementException   if the key doesn't exist in the map, or the value associated with the key is null
+     * @throws MapTypeMismatchException if the value cannot be cast to the expected type
+     */
+    public static <T> T getTypedValueOrThrow(Map<?, ?> map, Object key, Class<T> valueType) {
+        return requireValue(map, key, getTypedValueOrNull(map, key, valueType));
+    }
+
+    /**
      * Returns the value associated with the specified key as a Collection of the specified type,
      * or null if the key doesn't exist, or the value is null.
      *
@@ -719,6 +739,18 @@ public class KiwiMaps {
         } catch (ClassCastException e) {
             throw MapTypeMismatchException.forTypeMismatch(key, Map.class, e);
         }
+    }
+
+    private static <T> T requireValue(Map<?, ?> map, Object key, @Nullable T value) {
+        if (nonNull(value)) {
+            return value;
+        }
+
+        if (map.containsKey(key)) {
+            throw new NoSuchElementException(f("value associated with key '{}' is null", key));
+        }
+
+        throw new NoSuchElementException(f("key '{}' does not exist in map", key));
     }
 
     private static <V> void checkValueTypeNotNull(Class<V> valueType) {

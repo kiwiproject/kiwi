@@ -710,6 +710,51 @@ class KiwiMapsTest {
     }
 
     @Nested
+    class GetTypedValueOrThrow {
+
+        @Test
+        void shouldRequireArguments() {
+            assertAll(
+                    () -> assertThatIllegalArgumentException().isThrownBy(() -> KiwiMaps.getTypedValueOrThrow(null, "aKey", Integer.class)),
+                    () -> assertThatIllegalArgumentException().isThrownBy(() -> KiwiMaps.getTypedValueOrThrow(Map.of("count", 42L), null, Long.class)),
+                    () -> assertThatIllegalArgumentException().isThrownBy(() -> KiwiMaps.getTypedValueOrThrow(Map.of("count", 42L), "count", null))
+            );
+        }
+
+        @Test
+        void shouldThrowNoSuchElementException_WhenMapDoesNotContainKey() {
+            var map = Map.of("a", 1, "b", 2);
+            assertThatExceptionOfType(NoSuchElementException.class)
+                    .isThrownBy(() -> KiwiMaps.getTypedValueOrThrow(map, "c", Integer.class))
+                    .withMessage("key 'c' does not exist in map");
+        }
+
+        @Test
+        void shouldThrowNoSuchElementException_WhenMapContainsNullValueForKey() {
+            var map = KiwiMaps.newHashMap("a", null, "b", 12L);
+            assertThatExceptionOfType(NoSuchElementException.class)
+                    .isThrownBy(() -> KiwiMaps.getTypedValueOrThrow(map, "a", Long.class))
+                    .withMessage("value associated with key 'a' is null");
+        }
+
+        @Test
+        void shouldReturnValue_WhenItExists() {
+            var map = Map.of(1, "a", 2, "b", 3, "c");
+            assertThat(KiwiMaps.getTypedValueOrThrow(map, 2, String.class)).isEqualTo("b");
+        }
+
+        @Test
+        void shouldThrowMapTypeMismatchException_WhenCastFails() {
+            var map = Map.of("a", "not an integer", "b", "also not an integer");
+
+            assertThatExceptionOfType(MapTypeMismatchException.class)
+                    .isThrownBy(() -> KiwiMaps.getTypedValueOrThrow(map, "a", Integer.class))
+                    .withMessage("Cannot cast value for key 'a' to type java.lang.Integer")
+                    .withCauseExactlyInstanceOf(ClassCastException.class);
+        }
+    }
+
+    @Nested
     class GetTypedValue {
 
         @Test
