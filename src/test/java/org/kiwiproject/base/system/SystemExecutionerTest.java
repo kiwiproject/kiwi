@@ -12,6 +12,7 @@ import org.junit.jupiter.api.Test;
 import org.kiwiproject.base.DefaultEnvironment;
 
 import java.time.Duration;
+import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicLong;
@@ -104,14 +105,19 @@ class SystemExecutionerTest {
             var executionStrategy = new ExecutionStrategies.ExitFlaggingExecutionStrategy();
             var executioner = new SystemExecutioner(executionStrategy);
             var startTime = new AtomicLong();
+            var executionStarted = new CountDownLatch(1);
             var executionFuture = executorService.submit(() -> {
                 LOG.info("Calling executioner with 5 second wait");
                 startTime.set(System.nanoTime());
+                executionStarted.countDown();
                 executioner.exit(1, Duration.ofSeconds(5));
             });
 
             var killerSleepTimeMillis = 100;
             var killerFuture = executorService.submit(() -> {
+                // Don't start the clock on the killer's sleep until startTime has been recorded,
+                // otherwise the killer can finish sleeping before the elapsed time is measured from
+                await().pollInterval(1, TimeUnit.MILLISECONDS).atMost(ONE_SECOND).until(() -> executionStarted.getCount() == 0);
                 LOG.info("Sleeping for {} milliseconds...", killerSleepTimeMillis);
                 new DefaultEnvironment().sleepQuietly(killerSleepTimeMillis, TimeUnit.MILLISECONDS);
                 LOG.info("I'm awake and will now interrupt executionThread");
