@@ -117,7 +117,7 @@ class SystemExecutionerTest {
             var killerFuture = executorService.submit(() -> {
                 // Don't start the clock on the killer's sleep until startTime has been recorded,
                 // otherwise the killer can finish sleeping before the elapsed time is measured from
-                await().pollInterval(1, TimeUnit.MILLISECONDS).atMost(ONE_SECOND).until(() -> executionStarted.getCount() == 0);
+                await().pollInterval(5, TimeUnit.MILLISECONDS).atMost(ONE_SECOND).until(() -> executionStarted.getCount() == 0);
                 LOG.info("Sleeping for {} milliseconds...", killerSleepTimeMillis);
                 new DefaultEnvironment().sleepQuietly(killerSleepTimeMillis, TimeUnit.MILLISECONDS);
                 LOG.info("I'm awake and will now interrupt executionThread");
