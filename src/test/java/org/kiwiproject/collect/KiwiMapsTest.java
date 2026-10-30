@@ -1267,6 +1267,57 @@ class KiwiMapsTest {
     }
 
     @Nested
+    class GetTypedSetOrThrow {
+
+        @Test
+        void shouldRequireArguments() {
+            assertAll(
+                    () -> assertThatIllegalArgumentException().isThrownBy(() -> KiwiMaps.getTypedSetOrThrow(null, "aKey", String.class)),
+                    () -> assertThatIllegalArgumentException().isThrownBy(() -> KiwiMaps.getTypedSetOrThrow(Map.of("items", Set.of("a", "b")), null, String.class)),
+                    () -> assertThatIllegalArgumentException().isThrownBy(() -> KiwiMaps.getTypedSetOrThrow(Map.of("items", Set.of("a", "b")), "items", null))
+            );
+        }
+
+        @Test
+        void shouldThrowNoSuchElementException_WhenMapDoesNotContainKey() {
+            var map = Map.of("a", Set.of("a", "b"));
+            assertThatExceptionOfType(NoSuchElementException.class)
+                    .isThrownBy(() -> KiwiMaps.getTypedSetOrThrow(map, "c", String.class))
+                    .withMessage("key 'c' does not exist in map");
+        }
+
+        @Test
+        void shouldThrowNoSuchElementException_WhenMapContainsNullValueForKey() {
+            var map = KiwiMaps.newHashMap("a", null, "b", Set.of("a", "b"));
+            assertThatExceptionOfType(NoSuchElementException.class)
+                    .isThrownBy(() -> KiwiMaps.getTypedSetOrThrow(map, "a", String.class))
+                    .withMessage("value associated with key 'a' is null");
+        }
+
+        @Test
+        void shouldReturnValue_WhenItExists() {
+            var map = Map.of("a", Set.of("a", "b"));
+            assertThat(KiwiMaps.getTypedSetOrThrow(map, "a", String.class)).containsExactlyInAnyOrder("a", "b");
+        }
+
+        @Test
+        void shouldReturnValue_WhenItIsEmpty() {
+            var map = Map.of("a", Set.of());
+            assertThat(KiwiMaps.getTypedSetOrThrow(map, "a", String.class)).isEmpty();
+        }
+
+        @Test
+        void shouldThrowMapTypeMismatchException_WhenCastFails() {
+            var map = Map.of("a", "not a set");
+
+            assertThatExceptionOfType(MapTypeMismatchException.class)
+                    .isThrownBy(() -> KiwiMaps.getTypedSetOrThrow(map, "a", String.class))
+                    .withMessage("Cannot cast value for key 'a' to type java.util.Set")
+                    .withCauseExactlyInstanceOf(ClassCastException.class);
+        }
+    }
+
+    @Nested
     class GetTypedSetOrEmpty {
 
         @Test
