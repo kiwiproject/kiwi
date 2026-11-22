@@ -448,6 +448,82 @@ public class KiwiResources {
     }
 
     /**
+     * Creates a new {@link Response} containing only the status, entity, and media type of the given response, with
+     * the entity read as a {@link String}. This is a safer alternative to {@link Response#fromResponse(Response)}
+     * (and to {@link #newResponseBufferingEntityFrom(Response)}) which copy <em>all</em> headers from the original.
+     * <p>
+     * Copying all headers can cause problems. For example, if the original response has a
+     * {@code Content-Encoding: gzip} header but its entity was already decompressed (e.g., by transparent
+     * decompression in Apache HttpClient), then a response created using {@code fromResponse} will advertise
+     * an encoding that no longer matches the entity.
+     * <p>
+     * See {@link #newMinimalResponseFrom(Response, Class)} for details about what is and is not copied.
+     * To read the entity as some other type, use that method.
+     *
+     * @param original the original response
+     * @return a new response
+     * @throws IllegalArgumentException if the original response is null
+     * @see #newMinimalResponseFrom(Response, Class)
+     * @see #newResponseBufferingEntityFrom(Response)
+     */
+    public static Response newMinimalResponseFrom(Response original) {
+        return newMinimalResponseFrom(original, String.class);
+    }
+
+    /**
+     * Creates a new {@link Response} containing only the status, entity, and media type of the given response.
+     * This is a safer alternative to {@link Response#fromResponse(Response)} (and to
+     * {@link #newResponseBufferingEntityFrom(Response)}) which copy <em>all</em> headers from the original.
+     * <p>
+     * The new response contains:
+     * <ul>
+     *     <li>the status info of the original, including a custom reason phrase if there is one</li>
+     *     <li>the entity of the original, read as the given type, or no entity if the original does not have one</li>
+     *     <li>the media type of the original, if it has one</li>
+     * </ul>
+     * <p>
+     * No other headers are copied. In particular, headers such as {@code Content-Encoding} and
+     * {@code Content-Length} are not copied since they can describe an entity that is no longer in the same form
+     * as in the original response, for example after transparent decompression.
+     * <p>
+     * The original response is <em>always</em> closed, including when it has no entity, so it must not be used
+     * after calling this method. Closing it ensures that the underlying connection is released.
+     * <p>
+     * The entity type must be one that can be written back out, such as {@code String} or {@code byte[]}. Use
+     * {@code byte[]} for binary content, since reading binary content as a {@code String} can corrupt it.
+     * <p>
+     * Only metadata is logged, at TRACE level. The entity is never logged.
+     *
+     * @param original   the original response
+     * @param entityType the type to read the entity as
+     * @param <T>        the entity type
+     * @return a new response
+     * @throws IllegalArgumentException if the original response or entity type is null
+     * @see #newResponseBufferingEntityFrom(Response)
+     * @see Response#readEntity(Class)
+     */
+    public static <T> Response newMinimalResponseFrom(Response original, Class<T> entityType) {
+        checkArgumentNotNull(original, "original must not be null");
+        checkArgumentNotNull(entityType, "entityType must not be null");
+
+        return KiwiResponses.apply(original, response -> {
+            var hasEntity = response.hasEntity();
+            var entity = hasEntity ? response.readEntity(entityType) : null;
+            var mediaType = response.getMediaType();
+
+            LOG.trace("Original response has status {}, hasEntity: {}, entityType: {}, mediaType: {}",
+                    response.getStatus(), hasEntity, entityType.getName(), mediaType);
+
+            var builder = Response.status(response.getStatusInfo()).entity(entity);
+            if (nonNull(mediaType)) {
+                builder.type(mediaType);
+            }
+
+            return builder.build();
+        });
+    }
+
+    /**
      * Checks whether {@code parameters} contains parameter named {@code parameterName} that is an integer or
      * something that can be converted into an integer.
      *

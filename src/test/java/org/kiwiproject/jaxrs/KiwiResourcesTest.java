@@ -76,6 +76,7 @@ class KiwiResourcesTest {
     private static final ResourceExtension RESOURCES = ResourceExtension.builder()
             .bootstrapLogging(false)
             .addResource(new FromResponseTestResource())
+            .addResource(new MinimalResponseTestResource())
             .build();
 
     @Nested
@@ -568,6 +569,148 @@ class KiwiResourcesTest {
             var bufferedOutboundResponse = KiwiResources.newResponseBufferingEntityFrom(originalOutboundResponse);
 
             assertThat(bufferedOutboundResponse.hasEntity()).isFalse();
+        }
+    }
+
+    /**
+     * A test resource class for {@link NewMinimalResponseFrom}
+     */
+    @Path("/minimal-response")
+    @Produces(MediaType.APPLICATION_JSON)
+    public static class MinimalResponseTestResource {
+
+        static final String JSON = "{\"name\":\"Alice\",\"age\":42}";
+        static final byte[] BINARY = {0, 1, 2, (byte) 0xC3, (byte) 0x28, (byte) 0xFF, (byte) 0xFE};
+
+        @GET
+        @Path("/with-entity")
+        public Response withEntity() {
+            return Response.ok(JSON)
+                    .header("Header-1", "Value 1")
+                    .header("X-Not-Copied", "nope")
+                    .build();
+        }
+
+        @GET
+        @Path("/mismatched-encoding")
+        public Response mismatchedEncoding() {
+            // Claims gzip, but the entity is plain text
+            return Response.ok(JSON)
+                    .header(HttpHeaders.CONTENT_ENCODING, "gzip")
+                    .build();
+        }
+
+        @GET
+        @Path("/no-entity")
+        public Response noEntity() {
+            return Response.noContent().header("Header-A", "Value A").build();
+        }
+
+        @GET
+        @Path("/binary")
+        @Produces(MediaType.APPLICATION_OCTET_STREAM)
+        public Response binary() {
+            return Response.ok(BINARY).build();
+        }
+
+        @GET
+        @Path("/custom-status")
+        public Response customStatus() {
+            return Response.status(Response.Status.CONFLICT.getStatusCode(), "Custom Reason")
+                    .entity(JSON)
+                    .build();
+        }
+    }
+
+    @Nested
+    class NewMinimalResponseFrom {
+
+        @Test
+        void shouldCopyStatusEntityAndMediaType_AndNotOtherHeaders() {
+            var original = RESOURCES.client().target("/minimal-response/with-entity").request().get();
+
+            var response = KiwiResources.newMinimalResponseFrom(original);
+
+            assertOkResponse(response);
+            assertThat(response.getEntity()).isEqualTo(MinimalResponseTestResource.JSON);
+            assertThat(response.getMediaType()).isEqualTo(MediaType.APPLICATION_JSON_TYPE);
+            assertThat(response.getHeaders()).doesNotContainKeys("Header-1", "X-Not-Copied");
+        }
+
+        @Test
+        void shouldNotCopyContentEncoding() {
+            var original = RESOURCES.client().target("/minimal-response/mismatched-encoding").request().get();
+            assertThat(original.getHeaderString(HttpHeaders.CONTENT_ENCODING)).isEqualTo("gzip");
+
+            var response = KiwiResources.newMinimalResponseFrom(original);
+
+            assertOkResponse(response);
+            assertThat(response.getEntity()).isEqualTo(MinimalResponseTestResource.JSON);
+            assertThat(response.getHeaders()).doesNotContainKey(HttpHeaders.CONTENT_ENCODING);
+        }
+
+        @Test
+        void shouldCloseOriginal() {
+            var original = RESOURCES.client().target("/minimal-response/with-entity").request().get();
+
+            KiwiResources.newMinimalResponseFrom(original);
+
+            assertThat(original.isClosed()).isTrue();
+        }
+
+        @Test
+        void shouldWorkAndCloseOriginal_WhenOriginalHasNoEntity() {
+            var original = RESOURCES.client().target("/minimal-response/no-entity").request().get();
+
+            var response = KiwiResources.newMinimalResponseFrom(original);
+
+            assertThat(response.getStatus()).isEqualTo(Response.Status.NO_CONTENT.getStatusCode());
+            assertThat(response.hasEntity()).isFalse();
+            assertThat(response.getHeaders()).doesNotContainKey("Header-A");
+            assertThat(original.isClosed()).isTrue();
+        }
+
+        @Test
+        void shouldCopyStatusInfo_IncludingCustomReasonPhrase() {
+            var original = RESOURCES.client().target("/minimal-response/custom-status").request().get();
+
+            var response = KiwiResources.newMinimalResponseFrom(original);
+
+            assertThat(response.getStatus()).isEqualTo(Response.Status.CONFLICT.getStatusCode());
+            assertThat(response.getStatusInfo().getReasonPhrase()).isEqualTo("Custom Reason");
+        }
+
+        @Test
+        void shouldReadEntityAsGivenType() {
+            var original = RESOURCES.client().target("/minimal-response/binary").request().get();
+
+            var response = KiwiResources.newMinimalResponseFrom(original, byte[].class);
+
+            assertThat(response.getEntity()).isEqualTo(MinimalResponseTestResource.BINARY);
+            assertThat(response.getMediaType()).isEqualTo(MediaType.APPLICATION_OCTET_STREAM_TYPE);
+        }
+
+        @Test
+        void shouldNotSetMediaType_WhenOriginalHasNone() {
+            var original = Response.ok().build();
+
+            var response = KiwiResources.newMinimalResponseFrom(original);
+
+            assertThat(response.getMediaType()).isNull();
+        }
+
+        @Test
+        void shouldRequireOriginalResponse() {
+            assertThatIllegalArgumentException()
+                    .isThrownBy(() -> KiwiResources.newMinimalResponseFrom(null));
+        }
+
+        @Test
+        void shouldRequireEntityType() {
+            var original = Response.ok().build();
+
+            assertThatIllegalArgumentException()
+                    .isThrownBy(() -> KiwiResources.newMinimalResponseFrom(original, null));
         }
     }
 
