@@ -503,6 +503,7 @@ public class KiwiResources {
      * @see Response#readEntity(Class)
      */
     public static <T> Response newMinimalResponseFrom(Response original, Class<T> entityType) {
+        checkArgumentNotNull(original, "original must not be null");
         checkArgumentNotNull(entityType, "entityType must not be null");
 
         return KiwiResponses.apply(original, response -> {
