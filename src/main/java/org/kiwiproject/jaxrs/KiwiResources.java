@@ -510,10 +510,8 @@ public class KiwiResources {
             var entity = hasEntity ? response.readEntity(entityType) : null;
             var mediaType = response.getMediaType();
 
-            if (LOG.isTraceEnabled()) {
-                LOG.trace("Original response has status {}, hasEntity: {}, entityType: {}, mediaType: {}",
-                        response.getStatus(), hasEntity, entityType.getName(), mediaType);
-            }
+            LOG.trace("Original response has status {}, hasEntity: {}, entityType: {}, mediaType: {}",
+                    response.getStatus(), hasEntity, entityType.getName(), mediaType);
 
             var builder = Response.status(response.getStatusInfo()).entity(entity);
             if (nonNull(mediaType)) {
