@@ -40,7 +40,7 @@ jobs:
         java-version: 17
 
     - name: Initialize CodeQL
-      uses: github/codeql-action/init@33d7b85da1a04171e211befe2c739303b9a4c066  # v4
+      uses: github/codeql-action/init@33d7b85da1a04171e211befe2c739303b9a4c066  # v4.39.3
       with:
         languages: ${{ matrix.language }}
         queries: security-extended,security-and-quality
@@ -53,13 +53,13 @@ jobs:
         restore-keys: ${{ runner.os }}-m2
 
     - name: Delombok
-      uses: sleberknight/delombok-action@56a7f9d35ad110b4c85e400353c355124f476c08
+      uses: sleberknight/delombok-action@56a7f9d35ad110b4c85e400353c355124f476c08  # v0.8.0
 
     - name: Autobuild
-      uses: github/codeql-action/autobuild@33d7b85da1a04171e211befe2c739303b9a4c066  # v4
+      uses: github/codeql-action/autobuild@33d7b85da1a04171e211befe2c739303b9a4c066  # v4.39.3
 
     - name: Perform CodeQL Analysis
-      uses: github/codeql-action/analyze@33d7b85da1a04171e211befe2c739303b9a4c066  # v4
+      uses: github/codeql-action/analyze@33d7b85da1a04171e211befe2c739303b9a4c066  # v4.39.3
       with:
         category: "/language:${{matrix.language}}"
         
